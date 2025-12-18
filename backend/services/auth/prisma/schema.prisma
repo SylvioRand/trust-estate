@@ -1,0 +1,15 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model refresh_token {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  tokenHash String
+  expiresAt DateTime @default(now())
+}
