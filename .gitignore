@@ -1,0 +1,80 @@
+############################
+# Node.js
+############################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+############################
+# Build / Transpile
+############################
+dist/
+build/
+.out/
+.cache/
+coverage/
+
+############################
+# Environment variables / Secrets
+############################
+.env
+.env.*
+!.env.example
+
+############################
+# Logs
+############################
+logs/
+*.log
+
+############################
+# OS / Editors
+############################
+.DS_Store
+Thumbs.db
+
+.vscode/
+!.vscode/extensions.json
+
+.idea/
+*.swp
+*.swo
+
+############################
+# TypeScript
+############################
+*.tsbuildinfo
+
+############################
+# Docker
+############################
+docker-compose.override.yml
+*.pid
+
+############################
+# Prisma / ORM
+############################
+prisma/migrations/*
+!prisma/migrations/.gitkeep
+
+############################
+# Tests
+############################
+reports/
+test-results/
+
+############################
+# Runtime / Fastify
+############################
+tmp/
+uploads/
+public/uploads/
+
+############################
+# Misc
+############################
+*.tgz
+*.bak
+
