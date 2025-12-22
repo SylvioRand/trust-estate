@@ -1,8 +1,8 @@
-# 📘 Spécification API Complète — Plateforme Immobilière MVP
+# 📘 Spécification API Complète — Plateforme Immobilière MVP (UPDATE)
 
 **Compatible Apidog / OpenAPI 3.0**  
-**Date :** 18 Décembre 2024  
-**Version :** 2.0 (Corrigée - MVP Strict)
+**Date :** Décembre 2024  
+**Version :** 2.1 (Update Feedback API)
 
 ---
 
@@ -10,7 +10,7 @@
 
 ```yaml
 Base URL: /api/v1
-Auth: Bearer Token (JWT)
+Auth: Cookies HttpOnly (JWT dans cookies)
 Format: JSON
 Encoding: UTF-8
 Gateway: Nginx (reverse proxy)
@@ -37,7 +37,7 @@ Cette API est déployée sur 5 microservices Fastify derrière un gateway Nginx 
 
 ## 1. Authentification
 
-### 1.1 Inscription (🆕 NOUVEAU)
+### 1.1 Inscription
 
 ```http
 POST /auth/register
@@ -46,48 +46,54 @@ POST /auth/register
 **Request :**
 ```json
 {
-  "email": "user@mail.com",     // ✅ OBLIGATOIRE
-  "phone": "+261340000000",     // ✅ OBLIGATOIRE
-  "password": "********",       // ✅ OBLIGATOIRE
-  "name": "Nom Utilisateur"     // ✅ OBLIGATOIRE
+  "email": "user@mail.com",
+  "password": "********",
+  "name": "Nom Utilisateur"
 }
 ```
 
 **Response 201 :**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIs...",
-  "expiresIn": 86400,
-  "user": {
-    "id": "u1",
-    "email": "user@mail.com",
-    "phone": "+261340000000",
-    "name": "Nom Utilisateur",
-    "phoneVerified": false,
-    "role": "user",
-    "trustScore": 50,
-    "createdAt": "2025-01-15T10:00:00Z"
-  },
-  "initialCredits": 5,
-  "message": "Compte créé avec succès. 5 crédits offerts !"
+  "userId": "u1",
+  "message": "Verification email sent"
 }
 ```
 
-**Response 400 :**
+> **NOUVEAU :** Pas de token direct. L'utilisateur doit vérifier son email avant de pouvoir se connecter.
+
+---
+
+### 1.2 Vérification Email (🆕 NOUVEAU)
+
+```http
+POST /auth/verify-email
+```
+
+**Request :**
 ```json
 {
-  "error": "validation_error",
-  "message": "Erreur de validation"
+  "token": "verification-token-xxx"
+}
+```
+
+**Response 200 :**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "refreshToken": "refresh-token-xxx"
 }
 ```
 
 ---
 
-### 1.2 Connexion Email
+### 1.3 Connexion Email
 
 ```http
 POST /auth/login
 ```
+
+**Check :** Si email non vérifié -> Return 403 `EmailNotVerified`
 
 **Request :**
 ```json
@@ -100,18 +106,18 @@ POST /auth/login
 **Response 200 :**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIs...",
-  "expiresIn": 86400,
-  "refreshToken": "refresh-token-xxx",
   "user": {
     "id": "u1",
     "email": "user@mail.com",
-    "phone": "+261340000000",
+    "emailVerified": true,
+    "name": "Jean Rakoto",
     "role": "user",
-    "trustScore": 75
+    "creditBalance": 10
   }
 }
 ```
+
+> **Note :** Les tokens sont dans les cookies HttpOnly `realestate_access_token` et `realestate_refresh_token`.
 
 ---
 
@@ -131,16 +137,15 @@ POST /auth/google
 **Response 200 :**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIs...",
-  "expiresIn": 86400,
   "user": {
     "id": "u3",
     "email": "user@gmail.com",
+    "emailVerified": true,
+    "name": "Google User",
     "role": "user",
-    "trustScore": 50
+    "creditBalance": 5
   },
-  "isNewUser": true,
-  "initialCredits": 5
+  "isNewUser": true
 }
 ```
 
@@ -209,19 +214,17 @@ Authorization: Bearer {token}
 {
   "id": "u1",
   "email": "user@mail.com",
+  "emailVerified": true,
   "phone": "+261340000000",
   "name": "Jean Rakoto",
   "role": "user",
-  "trustScore": 85,
   "sellerStats": {
     "totalListings": 8,
     "activeListings": 2,
     "successfulSales": 5,
     "averageRating": 4.3
   },
-  "credits": {
-    "balance": 12
-  }
+  "creditBalance": 12
 }
 ```
 
@@ -280,7 +283,7 @@ GET /listings
       "type": "sale",
       "zoneDisplay": "Antananarivo - Analakely",
       "photos": ["https://mock-cdn.com/photo1.jpg"],
-      "trustScore": 82
+      "status": "active"
     }
   ],
   "pagination": {
@@ -314,8 +317,7 @@ GET /listings/:id
   },
   "seller": {
     "id": "u5",
-    "name": "Jean Rakoto",
-    "trustScore": 88
+    "name": "Jean Rakoto"
   }
 }
 ```
@@ -351,10 +353,6 @@ Authorization: Bearer {token}
 {
   "listingId": "l2",
   "status": "active",
-  "iaValidation": {
-    "status": "accepted",
-    "trustScore": 75
-  },
   "creditConsumed": 1
 }
 ```

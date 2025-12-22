@@ -1,6 +1,9 @@
 # 📘 Niveau 1 — Vision & Philosophie Produit
 **Plateforme immobilière digitale adaptée à Madagascar**
 
+> **Version :** 2.0 (Update Feedback Dev)  
+> **Date :** Décembre 2024
+
 ## 1. Introduction générale
 
 Ce document constitue le socle idéologique, stratégique et philosophique du projet de plateforme immobilière digitale destinée au marché malgache.
@@ -40,7 +43,7 @@ Il en résulte :
 - des arnaques fréquentes
 - une perte de temps importante pour les acheteurs et vendeurs
 
-### 2.2 Contraintes structurelles
+### 2.2 Contraintes structurelles & Compliance (GDPR)
 
 Toute plateforme opérant à Madagascar doit composer avec :
 - un pouvoir d'achat limité
@@ -50,7 +53,7 @@ Toute plateforme opérant à Madagascar doit composer avec :
 - une documentation foncière sensible
 - une méfiance naturelle envers les plateformes numériques
 
-**Ignorer ces contraintes condamne le produit à l'échec.**
+**Nouveauté Compliance :** Le respect des données personnelles (GDPR) est central dès la conception, avec une gestion transparente des consentements.
 
 ---
 
@@ -67,9 +70,8 @@ Toute plateforme opérant à Madagascar doit composer avec :
 
 **Gestion produit prévue :**
 - détection de photos dupliquées ou recyclées (hash visuel simple)
-- pénalité de visibilité pour images suspectes
-- demande de nouvelles photos en cas de doute
-- historique interne des visuels utilisés
+- affichage clair des caractéristiques détaillées (eau, électricité, type de bien précis)
+- système de notification fiable (email) pour chaque étape de la réservation
 
 ### 3.2 Problèmes côté vendeurs
 
@@ -99,8 +101,7 @@ Le produit s'adresse :
 
 La plateforme est conçue dès l'origine pour gérer deux types de transactions distinctes :
 
-**Vente :** cession définitive d'un bien (terrain, maison, appartement)
-
+**Vente :** cession définitive d'un bien (terrain, maison, appartement, loft...)
 **Location :** mise à disposition temporaire d'un bien (meublé ou non)
 
 Ces deux cas partagent :
@@ -108,51 +109,36 @@ Ces deux cas partagent :
 - les mêmes mécanismes de visibilité
 - la même logique de réservation de visite
 
-Mais impliquent :
-- des règles métier spécifiques
-- des états finaux distincts
-- des informations différentes affichées à l'utilisateur
-
 ---
 
 ## 5. Philosophie produit
 
-### 5.1 Principe n°1 — La confiance est progressive
+### 5.1 Principe n°1 — La confiance par la transparence (Pas de score artificiel)
 
-La plateforme repose sur l'idée que :
+La plateforme repose sur l'idée que la confiance se construit par la clarté de l'information, et non par des badges arbitraires.
 
-**la confiance n'est ni binaire, ni imposable. Elle se construit par niveaux, visibles et compréhensibles.**
+**Décision majeure :** 
+- **Aucun badge de validation "certifié"** qui pourrait engager la responsabilité de la plateforme.
+- **Aucun score de confiance visible** qui pourrait être manipulé ou mal interprété.
+- La confiance naît de la **complétude** de l'annonce et de l'historique réel (nombre de visites honorées).
 
-Aucun bien n'est bloqué par défaut. Aucune annonce n'est supprimée automatiquement.
+### 5.2 Principe n°2 — L'adoption via le système de Crédits (Pas d'abonnement)
 
-La confiance est :
-- gagnée
-- améliorée
-- récompensée
+Dans un contexte comme Madagascar, l'abonnement mensuel est un frein. Le modèle retenu est le **Pay-as-you-go** via des Crédits.
 
-### 5.2 Principe n°2 — L'adoption avant la monétisation
+**Logique :** 
+- L'utilisateur paye à l'acte (publication, boost).
+- Recharge facile via simulation de Mobile Money pour le MVP.
+- Pas d'engagement récurrent.
 
-Dans un contexte comme Madagascar :
-- toute barrière trop tôt tue l'usage
-- tout paiement injustifié crée de la défiance
+### 5.3 Principe n°3 — Respect du temps et de la donnée
 
-Le produit adopte donc une logique :
-
-**Gratuit pour exister. Payant pour mieux exister.**
-
-### 5.3 Principe n°3 — Respect du temps comme valeur centrale
-
-Le temps est une ressource rare et coûteuse :
-- déplacements longs
-- transports payants
-- disponibilité limitée
-
-La plateforme vise à :
+Le temps est une ressource rare. La plateforme vise à :
 - réduire les visites inutiles
-- filtrer les intentions
-- favoriser les interactions sérieuses
+- filtrer les intentions via la réservation
+- **Protéger les données** : vérification obligatoire de l'email pour toute interaction sérieuse.
 
----
+--- 
 
 ## 6. Positionnement stratégique
 
@@ -161,6 +147,7 @@ La plateforme vise à :
 - un filtre de confiance
 - un organisateur de mise en relation
 - un révélateur de sérieux
+- un outil multilingue (FR/EN/MG) adapté à tous
 
 ### 6.2 Ce que la plateforme N'EST PAS
 
@@ -169,27 +156,18 @@ La plateforme vise à :
 - une agence immobilière classique
 - un garant légal des transactions
 
-**Cette distinction est fondamentale.**
-
 ---
 
 ## 7. Comptes et rôles : philosophie
 
-### 7.1 Un seul type de compte utilisateur
+### 7.1 Un seul type de compte utilisateur (Dashboard Unifié)
 
 La plateforme adopte un principe simple : **un compte unique par personne.**
 
 Un utilisateur peut, avec le même compte :
-- publier une annonce de vente
-- publier une annonce de location
-- réserver une visite
-- contacter un vendeur ou un bailleur
-
-Il n'existe aucune séparation rigide entre :
-- vendeur
-- bailleur
-- acheteur
-- locataire
+- publier une annonce (Mode Vendeur)
+- réserver une visite (Mode Acheteur)
+- gérer ses favoris et ses ventes depuis le **même Dashboard**.
 
 **Les rôles sont dynamiques et contextuels.**
 
@@ -318,17 +296,11 @@ Chaque annonce possède un **score de confiance interne**.
 
 ## 11. Réservation de visite : vision
 
-### 11.1 Réservation de visite : définition
+### 11.1 Réservation = Engagement
 
-La réservation de visite est un **mécanisme de filtrage**.
-
-Elle consiste en :
-- un engagement volontaire de l'acheteur ou du locataire
-- un signal de sérieux pour le vendeur ou le bailleur
-
-Elle peut être associée à :
-- un micro-paiement
-- une confirmation de disponibilité
+La réservation est un engagement formel :
+- Nécessite un compte vérifié (Email).
+- Génère des notifications réelles (Email).
 
 ### 11.2 Vente et location : même logique, contexte différent
 
@@ -370,43 +342,28 @@ Ces annonces :
 
 ## 12. Modèle économique : éthique
 
-### 12.1 Micro-paiement et valeur
+### 12.1 Micro-paiement (Crédits)
 
-Chaque paiement doit correspondre à :
-- une valeur perçue immédiate
-- un avantage concret
-
-### 12.2 Ce que la plateforme refuse
-
-- **abonnements lourds** : pas de forfait mensuel obligatoire pour utiliser la plateforme
-- **paywalls bloquants** : pas de fonctionnalités essentielles cachées derrière un paiement obligatoire (ex: "Payez pour voir les annonces" ou "Payez pour contacter un vendeur")
-- **monétisation agressive** : pas de publicités intrusives ni de frais cachés
+Chaque paiement correspond à une action unitaire.
+La recharge de crédits est simulée pour le MVP mais pensée pour le Mobile Money réel à terme.
 
 ---
 
-## 13. Assistant IA : positionnement
+## 13. IA & Numérologie : positionnement
 
-### 13.1 IA comme conseiller, pas oracle
+### 13.1 IA comme assistant d'analyse
 
 L'IA :
-- informe
-- contextualise
-- éduque
+- aide à analyser le marché (Prix au m²)
+- fournit des "Chiffres clés" (Numérologie, ROI, Tendances)
+- éduque sur la valeur du bien
 
-Elle ne :
-- décide pas
-- certifie pas
-- remplace pas l'humain
+### 13.2 Limites strictes
 
-### 13.2 RAG et contrôle
-
-Les réponses sont basées sur :
-- des données locales (ex: prix moyen par type de bien selon la localité)
-- des règles explicites 
-
-Objectif :
-- réduire les hallucinations
-- renforcer la confiance
+L'IA ne :
+- **valide pas** les descriptions (responsabilité humaine)
+- certifie pas le prix
+- remplace pas l'expert humain
 
 ---
 

@@ -6,15 +6,15 @@ Décrire écran par écran le parcours acheteur / locataire sans ambiguïté.
 
 ---
 
-## 🎯 Résumé MVP
+## 🎯 Résumé MVP (Feedback Dev Integ)
 
-| Fonctionnalité            | MVP             |
-|---------------------------|-----------------|
-| Accueil / Home            | ✅              |
-| Liste des annonces        | ✅              |
-| Fiche annonce             | ✅              |
-| Réservation de visite     | ✅              |
-| Feedback post-visite      | ✅ (simplifié)  |
+| Fonctionnalité            | MVP             | Changement |
+|---------------------------|-----------------|------------|
+| Accueil / Home            | ✅              | + Sélecteur Langue, + Tags |
+| Liste des annonces        | ✅              | + Filtres détaillés (Terrain...) |
+| Fiche annonce             | ✅              | - Badge Confiance |
+| Réservation de visite     | ✅              | + Notif Email, + Verif Email |
+| Feedback post-visite      | ✅ (simplifié)  | + Limite caractères (128-256) |
 
 ---
 
@@ -26,14 +26,14 @@ Décrire écran par écran le parcours acheteur / locataire sans ambiguïté.
 - découverte rapide
 - accès immédiat aux annonces
 
-### Éléments UI
-- recherche par zone
-- filtres rapides (vente / location)
-- annonces mises en avant (classement)
+### Éléments UI Nouveaux
+- 🌍 **Sélecteur Langue** (FR/EN/MG) flottant.
+- 🍪 **Bannière GDPR** (discret en bas) au premier chargement.
+- **Tags Marketing** : "Urgent", "Exclusif" mis en avant.
 
 ### États
-- visiteur
-- utilisateur connecté
+- visiteur (Mode Public)
+- utilisateur connecté (Mode Authentifié)
 
 ---
 
@@ -41,15 +41,18 @@ Décrire écran par écran le parcours acheteur / locataire sans ambiguïté.
 
 ### Fonctions
 - pagination
-- filtres avancés (prix, surface, type)
-- tri par pertinence
+- **Filtres avancés** (Nouveaux champs) :
+    - Type : Appartement, Maison, Loft, **Terrain**, Local.
+    - Config : Chambres, SDB, WC séparés (Oui/Non).
+    - Extérieur : Jardin, Balcon.
 
 ### Carte annonce affiche
 - photos
 - prix
 - type de bien
-- localisation approximative
-- badge confiance
+- localisation approximative (Zone uniquement)
+- **Tags** (Urgent, Exclusif...)
+- ❌ **PAS de badge de confiance** (nettoyé)
 
 ---
 
@@ -57,14 +60,14 @@ Décrire écran par écran le parcours acheteur / locataire sans ambiguïté.
 
 ### Contenu visible
 - galerie photos
-- description validée IA
-- caractéristiques
-- score de confiance
-- score de confiance
+- description (rédigée par vendeur/IA, non validée)
+- caractéristiques complètes (tous les champs tech)
+- **Numérologie / Market Data** (via IA Assistant)
 
 ### Contenu masqué
 - nom du vendeur
 - contact direct
+- adresse exacte
 
 ### CTA principal
 - réserver une visite
@@ -76,16 +79,17 @@ Décrire écran par écran le parcours acheteur / locataire sans ambiguïté.
 > L'**acheteur/locataire** peut réserver un créneau pour visiter un bien.
 
 ### Conditions pour réserver
-- Acheteur/locataire connecté à son compte
-- Acheteur/locataire connecté à son compte
+- Acheteur connecté
+- **Email vérifié obligatoirement** (Si non : flow de vérification).
 
 ### Étapes
-- choix créneau
-- confirmation
+1. choix créneau
+2. confirmation
 
-### Effets
-- contact vendeur révélé
-- engagement enregistré
+### Effets & Notifications
+- ✅ Email de confirmation envoyé à l'acheteur.
+- ✅ Email "Nouvelle demande" envoyé au vendeur.
+- 📅 Ajout au calendrier "Mes Visites".
 
 ---
 
@@ -93,42 +97,22 @@ Décrire écran par écran le parcours acheteur / locataire sans ambiguïté.
 
 ### Actions MVP
 - note (1 à 5)
-- commentaire encadré
+- **Commentaire Strict** :
+    - Min : 128 caractères.
+    - Max : 256 caractères.
+    - Objectif : Éviter le spam ou les romans.
 
-### Effets
-- impact classement annonce
-- impact score vendeur
-
-### Déclencheur MVP
-**Automatique basé sur la date :**
-- Si `réservation.slot < maintenant` → feedback disponible
-- Pas besoin d'action manuelle du vendeur ni de l'acheteur
-- Simple vérification côté frontend
-
-- Simple vérification côté frontend
+### Déclencheur
+- Automatique : si `réservation.slot < maintenant`.
 
 ---
 
-## 6. Mon compte
+## 6. Mon compte (Dashboard Unifié)
 
 > ⚠️ **IMPORTANT :** Le compte est **identique** pour acheteurs et vendeurs.
-> 
-> Toute la documentation du dashboard "Mon compte" est centralisée dans :
-> **`Niveau_2.2_Parcours_Vendeur_Bailleur_CORRIGE.md` — Section 1**
->
-> Cette centralisation évite la duplication et garantit que le compte reste unifié comme défini dans le Niveau 1.
-
-### Ce que l'acheteur utilise dans "Mon compte"
-
-| Section          | Utilisation par l'acheteur                             |
-|------------------|--------------------------------------------------------|
-| **Mon profil**   | ✅ Modifier ses infos                                  |
-| **Mes annonces** | Visible mais peut être vide (CTA pour devenir vendeur) |
-| **Mes visites**  | ✅ Voir ses réservations, laisser des feedbacks        |
+> Voir `Niveau_2.2` pour la structure complète du Dashboard.
 
 ---
 
-**Version :** 2.0  
-**Statut :** Document de référence (MVP clarifié)  
+**Version :** 3.0 (Update Feedback)  
 **Date :** Décembre 2024
-
