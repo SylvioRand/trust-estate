@@ -142,7 +142,7 @@ Si scaling nécessaire → extraction progressive des services vers leurs propre
 **Dépendances :**
 - → Auth Service (vérifier vendeur)
 - → Credits Service (consommer crédit)
-- → AI Service (notifier pour indexation/suppression)
+- → AI Service (synchronisation de l'index vectoriel RAG)
 
 ---
 
@@ -150,12 +150,14 @@ Si scaling nécessaire → extraction progressive des services vers leurs propre
 
 **Responsabilité :** Réservations et feedbacks
 
-| Endpoint              | Méthode | Description            |
-|-----------------------|---------|------------------------|
-| `/reservations`       | POST    | Créer réservation      |
-| `/reservations/mine`  | GET     | Mes réservations       |
-| `/reservations/:id`   | DELETE  | Annuler réservation    |
-| `/feedback`           | POST    | Créer feedback         |
+| Endpoint                    | Méthode | Description            |
+|-----------------------------|---------|------------------------|
+| `/reservations`             | POST    | Créer réservation      |
+| `/reservations/mine`        | GET     | Mes réservations       |
+| `/reservations/:id/confirm` | POST    | Accepter visite        |
+| `/reservations/:id/reject`  | POST    | Refuser visite         |
+| `/reservations/:id`         | DELETE  | Annuler réservation    |
+| `/feedback`                 | POST    | Créer feedback         |
 
 **Modèles gérés :** `Reservation`, `Feedback`
 

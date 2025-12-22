@@ -446,8 +446,11 @@ GET /listings/:id
   "features": {
     "bedrooms": 3,
     "bathrooms": 2,
-    "parking": true,
-    "garden": true
+    "wc_separate": true,
+    "parking_type": "garage",
+    "garden_private": true,
+    "water_access": true,
+    "electricity_access": true
   },
   "status": "active",
   "sellerVisible": false,
@@ -528,10 +531,14 @@ POST /listings/publish
   "features": {
     "bedrooms": 4,
     "bathrooms": 3,
-    "parking": true,
-    "garden": true,
-    "pool": true
-  }
+    "wc_separate": true,
+    "parking_type": "garage",
+    "garden_private": true,
+    "pool": true,
+    "water_access": true,
+    "electricity_access": true
+  },
+  "tags": ["exclusive"]
 }
 ```
 
@@ -546,7 +553,7 @@ POST /listings/publish
 }
 ```
 
-**Response 400 (crédits insuffisants) :**
+**Response 402 (crédits insuffisants) :**
 ```json
 {
   "error": "insufficient_credits",
@@ -587,9 +594,12 @@ PUT /listings/:id
   "features": {
     "bedrooms": 4,
     "bathrooms": 3,
-    "parking": true,
-    "garden": true,
-    "pool": true
+    "wc_separate": true,
+    "parking_type": "garage",
+    "garden_private": true,
+    "pool": true,
+    "water_access": true,
+    "electricity_access": true
   }
 }
 ```
@@ -611,7 +621,7 @@ PUT /listings/:id
 }
 ```
 
-### 3.5 Renouveler Annonce (Prolongation)
+### 2.5 Renouveler Annonce (Prolongation)
 
 ```http
 POST /listings/:id/renew
@@ -639,7 +649,7 @@ POST /listings/:id/renew
 }
 ```
 
-### 3.6 Définir Disponibilités (Seller)
+### 2.6 Définir Disponibilités (Seller)
 
 ```http
 POST /listings/:id/availability
@@ -666,7 +676,7 @@ POST /listings/:id/availability
 }
 ```
 
-### 3.7 Lire Créneaux Disponibles (Buyer)
+### 2.7 Lire Créneaux Disponibles (Buyer)
 
 ```http
 GET /listings/:id/slots
@@ -692,7 +702,7 @@ GET /listings/:id/slots
 
 ---
 
-### 3.8 Archiver Annonce (Vendu/Loué)
+### 2.8 Archiver Annonce (Vendu/Loué)
 
 ```http
 POST /listings/:id/archive
@@ -717,7 +727,7 @@ POST /listings/:id/archive
 
 ---
 
-### 2.6 🆕 Mes Annonces
+### 2.9 🆕 Mes Annonces
 
 ```http
 GET /listings/mine
@@ -762,7 +772,7 @@ GET /listings/mine?status=active&page=1
 
 ---
 
-### 2.7 🆕 Signaler une annonce
+### 2.10 🆕 Signaler une annonce
 
 ```http
 POST /listings/:id/report
@@ -788,108 +798,9 @@ POST /listings/:id/report
 
 ---
 
-### 2.8 🆕 Dashboard Modération (Admin)
-
-#### 2.8.1 Liste des signalements (To Do)
-
-```http
-GET /admin/listings/flagged
-```
-
-**Description :** Récupère la liste des annonces ayant reçu des signalements utilisateurs et nécessitant une action.
-
-**Auth :** Cookie HttpOnly + Rôle `moderator`
-
-**Response 200 :**
-```json
-{
-  "data": [
-    {
-      "listingId": "l5",
-      "reportCount": 3,
-      "latestReportReason": "Photos trompeuses",
-      "lastReportedAt": "2025-01-16T09:00:00Z",
-      "listingSummary": {
-        "title": "Villa suspecte",
-        "price": 10000000,
-        "sellerId": "u9"
-      }
-    }
-  ],
-  "count": 1
-}
-```
-
-#### 2.8.2 Appliquer une action (Modération)
-
-```http
-POST /admin/listings/:id/action
-```
-
-**Description :** Applique une décision de modération sur une annonce spécifique.
-
-**Auth :** Cookie HttpOnly + Rôle `moderator`
-
-**Request :**
-```json
-{
-  "action": "block_temporary" | "archive_permanent" | "request_clarification",
-  "reason": "Non-respect des CGU (Photos non conformes)",
-  "metadata": {
-    "messageToSeller": "Veuillez mettre à jour vos photos sous 48h."
-  }
-}
-```
-
-**Response 200 :**
-```json
-{
-  "success": true,
-  "actionId": "ma2",
-  "newStatus": "blocked",
-  "message": "Action appliquée et notifiée au vendeur."
-}
-```
-
-### 2.9 🆕 Historique Modération (Admin)
-
-```http
-GET /admin/actions
-```
-
-**Auth :** Cookie HttpOnly (`realestate_access_token`) + Rôle `moderator`
-
-**Query params :**
-- `targetId` : string (optionnel)
-- `moderatorId` : string (optionnel)
-- `page` : number (défaut: 1)
-- `limit` : number (défaut: 50)
-
-**Response 200 :**
-```json
-{
-  "data": [
-    {
-      "id": "ma1",
-      "moderatorId": "m1",
-      "targetType": "listing",
-      "targetId": "l5",
-      "action": "block_temporary",
-      "reason": "Photos trompeuses confirmées",
-      "applied": true,
-      "appliedAt": "2025-01-15T14:00:00Z"
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "total": 120
-  }
-}
-```
-
 ---
 
-### 2.7 🆕 Génération Description IA
+### 2.11 🆕 Génération Description IA
 
 ```http
 POST /listings/generate-description
@@ -1009,7 +920,7 @@ GET /reservations/mine
 ```
 
 **Query params :**
-- `status` : `pending` | `confirmed` | `cancelled` | `done` (optionnel)
+- `status` : `pending` | `confirmed` | `rejected` | `cancelled` | `done` (optionnel)
 
 **Response 200 :**
 ```json
@@ -1035,9 +946,11 @@ GET /reservations/mine
 
 ### 3.3 🆕 Annuler réservation
 
-```http
-DELETE /reservations/:id
-```
+#### `DELETE /reservations/:id`
+**Rôle :** Annulation d'une réservation (autorisé jusqu'à 2h avant le slot).
+
+**Request :**
+(Aucun corps requis)
 
 **Response 200 :**
 ```json
@@ -1049,69 +962,70 @@ DELETE /reservations/:id
 
 ---
 
+### 3.4 🆕 Confirmer réservation (Vendeur)
+
+**Rôle :** Le vendeur accepte la demande de visite.
+**Action :** Le statut passe à `confirmed`. L'acheteur est notifié.
+
+```http
+POST /reservations/:id/confirm
+```
+
+**Request :**
+(Aucun corps requis)
+
+**Response 200 :**
+```json
+{
+  "status": "confirmed",
+  "confirmedAt": "2025-01-16T10:00:00Z"
+}
+```
+
+---
+
+### 3.5 🆕 Refuser réservation (Vendeur)
+
+**Rôle :** Le vendeur refuse la demande de visite.
+**Action :** Le statut passe à `rejected`. L'acheteur est notifié.
+
+```http
+POST /reservations/:id/reject
+```
+
+**Request :**
+(Aucun corps requis)
+
+**Response 200 :**
+```json
+{
+  "status": "rejected"
+}
+```
+
+---
+
 ## 4. Feedback
 
 ### 4.1 Créer feedback
 
----
-
-## 5. Assistant IA (ai-service)
-
-### 5.1 Chat RAG
+**Description :** Permet à l'acheteur de laisser une évaluation après une visite terminée (`status: done`).
 
 ```http
-POST /ai/chat
+POST /feedback
 ```
-
-**Request :**
-```json
-{
-  "message": "Est-ce que ce bien est cher ?",
-  "context": {
-    "listingId": "l1"
-  }
-}
-```
-
-**Response 200 :**
-```json
-{
-  "response": "Ce bien est affiché à 50.000.000 Ar, ce qui est légèrement en dessous de la moyenne du quartier (52M Ar). C'est une bonne opportunité.",
-  "sources": ["market_stats_2024"],
-  "suggestion": "Voulez-vous réserver une visite ?"
-}
-```
-
----
-
-### 5.2 Données Marché
-
-```http
-GET /ai/market-data
-```
-
-**Query params :** `zone`
-
-**Response 200 :**
-```json
-{
-  "zone": "tana-analakely",
-  "stats": {
-    "avgPriceSale": 2500000,
-    "avgPriceRent": 50000,
-    "demandScore": 8.5
-  }
-}
-```
-
----
 
 **Request :**
 ```json
 {
   "reservationId": "r1",
   "rating": 4,
-  "comment": "Visite conforme. Vendeur sérieux."
+  "comment": "Visite conforme. Vendeur sérieux.",
+  "categories": {
+    "listingAccurate": true,
+    "sellerReactive": true,
+    "visitUseful": true
+  }
 }
 ```
 
@@ -1138,6 +1052,9 @@ GET /ai/market-data
   "message": "Vous ne pouvez laisser un feedback qu'après la visite"
 }
 ```
+
+---
+
 
 ---
 
@@ -1212,7 +1129,7 @@ GET /credits/history
       "id": "tx1",
       "type": "recharge",
       "amount": +10,
-      "reason": "Achat pack Standard",
+      "reason": "recharge_pack",
       "balanceAfter": 15,
       "createdAt": "2025-01-15T10:00:00Z"
     },
@@ -1220,7 +1137,7 @@ GET /credits/history
       "id": "tx2",
       "type": "consume",
       "amount": -1,
-      "reason": "Publication annonce",
+      "reason": "publish_listing",
       "listingId": "l1",
       "balanceAfter": 14,
       "createdAt": "2025-01-15T11:30:00Z"
@@ -1330,6 +1247,76 @@ GET /admin/listings/flagged
 
 ---
 
+### 7.2 Appliquer une action (Modération)
+
+```http
+POST /admin/listings/:id/action
+```
+
+**Description :** Applique une décision de modération sur une annonce spécifique.
+
+**Auth :** Cookie HttpOnly + Rôle `moderator`
+
+**Request :**
+```json
+{
+  "action": "block_temporary" | "archive_permanent" | "request_clarification",
+  "reason": "Non-respect des CGU (Photos non conformes)",
+  "metadata": {
+    "messageToSeller": "Veuillez mettre à jour vos photos sous 48h."
+  }
+}
+```
+
+**Response 200 :**
+```json
+{
+  "success": true,
+  "actionId": "ma2",
+  "newStatus": "blocked",
+  "message": "Action appliquée et notifiée au vendeur."
+}
+```
+
+### 7.3 Historique Modération (Admin)
+
+```http
+GET /admin/actions
+```
+
+**Auth :** Cookie HttpOnly (`realestate_access_token`) + Rôle `moderator`
+
+**Query params :**
+- `targetId` : string (optionnel)
+- `moderatorId` : string (optionnel)
+- `page` : number (défaut: 1)
+- `limit` : number (défaut: 50)
+
+**Response 200 :**
+```json
+{
+  "data": [
+    {
+      "id": "ma1",
+      "moderatorId": "m1",
+      "targetType": "listing",
+      "targetId": "l5",
+      "action": "block_temporary",
+      "reason": "Photos trompeuses confirmées",
+      "applied": true,
+      "appliedAt": "2025-01-15T14:00:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "total": 120
+  }
+}
+```
+
+---
+
+### 7.4 Archivage Permanent (Sécurité)
 
 ```http
 POST /admin/listings/:id/archive-permanent
@@ -1531,6 +1518,8 @@ DELETE /ai/index/:listingId
 |                      | `POST`   | `/listings/generate-description`            |
 | **Réservations**     | `GET`    | `/reservations/mine`                        |
 |                      | `POST`   | `/reservations`                             |
+|                      | `POST`   | `/reservations/:id/confirm`                 |
+|                      | `POST`   | `/reservations/:id/reject`                  |
 |                      | `DELETE` | `/reservations/:id`                         |
 | **Feedback**         | `POST`   | `/feedback`                                 |
 | **Crédits**          | `GET`    | `/credits/balance`                          |
@@ -1540,6 +1529,7 @@ DELETE /ai/index/:listingId
 | **Modération**       | `GET`    | `/admin/listings/flagged`                   |
 |                      | `GET`    | `/admin/listings/:id`                       |
 |                      | `POST`   | `/admin/listings/:id/action`                |
+|                      | `GET`    | `/admin/actions`                            |
 | **AI (Assistant)**   | `POST`   | `/ai/chat`                                  |
 |                      | `GET`    | `/ai/market-data`                           |
 |                      | `POST`   | `/ai/index`                                 |

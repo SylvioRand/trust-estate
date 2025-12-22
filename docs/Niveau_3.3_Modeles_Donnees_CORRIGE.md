@@ -41,8 +41,8 @@ interface User {
   email: string;
   emailVerified: boolean;  // Vérifié à l'inscription, obligatoire pour se connecter
   phone: string;           // Obligatoire (Validation format uniquement, pas d'OTP)
-  firstName: string;       // 🆕
-  lastName: string;        // 🆕
+  firstName: string;
+  lastName: string;
   role: 'user' | 'moderator';
   
   // Stats vendeur (optionnel, créé à la 1ère annonce)
@@ -129,39 +129,41 @@ interface Listing {
   price: number;
   surface: number;
   
-  // Config Pièces (Nullable si Terrain)
-  rooms?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  wc?: number;
-  wc_separate?: boolean; // NOUVEAU
-  
-  // Config Immeuble (Nullable si Maison/Terrain)
-  floor?: number; // NOUVEAU
-  elevator?: boolean; // NOUVEAU
-  
-  // Config Terrain (Nullable si Habitation)
-  water_access?: boolean; // NOUVEAU
-  electricity_access?: boolean; // NOUVEAU
-  constructible?: boolean; // NOUVEAU
-  
-  // Extérieur & Annexes
-  balcony?: boolean;
-  terrace?: boolean;
-  garden_private?: boolean;
-  parking_type?: 'garage' | 'box' | 'parking' | 'none'; // NOUVEAU
+  // Caractéristiques physiques (Groupées)
+  features: ListingFeatures;
   
   // Marketing
   tags: ('urgent' | 'exclusive' | 'new')[];
   
   // Visibilité (Expiration)
   expiresAt: string; // 🆕 Date d'expiration (Created + 30j)
-  
+
   availability?: ListingAvailability[]; // Plages horaires définies
-  
-  // Cleanup
-  // REMOVED: confidenceScore
-  // REMOVED: validationBadge
+}
+
+interface ListingFeatures {
+  // Config Pièces
+  rooms?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  wc?: number;
+  wc_separate?: boolean;
+
+  // Config Immeuble
+  floor?: number;
+  elevator?: boolean;
+
+  // Config Terrain
+  water_access?: boolean;
+  electricity_access?: boolean;
+  constructible?: boolean;
+
+  // Extérieur
+  balcony?: boolean;
+  terrace?: boolean;
+  garden_private?: boolean;
+  parking_type?: 'garage' | 'box' | 'parking' | 'none';
+  pool?: boolean;
 }
 
 interface ListingAvailability {

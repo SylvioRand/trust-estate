@@ -100,7 +100,7 @@ Définir sans ambiguïté les règles frontend critiques afin que le prototype :
 | **Création annonce** | Bouton "Publier" | Désactivé (grisé)                            |
 | **Création annonce** | Message          | "Vous n'avez plus de crédits"                |
 | **Création annonce** | CTA              | "Recharger maintenant" → `/credits/recharge` |
-| **API Response**     | Erreur 400       | `{ "error": "insufficient_credits" }`        |
+| **API Response**     | Erreur 402       | `{ "error": "insufficient_credits" }`        |
 
 ---
 
