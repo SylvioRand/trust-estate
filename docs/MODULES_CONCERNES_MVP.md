@@ -47,9 +47,9 @@
 
 > **🔧 Stack Technique AI :**
 > - **Service :** Python FastAPI (port 3005)
-> - **LLM :** Ollama + llama3.2:3b
+> - **LLM :** OpenRouter + DeepSeek V3 (Cloud gratuit)
 > - **Embeddings :** Sentence Transformers (all-MiniLM-L6-v2)
-> - **Vector Database :** ChromaDB
+> - **Vector Database :** ChromaDB (Local)
 >
 > Voir [Niveau_3.5_Architecture_Microservices.md](./Niveau_3.5_Architecture_Microservices.md) pour la configuration Docker complète.
 

@@ -230,7 +230,7 @@ Niveau 3 (Spécification Technique MVP)
 - Vue d'ensemble architecture 5 microservices + gateway
 - Communication inter-services
 - Docker Compose complet
-- **Stack IA :** Python FastAPI, Ollama (llama3.2:3b), ChromaDB, Sentence Transformers
+- **Stack IA :** Python FastAPI, OpenRouter (DeepSeek V3), ChromaDB, Sentence Transformers
 
 **Statut :** ✅ Document de référence
 

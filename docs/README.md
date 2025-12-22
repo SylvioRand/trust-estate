@@ -90,7 +90,7 @@ Ce package contient **13 documents markdown** représentant l'intégralité de l
 14. **Niveau_3.5_Architecture_Microservices.md** 🆕
     - Architecture 5 microservices + API Gateway
     - Docker Compose complet
-    - **Stack IA :** Python FastAPI, Ollama (llama3.2:3b), ChromaDB, Sentence Transformers
+    - **Stack IA :** Python FastAPI, OpenRouter (DeepSeek V3), ChromaDB, Sentence Transformers
 
 ---
 

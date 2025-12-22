@@ -1351,9 +1351,9 @@ POST /admin/listings/:id/archive-permanent
 
 > **🔧 Stack Technique :**
 > - **Service :** Python FastAPI (port 3005)
-> - **LLM :** Ollama + llama3.2:3b
+> - **LLM :** OpenRouter + DeepSeek V3 (Cloud gratuit)
 > - **Embeddings :** Sentence Transformers (all-MiniLM-L6-v2)
-> - **Vector Database :** ChromaDB
+> - **Vector Database :** ChromaDB (Local)
 > 
 > Voir [Niveau_3.5_Architecture_Microservices.md](./Niveau_3.5_Architecture_Microservices.md) pour la configuration Docker.
 
@@ -1368,7 +1368,7 @@ POST /ai/chat
 {
   "message": "Quel est le prix moyen à Ivandry ?",
   "context": {
-    "listingId": "l1" // Optionnel, si ouvert depuis une annonce
+    "listingId": "l1" // Optionnel
   }
 }
 ```
@@ -1376,24 +1376,29 @@ POST /ai/chat
 **Response 200 :**
 ```json
 {
-  "reply": "À Ivandry, le prix moyen au m² est d'environ 4.500.000 Ar pour une maison...",
-  "sources": ["market_report_2024", "listing_l1"],
-  "usage": {
-    "dailyCount": 5,
-    "limit": 20
-  }
+  "reply": "À Ivandry, le prix moyen au m² est d'environ 4.500.000 Ar...",
+  "sources": ["market_report_2024", "listing_l1"]
 }
 ```
 
-**Response 429 :**
+### 8.2 Génération Texte (Streaming)
+
+```http
+POST /ai/generate
+```
+
+**Request :**
 ```json
 {
-  "error": "limit_reached",
-  "message": "Vous avez atteint votre limite de 20 questions par jour."
+  "prompt": "Rédige une description pour une villa T4...",
+  "stream": true
 }
 ```
 
-### 8.2 Données Marché (RAG source)
+**Response 200 (Stream) :**
+- Flux d'événements SSE (Server-Sent Events)
+
+### 8.3 Données Marché (RAG source)
 
 ```http
 GET /ai/market-data
@@ -1470,6 +1475,23 @@ DELETE /ai/index/:listingId
 ```json
 {
   "success": true
+}
+```
+
+#### Health Check
+
+```http
+GET /ai/health
+```
+
+**Response 200 :**
+```json
+{
+  "status": "healthy",
+  "providers": {
+    "llm": "online",
+    "vector_db": "connected"
+  }
 }
 ```
 

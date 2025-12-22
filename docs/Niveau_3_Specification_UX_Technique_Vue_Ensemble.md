@@ -33,7 +33,7 @@ Ce niveau traduit le cahier des charges fonctionnel (Niveau 2) en éléments act
 - **Backend Core :** Fastify (Node.js)
 - **Backend AI :** Python FastAPI
 - **AI Stack :**
-  - **LLM :** Ollama + llama3.2:3b
+  - **LLM :** OpenRouter + DeepSeek V3 (Cloud gratuit)
   - **Embeddings :** Sentence Transformers (all-MiniLM-L6-v2)
   - **Vector Database :** ChromaDB
 - **API Gateway :** Nginx (reverse proxy, rate limiting, SSL)
@@ -59,7 +59,3 @@ Le Niveau 3 est composé de plusieurs documents :
 
 
 ---
-
-**Version :** 1.0  
-**Statut :** Document de référence  
-**Date :** Décembre 2024
