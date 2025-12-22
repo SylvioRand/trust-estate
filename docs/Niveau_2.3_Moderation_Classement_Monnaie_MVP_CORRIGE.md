@@ -22,10 +22,11 @@
 - **Recharge Mobile Money** (Orange Money, MVola)
 
 ### Utilisation MVP
-| Action              | Coût     |
-|---------------------|----------|
-| Publication annonce | 1 crédit |
-| Réservation visite  | 1 crédit |
+| Action              | Coût       |
+|---------------------|------------|
+| Publication annonce | 1 crédit   |
+| Réservation visite  | 1 crédit   |
+| Renouvellement      | 0.5 crédit |
 
 ### Crédits épuisés
 - Annonces existantes **restent visibles**
@@ -90,11 +91,6 @@ Le modérateur intervient **uniquement sur signalement** (pas de validation IA a
 ```
 1. Dashboard (/admin)
    └── Liste des annonces signalées par les utilisateurs
-
-2. Détail annonce (/admin/listings/:id)
-   ├── Voir l'annonce complète
-   ├── Infos vendeur
-   └── Actions possibles
 
 2. Détail annonce (/admin/listings/:id)
    ├── Voir l'annonce complète
