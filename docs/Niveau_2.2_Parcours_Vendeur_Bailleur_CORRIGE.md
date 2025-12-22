@@ -25,7 +25,7 @@ Décrire le cycle de vie complet d'une annonce avec les nouvelles contraintes te
 
 ### Structure du Dashboard (Fusionné)
 Pas de séparation stricte. Le menu latéral contient :
-- **Mode Vendeur** : `Mes Annonces`, `Portefeuille Crédits`, `Leads`.
+- **Mode Vendeur** : `Mes Annonces`, `Portefeuille Crédits`, `Réservations reçues`.
 - **Mode Acheteur** : `Mes Visites`, `Favoris`.
 
 ---
@@ -81,10 +81,7 @@ Pas de séparation stricte. Le menu latéral contient :
 
 ### Actions Vendeur
 - Recevoir Email "Nouvelle demande".
-- Aller sur Dashboard -> "Leads".
-### Actions Vendeur
-- Recevoir Email "Nouvelle demande".
-- Aller sur Dashboard -> "Leads".
+- Aller sur Dashboard -> "Réservations reçues".
 - **Accepter / Refuser**.
     - Si Accepte : Statut `Confirmed` (Contact révélé à l'acheteur).
     - Si Refus : Statut `Rejected` (Email auto envoyé à l'acheteur).

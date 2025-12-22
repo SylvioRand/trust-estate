@@ -9,7 +9,7 @@ Refléter la base de données réelle nécessaire pour les nouvelles features.
 **🆕 Changements majeurs depuis feedback dev :**
 - `emailVerified` obligatoire (remplaçant phoneVerified)
 - PropertyType étendu (land, loft, commercial)
-- Nouveaux champs Property (wc_separate, floor, elevator, water_access...)
+- Nouveaux champs Listing (wc_separate, floor, elevator, water_access...)
 - Tags marketing
 - Suppression confidenceScore/validationBadge
 
@@ -116,12 +116,12 @@ SellerStats {
 
 ---
 
-## 3. Property (Listing)
+## 3. Listing (Annonce)
 
 ```typescript
 type PropertyType = 'apartment' | 'house' | 'loft' | 'land' | 'commercial';
 
-interface Property {
+interface Listing {
   id: string;
   type: PropertyType;
   
@@ -258,34 +258,35 @@ création → active → reserved → sold/rented → archived
 ```typescript
 interface Reservation {
   id: string;
-  propertyId: string;
+  listingId: string;           // Référence annonce
   buyerId: string;
   sellerId: string;
   slot: Date;
-  status: 'pending' | 'confirmed' | 'rejected' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'rejected' | 'cancelled' | 'done';
   
-  // Feedback (Post-visite)
-  feedbackRating?: number; // 1-5
-  feedbackComment?: string; // 128-256 chars
-}
-```
-
-**Règles :**
-- Un seul feedback par réservation
-- `feedbackComment.length` doit être entre 128 et 256 caractères
-- Feedback disponible uniquement si `slot < maintenant`
-
-  createdAt: string
-  updatedAt?: string
+  confirmedAt?: string;
+  doneAt?: string;
+  
+  feedbackEligible: boolean;
+  feedbackGiven: boolean;
+  
+  createdAt: string;
+  updatedAt?: string;
 }
 ```
 
 **Règles :**
 - `status = 'pending'` → En attente confirmation vendeur
 - `status = 'confirmed'` → Contact vendeur révélé à l'acheteur
-- `status = 'done'` → Automatique 2h après `slot` OU manuel par vendeur
+- `status = 'rejected'` → Refusé par le vendeur
 - `status = 'cancelled'` → Annulation possible jusqu'à 2h avant `slot`
+- `status = 'done'` → Automatique 2h après `slot` (visite passée)
 - `feedbackEligible = true` si `status = 'done'` ET `createdAt < 7 jours`
+
+**Règles Feedback :**
+- Un seul feedback par réservation
+- `feedbackComment.length` doit être entre 128 et 256 caractères
+- Feedback disponible uniquement si `status = 'done'`
 
 **Passage automatique à 'done' :**
 
@@ -347,7 +348,7 @@ Feedback {
   
   // 🆕 Catégories feedback (optionnel)
   categories?: {
-    propertyAccurate: boolean   // Bien conforme à l'annonce
+    listingAccurate: boolean    // Bien conforme à l'annonce
     sellerReactive: boolean     // Vendeur réactif
     visitUseful: boolean        // Visite utile
   }
@@ -386,7 +387,7 @@ sellerStats.averageRating =
   "rating": 4,
   "comment": "Visite conforme. Appartement bien entretenu. Vendeur réactif.",
   "categories": {
-    "propertyAccurate": true,
+    "listingAccurate": true,
     "sellerReactive": true,
     "visitUseful": true
   },
@@ -422,8 +423,6 @@ CreditBalance {
 |---------------------|------------|------------------|
 | Publication Annonce | 1 crédit   | 30 jours         |
 | Renouvellement      | 0.5 crédit | +30 jours        |
-| Boost Visibilité    | 2 crédits  | 7 jours          |
-| Pack "Verified"     | 1 crédit   | Permanent        |
 | Réservation Visite  | 1 crédit   | - (Débit immédiat)|
 
 **Tarifs Recharges (Mocked) :**
@@ -459,20 +458,13 @@ CreditTransaction {
   
   // 🆕 Raisons détaillées
   reason: 
-    | 'initial_bonus'           // 🆕 5 crédits gratuits inscription
-    | 'recharge_pack'
-    | 'recharge_bonus'
-    | 'publish_listing'
-    | 'boost_listing'
-    | 'premium_photos'
-    | 'verified_badge'
-    | 'recharge_bonus'
-    | 'publish_listing'
-    | 'reserve_visit'             // 🆕 (Anti-spam acheteur)
-    | 'boost_listing'
-    | 'premium_photos'
-    | 'verified_badge'
-    | 'refund_cancelled'
+    | 'initial_bonus'           // 5 crédits gratuits inscription
+    | 'recharge_pack'           // Achat pack crédits
+    | 'recharge_bonus'          // Bonus recharge (ex: +2 cr sur pack Standard)
+    | 'publish_listing'         // Publication annonce
+    | 'renew_listing'           // Renouvellement annonce
+    | 'reserve_visit'           // Réservation visite
+    | 'refund_cancelled'        // Remboursement annulation
   
   // Contexte
   listingId?: string            // Si lié à une annonce
@@ -661,7 +653,25 @@ Report {
 
 ---
 
-## 10. Relations clés
+## 10. 🆕 AI Service Modeling (Mapping)
+
+Modèle de correspondance utilisé par le service AI pour lier les données structurées (SQL) aux données vectorielles (ChromaDB).
+
+```typescript
+interface AIListingLink {
+  listingId: string;   // ID source de l'annonce d'origine (Postgres)
+  vectorId: string;    // ID du document correspondant dans ChromaDB
+}
+```
+
+**Règles :**
+- `listingId` est la clé primaire unique dans la table de mapping AI.
+- Une entrée est créée lors de l'appel à `POST /ai/index`.
+- L'entrée est supprimée lors de l'appel à `DELETE /ai/index/:id`.
+
+---
+
+## 11. Relations clés
 
 ```
 User 1—N Listing (en tant que vendeur)
@@ -694,7 +704,7 @@ ModerationAction N—1 User (modérateur)
 
 ---
 
-## 10. Diagramme relations simplifié
+## 12. Diagramme relations simplifié
 
 ```
 ┌──────────┐
@@ -727,14 +737,14 @@ ModerationAction N—1 User (modérateur)
 
 ---
 
-## 11. Notes MVP
+## 13. Notes MVP
 
 **Simplifications volontaires :**
 - Pas de relations complexes (JOIN multiples)
 - Pas de contraintes DB strictes (pour flexibilité prototypage)
 - Données mockées (pas de persistance réelle)
 - Modèles enrichis pour anticiper Phase 2
-- **AI Service :** Pas de modèles persistants pour le MVP (stateless).
+- **AI Service :** Utilisation d'une table de mapping `AIListingLink` pour assurer la cohérence SQL ↔ Vectoriel. Le chat reste stateless (historique en mémoire/session).
 
 **Objectif :** Cohérence produit & UX, pas optimisation DB.
 
@@ -742,7 +752,7 @@ ModerationAction N—1 User (modérateur)
 
 ---
 
-## 12. Changelog (Version Corrigée)
+## 14. Changelog (Version Corrigée)
 
 **🆕 Ajouts :**
 - Modèle `Zone` structuré (hiérarchie)
