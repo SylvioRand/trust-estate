@@ -15,8 +15,8 @@ Ce niveau traduit le cahier des charges fonctionnel (Niveau 2) en éléments act
 
 **Phase 1 (Prototype) :**
 - Frontend fonctionnel (Next.js)
-- Backend simulé (mocks Apidog)
-- API contracts définis
+- Backend simulé (Service mock ou Next.js API Routes)
+- API contracts définis (`Niveau_3.2`)
 
 **Phase 2 (Production) :**
 - Backend réel : 4 microservices Fastify
@@ -30,7 +30,12 @@ Ce niveau traduit le cahier des charges fonctionnel (Niveau 2) en éléments act
 ## Stack cible
 
 - **Frontend :** Next.js 16 (App Router)
-- **Backend :** Fastify (microservices)
+- **Backend Core :** Fastify (Node.js)
+- **Backend AI :** Python FastAPI
+- **AI Stack :**
+  - **LLM :** Ollama + llama3.2:3b
+  - **Embeddings :** Sentence Transformers (all-MiniLM-L6-v2)
+  - **Vector Database :** ChromaDB
 - **API Gateway :** Nginx (reverse proxy, rate limiting, SSL)
 - **Styling :** TailwindCSS v4.1
 - **Database :** PostgreSQL
@@ -44,7 +49,7 @@ Ce niveau traduit le cahier des charges fonctionnel (Niveau 2) en éléments act
 
 Le Niveau 3 est composé de plusieurs documents :
 
-- **Document 3.1 :** Flows UX clés
+- **Document 3.1 :** Spécification UX Détaillée *(nouveau)*
 - **Document 3.2 :** Contrats API (mock) *(corrigé)*
 - **Document 3.3 :** Modèles de données (simplifiés) *(corrigé)*
 - **Document 3.4 :** Règles frontend critiques

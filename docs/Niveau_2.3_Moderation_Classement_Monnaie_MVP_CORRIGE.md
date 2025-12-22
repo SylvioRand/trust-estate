@@ -25,11 +25,12 @@
 | Action              | Coût     |
 |---------------------|----------|
 | Publication annonce | 1 crédit |
+| Réservation visite  | 1 crédit |
 
 ### Crédits épuisés
 - Annonces existantes **restent visibles**
 - Nouvelles publications **bloquées**
-- Réservation de visites **toujours possible**
+- Réservation de visites **bloquées** (solde nul)
 - Message : "Rechargez pour publier"
 
 ---
@@ -44,6 +45,14 @@ En MVP, le classement des annonces est **basique** :
 
 > Pas de pénalités automatiques, pas de bonus, pas de scoring complexe.
 
+### ✅ Philosophie : "Fraîcheur Garantie"
+**Pourquoi ce système ?**
+Pour éviter le syndrome des "annonces zombies" (biens vendus mais toujours affichés) qui frustrent les acheteurs sur les plateformes classiques.
+*   **Règle :** Toute annonce expire techniquement après 30 jours (`expiresAt`).
+*   **But :** Forcer le vendeur à réaffirmer périodiquement la disponibilité du bien.
+*   **Résultat :** "Si c'est sur le site, c'est disponible (ou confirmé récemment)."
+
+---
 ---
 
 ## 3. Modération ✅ MVP
@@ -87,8 +96,10 @@ Le modérateur intervient **uniquement sur signalement** (pas de validation IA a
    ├── Infos vendeur
    └── Actions possibles
 
-3. Historique actions (/admin/history)
-   └── Log de toutes les actions modérateur
+2. Détail annonce (/admin/listings/:id)
+   ├── Voir l'annonce complète
+   ├── Infos vendeur
+   └── Actions possibles
 ```
 
 ### Actions disponibles MVP

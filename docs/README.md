@@ -49,19 +49,15 @@ Ce package contient **13 documents markdown** représentant l'intégralité de l
    - Périmètre général
    - Acteurs du système
 
-6. **Niveau_2.1_Parcours_Acheteur_Locataire.md** (1.6K)
-   - 6 écrans détaillés
-   - Workflow complet acheteur
+6. **[DEPRECATED] Niveau_2.1_Parcours_Acheteur_Locataire.md**
+   - *Voir Niveau 3.1 pour la version à jour*
 
-7. **Niveau_2.2_Parcours_Vendeur_Bailleur_CORRIGE.md** (3.3K) ✏️
-   - 8 étapes détaillées
-   - Validation IA clarifiée
-   - Modèle crédits précis
+7. **[DEPRECATED] Niveau_2.2_Parcours_Vendeur_Bailleur_CORRIGE.md**
+   - *Voir Niveau 3.1 pour la version à jour*
 
 8. **Niveau_2.3_Moderation_Classement_Monnaie_MVP_CORRIGE.md** (3.8K) ✏️
-   - Modération humaine
-   - Périmètre MVP
-   - Interface modérateur
+   - Règles métier (Crédits / Modération)
+   - Interface modérateur simplifiée
 
 ---
 
@@ -72,10 +68,9 @@ Ce package contient **13 documents markdown** représentant l'intégralité de l
    - Stack technique
    - Périmètre MVP
 
-10. **Niveau_3.1_Flows_UX_cles_MVP_CORRIGE.md** (4.4K) ✏️
-    - Flows UX détaillés
-    - États UI clarifiés
-    - Validation IA corrigée
+10. **Niveau_3.1_Specification_UX_Detaillee_MVP.md** (8.5K) 🆕
+    - Spécification UX complète (remplace les anciens flows)
+    - Source de vérité Frontend
 
 11. **Niveau_3.2_Contrats_API_CORRIGE.md** (19K) ✏️
     - 40+ endpoints REST
@@ -91,8 +86,11 @@ Ce package contient **13 documents markdown** représentant l'intégralité de l
 
 13. **Niveau_3.4_Regles_Frontend_critiques_Etats_UI_MVP.md** (2.5K)
     - Règles UI critiques
-    - États obligatoires
-    - Comportements fallback
+
+14. **Niveau_3.5_Architecture_Microservices.md** 🆕
+    - Architecture 5 microservices + API Gateway
+    - Docker Compose complet
+    - **Stack IA :** Python FastAPI, Ollama (llama3.2:3b), ChromaDB, Sentence Transformers
 
 ---
 

@@ -1,4 +1,8 @@
-# 📗 Niveau 2.2 — Parcours Vendeur / Bailleur — VERSION CORRIGÉE (UPDATE)
+# 📕 [DEPRECATED] Niveau 2.2 — Parcours Vendeur / Bailleur (BO)
+
+> ⚠️ **OBSOLÈTE :** Ce document est conservé pour référence historique.
+> 👉 La source de vérité pour les développeurs est **[Niveau 3.1 - Spécification UX Détaillée](./Niveau_3.1_Specification_UX_Detaillee_MVP.md)**.
+— VERSION CORRIGÉE (UPDATE)
 
 ## Objectif
 
@@ -78,8 +82,12 @@ Pas de séparation stricte. Le menu latéral contient :
 ### Actions Vendeur
 - Recevoir Email "Nouvelle demande".
 - Aller sur Dashboard -> "Leads".
+### Actions Vendeur
+- Recevoir Email "Nouvelle demande".
+- Aller sur Dashboard -> "Leads".
 - **Accepter / Refuser**.
-    - Si Refus : Email auto envoyé à l'acheteur.
+    - Si Accepte : Statut `Confirmed` (Contact révélé à l'acheteur).
+    - Si Refus : Statut `Rejected` (Email auto envoyé à l'acheteur).
 
 ### Marquer Vendu/Loué
 - Bouton simple.
