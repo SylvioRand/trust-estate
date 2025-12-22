@@ -40,8 +40,9 @@ interface User {
   id: string;
   email: string;
   emailVerified: boolean;  // Vérifié à l'inscription, obligatoire pour se connecter
-  phone?: string;          // Optionnel
-  name: string;
+  phone: string;           // Obligatoire (Validation format uniquement, pas d'OTP)
+  firstName: string;       // 🆕
+  lastName: string;        // 🆕
   role: 'user' | 'moderator';
   
   // Stats vendeur (optionnel, créé à la 1ère annonce)
@@ -70,7 +71,8 @@ interface User {
   "email": "jean@mail.com",
   "emailVerified": true,
   "phone": "+261340000001",
-  "name": "Jean Rakoto",
+  "firstName": "Jean",
+  "lastName": "Rakoto",
   "role": "user",
   "sellerStats": {
     "totalListings": 8,
@@ -150,12 +152,27 @@ interface Property {
   parking_type?: 'garage' | 'box' | 'parking' | 'none'; // NOUVEAU
   
   // Marketing
-  tags: ('urgent' | 'exclusive' | 'new')[]; // NOUVEAU
+  tags: ('urgent' | 'exclusive' | 'new')[];
+  
+  // Visibilité (Expiration)
+  expiresAt: string; // 🆕 Date d'expiration (Created + 30j)
+  
+  availability?: ListingAvailability[]; // Plages horaires définies
   
   // Cleanup
   // REMOVED: confidenceScore
   // REMOVED: validationBadge
 }
+
+interface ListingAvailability {
+  id: string;
+  listingId: string;
+  dayOfWeek: number;   // 0=Dimanche, 1=Lundi... 6=Samedi
+  startTime: string;   // "09:00"
+  endTime: string;     // "18:00"
+}
+
+type ListingStatus = 'draft' | 'active' | 'reserved' | 'sold' | 'rented' | 'blocked' | 'archived';
 ```
 
 **Règles :**
@@ -209,7 +226,8 @@ création → active → reserved → sold/rented → archived
     "feedbacks": 2
   },
   "createdAt": "2025-01-10T08:00:00Z",
-  "updatedAt": "2025-01-12T14:30:00Z"
+  "updatedAt": "2025-01-12T14:30:00Z",
+  "expiresAt": "2025-02-09T08:00:00Z"
 }
 ```
 
@@ -406,6 +424,7 @@ CreditBalance {
 | Renouvellement      | 0.5 crédit | +30 jours        |
 | Boost Visibilité    | 2 crédits  | 7 jours          |
 | Pack "Verified"     | 1 crédit   | Permanent        |
+| Réservation Visite  | 1 crédit   | - (Débit immédiat)|
 
 **Tarifs Recharges (Mocked) :**
 - Starter (5cr) : 5.000 Ar
@@ -444,6 +463,12 @@ CreditTransaction {
     | 'recharge_pack'
     | 'recharge_bonus'
     | 'publish_listing'
+    | 'boost_listing'
+    | 'premium_photos'
+    | 'verified_badge'
+    | 'recharge_bonus'
+    | 'publish_listing'
+    | 'reserve_visit'             // 🆕 (Anti-spam acheteur)
     | 'boost_listing'
     | 'premium_photos'
     | 'verified_badge'
@@ -608,9 +633,35 @@ ModerationAction {
 }
 ```
 
+}
+```
+
 ---
 
-## 9. Relations clés
+## 9. 🆕 Report (Signalement Utilisateur)
+
+```typescript
+Report {
+  id: string
+  targetId: string              // Listing ID
+  reporterId: string            // User ID
+  
+  reason: 'fraud' | 'spam' | 'incorrect_info' | 'inappropriate'
+  comment?: string
+  
+  status: 'pending' | 'reviewed' | 'addressed'
+  
+  createdAt: string
+}
+```
+
+**Règles :**
+- Un utilisateur ne peut signaler une annonce qu'une seule fois
+- Alimente le Dashboard Modérateur (`GET /admin/listings/flagged`)
+
+---
+
+## 10. Relations clés
 
 ```
 User 1—N Listing (en tant que vendeur)

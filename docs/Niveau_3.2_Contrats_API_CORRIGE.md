@@ -39,9 +39,9 @@ Ces endpoints sont répartis entre 4 services Fastify derrière un Nginx gateway
 
 **Auth :** Cookies HttpOnly (Standard strict)
 
-| Nom du cookie             | Contenu       | Durée (MVP) | Attributs requis                                |
-|---------------------------|---------------|-------------|-------------------------------------------------|
-| `realestate_access_token` | JWT (String)  | 15 min      | `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/` |
+| Nom du cookie             | Contenu       | Durée (MVP) | Attributs requis                                      |
+|---------------------------|---------------|-------------|-------------------------------------------------------|
+| `realestate_access_token` | JWT (String)  | 15 min      | `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/`     |
 | `realestate_refresh_token`| UUID (String) | 7 jours     | `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/auth` |
 
 > **Note pour les Mocks :** Le serveur de mock DOIT renvoyer ces headers `Set-Cookie` exacts.
@@ -71,9 +71,10 @@ POST /auth/register
 ```json
 {
   "email": "user@mail.com",
+  "firstName": "Jean",
+  "lastName": "Rakoto",
   "phone": "+261340000000",
-  "password": "********",
-  "name": "Nom Utilisateur"
+  "password": "********"
 }
 ```
 
@@ -122,7 +123,8 @@ POST /auth/verify-email
     "email": "user@mail.com",
     "emailVerified": true,
     "phone": "+261340000000",
-    "name": "Nom Utilisateur",
+    "firstName": "Jean",
+    "lastName": "Rakoto",
     "role": "user",
     "creditBalance": 5,
     "createdAt": "2025-01-15T10:00:00Z"
@@ -168,7 +170,8 @@ POST /auth/login
     "id": "u1",
     "email": "user@mail.com",
     "emailVerified": true,
-    "name": "Jean Rakoto",
+    "firstName": "Jean",
+    "lastName": "Rakoto",
     "role": "user",
     "sellerStats": {
       "totalListings": 5,
@@ -225,7 +228,8 @@ POST /auth/google
     "id": "u3",
     "email": "user@gmail.com",
     "emailVerified": true,
-    "name": "Google User",
+    "firstName": "Google",
+    "lastName": "User",
     "role": "user",
     "creditBalance": 5,
     "createdAt": "2025-01-15T11:00:00Z"
@@ -306,7 +310,8 @@ GET /users/me
   "email": "user@mail.com",
   "emailVerified": true,
   "phone": "+261340000000",
-  "name": "Nom Utilisateur",
+  "firstName": "Jean",
+  "lastName": "Rakoto",
   "role": "user",
   "sellerStats": {
     "totalListings": 5,
@@ -330,7 +335,8 @@ PUT /users/me
 **Request :**
 ```json
 {
-  "name": "Nouveau Nom",
+  "firstName": "Jean",
+  "lastName": "Rakoto",
   "phone": "+261340000001"
 }
 ```
@@ -341,7 +347,8 @@ PUT /users/me
   "updated": true,
   "user": {
     "id": "u1",
-    "name": "Nouveau Nom",
+    "firstName": "Jean",
+    "lastName": "Rakoto",
     "phone": "+261340000001"
   }
 }
@@ -387,7 +394,8 @@ GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000
         "https://mock-cdn.com/photo1.jpg"
       ],
       "status": "active",
-      "createdAt": "2025-01-10T08:00:00Z"
+      "createdAt": "2025-01-10T08:00:00Z",
+      "expiresAt": "2025-02-09T08:00:00Z"
     }
   ],
   "pagination": {
@@ -420,7 +428,7 @@ GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000
 GET /listings/:id
 ```
 
-**Response 200 (utilisateur non connecté) :**
+**Response 200:**
 ```json
 {
   "id": "l1",
@@ -449,7 +457,8 @@ GET /listings/:id
     "averageRating": 4.2
   },
   "createdAt": "2025-01-10T08:00:00Z",
-  "updatedAt": "2025-01-12T14:30:00Z"
+  "updatedAt": "2025-01-12T14:30:00Z",
+  "expiresAt": "2025-02-09T08:00:00Z"
 }
 ```
 
@@ -498,7 +507,7 @@ GET /listings/:id
 ### 2.3 Créer annonce
 
 ```http
-POST /listings
+POST /listings/publish
 ```
 
 **Auth :** Cookie HttpOnly (`realestate_access_token`)
@@ -565,7 +574,26 @@ PUT /listings/:id
 
 **Auth :** Cookie HttpOnly (`realestate_access_token`)
 
-**Request :** (mêmes champs que création)
+**Request :**
+```json
+{
+  "title": "Villa T4 avec piscine (Updated)",
+  "description": "Belle villa moderne... (Nouvelle description)",
+  "price": 115000000,
+  "photos": [
+    "data:image/jpeg;base64,...",
+    "https://existing-image.com/..."
+  ],
+  "features": {
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "parking": true,
+    "garden": true,
+    "pool": true
+  }
+}
+```
+*Note : Tous les champs sont optionnels. Envoyez uniquement ceux à modifier.*
 
 **Response 200 :**
 ```json
@@ -583,9 +611,88 @@ PUT /listings/:id
 }
 ```
 
+### 3.5 Renouveler Annonce (Prolongation)
+
+```http
+POST /listings/:id/renew
+```
+
+**Auth :** Cookie HttpOnly (`realestate_access_token`)
+
+**Description :** Prolonge la visibilité de 30 jours. Coût : 0.5 crédit.
+
+**Response 200 :**
+```json
+{
+  "success": true,
+  "newExpiresAt": "2025-03-11T08:00:00Z",
+  "creditConsumed": 0.5,
+  "message": "Annonce renouvelée pour 30 jours."
+}
+```
+
+**Response 402 :**
+```json
+{
+  "error": "insufficient_credits",
+  "message": "Solde insuffisant (0.5 crédit requis)"
+}
+```
+
+### 3.6 Définir Disponibilités (Seller)
+
+```http
+POST /listings/:id/availability
+```
+
+**Auth :** Cookie HttpOnly (`realestate_access_token`)
+
+**Request :**
+```json
+{
+  "weeklySchedule": [
+    { "dayOfWeek": 1, "startTime": "09:00", "endTime": "12:00" }, // Lundi Matin
+    { "dayOfWeek": 1, "startTime": "14:00", "endTime": "18:00" }, // Lundi Après-midi
+    { "dayOfWeek": 3, "startTime": "10:00", "endTime": "16:00" }  // Mercredi
+  ]
+}
+```
+
+**Response 200 :**
+```json
+{
+  "success": true,
+  "message": "Disponibilités mises à jour."
+}
+```
+
+### 3.7 Lire Créneaux Disponibles (Buyer)
+
+```http
+GET /listings/:id/slots
+```
+
+**Query Params :**
+- `startDate`: string (ISO date, ex: `2025-01-20`)
+- `days`: number (ex: `7` pour la semaine prochaine)
+
+**Response 200 :**
+```json
+{
+  "slots": [
+    "2025-01-20T09:00:00Z",
+    "2025-01-20T09:30:00Z",
+    "2025-01-20T10:00:00Z",
+    "2025-01-22T10:00:00Z"
+  ]
+}
+```
+
+**Note :** Le backend génère ces créneaux concrets (30 min par défaut) en croisant le `weeklySchedule` et les réservations existantes.
+
 ---
 
-### 2.5 🆕 Archiver annonce (Vendu/Loué)
+### 3.8 Archiver Annonce (Vendu/Loué)
 
 ```http
 POST /listings/:id/archive
@@ -616,8 +723,19 @@ POST /listings/:id/archive
 GET /listings/mine
 ```
 
+**Description :** Récupère la liste des annonces créées par l'utilisateur actuellement connecté (via son token).
+
+**Auth :** Cookie HttpOnly (`realestate_access_token`)
+
 **Query params :**
-- `status` : `active` | `archived` | `blocked` (optionnel)
+- `status` : `active` (visible) | `archived` (vendu/loué) | `blocked` (modération) | `all` (défaut)
+- `page` : number (défaut: 1)
+- `limit` : number (défaut: 20)
+
+**Exemple Request :**
+```http
+GET /listings/mine?status=active&page=1
+```
 
 **Response 200 :**
 ```json
@@ -644,7 +762,96 @@ GET /listings/mine
 
 ---
 
-### 2.8 🆕 Historique Modération (Admin)
+### 2.7 🆕 Signaler une annonce
+
+```http
+POST /listings/:id/report
+```
+
+**Auth :** Cookie HttpOnly (`realestate_access_token`)
+
+**Request :**
+```json
+{
+  "reason": "fraud" | "spam" | "incorrect_info" | "inappropriate",
+  "comment": "Les photos ne correspondent pas à la description..."
+}
+```
+
+**Response 200 :**
+```json
+{
+  "success": true,
+  "message": "Signalement enregistré. Merci de votre vigilance."
+}
+```
+
+---
+
+### 2.8 🆕 Dashboard Modération (Admin)
+
+#### 2.8.1 Liste des signalements (To Do)
+
+```http
+GET /admin/listings/flagged
+```
+
+**Description :** Récupère la liste des annonces ayant reçu des signalements utilisateurs et nécessitant une action.
+
+**Auth :** Cookie HttpOnly + Rôle `moderator`
+
+**Response 200 :**
+```json
+{
+  "data": [
+    {
+      "listingId": "l5",
+      "reportCount": 3,
+      "latestReportReason": "Photos trompeuses",
+      "lastReportedAt": "2025-01-16T09:00:00Z",
+      "listingSummary": {
+        "title": "Villa suspecte",
+        "price": 10000000,
+        "sellerId": "u9"
+      }
+    }
+  ],
+  "count": 1
+}
+```
+
+#### 2.8.2 Appliquer une action (Modération)
+
+```http
+POST /admin/listings/:id/action
+```
+
+**Description :** Applique une décision de modération sur une annonce spécifique.
+
+**Auth :** Cookie HttpOnly + Rôle `moderator`
+
+**Request :**
+```json
+{
+  "action": "block_temporary" | "archive_permanent" | "request_clarification",
+  "reason": "Non-respect des CGU (Photos non conformes)",
+  "metadata": {
+    "messageToSeller": "Veuillez mettre à jour vos photos sous 48h."
+  }
+}
+```
+
+**Response 200 :**
+```json
+{
+  "success": true,
+  "actionId": "ma2",
+  "newStatus": "blocked",
+  "message": "Action appliquée et notifiée au vendeur."
+}
+```
+
+### 2.9 🆕 Historique Modération (Admin)
 
 ```http
 GET /admin/actions
@@ -747,8 +954,10 @@ POST /reservations
   "reservationId": "r1",
   "status": "pending",
   "slot": "2025-01-20T10:00:00Z",
+  "creditConsumed": 1,
+  "remainingCredits": 4,
   "sellerContactVisible": false,
-  "message": "Réservation en attente de confirmation du vendeur"
+  "message": "Réservation envoyée. 1 crédit débité."
 }
 ```
 
@@ -768,6 +977,16 @@ POST /reservations
 ```
 
 
+
+**Response 402 (crédits insuffisants) :**
+```json
+{
+  "error": "insufficient_credits",
+  "message": "Solde insuffisant pour réserver (Coût: 1 crédit)",
+  "required": 1,
+  "balance": 0
+}
+```
 
 **Response 409 :**
 ```json
@@ -1111,96 +1330,6 @@ GET /admin/listings/flagged
 
 ---
 
-### 7.2 Demander clarifications
-
-```http
-POST /admin/listings/:id/request-clarification
-```
-
-**Request :**
-```json
-{
-  "message": "Vos photos semblent recyclées. Merci de fournir des photos récentes avec un objet daté visible.",
-  "issues": [
-    "photos_suspicious",
-    "price_incoherent"
-  ]
-}
-```
-
-**Response 200 :**
-```json
-{
-  "notificationSent": true,
-  "listing": {
-    "id": "l5",
-    "status": "active",
-    "clarificationRequested": true
-  }
-}
-```
-
----
-
-### 7.3 Ajuster visibilité
-
-```http
-POST /admin/listings/:id/adjust-visibility
-```
-
-**Request :**
-```json
-{
-  "visibilityPenalty": 50,
-  "reason": "Incohérences confirmées après examen",
-  "duration": 48
-}
-```
-
-**Response 200 :**
-```json
-{
-  "applied": true,
-  "listing": {
-    "id": "l5",
-    "visibilityPenalty": 50,
-    "penaltyUntil": "2025-01-17T10:00:00Z"
-  }
-}
-```
-
----
-
-### 7.4 Bloquer temporairement
-
-```http
-POST /admin/listings/:id/block-temporary
-```
-
-**Request :**
-```json
-{
-  "duration": 48,
-  "reason": "Photos trompeuses confirmées. Correction obligatoire."
-}
-```
-
-**Response 200 :**
-```json
-{
-  "blocked": true,
-  "listing": {
-    "id": "l5",
-    "status": "blocked",
-    "blockedUntil": "2025-01-17T10:00:00Z",
-    "reason": "Photos trompeuses confirmées"
-  }
-}
-```
-
----
-
-### 7.5 Archiver définitivement (fraude avérée)
 
 ```http
 POST /admin/listings/:id/archive-permanent
@@ -1229,31 +1358,17 @@ POST /admin/listings/:id/archive-permanent
 
 ---
 
-### 7.6 🆕 Historique actions modération
-
-```http
-GET /admin/actions/history
-```
-
-**Response 200 :**
-```json
-{
-  "data": [
-    {
-      "id": "a1",
-      "moderatorId": "m1",
-      "action": "block_temporary",
-      "listingId": "l5",
-      "reason": "Photos trompeuses",
-      "createdAt": "2025-01-15T14:00:00Z"
-    }
-  ]
-}
-```
-
 ---
 
 ## 8. 🆕 Intelligence Artificielle (ai-service)
+
+> **🔧 Stack Technique :**
+> - **Service :** Python FastAPI (port 3005)
+> - **LLM :** Ollama + llama3.2:3b
+> - **Embeddings :** Sentence Transformers (all-MiniLM-L6-v2)
+> - **Vector Database :** ChromaDB
+> 
+> Voir [Niveau_3.5_Architecture_Microservices.md](./Niveau_3.5_Architecture_Microservices.md) pour la configuration Docker.
 
 ### 8.1 Assistant Chat (RAG)
 
@@ -1335,6 +1450,7 @@ GET /ai/market-data
 | Catégorie            | Méthode  | Endpoint                                    |
 | :------------------- | :------  | :------------------                         | 
 | **Authentification** | `POST`   | `/auth/register`                            |
+|                      | `POST`   | `/auth/verify-email`                        |
 |                      | `POST`   | `/auth/login`                               |
 |                      | `POST`   | `/auth/google`                              |
 |                      | `POST`   | `/auth/refresh`                             |
@@ -1343,9 +1459,13 @@ GET /ai/market-data
 |                      | `PUT`    | `/users/me`                                 |
 | **Annonces**         | `GET`    | `/listings`                                 |
 |                      | `GET`    | `/listings/:id`                             |
-|                      | `POST`   | `/listings`                                 |
+|                      | `POST`   | `/listings/publish`                         |
 |                      | `PUT`    | `/listings/:id`                             |
+|                      | `POST`   | `/listings/:id/renew`                       |
 |                      | `POST`   | `/listings/:id/archive`                     |
+|                      | `POST`   | `/listings/:id/availability`                |
+|                      | `GET`    | `/listings/:id/slots`                       |
+|                      | `POST`   | `/listings/:id/report`                      |
 |                      | `GET`    | `/listings/mine`                            |
 |                      | `POST`   | `/listings/generate-description`            |
 | **Réservations**     | `GET`    | `/reservations/mine`                        |
@@ -1357,14 +1477,11 @@ GET /ai/market-data
 |                      | `GET`    | `/credits/history`                          |
 | **Zones**            | `GET`    | `/zones`                                    |
 | **Modération**       | `GET`    | `/admin/listings/flagged`                   |
-|                      | `POST`   | `/admin/listings/:id/request-clarification` |
-|                      | `POST`   | `/admin/listings/:id/adjust-visibility`     |
-|                      | `POST`   | `/admin/listings/:id/block-temporary`       |
-|                      | `POST`   | `/admin/listings/:id/archive-permanent`     |
-|                      | `GET`    | `/admin/actions/history`                    |
+|                      | `GET`    | `/admin/listings/:id`                       |
+|                      | `POST`   | `/admin/listings/:id/action`                |
 | **AI (Assistant)**   | `POST`   | `/ai/chat`                                  |
 |                      | `GET`    | `/ai/market-data`                           |
-| **TOTAL**            |          | **30 Endpoints**                            |
+| **TOTAL**            |          | **32 Endpoints**                            |
 
 ---
 
