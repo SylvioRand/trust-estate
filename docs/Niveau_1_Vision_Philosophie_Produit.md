@@ -127,7 +127,7 @@ La plateforme repose sur l'idée que la confiance se construit par la clarté de
 Dans un contexte comme Madagascar, l'abonnement mensuel est un frein. Le modèle retenu est le **Pay-as-you-go** via des Crédits.
 
 **Logique :** 
-- L'utilisateur paye à l'acte (publication, boost).
+- L'utilisateur paye à l'acte (publication, renouvellement).
 - Recharge facile via simulation de Mobile Money pour le MVP.
 - Pas d'engagement récurrent.
 
