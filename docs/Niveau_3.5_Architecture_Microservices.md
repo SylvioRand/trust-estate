@@ -23,13 +23,25 @@ Définir l'architecture technique des microservices pour la plateforme immobili�
       │           │              │              │           │
       ▼           ▼              ▼              ▼           ▼
 ┌──────────┐ ┌──────────┐ ┌────────────┐ ┌──────────┐ ┌──────────┐
-│   AUTH   │ │ LISTINGS │ │RESERVATIONS│ │ CREDITS  │ │    AI    │
-│ SERVICE  │ │ SERVICE  │ │  SERVICE   │ │ SERVICE  │ │ SERVICE  │
-│ Fastify  │ │ Fastify  │ │  Fastify   │ │ Fastify  │ │ Fastify  │
-│  :3001   │ │  :3002   │ │   :3003    │ │  :3004   │ │  :3005   │
-└────┬─────┘ └────┬─────┘ └─────┬──────┘ └────┬─────┘ └────┬─────┘
-     │            │             │             │            │
-     └────────────┴─────────────┼─────────────┴────────────┘
+│   AUTH   │ │ LISTINGS │ │RESERVATIONS│ │ CREDITS  │ │    AI    │────┐
+│ SERVICE  │ │ SERVICE  │ │  SERVICE   │ │ SERVICE  │ │ SERVICE  │    │
+│ Fastify  │ │ Fastify  │ │  Fastify   │ │ Fastify  │ │ Python   │    │
+│  :3001   │ │  :3002   │ │   :3003    │ │  :3004   │ │ FastAPI  │    │
+└────┬─────┘ └────┬─────┘ └─────┬──────┘ └────┬─────┘ │  :3005   │    │
+     │            │             │             │       └────┬─────┘    │
+     │            │             │             │            │          │
+     │            │             │             │            │          ▼
+     │            │             │             │            │    ┌───────────┐
+     │            │             │             │            │    │  OLLAMA   │
+     │            │             │             │            │    │llama3.2:3b│
+     │            │             │             │            │    └───────────┘
+     │            │             │             │            │          │
+     │            │             │             │            │          ▼
+     │            │             │             │            │    ┌───────────┐
+     │            │             │             │            │    │ ChromaDB  │
+     │            │             │             │            │    │ VectorDB  │
+     │            │             │             │            │    └───────────┘
+     └────────────┴─────────────┼─────────────┴────────────┴──────────┘
                                 │
                                 ▼
                     ┌─────────────────────┐
@@ -305,6 +317,7 @@ services:
       - listings-service
       - reservations-service
       - credits-service
+      - ai-service
 
   # Microservices
   auth-service:
@@ -348,28 +361,66 @@ services:
     depends_on:
       - db
 
+  # AI Service avec RAG
   ai-service:
     build: ./services/ai
     ports:
       - "3005:3005"
     environment:
-      - OPENAI_API_KEY=mock-key
-      - MARKET_DATA_SOURCE=mock
+      - DATABASE_URL=postgresql://user:pass@db:5432/realstate
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_MODEL=llama3.2:3b
+      - CHROMADB_HOST=chromadb
+      - CHROMADB_PORT=8000
+      - EMBEDDING_MODEL=all-MiniLM-L6-v2
+      - LISTINGS_SERVICE_URL=http://listings-service:3002
     depends_on:
+      - db
+      - ollama
+      - chromadb
       - listings-service
+    volumes:
+      - ./services/ai:/app
+    restart: unless-stopped
 
-  # Database
+  # Ollama - LLM Server
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  # ChromaDB - Vector Database
+  chromadb:
+    image: chromadb/chroma:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - chromadb_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+    restart: unless-stopped
+
+  # Database principale
   db:
     image: postgres:15-alpine
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=pass
       - POSTGRES_DB=realstate
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+  ollama_data:
+  chromadb_data:
 ```
 
 ---
@@ -410,8 +461,10 @@ project/
 │   │   └── ...
 │   └── credits/              # Fastify credits service
 │       └── ...
-│   ├── ai/                   # Fastify AI service
-│       └── ...
+│   ├── ai/                   # Python FastAPI AI service
+│       ├── main.py
+│       ├── requirements.txt
+│       └── Dockerfile
 ├── nginx/
 │   └── nginx.conf
 ├── docker-compose.yml
@@ -426,8 +479,9 @@ project/
 # Développement
 docker-compose up -d
 
-# Production
-docker-compose -f docker-compose.prod.yml up -d
+# ⚠️ Important : Initialisation Modèle IA
+# Une fois le conteneur ollama démarré, télécharger le modèle :
+docker exec -it listings-service-ollama-1 ollama pull llama3.2:3b
 ```
 
 ---

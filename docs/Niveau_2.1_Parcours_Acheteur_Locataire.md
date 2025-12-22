@@ -1,4 +1,7 @@
-# 📗 Niveau 2.1 — Parcours Acheteur / Locataire
+# 📕 [DEPRECATED] Niveau 2.1 — Parcours Acheteur / Locataire
+
+> ⚠️ **OBSOLÈTE :** Ce document est conservé pour référence historique.
+> 👉 La source de vérité pour les développeurs est **[Niveau 3.1 - Spécification UX Détaillée](./Niveau_3.1_Specification_UX_Detaillee_MVP.md)**.
 
 ## Objectif
 
@@ -52,6 +55,7 @@ Décrire écran par écran le parcours acheteur / locataire sans ambiguïté.
 - type de bien
 - localisation approximative (Zone uniquement)
 - **Tags** (Urgent, Exclusif...)
+- **Favoris** : Bouton Cœur (Interaction immédiate)
 - ❌ **PAS de badge de confiance** (nettoyé)
 
 ---
@@ -81,6 +85,7 @@ Décrire écran par écran le parcours acheteur / locataire sans ambiguïté.
 ### Conditions pour réserver
 - Acheteur connecté
 - **Email vérifié obligatoirement** (Si non : flow de vérification).
+- **Solde suffisant** : La réservation coûte **1 Crédit** (Engagement anti-spam).
 
 ### Étapes
 1. choix créneau
