@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import fastifyEnv from '@fastify/env'
 import { envSchema } from "./config/env.schema.ts";
 import fastifyCors from "@fastify/cors";
+import { authRegister } from "./modules/module/auth.module.ts";
 
 const dir = "../../.env";
 
@@ -36,8 +37,7 @@ await server.register(fastifyCors, {
 await server.register(fastifyEnv, options);
 
 server.addHook('onRequest', async (req, reply) => {
-	console.log(req.server.config);
-	console.log("HELLO", req.headers['x-internal-gateway'], req.server.config.INTERNAL_SECRET );
+	console.log("===>", req.url);
 	if (req.headers['x-internal-gateway'] !== server.config.INTERNAL_SECRET || !req.headers['x-internal-gateway']) {
 		return reply.code(403).send({
 				"error": "forbidden",
@@ -46,6 +46,7 @@ server.addHook('onRequest', async (req, reply) => {
 	}
 });
 
+await authRegister(server);
 
 server.get("/api/auth", async (req:FastifyRequest, reply: FastifyReply) => {
 	return reply.status(200).send("Bonjour depuis auth");

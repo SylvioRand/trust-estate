@@ -5,9 +5,14 @@ import type { GatewayRouteConfig } from "../interfaces/routes.interface.ts";
 export async function gatewayRoutes(app: FastifyInstance) {
 	const ROUTES : GatewayRouteConfig[] = [
 		{
-			prefix: '/auth',
+			prefix: '/auth/register',
 			upstream: app.config.API_AUTH_URL_SERVICE,
-			rewritePrefix: '/api/auth'
+			rewritePrefix: '/api/auth/register'
+		},
+		{
+			prefix: '/auth/login',
+			upstream: app.config.API_AUTH_URL_SERVICE,
+			rewritePrefix: '/api/auth/login'
 		}
 	];
 	await Promise.all(

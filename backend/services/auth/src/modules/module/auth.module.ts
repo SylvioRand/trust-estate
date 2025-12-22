@@ -1,10 +1,16 @@
-import { FastifyInstance } from "fastify";
-import { authRoutes, oathAuthRoutes, passwordAuthRoutes, twoFaAuthRoutes, verficationAuthRoutes } from "../routes/auth.routes.ts";
+import type { FastifyInstance } from "fastify";
+import { authRoutes, emailAuthRoutes, oathAuthRoutes } from "../routes/auth.routes.ts";
+import fastifyCookie from "fastify-cookie";
+import jwtPlugin from "../../plugin/jwt.plugin.ts";
+import prismaPlugin from "../../plugin/prisma.plugin.ts";
 
 export async function authRegister(app: FastifyInstance) {
-	await app.register(authRoutes);
-	await app.register(verficationAuthRoutes);
-	await app.register(twoFaAuthRoutes);
+	await app.register(fastifyCookie, {
+		secret: app.config.COOKIE_SECRET,
+	});
+	await app.register(jwtPlugin);
+	await app.register(prismaPlugin);
+	await app.register(authRoutes, {prefix: "/api/auth"});
+	await app.register(emailAuthRoutes)
 	await app.register(oathAuthRoutes);
-	await app.register(passwordAuthRoutes);
 }

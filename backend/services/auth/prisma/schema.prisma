@@ -1,15 +1,66 @@
 generator client {
-  provider = "prisma-client"
-  output   = "./generated/prisma"
+	provider = "prisma-client-js"
+	// output   = "./generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+	provider = "postgresql"
+	url      = env("DATABASE_URL")
 }
 
 model refresh_token {
-  id        Int      @id @default(autoincrement())
-  userId    String
-  tokenHash String
-  expiresAt DateTime @default(now())
+	id			Int		@id @default(autoincrement())
+	userId		String	@unique
+	tokenHash	String
+	expiresAt	DateTime
+	user		User	@relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model email_Verification_token {
+	id			Int		@id @default(autoincrement())
+	userId		String	@unique
+	tokenHash	String
+	expiresAt	String
+	user		User	@relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+	USER
+	MODERATOR
+}
+
+model User {
+	id				String		@id @default(uuid())
+	email			String		@unique
+	emailVerified	Boolean		@default(false)
+	firstName		String
+	lastName		String
+	phone			String		@unique
+	phoneVerified	Boolean		@default(true)
+	role			Role		@default(USER)
+	trustScore		Int			@default(0)
+	credit			Int			@default(5)
+	createAt		DateTime	@default(now())
+	updateAt		DateTime	@updatedAt
+	sellerStats		SellerStats?
+	refreshToken	refresh_token?
+	emailVerificationToken	email_Verification_token?
+}
+
+model SellerStats {
+	id					String	@id @default(uuid())
+	userId				String	@unique
+
+	totalListings		Int		@default(0)
+	activeListings		Int		@default(0)
+	successfulSales		Int		@default(0)
+	successfulRents		Int		@default(0)
+	averageRating		Float	@default(0)
+	responseRate		Float	@default(0)
+
+	user				User	@relation(fields: [userId], references: [id], onDelete: Cascade)
+
+	@@index([averageRating])
+	@@index([successfulSales])
+	@@index([responseRate])
 }

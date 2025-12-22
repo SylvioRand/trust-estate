@@ -1,6 +1,11 @@
 export const envSchema = {
 	type: 'object',
-	required: ['PORT_AUTH_SERVICE', 'INTERNAL_SECRET'],
+	required: [
+		'PORT_AUTH_SERVICE', 'INTERNAL_SECRET',
+		'JWT_SECRET', 'JWT_REFRESH_SECRET', 
+		'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GMAIL_APP_PASSWORD', 
+		'COOKIE_SECRET', 
+	],
 	properties: {
 		PORT_AUTH_SERVICE: {
 			type: 'number',
@@ -9,6 +14,24 @@ export const envSchema = {
 		INTERNAL_SECRET: {
 			type: 'string',
 			default: 'INTERNAL_SERVICE_SECRET'
-		}
+		},
+		JWT_SECRET: {
+			type: 'string'
+		},
+		JWT_REFRESH_SECRET: {
+			type: 'string'
+		},
+		GOOGLE_CLIENT_ID: {
+			type: 'string'
+		},
+		GOOGLE_CLIENT_SECRET: {
+			type: 'string'
+		},
+		GMAIL_APP_PASSWORD: {
+			type: 'string'
+		},
+		COOKIE_SECRET: {
+			type: 'string'
+		},
 	}
 };
