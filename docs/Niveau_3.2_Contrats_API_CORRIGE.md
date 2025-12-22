@@ -78,6 +78,39 @@ POST /auth/register
 ```
 
 **Response 201 :**
+```json
+{
+  "userId": "u1",
+  "message": "Un email de vérification a été envoyé."
+}
+```
+
+> **Note :** Pas de token retourné. L'utilisateur doit vérifier son email avant de pouvoir se connecter.
+
+**Response 400 :**
+```json
+{
+  "error": "email_exists",
+  "message": "Cet email est déjà utilisé"
+}
+```
+
+---
+
+### 1.2 Vérification Email (🆕 NOUVEAU)
+
+```http
+POST /auth/verify-email
+```
+
+**Request :**
+```json
+{
+  "token": "verification-token-from-email"
+}
+```
+
+**Response 200 :**
 - **Headers:**
   - `Set-Cookie: realestate_access_token=jwt...; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=900`
   - `Set-Cookie: realestate_refresh_token=uuid...; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=604800`
@@ -87,14 +120,14 @@ POST /auth/register
   "user": {
     "id": "u1",
     "email": "user@mail.com",
+    "emailVerified": true,
     "phone": "+261340000000",
     "name": "Nom Utilisateur",
-    "phoneVerified": false,
     "role": "user",
-    "trustScore": 50,
     "creditBalance": 5,
     "createdAt": "2025-01-15T10:00:00Z"
-  }
+  },
+  "message": "Compte activé avec succès. 5 crédits offerts !"
 }
 ```
 
@@ -108,12 +141,13 @@ POST /auth/register
 
 ---
 
-### 1.2 Login Email
-
+### 1.3 Login Email
 
 ```http
 POST /auth/login
 ```
+
+**Check :** Si `emailVerified = false` → Retourner 403 `email_not_verified`
 
 **Request :**
 ```json
@@ -133,16 +167,26 @@ POST /auth/login
   "user": {
     "id": "u1",
     "email": "user@mail.com",
+    "emailVerified": true,
+    "name": "Jean Rakoto",
     "role": "user",
-    "phoneVerified": true,
-    "trustScore": 75,
     "sellerStats": {
       "totalListings": 5,
       "averageRating": 4.5
     },
+    "creditBalance": 10,
     "createdAt": "2025-01-10T08:00:00Z"
   }
 }
+```
+
+**Response 403 :**
+```json
+{
+  "error": "email_not_verified",
+  "message": "Veuillez vérifier votre email avant de vous connecter."
+}
+```
 ```
 
 **Response 400 :**
@@ -180,11 +224,14 @@ POST /auth/google
   "user": {
     "id": "u3",
     "email": "user@gmail.com",
+    "emailVerified": true,
+    "name": "Google User",
     "role": "user",
-    "phoneVerified": false,
-    "trustScore": 50,
+    "creditBalance": 5,
     "createdAt": "2025-01-15T11:00:00Z"
-  }
+  },
+  "isNewUser": true,
+  "message": "Compte créé avec 5 crédits offerts !"
 }
 ```
 
@@ -257,11 +304,10 @@ GET /users/me
 {
   "id": "u1",
   "email": "user@mail.com",
+  "emailVerified": true,
   "phone": "+261340000000",
   "name": "Nom Utilisateur",
   "role": "user",
-  "phoneVerified": true,
-  "trustScore": 75,
   "sellerStats": {
     "totalListings": 5,
     "activeListings": 2,
@@ -340,7 +386,6 @@ GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000
       "photos": [
         "https://mock-cdn.com/photo1.jpg"
       ],
-      "trustScore": 82,
       "status": "active",
       "createdAt": "2025-01-10T08:00:00Z"
     }
@@ -396,7 +441,6 @@ GET /listings/:id
     "parking": true,
     "garden": true
   },
-  "trustScore": 82,
   "status": "active",
   "sellerVisible": false,
   "sellerStats": {
@@ -422,7 +466,6 @@ GET /listings/:id
   "zoneDisplay": "Antananarivo - Analakely",
   "photos": [...],
   "features": {...},
-  "trustScore": 82,
   "status": "active",
   "sellerVisible": true,
   "seller": {
@@ -430,7 +473,6 @@ GET /listings/:id
     "name": "Jean Rakoto",
     "phone": "+261XXXXXXXX",
     "email": "jean@mail.com",
-    "trustScore": 88,
     "memberSince": "2024-06-15T00:00:00Z"
   },
   "sellerStats": {
@@ -529,11 +571,7 @@ PUT /listings/:id
 ```json
 {
   "listingId": "l2",
-  "updated": true,
-  "iaValidation": {
-    "status": "accepted",
-    "trustScore": 78
-  }
+  "updated": true
 }
 ```
 
@@ -591,7 +629,6 @@ GET /listings/mine
       "price": 50000000,
       "type": "sale",
       "status": "active",
-      "trustScore": 82,
       "views": 150,
       "reservations": 3,
       "createdAt": "2025-01-10T08:00:00Z"
@@ -863,11 +900,7 @@ GET /ai/market-data
 ```json
 {
   "feedbackId": "f1",
-  "saved": true,
-  "impactOnListing": {
-    "newTrustScore": 84,
-    "visibilityChange": +5
-  }
+  "saved": true
 }
 ```
 
@@ -1130,7 +1163,6 @@ POST /admin/listings/:id/adjust-visibility
   "applied": true,
   "listing": {
     "id": "l5",
-    "trustScore": 40,
     "visibilityPenalty": 50,
     "penaltyUntil": "2025-01-17T10:00:00Z"
   }

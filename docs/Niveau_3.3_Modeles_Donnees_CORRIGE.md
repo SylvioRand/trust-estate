@@ -1,20 +1,17 @@
-# 📕 Niveau 3.3 — Modèles de données (MVP) — VERSION CORRIGÉE
+# 📕 Niveau 3.3 — Modèles de données (MVP) — VERSION CORRIGÉE (UPDATE)
 
 ## Objectif
 
-Définir des modèles de données simples, cohérents et stables, utilisés :
-- par le frontend (state, UI)
-- par les mocks API (Apidog)
+Refléter la base de données réelle nécessaire pour les nouvelles features.
 
 ⚠️ Ces modèles sont volontairement simplifiés pour le MVP.
 
-**🆕 Cette version corrige et enrichit le document initial avec :**
-- Zones structurées
-- Feedback avec timestamp
-- Gestion des documents fonciers
-- Relations clarifiées
-- États enrichis
-- **Ownership par microservice**
+**🆕 Changements majeurs depuis feedback dev :**
+- `emailVerified` obligatoire (remplaçant phoneVerified)
+- PropertyType étendu (land, loft, commercial)
+- Nouveaux champs Property (wc_separate, floor, elevator, water_access...)
+- Tags marketing
+- Suppression confidenceScore/validationBadge
 
 ---
 
@@ -39,40 +36,42 @@ Définir des modèles de données simples, cohérents et stables, utilisés :
 ## 1. User
 
 ```typescript
-User {
-  id: string                    // Unique ID
-  email?: string                // Optionnel (si login téléphone)
-  phone?: string                // Optionnel (si login email)
-  phoneVerified: boolean        // 🆕 Crucial pour réservations
-  role: 'user' | 'moderator'
-  trustScore: number            // 0-100
+interface User {
+  id: string;
+  email: string;
+  emailVerified: boolean;  // Vérifié à l'inscription, obligatoire pour se connecter
+  phone?: string;          // Optionnel
+  name: string;
+  role: 'user' | 'moderator';
   
-  // Relation (1-1)
-  sellerStats?: SellerStats     // 🆕 Désormais une table séparée (voir section 9)
+  // Stats vendeur (optionnel, créé à la 1ère annonce)
+  sellerStats?: SellerStats;
   
-  createdAt: string             // ISO 8601
-  updatedAt?: string
+  // Crédits (injecté depuis credits-service)
+  creditBalance: number;
+  
+  createdAt: string;
+  updatedAt?: string;
 }
 ```
 
 **Règles :**
+- `emailVerified` doit être `true` pour pouvoir se connecter (vérifié à l'inscription)
+- Réservation = utilisateur connecté (donc email déjà vérifié)
 - Un utilisateur peut être acheteur ET vendeur simultanément
 - `role: 'moderator'` → accès aux endpoints `/admin/*`
-- Un utilisateur peut être acheteur ET vendeur simultanément
-- `role: 'moderator'` → accès aux endpoints `/admin/*`
-- `phoneVerified` toujours `true` en MVP (pas de provider SMS réel)
-- **Note API :** Bien que `creditBalance` soit une table séparée, l'API `/users/me` l'injecte souvent directement à la racine de l'objet User pour simplifier le frontend.
+- **Note API :** `creditBalance` injecté par l'API `/users/me` pour simplifier le frontend
 
-**Exemples :**
+**Exemple :**
 
 ```json
 {
   "id": "u1",
   "email": "jean@mail.com",
+  "emailVerified": true,
   "phone": "+261340000001",
-  "phoneVerified": true,
+  "name": "Jean Rakoto",
   "role": "user",
-  "trustScore": 85,
   "sellerStats": {
     "totalListings": 8,
     "activeListings": 2,
@@ -81,13 +80,13 @@ User {
     "averageRating": 4.3,
     "responseRate": 92
   },
+  "creditBalance": 12,
   "createdAt": "2024-06-15T10:00:00Z"
 }
 ```
 
 ---
 
----
 
 ## 2. SellerStats (Historique Vendeur)
 
@@ -115,63 +114,47 @@ SellerStats {
 
 ---
 
-## 3. Listing (Annonce)
+## 3. Property (Listing)
 
 ```typescript
-Listing {
-  id: string
-  type: 'sale' | 'rent'
-  title: string
-  description: string
-  price: number                 // Prix en Ariary (MGA)
+type PropertyType = 'apartment' | 'house' | 'loft' | 'land' | 'commercial';
+
+interface Property {
+  id: string;
+  type: PropertyType;
   
-  // Caractéristiques bien
-  surface?: number              // m²
-  features?: {
-    bedrooms?: number
-    bathrooms?: number
-    parking?: boolean
-    garden?: boolean
-    pool?: boolean
-    furnished?: boolean         // 🆕 Pour locations
-  }
+  // Config Générale
+  price: number;
+  surface: number;
   
-  // Localisation
-  zone: string                  // 🆕 Format: "tana-analakely"
-  zoneDisplay: string           // 🆕 Format: "Antananarivo - Analakely"
+  // Config Pièces (Nullable si Terrain)
+  rooms?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  wc?: number;
+  wc_separate?: boolean; // NOUVEAU
   
-  // Visuels
-  photos: string[]              // URLs ou base64
-  photoHashes?: string[]        // 🆕 Hash photos (détection doublons)
+  // Config Immeuble (Nullable si Maison/Terrain)
+  floor?: number; // NOUVEAU
+  elevator?: boolean; // NOUVEAU
   
-  // États
-  status: 'active' | 'reserved' | 'sold' | 'rented' | 'archived' | 'blocked'  // 🔧 'draft' supprimé pour MVP
-  trustScore: number            // 0-100
+  // Config Terrain (Nullable si Habitation)
+  water_access?: boolean; // NOUVEAU
+  electricity_access?: boolean; // NOUVEAU
+  constructible?: boolean; // NOUVEAU
   
-  // 🆕 Modération
-  moderationStatus?: {
-    flagged: boolean
-    flaggedReason?: string
-    flaggedAt?: string
-    clarificationRequested?: boolean
-    clarificationMessage?: string
-  }
+  // Extérieur & Annexes
+  balcony?: boolean;
+  terrace?: boolean;
+  garden_private?: boolean;
+  parking_type?: 'garage' | 'box' | 'parking' | 'none'; // NOUVEAU
   
-  // Vendeur
-  sellerId: string
-  sellerVisible: boolean        // False avant réservation confirmée
+  // Marketing
+  tags: ('urgent' | 'exclusive' | 'new')[]; // NOUVEAU
   
-  // Timestamps
-  createdAt: string
-  updatedAt?: string
-  archivedAt?: string
-  
-  // 🆕 Stats annonce
-  stats?: {
-    views: number
-    reservations: number
-    feedbacks: number
-  }
+  // Cleanup
+  // REMOVED: confidenceScore
+  // REMOVED: validationBadge
 }
 ```
 
@@ -179,8 +162,7 @@ Listing {
 - `sellerVisible` passe à `true` uniquement après réservation confirmée
 - Une annonce `archived` n'est jamais supprimée (conservée pour historique)
 - `status = 'blocked'` uniquement par action modérateur humain
-- `trustScore` influencé par : complétude, photos, feedbacks, historique vendeur
-- `visibilityPenalty` réduit le classement sans bloquer l'annonce
+- Classement influencé par : complétude, photos, feedbacks, historique vendeur
 
 **États du cycle de vie (MVP) :**
 
@@ -219,8 +201,6 @@ création → active → reserved → sold/rented → archived
     "b7e2c8f1a9d5"
   ],
   "status": "active",
-  "trustScore": 82,
-  "trustScore": 82,
   "sellerId": "u5",
   "sellerVisible": false,
   "stats": {
@@ -247,8 +227,6 @@ création → active → reserved → sold/rented → archived
   "zoneDisplay": "Antananarivo - Ankorondrano",
   "photos": ["https://mock-cdn.com/l3-photo1.jpg"],
   "status": "active",
-  "trustScore": 60,
-  "trustScore": 60,
   "sellerId": "u8",
   "sellerVisible": false,
   "createdAt": "2025-01-11T09:50:00Z"
@@ -257,28 +235,28 @@ création → active → reserved → sold/rented → archived
 
 ---
 
-## 3. Reservation
+## 4. Reservation
 
 ```typescript
-Reservation {
-  id: string
-  listingId: string
-  buyerId: string               // Celui qui réserve
+interface Reservation {
+  id: string;
+  propertyId: string;
+  buyerId: string;
+  sellerId: string;
+  slot: Date;
+  status: 'pending' | 'confirmed' | 'rejected' | 'cancelled';
   
-  slot: string                  // ISO 8601 date/heure créneau
-  status: 'pending' | 'confirmed' | 'cancelled' | 'done'
-  
-  // 🆕 Gestion cycle de vie
-  confirmedAt?: string          // Quand vendeur confirme
-  doneAt?: string               // 🆕 Quand visite marquée terminée
-  cancelledAt?: string
-  cancelledBy?: 'buyer' | 'seller' | 'system'
-  cancellationReason?: string
-  
-  // 🆕 Feedback
-  feedbackEligible: boolean     // True si status='done' et < 7 jours
-  feedbackGiven: boolean
-  
+  // Feedback (Post-visite)
+  feedbackRating?: number; // 1-5
+  feedbackComment?: string; // 128-256 chars
+}
+```
+
+**Règles :**
+- Un seul feedback par réservation
+- `feedbackComment.length` doit être entre 128 et 256 caractères
+- Feedback disponible uniquement si `slot < maintenant`
+
   createdAt: string
   updatedAt?: string
 }
@@ -368,17 +346,13 @@ Feedback {
 **Règles :**
 - Un seul feedback par `reservationId`
 - Feedback possible uniquement si `reservation.status = 'done'`
-- Feedback impacte : `listing.trustScore` ET `seller.trustScore`
 - Feedbacks < 3 étoiles peuvent déclencher alerte modérateur
 - Feedbacks restent visibles sauf modération exceptionnelle (insultes, etc.)
 
-**Impact sur les scores :**
+**Impact sur les stats vendeur :**
 
 ```
-Nouveau trustScore annonce = 
-  (ancien score × 0.7) + (rating × 20 × 0.3)
-
-Nouveau trustScore vendeur = 
+sellerStats.averageRating = 
   moyenne pondérée des feedbacks reçus (50 derniers)
 ```
 
