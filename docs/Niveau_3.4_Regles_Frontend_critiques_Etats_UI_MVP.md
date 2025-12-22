@@ -86,11 +86,11 @@ Définir sans ambiguïté les règles frontend critiques afin que le prototype :
 
 **Ce qui fonctionne toujours :**
 - ✅ Annonces existantes restent visibles
-- ✅ Réservation de visites (acheteur)
 - ✅ Accès au dashboard
 
 **Ce qui est bloqué :**
 - ❌ Création de nouvelles annonces
+- ❌ Réservation de visites (coût: 1 crédit)
 
 **UI à afficher :**
 

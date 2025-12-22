@@ -194,7 +194,7 @@ Il sert de référence unique pour les développeurs Frontend (Next.js).
         *   **Action "Renouveler"** :
             *   Visible si `expiresAt < now + 5 days`.
             *   Clic -> Affiche prix (0.5 crédit) -> Confirmation.
-    *   **Leads / Demandes** (Gestion visites reçues).
+    *   **Réservations reçues** (Gestion des demandes de visite).
     *   Portefeuille Crédits.
 
 ### 5.2 Création Annonce (`/listings/new`)
@@ -208,7 +208,7 @@ Il sert de référence unique pour les développeurs Frontend (Next.js).
 4.  **Description** (IA optionnelle).
 5.  **Paiement** : "Publier pour 1 Crédit".
 
-### 5.3 Gestion des Leads (Vendeur)
+### 5.3 Gestion des Réservations reçues (Vendeur)
 **Liste des demandes reçues :**
 *   Affichage : Nom acheteur, Créneau demandé.
 *   **Actions** :

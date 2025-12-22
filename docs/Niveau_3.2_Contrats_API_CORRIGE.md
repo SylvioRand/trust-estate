@@ -1427,7 +1427,68 @@ GET /ai/market-data
 
 ---
 
-## 8. Notes MVP
+### 8.3 Indexation & Synchronisation
+
+Ces endpoints sont utilisés pour synchroniser la base SQL principale avec le moteur de recherche vectoriel (ChromaDB).
+
+#### Indexer une annonce
+
+**Utilisation :** Appelé par le `listings-service` après la création ou modification d'une annonce pour synchroniser les données avec le moteur vectoriel.
+
+```http
+POST /ai/index
+```
+
+**Body :**
+```json
+{
+  "listingId": "l123"
+}
+```
+
+**Response 200 :**
+```json
+{
+  "status": "queued",
+  "jobId": "job_999"
+}
+```
+
+#### Vérifier le statut d'indexation
+
+**Utilisation :** Utilisé par le Frontend pour valider si le chat contextuel peut être activé (évite les réponses "Je ne connais pas ce bien").
+
+```http
+GET /ai/index-status/:listingId
+```
+
+**Response 200 :**
+```json
+{
+  "listingId": "l123",
+  "isIndexed": true,
+  "lastIndexedAt": "2024-03-20T10:00:00Z"
+}
+```
+
+#### Supprimer de l'index
+
+**Utilisation :** Appelé par le `listings-service` lors de la suppression d'une annonce pour nettoyer ChromaDB.
+
+```http
+DELETE /ai/index/:listingId
+```
+
+**Response 200 :**
+```json
+{
+  "success": true
+}
+```
+
+---
+
+## 9. Notes MVP
 
 **Toutes les données sont mockées :**
 - ✅ Aucune persistance réelle
@@ -1481,11 +1542,14 @@ GET /ai/market-data
 |                      | `POST`   | `/admin/listings/:id/action`                |
 | **AI (Assistant)**   | `POST`   | `/ai/chat`                                  |
 |                      | `GET`    | `/ai/market-data`                           |
-| **TOTAL**            |          | **32 Endpoints**                            |
+|                      | `POST`   | `/ai/index`                                 |
+|                      | `GET`    | `/ai/index-status/:listingId`               |
+|                      | `DELETE` | `/ai/index/:listingId`                      |
+| **TOTAL**            |          | **35 Endpoints**                            |
 
 ---
 
-## 9. Changelog (Version Corrigée)
+## 10. Changelog (Version Corrigée)
 
 **🆕 Ajouts :**
 - Inscription utilisateur (POST /auth/register)

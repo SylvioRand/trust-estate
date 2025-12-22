@@ -142,6 +142,7 @@ Si scaling nécessaire → extraction progressive des services vers leurs propre
 **Dépendances :**
 - → Auth Service (vérifier vendeur)
 - → Credits Service (consommer crédit)
+- → AI Service (notifier pour indexation/suppression)
 
 ---
 
@@ -186,12 +187,25 @@ Si scaling nécessaire → extraction progressive des services vers leurs propre
 
 **Responsabilité :** Assistant Chat & RAG
 
-| Endpoint            | Méthode | Description                |
-|---------------------|---------|----------------------------|
-| `/ai/chat`          | POST    | Chat RAG avec LLM          |
-| `/ai/market-data`   | GET     | Données marché pour l'IA   |
+| Endpoint            | Méthode | Description                      |
+|---------------------|---------|----------------------------------|
+| `/ai/chat`          | POST    | Chat RAG avec LLM                |
+| `/ai/market-data`   | GET     | Données marché pour l'IA         |
+| `/ai/index`         | POST    | Indexer / Mettre à jour annonce  |
+| `/ai/index-status`  | GET     | Vérifier statut indexation       |
+| `/ai/index/:id`     | DELETE  | Supprimer lien et vecteurs       |
 
-**Modèles gérés :** Aucun (stateless ou session en mémoire/Redis pour MVP)
+**Modèles gérés :** `AIListingLink` (Table de mapping Listing ID <-> Vector ID)
+
+---
+
+### 🧩 Orchestration & Synchronisation RAG
+
+Pour que l'IA reste pertinente, le **Listings Service** joue le rôle d'orchestrateur :
+
+1.  **Création/MAJ Annonce** : Après succès en base SQL, le Listings Service appelle `POST /ai/index` en arrière-plan.
+2.  **Suppression Annonce** : Avant de supprimer ou archiver définitivement, le Listings Service appelle `DELETE /ai/index/:id` pour nettoyer ChromaDB.
+3.  **Frontend UX** : Avant d'ouvrir le chat contextuel, le Frontend interroge `GET /ai/index-status/:id`. Si `isIndexed: false`, l'UI affiche un état "Initialisation de l'assistant...".
 
 ---
 
