@@ -92,6 +92,3 @@ Pas de séparation stricte. Le menu latéral contient :
 
 ---
 
-**Version :** 4.0 (Update Feedback)  
-**Date :** Décembre 2024
-

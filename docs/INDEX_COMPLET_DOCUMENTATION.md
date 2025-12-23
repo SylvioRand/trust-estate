@@ -89,7 +89,7 @@ Niveau 3 (Spécification Technique MVP)
 **Contenu :**
 - Tableau de bord vendeur
 - Création d'annonce
-- **🆕 Rôle IA Passif (Aide qualité)**
+- **🆕 Rôle IA Passif (Aide qualité)** // TODO
 - **🆕 Modèle crédits détaillé**
 - Publication & visibilité
 - Gestion réservations

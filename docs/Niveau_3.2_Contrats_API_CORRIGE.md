@@ -143,7 +143,55 @@ POST /auth/verify-email
 
 ---
 
-### 1.3 Login Email
+### 1.3 Renvoyer Email de Vérification (🆕 NOUVEAU)
+
+```http
+POST /auth/resend-verification
+```
+
+**Request :**
+```json
+{
+  "email": "user@mail.com",
+  "lastName": "Rakoto"
+}
+```
+
+**Response 201 :**
+```json
+{
+  "userId": "u1",
+  "message": "Un email de vérification a été envoyé."
+}
+```
+
+**Response 400 (Déjà vérifié) :**
+```json
+{
+  "error": "email_verified",
+  "message": "Cet email est déjà verifié"
+}
+```
+
+**Response 400 (Utilisateur inconnu) :**
+```json
+{
+  "error": "invalid_credentials",
+  "message": "Email incorrect"
+}
+```
+
+**Response 500 :**
+```json
+{
+  "error": "Internal server error",
+  "message": "Internal server error"
+}
+```
+
+---
+
+### 1.4 Login Email
 
 ```http
 POST /auth/login
@@ -206,7 +254,7 @@ POST /auth/login
 
 
 
-### 1.3 Login Google OAuth
+### 1.5 Login Google OAuth
 
 ```http
 POST /auth/google
@@ -245,7 +293,7 @@ POST /auth/google
 
 ---
 
-### 1.4 Refresh Token
+### 1.6 Refresh Token
 
 ```http
 POST /auth/refresh
@@ -277,7 +325,7 @@ POST /auth/refresh
 
 ---
 
-### 1.5 Logout
+### 1.7 Logout
 
 ```http
 POST /auth/logout
@@ -297,7 +345,7 @@ POST /auth/logout
 
 ---
 
-### 1.6 Mon Profil
+### 1.8 Mon Profil
 
 ```http
 GET /users/me
@@ -326,7 +374,7 @@ GET /users/me
 
 ---
 
-### 1.7 Modifier Profil
+### 1.9 Modifier Profil
 
 ```http
 PUT /users/me
@@ -1521,6 +1569,7 @@ GET /ai/health
 | :------------------- | :------  | :------------------                         | 
 | **Authentification** | `POST`   | `/auth/register`                            |
 |                      | `POST`   | `/auth/verify-email`                        |
+|                      | `POST`   | `/auth/resend-verification`                 |
 |                      | `POST`   | `/auth/login`                               |
 |                      | `POST`   | `/auth/google`                              |
 |                      | `POST`   | `/auth/refresh`                             |
@@ -1557,13 +1606,14 @@ GET /ai/health
 |                      | `POST`   | `/ai/index`                                 |
 |                      | `GET`    | `/ai/index-status/:listingId`               |
 |                      | `DELETE` | `/ai/index/:listingId`                      |
-| **TOTAL**            |          | **35 Endpoints**                            |
+| **TOTAL**            |          | **36 Endpoints**                            |
 
 ---
 
 ## 10. Changelog (Version Corrigée)
 
 **🆕 Ajouts :**
+- Resend email verification (POST /auth/resend-verification)
 - Inscription utilisateur (POST /auth/register)
 - Refresh token et logout
 - Endpoints zones (GET /zones)

@@ -33,8 +33,10 @@ Définir l'architecture technique des microservices pour la plateforme immobili�
      │            │             │             │            │          ▼
      │            │             │             │            │    ┌───────────┐
      │            │             │             │            │    │ ChromaDB  │
+     │            │             │             │            │    │ 0.4.22    │
+     │            │             │             │            │    │ VectorDB  │
      │            │             │             │            │    │  (Local)  │
-     │            │ │             │            │    └───────────┘
+     │            │             │             │            │    └───────────┘
      │            │             │             │            │          
      │            │             │             │            ├──────────────────┐
      │            │             │             │            │                  │
@@ -314,19 +316,34 @@ services:
     ports:
       - "3005:3005"
     environment:
+      # Base de données
       - DATABASE_URL=postgresql://user:pass@db:5432/realstate
+      
+      # ✅ OpenRouter (LLM cloud rapide et gratuit)
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - OPENROUTER_MODEL=deepseek/deepseek-chat
+      
+      # ✅ ChromaDB (vecteurs locaux)
       - CHROMADB_HOST=chromadb
       - CHROMADB_PORT=8000
+      - CHROMADB_COLLECTION=trust_estate_knowledge
+      
+      # ✅ Embeddings locaux
       - EMBEDDING_MODEL=all-MiniLM-L6-v2
+      
+      # Services
       - LISTINGS_SERVICE_URL=http://listings-service:3002
+      
     depends_on:
       - db
       - chromadb
       - listings-service
     volumes:
       - ./services/ai:/app
+    deploy:
+      resources:
+        limits:
+          memory: 1G  # Réduit de 3G car pas de LLM local
     restart: unless-stopped
 
   # ChromaDB - Vector Database
