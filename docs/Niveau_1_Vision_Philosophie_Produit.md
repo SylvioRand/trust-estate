@@ -136,7 +136,7 @@ Dans un contexte comme Madagascar, l'abonnement mensuel est un frein. Le modèle
 Le temps est une ressource rare. La plateforme vise à :
 - réduire les visites inutiles
 - filtrer les intentions via la réservation
-- **Protéger les données** : vérification obligatoire de l'email pour toute interaction sérieuse.
+- **Protéger les données** : vérification obligatoire de l'email dès l'inscription (Connexion impossible sans email vérifié).
 
 --- 
 
@@ -219,6 +219,8 @@ La plateforme adopte une posture claire :
 
 **Jamais public. Jamais obligatoire.**
 
+> **Note MVP :** Cette fonctionnalité de "Signal de sérieux" via documents fonciers est **exclue du périmètre MVP**. Elle sera réintroduite en Phase 2.
+
 ### 9.2 Pourquoi accepter un upload privé
 
 L'upload privé d'un document foncier n'a jamais pour objectif de certifier légalement un bien. Il sert à introduire un minimum de signal de crédibilité, sans basculer dans un rôle institutionnel.
@@ -299,7 +301,8 @@ Chaque annonce possède un **score de confiance interne**.
 ### 11.1 Réservation = Engagement
 
 La réservation est un engagement formel :
-- Nécessite un compte vérifié (Email).
+- Nécessite un compte vérifié (Email actif).
+- Demande un numéro de téléphone (Non vérifié en MVP, mais obligatoire).
 - Génère des notifications réelles (Email).
 
 ### 11.2 Vente et location : même logique, contexte différent
