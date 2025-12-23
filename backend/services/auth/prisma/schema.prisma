@@ -19,7 +19,7 @@ model refresh_token {
 model email_Verification_token {
 	id			Int		@id @default(autoincrement())
 	userId		String	@unique
-	tokenHash	String
+	tokenHash	String	@unique
 	expiresAt	String
 	user		User	@relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -35,11 +35,12 @@ model User {
 	emailVerified	Boolean		@default(false)
 	firstName		String
 	lastName		String
+	password		String
 	phone			String		@unique
 	phoneVerified	Boolean		@default(true)
 	role			Role		@default(USER)
 	trustScore		Int			@default(0)
-	credit			Int			@default(5)
+	creditBalance	Int			@default(10)
 	createAt		DateTime	@default(now())
 	updateAt		DateTime	@updatedAt
 	sellerStats		SellerStats?

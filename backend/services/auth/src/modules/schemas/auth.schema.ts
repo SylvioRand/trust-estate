@@ -19,12 +19,12 @@ export const SignUpUserSchema = {
 			firstName: {
 				type: 'string',
 				minLength: 3,
-				pattern: '^[a-zA-Z0-9]+_?[a-zA-Z0-9]+$'
+				pattern: "^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$"
 			},
 			lastName: {
 				type: 'string',
 				minLength: 3,
-				pattern: '^[a-zA-Z0-9]+_?[a-zA-Z0-9]+$'
+				pattern: "^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$"
 			},
 			phone: {
 				type: 'string',

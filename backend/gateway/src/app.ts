@@ -32,7 +32,7 @@ const server : FastifyInstance = fastify({
 });
 
 await server.register(fastifyCors, {
-	origin: ['http://127.0.0.1:3000'],
+	origin: ['http://127.0.0.1:3000', 'http://127.0.0.1:5500'],
 	methods: ['GET','POST','PUT'],
 	allowedHeaders: ['Content-Type','Authorization'],
 	exposedHeaders: ['X-Total-Count'],
