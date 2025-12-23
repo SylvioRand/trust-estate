@@ -12,6 +12,7 @@ Refléter la base de données réelle nécessaire pour les nouvelles features.
 - Nouveaux champs Listing (wc_separate, floor, elevator, water_access...)
 - Tags marketing
 - Suppression confidenceScore/validationBadge
+- Suppression totale `iaValidation` (Reporté post-MVP)
 
 ---
 
@@ -760,7 +761,6 @@ ModerationAction N—1 User (modérateur)
 - Modèle `Zone` structuré (hiérarchie)
 - Modèle `ModerationAction` (traçabilité)
 - `User.sellerStats` (historique vendeur)
-- `Listing.iaValidation` détaillé
 - `Listing.moderationStatus`
 - `Listing.photoHashes` (détection doublons)
 - `Reservation.doneAt` (trigger feedback)

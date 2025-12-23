@@ -89,7 +89,7 @@ Niveau 3 (Spécification Technique MVP)
 **Contenu :**
 - Tableau de bord vendeur
 - Création d'annonce
-- **🆕 Validation IA clarifiée (4 niveaux)**
+- **🆕 Rôle IA Passif (Aide qualité)**
 - **🆕 Modèle crédits détaillé**
 - Publication & visibilité
 - Gestion réservations
@@ -148,12 +148,12 @@ Niveau 3 (Spécification Technique MVP)
 **Contenu :**
 - Flow A : Acheteur/Locataire (6 écrans)
 - Flow B : Vendeur/Bailleur (7 écrans)
-- **🆕 États validation IA corrigés**
+- **🆕 États validation IA supprimés (MVP)**
 - Notes MVP
 
 **Statut :** ✏️ CORRIGÉ  
 **Modifications :**
-- États validation IA : acceptée / incohérences mineures / majeures / fraude
+- États validation IA : Supprimés pour le MVP (Simplification)
 - Suppression état "bloquée"
 - Clarification feedback UI
 
@@ -176,7 +176,7 @@ Niveau 3 (Spécification Technique MVP)
 **Statut :** ✏️ CORRIGÉ (enrichi)  
 **Modifications :**
 - +10 nouveaux endpoints
-- Workflow téléphone complet
+- Workflow téléphone (Collecte obligatoire sans vérification)
 - Endpoints modérateur
 - Gestion erreurs exhaustive
 - Exemples JSON détaillés
@@ -188,7 +188,7 @@ Niveau 3 (Spécification Technique MVP)
 
 **Contenu :**
 - User (enrichi avec sellerStats)
-- Listing (enrichi avec iaValidation, moderationStatus)
+- Listing (enrichi avec moderationStatus)
 - Reservation (avec feedbackEligible, doneAt)
 - Feedback (avec categories, targetId)
 - CreditBalance

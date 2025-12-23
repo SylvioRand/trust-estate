@@ -125,7 +125,6 @@
 |-------------------------------------------|-------|--------|---------|-------------------------------|
 | Multiple languages (FR/EN/MG)             | Minor | 1      | Moyen   | i18n potentiel                |
 | 2FA (Two-Factor Authentication)           | Minor | 1      | Moyen   | Phase 2                       |
-| Content moderation AI                     | Minor | 1      | Faible  | Déjà préparé dans validation IA |
 | PWA with offline support                  | Minor | 1      | Moyen   | Non prévu MVP                 |
 
 ---
