@@ -1,4 +1,15 @@
-# 📦 Documentation Complète — Plateforme Immobilière Madagascar
+# Trust Estate — Plateforme Immobilière Madagascar
+
+> ⚠️ **DEVELOPER WARNING: DO NOT USE LEVEL 2 DOCUMENTS**
+>
+> The **Level 2** documents (Functional Specs) are kept for historical context but are **DEPRECATED** for implementation details.
+>
+> 👉 **SOURCE OF TRUTH:** You MUST use **Level 3** documents (Technical Specs) for all API contracts, Data Models, and UX Flows.
+> - **UX:** [Niveau 3.1 UX MVP](./Niveau_3.1_Specification_UX_Detaillee_MVP.md)
+> - **API:** [Niveau 3.2 API MVP](./Niveau_3.2_Contrats_API_CORRIGE.md)
+> - **DB:** [Niveau 3.3 Data Models](./Niveau_3.3_Modeles_Donnees_CORRIGE.md)
+
+---
 
 ## Contenu du package
 

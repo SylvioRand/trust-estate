@@ -49,7 +49,7 @@ Il sert de référence unique pour les développeurs Frontend (Next.js).
         *   Input texte "Ville, Quartier...".
         *   Select "Acheter" / "Louer".
         *   Bouton Recherche.
-*   **Catégories Rapides** (Chips/Icones) : `Appartements`, `Maisons`, `Terrains`, `Lofts`.
+*   **Catégories Rapides** (Chips/Icones) : `Appartements`, `Maisons`, `Terrains`, `Lofts`, `Locaux (Commercial)`.
 *   **Section "Dernières Annonces"** : Grid de 3 ou 4 cartes.
 *   **Section "Pourquoi nous choisir"** (Réassurance Clean & Trust).
 
@@ -92,7 +92,7 @@ Il sert de référence unique pour les développeurs Frontend (Next.js).
     *   Prix.
     *   **Caractéristiques Clés** : Grid d'icônes with labels.
     *   **Description** : Titre, Description, Prix... et **Disponibilités**.
-        *   *UI Disponibilités* : Semainier simple (Lundi-Dimanche). Coche "Matin (9h-12h)" / "Après-midi (14h-18h)".
+        *   *UI Disponibilités* : **Créneaux Précis**. Le vendeur définit ses plages (ex: Lundi 14h-16h). L'acheteur sélectionne une heure de début précise (ex: 14h30) dans ces créneaux.
     *   **Photos** : Upload drag & drop (min 3).
     *   **Assistant IA** (Float ou intégré) :
         *   **Philosophie** : "Démocratiser l'expertise." L'IA remplace le conseiller immobilier pour donner des données objectives (Prix marché, tendances, commodités).
@@ -119,7 +119,7 @@ Il sert de référence unique pour les développeurs Frontend (Next.js).
     *   Nom (ex: Rakoto).
     *   **Prénom** (ex: Jean).
     *   Email.
-    *   **Téléphone (Obligatoire)** (Format international +261...). *Info-bulle: "Validation de format uniquement."*
+    *   **Téléphone (Obligatoire)** (Format international +261...). *Info-bulle: "Requis pour les visites. Non vérifié par SMS (MVP)."*
     *   Mot de passe.
 *   **Action** : "S'inscrire".
 *   **Post-Action** :
@@ -204,6 +204,7 @@ Il sert de référence unique pour les développeurs Frontend (Next.js).
 **Wizard (Étapes) :**
 1.  **Catégorie** (Maison, Appart, Terrain...) + **Localisation**.
 2.  **Caractéristiques** (Surface, Pièces...).
+3.  **Disponibilités** (Nouveau) : Ajouter des plages horaires précises (Jour + Heure Début/Fin) pour les visites.
 3.  **Médias** (Photos).
 4.  **Description** (IA optionnelle).
 5.  **Paiement** : "Publier pour 1 Crédit".
