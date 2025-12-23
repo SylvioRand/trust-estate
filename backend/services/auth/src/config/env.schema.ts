@@ -3,8 +3,8 @@ export const envSchema = {
 	required: [
 		'PORT_AUTH_SERVICE', 'INTERNAL_SECRET',
 		'JWT_SECRET', 'JWT_REFRESH_SECRET', 
-		'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GMAIL_APP_PASSWORD', 
-		'COOKIE_SECRET', 
+		'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GMAIL_USER', 'GMAIL_APP_PASSWORD', 
+		'COOKIE_SECRET', 'FRONTEND_URL'
 	],
 	properties: {
 		PORT_AUTH_SERVICE: {
@@ -27,11 +27,19 @@ export const envSchema = {
 		GOOGLE_CLIENT_SECRET: {
 			type: 'string'
 		},
+		GMAIL_USER: {
+			type: 'string'
+		},
 		GMAIL_APP_PASSWORD: {
 			type: 'string'
 		},
 		COOKIE_SECRET: {
-			type: 'string'
+			type: 'string',
+			default: 'COOKIE_SECRET_KEY'
 		},
+		FRONTEND_URL: {
+			type: 'string',
+			default: "http://localhost:8080"
+		}
 	}
 };

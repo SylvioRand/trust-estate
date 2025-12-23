@@ -10,7 +10,23 @@ export async function authRoutes(app: FastifyInstance, options: FastifyPluginOpt
 }
 
 export async function emailAuthRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
-	app.post("/verify-mail", authControllers.verifiedEmail);
+	app.post("/verify-email", authControllers.verifiedEmail);
+	app.post("/resend-email", {
+		config: {
+			rateLimit: {
+				max: 3,
+				timeWindow: "5 minutes",
+				hook: "preHandler",
+				keyGenerator: (req: any) => {
+					const email = req.body?.email || "";
+					const ip = req.ip;
+					const ua = req.headers["user-agent"] || "";
+					console.log(`${email}:${ip}:${ua}`);
+					return `${email}:${ip}:${ua}`;
+				}
+			}
+		}
+	}, authControllers.resendEmailVerification)
 }
 
 export async function oathAuthRoutes(app: FastifyInstance, options: FastifyPluginOptions) {

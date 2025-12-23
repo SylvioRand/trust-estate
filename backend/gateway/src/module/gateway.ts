@@ -6,12 +6,28 @@ import type { GatewayRouteConfig } from "../interfaces/routes.interface.ts";
 export default async function apiGateway(app: FastifyInstance, route: GatewayRouteConfig) {
 	app.server.setTimeout(10000);
 
+	const emailRateLimit = {
+		max: 3,
+		timeWindow: '1 minutes',
+		hook: 'preHandler',
+		keyGenerator: (request: any) => {
+			const email = request.body?.email || '';
+			const ip = request.ip;
+			const ua = request.headers['user-agent'] || '';
+			console.log( `${email}:${ip}:${ua}`);
+			return `${email}:${ip}:${ua}`;
+		}
+	};
+
 	await app.register(fastifyHttpProxy, {
 		upstream: route.upstream,
 		prefix: route.prefix,
 		rewritePrefix: route.rewritePrefix,
 		http2: false,
 		disableCache: true,
+		config: {
+			rateLimit: emailRateLimit
+		},
 		replyOptions: {
 			onResponse: async (request, reply , res: any) => {
 				reply.raw.statusCode = res.statusCode ?? 502;

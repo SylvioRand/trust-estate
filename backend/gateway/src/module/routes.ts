@@ -13,6 +13,16 @@ export async function gatewayRoutes(app: FastifyInstance) {
 			prefix: '/auth/login',
 			upstream: app.config.API_AUTH_URL_SERVICE,
 			rewritePrefix: '/api/auth/login'
+		},
+		{
+			prefix: '/auth/verify-email',
+			upstream: app.config.API_AUTH_URL_SERVICE,
+			rewritePrefix: '/api/auth/verify-email'
+		},
+		{
+			prefix: '/auth/resend-email',
+			upstream: app.config.API_AUTH_URL_SERVICE,
+			rewritePrefix: '/api/auth/resend-email'
 		}
 	];
 	await Promise.all(
