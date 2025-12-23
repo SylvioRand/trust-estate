@@ -118,6 +118,3 @@ Décrire écran par écran le parcours acheteur / locataire sans ambiguïté.
 > Voir `Niveau_2.2` pour la structure complète du Dashboard.
 
 ---
-
-**Version :** 3.0 (Update Feedback)  
-**Date :** Décembre 2024

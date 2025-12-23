@@ -107,7 +107,3 @@ Le modérateur intervient **uniquement sur signalement** (pas de validation IA a
 | **Archiver définitivement** | Fraude avérée uniquement      |
 
 ---
-
-**Version :** 3.0 (Simplifiée)  
-**Statut :** Document de référence (MVP clarifié)  
-**Date :** Décembre 2024
