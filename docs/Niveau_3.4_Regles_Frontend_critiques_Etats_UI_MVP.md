@@ -26,7 +26,7 @@ Définir sans ambiguïté les règles frontend critiques afin que le prototype :
 ### 1.2 Pages Publiques vs Privées
 
 | Page                       | Accès           | Notes                                     |
-|----------------------------|-----------------|—------------------------------------------|
+|----------------------------|-----------------|-------------------------------------------|
 | **Accueil / Home**         | 🌐 Public       | Visiteur peut explorer                    |
 | **Liste des annonces**     | 🌐 Public       | Visiteur peut chercher et filtrer         |
 | **Fiche annonce**          | 🌐 Public       | Visiteur peut voir, CTA redirige au login |
@@ -182,7 +182,3 @@ Ces règles garantissent :
 👉 Le Niveau 3 MVP est maintenant COMPLET.
 
 ---
-
-**Version :** 1.0  
-**Statut :** Document de référence  
-**Date :** Décembre 2024

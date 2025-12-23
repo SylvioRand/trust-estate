@@ -74,7 +74,3 @@ Le Niveau 2 est composé de plusieurs documents :
 **Ces documents forment un seul et même Niveau 2.**
 
 ---
-
-**Version :** 1.0  
-**Statut :** Document de référence  
-**Date :** Décembre 2024
