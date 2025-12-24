@@ -1,382 +1,69 @@
-# 🎯 GETTING STARTED - DOCUMENTATION BACKEND ET AUTH SERVICE
+# 🎯 INSTRUCTIONS FINALES - DOCUMENTATION BACKEND
 
-## Status Actuel (23 Décembre 2024)
+## Fichiers créés
 
-### ✅ COMPLÉTÉ
-- **Service Auth**: Entièrement implémenté et fonctionnel
-- **User Registration**: Création de compte avec validation et email verification
-- **Login**: Authentification avec email/password et JWT tokens
-- **Email Verification**: Tokens avec expiration, resend avec rate limiting
-- **Password Security**: Bcrypt hashing avec salt rounds 12
-- **Token Management**: JWT access (15min) + refresh (7 days)
-- **Email Notifications**: Gmail SMTP integration avec templates HTML
-- **API Tester**: Interface web complète pour tester tous les endpoints
+✅ **16 fichiers Markdown** générés avec ~15,000 lignes de documentation
 
-### 🚀 READY FOR PRODUCTION
-- Service auth peut être déployé en production
-- Toutes les migrations Prisma appliquées
-- Variables d'environnement documentées
-- Tests API disponibles via api-tester.html
+### Fichiers principaux
+1. **README_BACKEND_NEW.md** - Vue d'ensemble technique complète
+2. **PRISMA_MODELS.md** - Guide détaillé des modèles et migrations
+3. **INDEX.md** - Index de navigation complet
+4. **GENERATION_SUMMARY.md** - Synthèse de ce qui a été créé
 
-### ⏳ À FAIRE
-- Service Users: Profile management, seller stats
-- OAuth Google: Integration pour login social
-- 2FA: Two-factor authentication
-- Frontend: Implementation des endpoints auth
-
----
-
-## Démarrage Rapide
-
-### Prerequisites
-- Node.js 18+
-- PostgreSQL 14+
-- Docker (optionnel pour DB)
-
-### Installation Auth Service
-
-```bash
-# 1. Installer les dépendances
-cd backend/services/auth
-npm install
-
-# 2. Configurer .env (voir section Configuration)
-cp .env.example .env  # ou créer le fichier
-
-# 3. Appliquer migrations
-npx prisma migrate deploy
-npx prisma db seed  # si seed disponible
-
-# 4. Démarrer le service
-npm run dev
-# Server listening on http://localhost:3001
+### Fichiers detaillés par composant (11 fichiers)
 ```
-
-### Configuration .env pour Auth Service
-
-```env
-# Port
-PORT_AUTH_SERVICE=3001
-
-# Secrets (générer avec: openssl rand -base64 32)
-INTERNAL_SECRET=your-internal-secret-here
-JWT_SECRET=your-jwt-secret-key-here
-JWT_REFRESH_SECRET=your-refresh-secret-here
-COOKIE_SECRET=your-cookie-secret-here
-
-# Google OAuth (obtenir sur https://console.cloud.google.com)
-GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=your-client-secret
-
-# Gmail SMTP (utiliser un mot de passe application)
-GMAIL_USER=your-email@gmail.com
-GMAIL_APP_PASSWORD=your-16-char-app-password
-
-# URLs
-FRONTEND_URL=http://localhost:3000
-DATABASE_URL=postgresql://user:password@localhost:5432/transcendence_auth
-```
-
-### Obtenir Gmail App Password
-
-1. Activer 2FA sur Google Account: https://myaccount.google.com/security
-2. Aller à: https://myaccount.google.com/apppasswords
-3. Sélectionner "Mail" et "Windows Computer"
-4. Copier le mot de passe généré (16 caractères)
-
----
-
-## API Endpoints - Auth Service
-
-### 1. Création de Compte (Register)
-
-```bash
-POST /api/auth/register
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "firstName": "John",
-  "lastName": "Doe",
-  "phone": "+261321234567",
-  "password": "SecurePass123!",
-  "avatarUrl": "https://example.com/avatar.jpg"  # optionnel
-}
-
-# Response 201
-{
-  "userId": "uuid-here",
-  "message": "Un email de vérification a été envoyé."
-}
-```
-
-**Validation**:
-- Email: Format valide et unique
-- FirstName/LastName: Min 3 chars, pattern: `^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$`
-- Phone: Pattern: `^\\+261(32|33|34|38)\\d{7}$` (Madagascar)
-- Password: Min 12 chars, uppercase, lowercase, number, special char
-
-### 2. Vérifier Email
-
-```bash
-POST /api/auth/verify-email
-Content-Type: application/json
-
-{
-  "token": "token-from-email-link"
-}
-
-# Response 200
-{
-  "id": "user-id",
-  "email": "user@example.com",
-  "emailVerified": true,
-  "firstName": "John",
-  "lastName": "Doe",
-  "role": "USER",
-  "sellerStats": { ... },
-  "creditBalance": 10,
-  "createdAt": "2024-12-23T..."
-}
-```
-
-### 3. Se Connecter (Login)
-
-```bash
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "SecurePass123!"
-}
-
-# Response 200
-{
-  "id": "user-id",
-  "email": "user@example.com",
-  "emailVerified": true,
-  "firstName": "John",
-  "lastName": "Doe",
-  "role": "USER",
-  "sellerStats": { ... },
-  "creditBalance": 10,
-  "createdAt": "2024-12-23T..."
-}
-
-# Cookies set automatically:
-# - tokenPong: JWT access token (15 min)
-# - refreshTokenPong: JWT refresh token (7 days)
-```
-
-**Conditions**:
-- Email doit être vérifié
-- Password doit être correct
-- Compte doit exister
-
-### 4. Renvoyer Email Vérification
-
-```bash
-POST /api/auth/resend-email
-Content-Type: application/json
-Rate-Limited: 3/5minutes
-
-{
-  "email": "user@example.com",
-  "lastName": "Doe"
-}
-
-# Response 201
-{
-  "userId": "user-id",
-  "message": "Un email de vérification a été envoyé."
-}
-```
-
-**Rate Limit**: 3 tentatives par 5 minutes par email
-
-### 5. Refresh Token (Placeholder)
-
-```bash
-POST /api/auth/refresh
-# À implémenter
-```
-
-### 6. Logout (Placeholder)
-
-```bash
-POST /api/auth/logout
-# À implémenter
-```
-
----
-
-## Testing
-
-### Via API Tester HTML
-
-```bash
-# Ouvrir dans le navigateur
-/backend/api-tester.html
-
-# Features:
-- Endpoint selector avec méthode HTTP
-- Form validation
-- Cookie management
-- Response syntax highlighting
-- Performance metrics
-```
-
-### Via cURL
-
-```bash
-# Register
-curl -X POST http://localhost:3001/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com",
-    "firstName": "Test",
-    "lastName": "User",
-    "phone": "+261321234567",
-    "password": "TestPass123!"
-  }'
-
-# Login
-curl -X POST http://localhost:3001/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com",
-    "password": "TestPass123!"
-  }' \
-  -i  # Voir les cookies
-```
-
-### Via Postman/Insomnia
-
-Utiliser les endpoints listés ci-dessus avec les méthodes POST
-Les cookies sont automatiquement gérés
-
----
-
-## Troubleshooting
-
-### Port 3001 already in use
-```bash
-# Tuer le process
-lsof -ti:3001 | xargs kill -9
-# Ou changer PORT_AUTH_SERVICE=3002
-```
-
-### Database connection error
-```bash
-# Vérifier DATABASE_URL
-# Vérifier que PostgreSQL est en cours d'exécution
-# Vérifier les credentials
-psql postgresql://user:password@localhost:5432/dbname
-```
-
-### Email not sending
-```bash
-# Vérifier Gmail credentials
-# Activer Less secure apps OR utiliser App Password
-# Vérifier GMAIL_USER et GMAIL_APP_PASSWORD dans .env
-```
-
-### Password validation fails
-```
-- Min 12 caractères
-- Au moins 1 majuscule
-- Au moins 1 minuscule
-- Au moins 1 chiffre
-- Au moins 1 caractère spécial (#?!@$%^&*-)
-```
-
-### Phone validation fails
-```
-Format requis: +261 suivi de 32, 33, 34, ou 38 + 7 chiffres
-Exemples:
-- ✅ +261321234567
-- ✅ +261331234567
-- ❌ +261111234567  (premier chiffre invalide)
-```
-
----
-
-## Architecture Service Auth
-
-```
-backend/services/auth/
-├── src/
-│   ├── app.ts                     # Entry point
-│   ├── config/
-│   │   └── env.schema.ts          # Validation env vars
-│   ├── interfaces/
-│   │   ├── auth.interface.ts      # Types (User, LoginResponse, etc)
-│   │   └── config.interface.ts    # Config types
-│   ├── modules/
-│   │   ├── controller/
-│   │   │   └── auth.controllers.ts # Handler des routes
-│   │   ├── routes/
-│   │   │   └── auth.routes.ts     # Définition des routes
-│   │   ├── schemas/
-│   │   │   └── auth.schema.ts     # Validation JSON schema
-│   │   └── services/
-│   │       └── auth.services.ts   # Logique métier
+docs/files/
+├── backend/src/
+│   ├── app.md (Gateway entry point)
+│   ├── module/
+│   │   ├── app.md
+│   │   ├── back.module.ts.md
+│   │   ├── gateway.md
+│   │   ├── hook.md
+│   │   ├── routes.md
+│   │   └── backend.schema.ts.md
 │   ├── plugin/
-│   │   ├── jwt.plugin.ts          # JWT token signing
-│   │   ├── prisma.plugin.ts       # DB connection
-│   │   └── mail.plugin.ts         # Email sending
-│   ├── types/
-│   │   ├── fastify-env.d.ts       # Types Fastify config
-│   │   └── fastify-mailer.d.ts    # Types fastify-mailer
-│   └── utils/
-│       ├── auth.utils.ts          # Token + cookie helpers
-│       └── text.ts                # Email template generator
-├── prisma/
-│   ├── schema.prisma              # DB schema
-│   └── migrations/                # DB migrations
-├── package.json
-├── tsconfig.json
-└── .env                           # Configuration
+│   │   ├── helmet.plugin.ts.md
+│   │   └── rate-limit.ts.md
+│   └── interfaces/
+│       ├── config.interface.ts.md
+│       └── routes.interface.ts.md
+└── services/
+    ├── auth/src/app.md
+    └── users/src/app.md
 ```
 
----
-
-## Prochaines Étapes
-
-1. **Implémenter OAuth Google**
-   - Intégrer avec Google OAuth2
-   - Créer endpoint POST /oauth/google
-
-2. **Service Users**
-   - Profile management (CRUD)
-   - Seller statistics
-   - Role-based access
-
-3. **2FA (Two-Factor Authentication)**
-   - Totp ou SMS-based
-   - Implémenter POST /2fa/setup
-
-4. **Frontend Integration**
-   - Consommer endpoints auth
-   - Gérer les tokens/cookies
-   - Implémenter les formulaires
+### Fichiers de support
+- **COMMIT_MESSAGE.md** - Message de commit git prêt à utiliser
 
 ---
 
-## Fichiers de Documentation
+## ⚡ Quick Start
 
-- **README_BACKEND_NEW.md** - Vue d'ensemble technique
-- **PRISMA_MODELS.md** - Modèles de données
-- **INDEX.md** - Index navigation
-- **Ce fichier** - Quick start et API docs
-````open INDEX.md
+### Pour commencer la documentation
+```bash
+cd /home/tolrandr/Project\ cursus/ft_transcendence/backend/docs
+
+# Lire le point de départ
+open README_BACKEND_NEW.md
+
+# Ou naviguer via l'index
+open INDEX.md
 ```
 
 ### Pour voir la synthèse
 ```bash
 cat GENERATION_SUMMARY.md
 ```
+
+---
+
+## Changements récents (état actuel)
+
+- Gateway: ajout de routes pour Google OAuth (`/auth/google`, `/auth/google/callback`) et support de rateLimit par route.
+- Auth Service: implémentation du flux Google OAuth (redirect + callback), gestion du cycle des refresh tokens (génération, stockage hashé, refresh), cookies renommés en `realestate_access_token` / `realestate_refresh_token`.
+- Prisma: ajout du champ `sub` sur `User` et migrations pour rendre `password` et `phone` optionnels.
+- Outils: `api-tester.html` mis à jour avec un bouton "Connexion Google"; dépendance `googleapis` ajoutée.
 
 ---
 
@@ -402,7 +89,7 @@ cat GENERATION_SUMMARY.md
 1. ✅ Committer la documentation
    ```bash
    git add backend/docs/
-   git commit -F backend/COMMIT_MESSAGE.md
+   git commit -F backend/docs/COMMIT_MESSAGE.md
    git push
    ```
 

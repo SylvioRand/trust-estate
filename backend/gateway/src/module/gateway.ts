@@ -7,7 +7,7 @@ export default async function apiGateway(app: FastifyInstance, route: GatewayRou
 	app.server.setTimeout(10000);
 
 	const emailRateLimit = {
-		max: 3,
+		max: 1,
 		timeWindow: '1 minutes',
 		hook: 'preHandler',
 		keyGenerator: (request: any) => {
@@ -25,9 +25,9 @@ export default async function apiGateway(app: FastifyInstance, route: GatewayRou
 		rewritePrefix: route.rewritePrefix,
 		http2: false,
 		disableCache: true,
-		config: {
-			rateLimit: emailRateLimit
-		},
+		config: route.rateLimit
+			? { rateLimit: emailRateLimit }
+		: {},
 		replyOptions: {
 			onResponse: async (request, reply , res: any) => {
 				reply.raw.statusCode = res.statusCode ?? 502;
