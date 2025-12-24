@@ -26,7 +26,7 @@ const server = fastify({
 });
 
 await server.register(fastifyCors, {
-	origin: ['http://127.0.0.1:3001'],
+	origin: ['http://127.0.0.1:3001', 'http://127.0.0.1:5500'],
 	methods: ['GET','POST','PUT'],
 	allowedHeaders: ['Content-Type','Authorization'],
 	exposedHeaders: ['X-Total-Count'],
@@ -37,7 +37,6 @@ await server.register(fastifyCors, {
 await server.register(fastifyEnv, options);
 
 server.addHook('onRequest', async (req, reply) => {
-	console.log("===>", req.url);
 	if (req.headers['x-internal-gateway'] !== server.config.INTERNAL_SECRET || !req.headers['x-internal-gateway']) {
 		return reply.code(403).send({
 				"error": "forbidden",

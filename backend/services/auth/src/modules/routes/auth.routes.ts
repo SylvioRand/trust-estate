@@ -30,6 +30,7 @@ export async function emailAuthRoutes(app: FastifyInstance, options: FastifyPlug
 }
 
 export async function oathAuthRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
-	app.post("/oauth/google", authControllers.loginOauth);
+	app.get("/google", authControllers.loginOauth)
+	app.get("/google/callback", authControllers.googleCallback);
 }
 

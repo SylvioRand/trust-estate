@@ -509,6 +509,7 @@
                 <div class="form-fields" id="formFields"></div>
 
                 <!-- Send Button -->
+                <button id="googleBtn" class="send-button">Connexion Google</button>
                 <button id="sendBtn" class="send-button">Send Request</button>
             </div>
 
@@ -530,6 +531,14 @@
         // ============================================
 
         // Endpoint configurations with validation schemas
+		const google = document.getElementById("googleBtn");
+		google.addEventListener('click',async () => {
+			try {
+				window.location.href = "http://localhost:3000/auth/google";
+			} catch (error) {
+				
+			}
+		})
         const ENDPOINTS = {
             // Auth endpoints (via Gateway)
             'auth-login': {

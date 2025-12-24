@@ -27,6 +27,7 @@
     "fastify-cookie": "^5.6.1",
     "fastify-mailer": "^2.3.1",
     "fastify-plugin": "^5.1.0",
+    "googleapis": "^169.0.0",
     "nodemailer": "^7.0.12",
     "pg": "^8.16.3",
     "prisma": "^6.10.0"
