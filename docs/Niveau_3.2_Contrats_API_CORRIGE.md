@@ -136,8 +136,8 @@ POST /auth/verify-email
 **Response 400 :**
 ```json
 {
-  "error": "email_exists",
-  "message": "Cet email est déjà utilisé"
+  "error": "invalid_or_expired_token",
+  "message": "Le lien de vérification est invalide ou expiré"
 }
 ```
 
