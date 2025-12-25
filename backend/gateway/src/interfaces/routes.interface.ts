@@ -3,4 +3,5 @@ export interface GatewayRouteConfig {
 	prefix: string;
 	rewritePrefix?: string;
 	rateLimit?: boolean;
+	authRequired?: boolean;
 }

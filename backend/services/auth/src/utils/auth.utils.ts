@@ -6,14 +6,13 @@ import { saveRefreshToken } from "../modules/services/auth.services.ts";
 export function generateTokens(app: FastifyInstance, user: UserInterface) {
 	const payload = {
 		id: user.id,
-		email: user.email,
-		lastName: user.lastName,
-		firstName: user.firstName,
-		phone: user.phone
+		role: user.role
 	};
 	return {
 		id: payload.id,
-		realestate_access_token: app.jwt.sign(payload, { expiresIn: "15m" }),
+		realestate_access_token: app.jwt.sign(payload, {
+			expiresIn: "15m"
+		}),
 		realestate_refresh_token: app.jwt.sign(
 		{
 			userId: user.id,
@@ -26,13 +25,15 @@ export function generateTokens(app: FastifyInstance, user: UserInterface) {
 	};
 };
 
+export const cookieOptions = {
+	httpOnly: true,
+	secure: true,
+	sameSite: 'none' as const,
+	path: '/'
+};
+
 export function setAuthCookies(reply: FastifyReply, realestate_access_token: string, realestate_refresh_token: string) {
-	const cookieOptions = {
-		httpOnly: true,
-		secure: true,
-		sameSite: 'none' as const,
-		path: '/'
-	};
+	
 	reply.setCookie("realestate_access_token", realestate_access_token, {
 		...cookieOptions,
 		maxAge: 15 * 60

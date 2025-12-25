@@ -8,7 +8,7 @@ import { responseUser } from "../../utils/auth.utils.ts";
 
 export async function findUserByEmail(app: FastifyInstance, email: string, password: string) {
 	const user = await app.prisma.user.findUnique({
-		where: {email: email},
+		where: { email: email },
 		include: {
 			sellerStats: true
 		}
@@ -30,9 +30,9 @@ export async function findUserByEmail(app: FastifyInstance, email: string, passw
 }
 
 export async function createUserAccount(app: FastifyInstance,
-	 email: string, firstName: string, lastName: string, phone: string, password: string) {
+	email: string, firstName: string, lastName: string, phone: string, password: string) {
 	const userExist = await app.prisma.user.findUnique({
-		where: {email: email}
+		where: { email: email }
 	});
 	if (userExist && userExist.email === email) {
 		throw new Error("Your email is already in use");
@@ -63,8 +63,8 @@ export async function createUserAccount(app: FastifyInstance,
 		});
 
 		const baseUrl = app.config.FRONTEND_URL;
-		const verificationUrl = `${baseUrl}/verify-email?token=${hash}`;
-		const {text, html} = generateMail(lastName, verificationUrl);
+		const verificationUrl = `${baseUrl}/verify-email.html?token=${hash}`;
+		const { text, html } = generateMail(lastName, verificationUrl);
 		const info = await (app as any).mailer.sendMail({
 			from: 'dinandrianom@gmail.com',
 			to: email,
@@ -81,7 +81,7 @@ export async function createUserAccount(app: FastifyInstance,
 export async function verifyTokenEmail(app: FastifyInstance, token: string) {
 	const hash = createHash('sha256').update(token).digest('hex');
 	const verificationToken = await app.prisma.email_Verification_token.findUnique({
-		where: { tokenHash: hash}
+		where: { tokenHash: hash }
 	});
 
 	if (!verificationToken)
@@ -93,22 +93,22 @@ export async function verifyTokenEmail(app: FastifyInstance, token: string) {
 	}
 	await app.prisma.user.update({
 		where: { id: verificationToken.userId },
-		data:{
+		data: {
 			emailVerified: true
 		}
 	});
 	const user = await app.prisma.user.findUnique({
-		where: {id: verificationToken.userId}
+		where: { id: verificationToken.userId }
 	});
 	await app.prisma.email_Verification_token.delete({
-		where: {userId: verificationToken.userId}
+		where: { userId: verificationToken.userId }
 	});
 	return (user);
 };
 
 export async function resendEmail(app: FastifyInstance, lastName: string, email: string) {
 	const user = await app.prisma.user.findUnique({
-		where: {email: email}
+		where: { email: email }
 	});
 
 	if (!user)
@@ -120,12 +120,12 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 	const tokenHash = createHash('sha256').update(hash).digest('hex');
 	const expiresAt = new Date(Date.now() + 1000 * 60 * 24).toISOString();
 	await app.prisma.email_Verification_token.upsert({
-		where: {userId: user.id},
+		where: { userId: user.id },
 		update: {
 			tokenHash,
 			expiresAt
 		},
-		create:{
+		create: {
 			userId: user.id,
 			tokenHash,
 			expiresAt
@@ -134,7 +134,7 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 
 	const baseUrl = app.config.FRONTEND_URL;
 	const verificationUrl = `${baseUrl}/verify-email?token=${hash}`;
-	const {text, html} = generateMail(lastName, verificationUrl);
+	const { text, html } = generateMail(lastName, verificationUrl);
 	await (app as any).mailer.sendMail({
 		from: 'dinandrianom@gmail.com',
 		to: email,
@@ -206,15 +206,15 @@ export async function createOrUpdateUserAccount(app: FastifyInstance, userData: 
 	if (user.sub && user.sub !== userData.id) {
 		throw new Error("Ce compte est déjà lié à un autre compte Google");
 	}
-	
+
 	if (!user.sub) {
-    	return await app.prisma.user.update({
+		return await app.prisma.user.update({
 			where: { id: user.id },
-				data: {
-					sub: userData.id,
-					emailVerified: true
-				}
-			});
+			data: {
+				sub: userData.id,
+				emailVerified: true
+			}
+		});
 	}
 	await app.prisma.email_Verification_token.deleteMany({
 		where: { userId: user.id }
@@ -242,7 +242,7 @@ export async function saveRefreshToken(app: FastifyInstance, userId: string, tok
 
 export async function refreshTokenExists(app: FastifyInstance, userId: string, token: string): Promise<boolean> {
 	const tokenHash = createHash('sha256').update(token).digest('hex');
-	 const storedToken = await app.prisma.refresh_token.findUnique({
+	const storedToken = await app.prisma.refresh_token.findUnique({
 		where: { userId }
 	});
 
@@ -257,17 +257,28 @@ export async function refreshTokenExists(app: FastifyInstance, userId: string, t
 export async function deleteRefreshToken(app: FastifyInstance, token: string): Promise<void> {
 	const tokenHash = createHash('sha256').update(token).digest('hex');
 	await app.prisma.refresh_token.deleteMany({
-		where: {tokenHash: tokenHash}
+		where: { tokenHash: tokenHash }
 	});
 }
 
 export async function updateRefrechToken(app: FastifyInstance, decoded: any, oldToken: string) {
 	const user = await app.prisma.user.findUnique({
-		where: {id: decoded.id}
+		where: { id: decoded.userId }
 	})
 
 	if (!user)
 		throw new Error("User not found");
 	await deleteRefreshToken(app, oldToken);
 	return (user);
+}
+
+export async function findUserById(app: FastifyInstance, id: string) {
+	const user = await app.prisma.user.findUnique({
+		where: { id: id },
+		include: {
+			sellerStats: true
+		}
+	});
+	if (!user) throw new Error("User not found");
+	return user;
 }

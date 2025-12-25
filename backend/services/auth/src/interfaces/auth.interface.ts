@@ -13,10 +13,7 @@ export interface SignUpUserInterface {
 
 export interface UserInterface {
 	id: string,
-	email: string,
-	firstName: string,
-	lastName: string,
-	phone: string,
+	role: string
 }
 
 export interface SellerStats {

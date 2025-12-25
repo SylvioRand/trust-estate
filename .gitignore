@@ -22,6 +22,11 @@ coverage/
 .env
 .env.*
 !.env.example
+secrets/
+backend/secret/
+secret/
+secrets/
+
 
 ############################
 # Logs

@@ -14,7 +14,7 @@ export default async function apiGateway(app: FastifyInstance, route: GatewayRou
 			const email = request.body?.email || '';
 			const ip = request.ip;
 			const ua = request.headers['user-agent'] || '';
-			console.log( `${email}:${ip}:${ua}`);
+
 			return `${email}:${ip}:${ua}`;
 		}
 	};
@@ -58,14 +58,21 @@ export default async function apiGateway(app: FastifyInstance, route: GatewayRou
 				reply.code(502).send({ error: 'Auth service unavailable' });
 			}
 		},
-		preHandler: (request, reply , done: any) => {
-			delete request.headers.host;
-			delete request.headers['x-forwarded-host'];
-			delete request.headers['x-forwarded-for'];
-			delete request.headers['x-real-ip'];
-			request.headers['x-gateway-name'] = 'api-gateway';
-			request.headers['x-internal-gateway'] = app.config.INTERNAL_SECRET;
-			done();
+		preHandler: async (request, reply) => {
+			try {
+				if (route.authRequired) {
+					await app.authentication(request, reply);
+					request.headers['authorization'] = `Bearer ${(request as any).internalToken}`;
+				}
+				delete request.headers.host;
+				delete request.headers['x-forwarded-host'];
+				delete request.headers['x-forwarded-for'];
+				delete request.headers['x-real-ip'];
+				request.headers['x-gateway-name'] = 'api-gateway';
+				request.headers['x-internal-gateway'] = app.config.INTERNAL_SECRET;
+			} catch (error: any) {
+				return reply.code(401).send({ error: 'Unauthorized' });
+			}
 		}
 	});
 }

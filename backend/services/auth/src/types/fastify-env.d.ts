@@ -7,6 +7,7 @@ declare module 'fastify' {
     config: EnvConfigInterface
 	prisma: PrismaClient
 	refreshSecret: string
+	privateKey: any
     authentication: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
   }
 }

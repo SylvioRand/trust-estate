@@ -47,7 +47,7 @@ await gatewayRoutes(server);
 
 server.addHook('onRequest', async (req, reply) => {
 	const allowedPrefixes = ['/auth', '/users', '/orders']
-
+	console.log("===>", req.url);
 	if (!allowedPrefixes.some(p => req.url.startsWith(p))) {
 		return reply.code(404).send({ error: 'Route non exposée' })
 	};

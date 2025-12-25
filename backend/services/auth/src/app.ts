@@ -39,9 +39,9 @@ await server.register(fastifyEnv, options);
 server.addHook('onRequest', async (req, reply) => {
 	if (req.headers['x-internal-gateway'] !== server.config.INTERNAL_SECRET || !req.headers['x-internal-gateway']) {
 		return reply.code(403).send({
-				"error": "forbidden",
-				"message": "Vous n'avez pas la permission d'effectuer cette action"
-				});
+			"error": "forbidden",
+			"message": "Vous n'avez pas la permission d'effectuer cette action"
+		});
 	}
 });
 

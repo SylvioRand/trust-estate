@@ -13,4 +13,7 @@ export interface EnvConfigInterface {
 	AUTH_URL: string
 	TOKEN_URL: string
 	USER_INFO_URL: string
+	JWT_SECRET_PRIVATE_KEY: string
+	JWT_SECRET_PUBLIC_KEY: string
+	GATEWAY_SECRET_PUBLIC_KEY: string
 }

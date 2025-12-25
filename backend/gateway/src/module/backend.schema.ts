@@ -1,6 +1,8 @@
 export const envSchema = {
 	type: 'object',
-	required: ['PORT_BACKEND', 'API_AUTH_URL_SERVICE', 'INTERNAL_SECRET'],
+	required: ['PORT_BACKEND', 'API_AUTH_URL_SERVICE',
+		'GATEWAY_SECRET_PRIVATE_KEY', 'GATEWAY_SECRET_PUBLIC_KEY',
+		'INTERNAL_SECRET', 'JWT_SECRET_PUBLIC_KEY', 'COOKIE_SECRET'],
 	properties: {
 		PORT_BACKEND: {
 			type: 'number',
@@ -13,6 +15,13 @@ export const envSchema = {
 		INTERNAL_SECRET: {
 			type: 'string',
 			default: 'INTERNAL_SERVICE_SECRET'
+		},
+		GATEWAY_SECRET_PRIVATE_KEY: {type: 'string'},
+		GATEWAY_SECRET_PUBLIC_KEY: {type: 'string'},
+		JWT_SECRET_PUBLIC_KEY:{ type: 'string' },
+		COOKIE_SECRET: {
+			type: 'string',
+			default: 'COOKIE_SECRET_KEY'
 		}
 	}
 };

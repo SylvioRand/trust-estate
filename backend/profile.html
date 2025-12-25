@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card">
+            <h2>Mon Profil</h2>
+            <p class="subtitle">Connexion réussie</p>
+
+            <div class="profile-info">
+                <p><strong>Email :</strong> <span id="profile-email">Chargement...</span></p>
+                <p><strong>ID :</strong> <span id="profile-id">---</span></p>
+                <!-- On pourrait afficher d'autres infos disponibles dans le localStorage -->
+                <p><strong>Nom :</strong> <span id="profile-lastname">---</span></p>
+                <p><strong>Prénom :</strong> <span id="profile-firstname">---</span></p>
+            </div>
+
+            <button onclick="logout()" class="btn-secondary"
+                style="border-color: var(--error-color); color: var(--error-color);">Se déconnecter</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:3000';
+
+        // Fonction de déconnexion
+        // Fonction de déconnexion
+        async function logout() {
+            try {
+                await fetch(`${API_BASE_URL}/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (error) {
+                console.error("Erreur logout:", error);
+            } finally {
+                // Toujours rediriger, même si le backend est injoignable
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Chargement des données via l'API
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // On appelle /auth/me qui est redirigé vers /api/profile par la gateway
+                // credentials: 'include' envoie les cookies HttpOnly (token)
+                const response = await fetch(`${API_BASE_URL}/auth/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Non authentifié ou session expirée');
+                }
+
+                const user = await response.json();
+
+                document.getElementById('profile-email').textContent = user.email || 'Inconnu';
+                document.getElementById('profile-id').textContent = user.id || user.userId || 'N/A';
+                document.getElementById('profile-lastname').textContent = user.lastName || '---';
+                document.getElementById('profile-firstname').textContent = user.firstName || '---';
+
+            } catch (error) {
+                console.warn('Erreur chargement profil:', error);
+                // Si échec (ex: 401), retour au login
+                // window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+
+</html>
