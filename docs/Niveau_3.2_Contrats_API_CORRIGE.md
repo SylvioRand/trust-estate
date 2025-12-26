@@ -161,25 +161,15 @@ POST /auth/resend-verification
 ```json
 {
   "userId": "u1",
-  "message": "Un email de vérification a été envoyé."
+  "message": "Si un compte existe pour cet email, un message de vérification a été envoyé."
 }
 ```
-
-**Response 400 (Déjà vérifié) :**
+**Response 429 :**
 ```json
 {
-  "error": "email_verified",
-  "message": "Cet email est déjà verifié"
+  "error": "rate_limited",
+  "message": "Trop de requêtes. Veuillez réessayer plus tard."
 }
-```
-
-**Response 400 (Utilisateur inconnu) :**
-```json
-{
-  "error": "invalid_credentials",
-  "message": "Email incorrect"
-}
-```
 
 **Response 500 :**
 ```json
