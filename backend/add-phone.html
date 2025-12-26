@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un numero telephone</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card">
+            <h2>Ajouter un numero telephone</h2>
+
+            <div class="input-group">
+				<label for="signup-phone">Téléphone</label>
+				<input type="tel" id="signup-phone" placeholder="+261 32 XX XXX XX" required
+					pattern="\+261(32|33|34|38)\d{7}" title="Format: +261 seguido de 9 dígitos (ex: +261321234567)">
+			</div>
+			<button type="submit" class="btn-primary" onclick="addNumber()">Add phone number</button>
+
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:3001';
+		const phoneNumber = document.getElementById("signup-phone").value;
+
+        async function addNumber() {
+            try {
+                await fetch(`${API_BASE_URL}/auth/update-phone`, {
+                    method: 'POST',
+                    credentials: 'include',
+					headers: { 'Content-Type': 'application/json' },
+            		body: JSON.stringify({ phoneNumber }),
+                });
+            } catch (error) {
+                console.error("Erreur logout:", error);
+            } finally {
+                // Toujours rediriger, même si le backend est injoignable
+                // window.location.href = 'index.html';
+            }
+        }
+
+    </script>
+</body>
+
+</html>

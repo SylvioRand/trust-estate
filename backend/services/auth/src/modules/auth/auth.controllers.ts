@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { LoginUserInterface, SignUpUserInterface } from "../../interfaces/auth.interface.ts";
-import * as authServices from '../services/auth.services.ts'
+import type { LoginUserInterface, SignUpUserInterface, UserInterface } from "../../interfaces/auth.interface.ts";
+import * as authServices from './auth.services.ts'
 import { cookieOptions, generateAccessToken, responseUser } from "../../utils/auth.utils.ts";
 
 export async function loginUser(request: FastifyRequest<{ Body: LoginUserInterface }>, reply: FastifyReply) {
@@ -8,7 +8,8 @@ export async function loginUser(request: FastifyRequest<{ Body: LoginUserInterfa
 
 	try {
 		const user = await authServices.findUserByEmail(request.server, email, password);
-		const responseUsers = responseUser(request, reply, user);
+		const responseUsers = await responseUser(request, reply, user);
+		console.log(responseUsers);
 		return (reply.status(200).send(responseUsers));
 	} catch (error: any) {
 		if (error.message === 'Email not verified')
@@ -90,9 +91,8 @@ export async function refreshToken(request: FastifyRequest, reply: FastifyReply)
 
 export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
 	const user = request.user;
-	console.log("=>", user);
+
 	if (!user) {
-		console.log("User is not authenticated");
 		return reply.code(401).send({
 			"error":"Error",
 			"message":"User is not authenticated"
@@ -117,7 +117,7 @@ export async function verifiedEmail(request: FastifyRequest<{ Body: { token: str
 
 	try {
 		const user = await authServices.verifyTokenEmail(request.server, token);
-		const responseUsers = responseUser(request, reply, user);
+		const responseUsers = await responseUser(request, reply, user);
 		return (reply.status(200).send(responseUsers));
 	} catch (error: any) {
 		return reply.status(400).send({
@@ -137,21 +137,10 @@ export async function resendEmailVerification(request: FastifyRequest<{ Body: { 
 			"message": "Un email de vérification a été envoyé."
 		})
 	} catch (error: any) {
-		if (error.message === 'Your email is already in verified')
-			return reply.status(400).send({
-				"error": "email_verified",
-				"message": "Cet email est déjà verifié"
-			});
-		else if (error.message === "User not found")
-			return reply.status(400).send({
-				"error": "invalid_credentials",
-				"message": "Email incorrect"
-			});
-		else
-			return reply.status(500).send({
-				"error": "Internal server error",
-				"message": "Internal server error"
-			});
+		return reply.status(500).send({
+			"error": "Internal server error",
+			"message": "Internal server error"
+		});
 	}
 }
 
@@ -182,8 +171,8 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 	try {
 		const userData = await authServices.getUserInfo(request.server, code);
 		const user = await authServices.createOrUpdateUserAccount(request.server, userData);
-		const responseUsers = responseUser(request, reply, user);
-		console.log(responseUsers);
+		const responseUsers = await responseUser(request, reply, user);
+
 		return (reply.redirect(request.server.config.FRONTEND_URL));
 	} catch (error: any) {
 		if (error.message === "Invalid credential")
@@ -204,6 +193,33 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 	}
 }
 
+export async function updatePhoneNumber(request: FastifyRequest <{Body: {phoneNumber: string}}>, reply: FastifyReply) {
+	const phoneNumber = request.body.phoneNumber;
+	const userId = (request.user as UserInterface).id;
+
+	try {
+		await authServices.updatePhoneNumberUser(request.server, userId, phoneNumber);
+		return reply.status(200).send({
+			"user": {
+				"id": userId,
+				"phone": phoneNumber
+			},
+			"message": "Numero de telephone mis a jour avec succes"
+		});
+	} catch (error: any) {
+		if (error.message === "User not found")
+			return reply.code(400).send({
+					"error": "invalid_credentials",
+					"message": "Token invalide ou expiré"
+				});
+		else
+			return reply.status(500).send({
+				"error": "Internal server error",
+				"message": "Internal server error"
+			});
+	}
+}
+
 export async function profile(request: FastifyRequest, reply: FastifyReply) {
 	const token = request.cookies.realestate_access_token;
 
@@ -213,14 +229,11 @@ export async function profile(request: FastifyRequest, reply: FastifyReply) {
 
 	try {
 		const decoded: any = request.server.jwt.verify(token);
-		// Note: decoded.id comes from the payload
 		const user = await authServices.findUserById(request.server, decoded.id);
 
-		// Ensure we don't return null if user deleted but valid token
 		if (!user) {
 			return reply.status(401).send({ error: "Unauthorized", message: "Utilisateur introuvable" });
 		}
-
 		return user;
 	} catch (error) {
 		return reply.status(401).send({ error: "Unauthorized", message: "Session invalide" });

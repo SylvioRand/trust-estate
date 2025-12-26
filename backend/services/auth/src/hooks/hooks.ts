@@ -8,22 +8,23 @@ export async function addHooks(server: FastifyInstance) {
 		if (contentLength > maxSize) {
 			throw new Error(`Payload trop volumineux: ${contentLength} bytes (max: ${maxSize})`);
 		}
-	})
+	});
 
 	server.addHook('onRequest', async (req: FastifyRequest, reply: FastifyReply) => {
-		delete req.headers['x-powered-by']
-		delete req.headers['referer']
-
+		delete req.headers.host;
+		delete req.headers['x-forwarded-host'];
+		delete req.headers['x-real-ip'];
+		console.log("===>", req.url);
 		if (req.headers['x-forwarded-for']) {
 			req.headers['x-forwarded-for'] = (req.headers['x-forwarded-for'] as any).split(',')[0].trim()
 		}
-	})
+	});
 
 	server.addHook('onSend', async (req:FastifyRequest, reply: FastifyReply) => {
 		reply.header('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
 		reply.header('X-Content-Type-Options', 'nosniff')
 		reply.header('X-Frame-Options', 'DENY')
 		reply.header('Referrer-Policy', 'no-referrer')
-	})
+	});
 
 }
