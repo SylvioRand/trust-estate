@@ -289,7 +289,7 @@ POST /auth/google
 ### 1.6 Refresh Token
 
 ```http
-POST /auth/refresh
+GET /auth/refresh
 ```
 
 **Request :**
