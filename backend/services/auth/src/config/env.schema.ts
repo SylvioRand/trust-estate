@@ -3,7 +3,7 @@ export const envSchema = {
 	required: [
 		'PORT_AUTH_SERVICE', 'INTERNAL_SECRET',
 		'JWT_SECRET', 'JWT_REFRESH_SECRET',
-		'JWT_SECRET_PRIVATE_KEY', 'JWT_SECRET_PUBLIC_KEY', 'GATEWAY_SECRET_PUBLIC_KEY',
+		'JWT_SECRET_PRIVATE_KEY', 'JWT_SECRET_PUBLIC_KEY',
 		'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GMAIL_USER', 'GMAIL_APP_PASSWORD', 
 		'COOKIE_SECRET', 'FRONTEND_URL',
 		'REDIRECT_URI', 'AUTH_URL', 'TOKEN_URL', 'USER_INFO_URL',
@@ -21,7 +21,6 @@ export const envSchema = {
 		JWT_REFRESH_SECRET: { type: 'string' },
 		JWT_SECRET_PRIVATE_KEY:{ type: 'string' },
 		JWT_SECRET_PUBLIC_KEY:{ type: 'string' },
-		GATEWAY_SECRET_PUBLIC_KEY:{ type: 'string' },
 		GOOGLE_CLIENT_ID: { type: 'string' },
 		GOOGLE_CLIENT_SECRET: { type: 'string' },
 		GMAIL_USER: { type: 'string' },

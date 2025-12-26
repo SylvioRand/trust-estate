@@ -4,7 +4,8 @@ import dotenv from 'dotenv';
 import fastifyEnv from '@fastify/env'
 import { envSchema } from "./config/env.schema.ts";
 import fastifyCors from "@fastify/cors";
-import { authRegister } from "./modules/module/auth.module.ts";
+import { authRegister, pluginRegister } from "./modules/auth/auth.module.ts";
+import { addHooks } from "./hooks/hooks.ts";
 
 const dir = "../../.env";
 
@@ -36,15 +37,8 @@ await server.register(fastifyCors, {
 
 await server.register(fastifyEnv, options);
 
-server.addHook('onRequest', async (req, reply) => {
-	if (req.headers['x-internal-gateway'] !== server.config.INTERNAL_SECRET || !req.headers['x-internal-gateway']) {
-		return reply.code(403).send({
-			"error": "forbidden",
-			"message": "Vous n'avez pas la permission d'effectuer cette action"
-		});
-	}
-});
-
+await addHooks(server);
+await pluginRegister(server);
 await authRegister(server);
 
 server.get("/api/auth", async (req:FastifyRequest, reply: FastifyReply) => {

@@ -1,7 +1,7 @@
 // --- GESTION DE L'INTERFACE (UI) ---
 
 // URL de base de l'API Gateway
-const API_BASE_URL = 'http://127.0.0.1:3000';
+const API_BASE_URL = 'http://127.0.0.1:3001';
 
 // Variables temporaires pour le resend
 let tempEmail = '';
@@ -12,7 +12,7 @@ let resendTimerInterval = null;
 function showLogin() {
     document.getElementById('login-form').classList.remove('hidden');
     document.getElementById('signup-form').classList.add('hidden');
-    document.getElementById('verification-section').classList.add('hidden');
+    // document.getElementById('verification-section').classList.add('hidden');
 
     document.getElementById('tab-login').classList.add('active');
     document.getElementById('tab-signup').classList.remove('active');
@@ -24,7 +24,7 @@ function showLogin() {
 function showSignup() {
     document.getElementById('signup-form').classList.remove('hidden');
     document.getElementById('login-form').classList.add('hidden');
-    document.getElementById('verification-section').classList.add('hidden');
+    // document.getElementById('verification-section').classList.add('hidden');
 
     document.getElementById('tab-signup').classList.add('active');
     document.getElementById('tab-login').classList.remove('active');
@@ -84,6 +84,10 @@ async function handleResponse(response) {
         throw new Error(errorData.message || 'Une erreur est survenue.');
     }
     return response.json();
+}
+
+async function googleOauth() {
+	window.location.href = `${API_BASE_URL}/auth/google`;
 }
 
 // Gérer la soumission du LOGIN

@@ -4,7 +4,6 @@ import crypto from "node:crypto";
 import { createHash } from 'node:crypto';
 import { generateMail } from "../../utils/text.ts";
 import type { UserGoogleInterface } from "../../interfaces/auth.interface.ts";
-import { responseUser } from "../../utils/auth.utils.ts";
 
 export async function findUserByEmail(app: FastifyInstance, email: string, password: string) {
 	const user = await app.prisma.user.findUnique({
@@ -280,5 +279,15 @@ export async function findUserById(app: FastifyInstance, id: string) {
 		}
 	});
 	if (!user) throw new Error("User not found");
-	return user;
+	return (user);
+}
+
+export async function updatePhoneNumberUser(app: FastifyInstance, userId: string, phone: string) {
+	await app.prisma.user.update({
+		where: {id: userId},
+		data: {
+			phone,
+			phoneVerified: true
+		}
+	});
 }

@@ -12,8 +12,10 @@ export interface SignUpUserInterface {
 }
 
 export interface UserInterface {
-	id: string,
-	role: string
+	id: string;
+	role: string;
+	phoneVerified?: boolean;
+	emailVerified?: boolean;
 }
 
 export interface SellerStats {

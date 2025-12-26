@@ -1,12 +1,14 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import type { UserInterface } from "../interfaces/auth.interface.ts";
 import type { User } from "../interfaces/auth.interface.ts";
-import { saveRefreshToken } from "../modules/services/auth.services.ts";
+import { saveRefreshToken } from "../modules/auth/auth.services.ts";
 
 export function generateTokens(app: FastifyInstance, user: UserInterface) {
 	const payload = {
 		id: user.id,
-		role: user.role
+		role: user.role,
+		phoneVerified: user.phoneVerified,
+		emailVerified: user.emailVerified
 	};
 	return {
 		id: payload.id,
@@ -53,7 +55,7 @@ export async function generateAccessToken(request: FastifyRequest, reply: Fastif
 }
 
 export async function responseUser(request: FastifyRequest,reply: FastifyReply, user: any) {
-	const realestate_refresh_token = generateAccessToken(request, reply, user);
+	const realestate_refresh_token = await generateAccessToken(request, reply, user);
 	const responseUser: User = {
 		id: user.id,
 		email: user.email,
@@ -71,5 +73,5 @@ export async function responseUser(request: FastifyRequest,reply: FastifyReply, 
 		creditBalance: user.creditBalance,
 		createdAt: user.createAt.toISOString(),
 	};
-	return ({responseUser, realestate_refresh_token});
+	return (responseUser);
 }

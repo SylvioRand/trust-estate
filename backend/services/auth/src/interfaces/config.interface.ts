@@ -15,5 +15,4 @@ export interface EnvConfigInterface {
 	USER_INFO_URL: string
 	JWT_SECRET_PRIVATE_KEY: string
 	JWT_SECRET_PUBLIC_KEY: string
-	GATEWAY_SECRET_PUBLIC_KEY: string
 }

@@ -8,7 +8,7 @@ export const LoginUserSchema = {
 		},
 		additionalProperties: false
 	}
-}
+};
 
 export const SignUpUserSchema = {
 	body: {
@@ -38,6 +38,32 @@ export const SignUpUserSchema = {
 			},
 			avatarUrl: { type: 'string' }
 		},
+		additionalProperties: false
+	}
+};
+
+export const VerificationTokenSchema = {
+	body: {
+		type: 'object',
+		required: ['token'],
+		properties: {
+			token: {type: 'string'}
+		},
+		additionalProperties: false
+	}
+}
+
+export const UpdatePhoneNumberSchema = {
+	body: {
+		type: 'object',
+		required: ['phoneNumber'],
+		properties: {
+				phoneNumber: {
+					type: 'string',
+					minLength: 3,
+					pattern: '^\\+261(32|33|34|38)\\d{7}$'
+				}
+			},
 		additionalProperties: false
 	}
 }
