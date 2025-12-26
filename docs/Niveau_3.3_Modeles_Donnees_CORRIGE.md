@@ -54,6 +54,10 @@ interface User {
   
   createdAt: string;
   updatedAt?: string;
+
+  // Données internes de sécurité (non exposées)
+  resetPasswordToken?: string;   // Hashé
+  resetPasswordExpires?: Date;
 }
 ```
 

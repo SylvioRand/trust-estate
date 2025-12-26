@@ -137,9 +137,22 @@ Il sert de référence unique pour les développeurs Frontend (Next.js).
 *   **Logique de blocage** :
     *   Si email non vérifié -> **Erreur 403** : "Veuillez vérifier votre email pour accéder à votre compte." + Lien "Renvoyer l'email".
     *   *Note : Aucune action (Réserver, Publier, Favoris) n'est possible sans login validé.*
+    *   Lien "Mot de passe oublié ?" sous le champ mot de passe -> Redirige vers 3.4.
 
-### 3.4 Pas de 2FA
+### 3.4 Mot de passe oublié (Flux)
+*   **Écran 1 (Demande)** :
+    *   Input : Email.
+    *   Action : "Recevoir mon code".
+    *   Feedback : "Un code vous a été envoyé si l'email existe."
+*   **Écran 2 (Reset)** :
+    *   Input : Code (6 chiffres).
+    *   Input : Nouveau mot de passe.
+    *   Action : "Changer le mot de passe".
+    *   Succès -> Redirection `/login` avec toast "Mot de passe modifié".
+
+### 3.5 Pas de 2FA
 *   Suppression explicite de tout mécanisme 2FA pour le MVP.
+
 
 ---
 
