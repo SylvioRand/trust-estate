@@ -161,15 +161,17 @@ POST /auth/resend-verification
 ```json
 {
   "userId": "u1",
-  "message": "Si un compte existe pour cet email, un message de vérification a été envoyé."
+  "message": "Un email de vérification a été envoyé si le compte existe."
 }
 ```
+
 **Response 429 :**
 ```json
 {
   "error": "rate_limited",
   "message": "Trop de requêtes. Veuillez réessayer plus tard."
 }
+```
 
 **Response 500 :**
 ```json
