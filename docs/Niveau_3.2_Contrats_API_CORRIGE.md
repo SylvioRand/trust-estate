@@ -98,7 +98,7 @@ POST /auth/register
 
 ---
 
-### 1.2 Vérification Email (🆕 NOUVEAU)
+### 1.2 Vérification Email
 
 ```http
 POST /auth/verify-email
@@ -149,7 +149,7 @@ POST /auth/verify-email
 
 ---
 
-### 1.3 Renvoyer Email de Vérification (🆕 NOUVEAU)
+### 1.3 Renvoyer Email de Vérification
 
 ```http
 POST /auth/resend-verification
@@ -189,7 +189,70 @@ POST /auth/resend-verification
 
 ---
 
-### 1.4 Login Email
+### 1.4 Mot de passe oublié
+
+```http
+POST /auth/forgot-password
+```
+
+**Request :**
+```json
+{
+  "email": "user@mail.com"
+}
+```
+
+**Response 200 :**
+```json
+{
+  "message": "Si cet email existe, un code de réinitialisation a été envoyé."
+}
+```
+> **Securité :** Message générique pour éviter l'énumération des utilisateurs.
+
+**Response 429 :**
+```json
+{
+  "error": "rate_limited",
+  "message": "Trop de demandes. Veuillez patienter."
+}
+```
+
+---
+
+### 1.5 Réinitialiser Mot de passe (🆕 NOUVEAU)
+
+```http
+POST /auth/reset-password
+```
+
+**Request :**
+```json
+{
+  "token": "123456",
+  "newPassword": "newSecurePassword123!"
+}
+```
+
+**Response 200 :**
+```json
+{
+  "success": true,
+  "message": "Mot de passe modifié avec succès. Vous pouvez vous connecter."
+}
+```
+
+**Response 400 :**
+```json
+{
+  "error": "invalid_token",
+  "message": "Le code est invalide ou expiré."
+}
+```
+
+---
+
+### 1.6 Login Email
 
 ```http
 POST /auth/login
@@ -256,7 +319,7 @@ POST /auth/login
 
 
 
-### 1.5 Login Google OAuth
+### 1.7 Login Google OAuth
 
 ```http
 POST /auth/google
@@ -300,7 +363,7 @@ POST /auth/google
 
 ---
 
-### 1.6 Logout
+### 1.8 Logout
 
 ```http
 GET /auth/logout
@@ -320,7 +383,7 @@ GET /auth/logout
 
 ---
 
-### 1.7 Mon Profil
+### 1.9 Mon Profil
 
 ```http
 GET /users/me
@@ -349,7 +412,7 @@ GET /users/me
 
 ---
 
-### 1.8 Modifier Profil
+### 1.10 Modifier Profil
 
 ```http
 PUT /users/me
@@ -379,7 +442,7 @@ PUT /users/me
 
 ---
 
-### 1.9 Ajouter/Modifier Téléphone (🆕 NOUVEAU)
+### 1.11 Ajouter/Modifier Téléphone (🆕 NOUVEAU)
 
 ```http
 PUT /users/me/phone
