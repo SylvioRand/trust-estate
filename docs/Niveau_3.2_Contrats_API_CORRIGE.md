@@ -230,7 +230,6 @@ POST /auth/login
   "message": "Veuillez vérifier votre email avant de vous connecter."
 }
 ```
-```
 
 **Response 400 :**
 ```json
@@ -265,17 +264,19 @@ POST /auth/google
 ```json
 {
   "user": {
-    "id": "u3",
-    "email": "user@gmail.com",
+    "id": "u1",
+    "email": "user@mail.com",
     "emailVerified": true,
-    "firstName": "Google",
-    "lastName": "User",
+    "firstName": "Jean",
+    "lastName": "Rakoto",
     "role": "user",
-    "creditBalance": 5,
-    "createdAt": "2025-01-15T11:00:00Z"
-  },
-  "isNewUser": true,
-  "message": "Compte créé avec 5 crédits offerts !"
+    "sellerStats": {
+      "totalListings": 5,
+      "averageRating": 4.5
+    },
+    "creditBalance": 10,
+    "createdAt": "2025-01-10T08:00:00Z"
+  }
 }
 ```
 
@@ -288,7 +289,7 @@ POST /auth/google
 ### 1.6 Refresh Token
 
 ```http
-POST /auth/refresh
+GET /auth/refresh
 ```
 
 **Request :**
