@@ -656,7 +656,7 @@ POST /auth/google
 **Request :**
 ```json
 {
-  "idToken": "google-oauth-token"
+  "idToken": "google-oauth-token" // token retourne par Google OAuth
 }
 ```
 
@@ -961,8 +961,8 @@ GET /listings
 
 **Exemple :**
 ```
-GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000&page=1&limit=20
 ```
+GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000&page=1&limit=20
 
 **Response 200 :**
 ```json
