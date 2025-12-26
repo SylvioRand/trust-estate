@@ -119,15 +119,21 @@ POST /auth/verify-email
 ```json
 {
   "user": {
-    "id": "u1",
-    "email": "user@mail.com",
-    "emailVerified": true,
+    "id": "235afa03-4130-44d5-8002-522a58ab164d",
+    "email": "Icie64@hotmail.com",
+    "emailVerified": "true",
     "phone": "+261340000000",
-    "firstName": "Jean",
-    "lastName": "Rakoto",
+    "firstName": "Sydni",
+    "lastName": "Ziemann",
     "role": "user",
-    "creditBalance": 5,
-    "createdAt": "2025-01-15T10:00:00Z"
+    "sellerStats": {
+      "totalListings": 5,
+      "activeListings": 4,
+      "successfulSales": 1,
+      "averageRating": 8.5
+    },
+    "creditBalance": 45,
+    "createdAt": "2025-12-26T08:55:19.215Z"
   },
   "message": "Compte activé avec succès. 5 crédits offerts !"
 }
@@ -272,7 +278,7 @@ POST /auth/google
     "id": "8757f505-eb47-4078-8c64-b33239e264e6",
     "email": "Monty_Rempel@gmail.com",
     "emailVerified": "true",
-    "phone": "382.607.4819 x733",
+    "phone": "+261340000000",
     "firstName": "Edwin",
     "lastName": "Bernier",
     "role": "moderator",
