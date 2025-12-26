@@ -286,39 +286,7 @@ POST /auth/google
 
 ---
 
-### 1.6 Refresh Token
-
-```http
-GET /auth/refresh
-```
-
-**Request :**
-- Pas de body (le `refresh_token` est lu dans le cookie)
-```json
-{}
-```
-
-**Response 200 :**
-- **Headers:** `Set-Cookie: access_token=new-jwt...; ...`
-
-```json
-{
-  "success": true,
-  "expiresIn": 900
-}
-```
-
-**Response 401 :**
-```json
-{
-  "error": "invalid_refresh_token",
-  "message": "Token invalide ou expiré"
-}
-```
-
----
-
-### 1.7 Logout
+### 1.6 Logout
 
 ```http
 POST /auth/logout
@@ -338,7 +306,7 @@ POST /auth/logout
 
 ---
 
-### 1.8 Mon Profil
+### 1.7 Mon Profil
 
 ```http
 GET /users/me
@@ -367,7 +335,7 @@ GET /users/me
 
 ---
 
-### 1.9 Modifier Profil
+### 1.8 Modifier Profil
 
 ```http
 PUT /users/me
@@ -395,10 +363,9 @@ PUT /users/me
 }
 ```
 
-
 ---
 
-### 1.10 Ajouter/Modifier Téléphone (🆕 NOUVEAU)
+### 1.9 Ajouter/Modifier Téléphone (🆕 NOUVEAU)
 
 ```http
 PUT /users/me/phone
@@ -1644,7 +1611,7 @@ GET /ai/health
 **🆕 Ajouts :**
 - Resend email verification (POST /auth/resend-verification)
 - Inscription utilisateur (POST /auth/register)
-- Refresh token et logout
+- Logout
 - Endpoints zones (GET /zones)
 - Endpoints modérateur (6 endpoints admin)
 - Historique crédits (GET /credits/history)
