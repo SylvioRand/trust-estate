@@ -139,16 +139,18 @@ Il sert de référence unique pour les développeurs Frontend (Next.js).
     *   *Note : Aucune action (Réserver, Publier, Favoris) n'est possible sans login validé.*
     *   Lien "Mot de passe oublié ?" sous le champ mot de passe -> Redirige vers 3.4.
 
-### 3.4 Mot de passe oublié (Flux)
+### 3.4 Mot de passe oublié (Flux Magic Link)
 *   **Écran 1 (Demande)** :
     *   Input : Email.
-    *   Action : "Recevoir mon code".
-    *   Feedback : "Un code vous a été envoyé si l'email existe."
+    *   Action : "Recevoir mon lien de récupération".
+    *   Feedback : "Si cet email existe, un lien vous a été envoyé."
+*   **Email** :
+    *   Contient un lien unique (ex: `/reset-password?token=...`).
 *   **Écran 2 (Reset)** :
-    *   Input : Code (6 chiffres).
+    *   *Accessible uniquement via le lien email.*
     *   Input : Nouveau mot de passe.
     *   Action : "Changer le mot de passe".
-    *   Succès -> Redirection `/login` avec toast "Mot de passe modifié".
+    *   Succès -> Redirection `/login` avec toast "Mot de passe modifié. Sessions déconnectées."
 
 ### 3.5 Pas de 2FA
 *   Suppression explicite de tout mécanisme 2FA pour le MVP.
