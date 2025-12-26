@@ -394,6 +394,42 @@ PUT /users/me
 }
 ```
 
+
+---
+
+### 1.10 Ajouter/Modifier Téléphone (🆕 NOUVEAU)
+
+```http
+PUT /users/me/phone
+```
+
+**Request :**
+```json
+{
+  "phone": "+261340000002"
+}
+```
+
+**Response 200 :**
+```json
+{
+  "updated": true,
+  "user": {
+    "id": "u1",
+    "phone": "+261340000002"
+  },
+  "message": "Numéro de téléphone mis à jour avec succès"
+}
+```
+
+**Response 400 :**
+```json
+{
+  "error": "invalid_phone_format",
+  "message": "Format de téléphone invalide"
+}
+```
+
 ---
 
 ## 2. Annonces (listings-service)
