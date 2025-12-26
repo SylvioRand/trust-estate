@@ -206,20 +206,25 @@ POST /auth/login
 
 ```json
 {
+{
   "user": {
-    "id": "u1",
-    "email": "user@mail.com",
-    "emailVerified": true,
-    "firstName": "Jean",
-    "lastName": "Rakoto",
+    "id": "b016c7e2-9a78-4c86-a5ab-5f4166e6deaa",
+    "email": "Destiny_Dickinson25@gmail.com",
+    "emailVerified": false,
+    "phone": "+261340000000",
+    "firstName": "Sonya",
+    "lastName": "Leuschke",
     "role": "user",
     "sellerStats": {
       "totalListings": 5,
-      "averageRating": 4.5
+      "activeListings": 4,
+      "successfulSales": 1,
+      "averageRating": 8.5
     },
-    "creditBalance": 10,
-    "createdAt": "2025-01-10T08:00:00Z"
+    "creditBalance": 45,
+    "createdAt": "2025-12-26T08:49:13.639Z"
   }
+}
 }
 ```
 
@@ -264,18 +269,21 @@ POST /auth/google
 ```json
 {
   "user": {
-    "id": "u1",
-    "email": "user@mail.com",
-    "emailVerified": true,
-    "firstName": "Jean",
-    "lastName": "Rakoto",
-    "role": "user",
+    "id": "8757f505-eb47-4078-8c64-b33239e264e6",
+    "email": "Monty_Rempel@gmail.com",
+    "emailVerified": "true",
+    "phone": "382.607.4819 x733",
+    "firstName": "Edwin",
+    "lastName": "Bernier",
+    "role": "moderator",
     "sellerStats": {
       "totalListings": 5,
-      "averageRating": 4.5
+      "activeListings": 4,
+      "successfulSales": 1,
+      "averageRating": 8.5
     },
-    "creditBalance": 10,
-    "createdAt": "2025-01-10T08:00:00Z"
+    "creditBalance": 45,
+    "createdAt": "2025-12-26T08:51:13.893Z"
   }
 }
 ```
