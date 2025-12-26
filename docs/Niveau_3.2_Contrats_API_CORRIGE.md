@@ -189,7 +189,7 @@ POST /auth/resend-verification
 
 ---
 
-### 1.4 Mot de passe oublié
+### 1.4 Mot de passe oublié (🆕 NOUVEAU)
 
 ```http
 POST /auth/forgot-password
@@ -205,7 +205,7 @@ POST /auth/forgot-password
 **Response 200 :**
 ```json
 {
-  "message": "Si cet email existe, un code de réinitialisation a été envoyé."
+  "message": "Si cet email existe, un lien de réinitialisation a été envoyé."
 }
 ```
 > **Securité :** Message générique pour éviter l'énumération des utilisateurs.
@@ -229,7 +229,7 @@ POST /auth/reset-password
 **Request :**
 ```json
 {
-  "token": "123456",
+  "token": "eyJhbGciOiJIUzI1NiIsIn...", // Token récupéré depuis l'URL (Magic Link)
   "newPassword": "newSecurePassword123!"
 }
 ```
@@ -238,15 +238,16 @@ POST /auth/reset-password
 ```json
 {
   "success": true,
-  "message": "Mot de passe modifié avec succès. Vous pouvez vous connecter."
+  "message": "Mot de passe modifié avec succès."
 }
 ```
+> **Securité :** Cette action révoque/déconnecte immédiatement toutes les sessions actives de l'utilisateur.
 
 **Response 400 :**
 ```json
 {
   "error": "invalid_token",
-  "message": "Le code est invalide ou expiré."
+  "message": "Le lien est invalide ou expiré."
 }
 ```
 
