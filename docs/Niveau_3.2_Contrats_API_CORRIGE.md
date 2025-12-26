@@ -289,7 +289,7 @@ POST /auth/google
 ### 1.6 Logout
 
 ```http
-POST /auth/logout
+GET /auth/logout
 ```
 
 **Response 200 :**
