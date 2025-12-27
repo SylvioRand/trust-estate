@@ -110,9 +110,13 @@ Toutes les validations frontend **DOIVENT** être répliquées au backend. Le fr
   "error": "validation_failed",
   "message": "Données invalides",
   "details": {
-    "email": ["Format email invalide"],
-    "password": ["Minimum 8 caractères requis", "Doit contenir 1 majuscule"],
-    "photos": ["Maximum 10 images autorisées"]
+    "password": [
+      "Minimum 8 caractères requis",
+      "Maximum 128 caractères autorisé",
+      "Doit contenir au moins une majuscule",
+      "Doit contenir au moins une minuscule",
+      "Doit contenir au moins un chiffre"
+    ]
   }
 }
 ```
