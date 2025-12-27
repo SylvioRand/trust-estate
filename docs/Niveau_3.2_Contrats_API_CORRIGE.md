@@ -733,6 +733,14 @@ GET /users/me
 }
 ```
 
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
 ---
 
 ### 1.10 Modifier Profil
