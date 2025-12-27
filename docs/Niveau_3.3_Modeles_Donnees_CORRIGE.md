@@ -470,10 +470,10 @@ CreditBalance {
 - Min Solde : **0** (Pas de découvert)
 
 **Table des coûts (MVP) :**
-| Action              | Coût       | Durée Visibilité |
-|---------------------|------------|------------------|
-| Publication Annonce | 1 crédit   | 30 jours         |
-| Renouvellement      | 0.5 crédit | +30 jours        |
+| Action              | Coût       | Durée Visibilité  |
+|---------------------|------------|-------------------|
+| Publication Annonce | 1 crédit   | 30 jours          |
+| Renouvellement      | 0.5 crédit | +30 jours         |
 | Réservation Visite  | 1 crédit   | - (Débit immédiat)|
 
 **Tarifs Recharges (Mocked) :**
