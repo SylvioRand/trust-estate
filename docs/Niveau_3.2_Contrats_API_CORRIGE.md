@@ -867,15 +867,13 @@ GET /auth/check-email?email=user@mail.com
 ```json
 {
   "available": true
-  "message": "Cet email est disponible"
 }
 ```
 
 **Response 200 (email déjà utilisé) :**
 ```json
 {
-  "available": false,
-  "message": "Cet email est déjà utilisé"
+  "available": false
 }
 ```
 
