@@ -945,6 +945,14 @@ GET /reservations/check-slot?listingId=l1&slot=2025-01-20T10:00:00Z
 
 > **Utilité :** Évite à l'utilisateur de perdre 1 crédit si le slot vient d'être pris par quelqu'un d'autre.
 
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
 ---
 
 ## 2. Annonces (listings-service)
@@ -1549,6 +1557,14 @@ GET /listings/mine?status=active&page=1
 }
 ```
 
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
 ---
 
 ### 2.10 🆕 Signaler une annonce
@@ -1810,6 +1826,14 @@ GET /reservations/mine
 }
 ```
 
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
 ---
 
 ### 3.3 🆕 Annuler réservation
@@ -2064,6 +2088,14 @@ GET /credits/balance
 }
 ```
 
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
 ---
 
 ### 5.2 Recharger crédits
@@ -2161,6 +2193,14 @@ GET /credits/history
     }
   ],
   "pagination": {...}
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
 }
 ```
 
