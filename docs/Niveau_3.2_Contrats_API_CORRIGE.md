@@ -327,14 +327,41 @@ POST /auth/register
 }
 ```
 
+**Response 400 (téléphone existant) :**
+```json
+{
+  "error": "phone_exists",
+  "message": "Ce numéro de téléphone est déjà utilisé"
+}
+```
+
 **Response 400 (validation) :**
 ```json
 {
   "error": "validation_failed",
+  "message": "Données invalides",
   "details": {
-    "email": ["Format invalide"],
-    "password": ["Trop court (min 8 caractères)"]
+    "email": ["Format email invalide", "Maximum 255 caractères"],
+    "firstName": ["Minimum 2 caractères requis", "Maximum 50 caractères", "Lettres et espaces uniquement"],
+    "lastName": ["Minimum 2 caractères requis", "Maximum 50 caractères", "Lettres et espaces uniquement"],
+    "phone": ["Format invalide (+261 32/33/34/38 + 7 chiffres)"],
+    "password": [
+      "Minimum 8 caractères requis",
+      "Maximum 128 caractères autorisé",
+      "Doit contenir au moins une majuscule",
+      "Doit contenir au moins une minuscule",
+      "Doit contenir au moins un chiffre"
+    ]
   }
+}
+```
+
+**Response 429 (rate limiting) :**
+```json
+{
+  "error": "rate_limited",
+  "message": "Trop de comptes créés depuis cette adresse IP. Réessayez dans 1 heure.",
+  "retryAfter": 3600
 }
 ```
 
@@ -576,6 +603,15 @@ POST /auth/login
 }
 ```
 
+**Response 429 (rate limiting) :**
+```json
+{
+  "error": "rate_limited",
+  "message": "Trop de tentatives de connexion. Compte temporairement bloqué.",
+  "retryAfter": 3600
+}
+```
+
 #### Règles de Validation
 
 **Frontend :**
@@ -633,6 +669,14 @@ POST /auth/google
     "creditBalance": 45,
     "createdAt": "2025-12-26T08:51:13.893Z"
   }
+}
+```
+
+**Response 400 :**
+```json
+{
+  "error": "invalid_google_token",
+  "message": "Token Google invalide ou expiré"
 }
 ```
 
@@ -719,6 +763,35 @@ PUT /users/me
 }
 ```
 
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "Données invalides",
+  "details": {
+    "firstName": ["Minimum 2 caractères", "Maximum 50 caractères", "Lettres et espaces uniquement"],
+    "lastName": ["Minimum 2 caractères", "Maximum 50 caractères", "Lettres et espaces uniquement"],
+    "phone": ["Format invalide (+261 32/33/34/38 + 7 chiffres)"]
+  }
+}
+```
+
+**Response 400 (téléphone existant) :**
+```json
+{
+  "error": "phone_exists",
+  "message": "Ce numéro de téléphone est déjà utilisé par un autre compte"
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
 ---
 
 ### 1.11 Ajouter/Modifier Téléphone (🆕 NOUVEAU)
@@ -746,11 +819,27 @@ PUT /users/me/phone
 }
 ```
 
-**Response 400 :**
+**Response 400 (format invalide) :**
 ```json
 {
   "error": "invalid_phone_format",
-  "message": "Format de téléphone invalide"
+  "message": "Format de téléphone invalide (+261 32/33/34/38 + 7 chiffres)"
+}
+```
+
+**Response 400 (téléphone existant) :**
+```json
+{
+  "error": "phone_exists",
+  "message": "Ce numéro de téléphone est déjà utilisé par un autre compte"
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
 }
 ```
 
@@ -1084,6 +1173,23 @@ POST /listings/publish
 }
 ```
 
+**Response 422 (format invalide) :**
+```json
+{
+  "error": "invalid_mime_type",
+  "message": "Format d'image non supporté (JPG, PNG, WebP uniquement)",
+  "invalidFiles": ["photo_3.gif"]
+}
+```
+
+**Response 429 (limite atteinte) :**
+```json
+{
+  "error": "listing_limit_reached",
+  "message": "Limite de 10 annonces actives atteinte"
+}
+```
+
 #### Règles de Validation
 
 **Frontend :**
@@ -1151,6 +1257,26 @@ PUT /listings/:id
 }
 ```
 
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "Données invalides",
+  "details": {
+    "title": ["Maximum 100 caractères"],
+    "description": ["Maximum 2000 caractères"]
+  }
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
 **Response 403 :**
 ```json
 {
@@ -1159,7 +1285,17 @@ PUT /listings/:id
 }
 ```
 
-### 2.5 Renouveler Annonce (Prolongation)
+**Response 404 :**
+```json
+{
+  "error": "listing_not_found",
+  "message": "Annonce introuvable"
+}
+```
+
+---
+
+### 2.5 Renouveler Annonce (Prolonger annonce)
 
 ```http
 POST /listings/:id/renew
@@ -1186,6 +1322,32 @@ POST /listings/:id/renew
   "message": "Solde insuffisant (0.5 crédit requis)"
 }
 ```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
+**Response 403 :**
+```json
+{
+  "error": "forbidden",
+  "message": "Vous ne pouvez renouveler que vos propres annonces"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "listing_not_found",
+  "message": "Annonce introuvable"
+}
+```
+
+---
 
 ### 2.6 Définir Disponibilités (Seller)
 
@@ -1214,8 +1376,44 @@ POST /listings/:id/availability
 }
 ```
 
-### 2.7 Lire Créneaux Disponibles (Buyer)
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "Données invalides",
+  "details": {
+    "weeklySchedule": ["dayOfWeek doit être entre 0 et 6", "startTime doit être au format HH:mm"]
+  }
+}
+```
 
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
+**Response 403 :**
+```json
+{
+  "error": "forbidden",
+  "message": "Vous ne pouvez définir les disponibilités que de vos propres annonces"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "listing_not_found",
+  "message": "Annonce introuvable"
+}
+```
+
+---
+
+### 2.7 Récupérer créneaux disponibles
 ```http
 GET /listings/:id/slots
 ```
@@ -1260,6 +1458,41 @@ POST /listings/:id/archive
   "archived": true,
   "finalStatus": "sold",
   "archivedAt": "2025-01-15T16:00:00Z"
+}
+```
+
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "Données invalides",
+  "details": {
+    "finalStatus": ["Valeur invalide. Doit être 'sold' ou 'rented'"]
+  }
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
+**Response 403 :**
+```json
+{
+  "error": "forbidden",
+  "message": "Vous ne pouvez archiver que vos propres annonces"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "listing_not_found",
+  "message": "Annonce introuvable"
 }
 ```
 
@@ -1331,6 +1564,42 @@ POST /listings/:id/report
 {
   "success": true,
   "message": "Signalement enregistré. Merci de votre vigilance."
+}
+```
+
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "Données invalides",
+  "details": {
+    "reason": ["Valeur invalide. Doit être 'fraud', 'spam', 'incorrect_info' ou 'inappropriate'"],
+    "comment": ["Minimum 10 caractères requis", "Maximum 500 caractères"]
+  }
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "listing_not_found",
+  "message": "Annonce introuvable"
+}
+```
+
+**Response 409 :**
+```json
+{
+  "error": "already_reported",
+  "message": "Vous avez déjà signalé cette annonce"
 }
 ```
 
@@ -1427,6 +1696,26 @@ POST /reservations
 
 
 
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "Données invalides",
+  "details": {
+    "listingId": ["Format UUID invalide"],
+    "slot": ["Format ISO 8601 requis", "Doit être dans le futur (minimum 2h)"]
+  }
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
 **Response 402 (crédits insuffisants) :**
 ```json
 {
@@ -1434,6 +1723,22 @@ POST /reservations
   "message": "Solde insuffisant pour réserver (Coût: 1 crédit)",
   "required": 1,
   "balance": 0
+}
+```
+
+**Response 403 :**
+```json
+{
+  "error": "cannot_reserve_own_listing",
+  "message": "Vous ne pouvez pas réserver votre propre annonce"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "listing_not_found",
+  "message": "Annonce introuvable ou inactive"
 }
 ```
 
@@ -1515,7 +1820,37 @@ GET /reservations/mine
 }
 ```
 
----
+**Response 400 :**
+```json
+{
+  "error": "cancellation_too_late",
+  "message": "Annulation impossible moins de 2h avant le rendez-vous"
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
+**Response 403 :**
+```json
+{
+  "error": "forbidden",
+  "message": "Vous ne pouvez annuler que vos propres réservations"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "reservation_not_found",
+  "message": "Réservation introuvable"
+}
+```
 
 ### 3.4 🆕 Confirmer réservation (Vendeur)
 
@@ -1537,6 +1872,38 @@ POST /reservations/:id/confirm
 }
 ```
 
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
+**Response 403 :**
+```json
+{
+  "error": "forbidden",
+  "message": "Seul le vendeur peut confirmer cette réservation"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "reservation_not_found",
+  "message": "Réservation introuvable"
+}
+```
+
+**Response 409 :**
+```json
+{
+  "error": "reservation_already_processed",
+  "message": "Cette réservation a déjà été traitée"
+}
+```
+
 ---
 
 ### 3.5 🆕 Refuser réservation (Vendeur)
@@ -1555,6 +1922,38 @@ POST /reservations/:id/reject
 ```json
 {
   "status": "rejected"
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
+**Response 403 :**
+```json
+{
+  "error": "forbidden",
+  "message": "Seul le vendeur peut refuser cette réservation"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "reservation_not_found",
+  "message": "Réservation introuvable"
+}
+```
+
+**Response 409 :**
+```json
+{
+  "error": "reservation_already_processed",
+  "message": "Cette réservation a déjà été traitée"
 }
 ```
 
@@ -1592,11 +1991,31 @@ POST /feedback
 }
 ```
 
-**Response 400 :**
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "Données invalides",
+  "details": {
+    "rating": ["Doit être entre 1 et 5"],
+    "comment": ["Minimum 10 caractères requis", "Maximum 500 caractères"]
+  }
+}
+```
+
+**Response 400 (déjà exist) :**
 ```json
 {
   "error": "feedback_already_exists",
   "message": "Vous avez déjà laissé un feedback pour cette visite"
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
 }
 ```
 
@@ -1605,6 +2024,14 @@ POST /feedback
 {
   "error": "reservation_not_done",
   "message": "Vous ne pouvez laisser un feedback qu'après la visite"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "reservation_not_found",
+  "message": "Réservation introuvable"
 }
 ```
 
@@ -1656,7 +2083,19 @@ POST /credits/recharge
 }
 ```
 
-**Response 400 :**
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "Données invalides",
+  "details": {
+    "amount": ["Doit être un nombre positif", "Minimum 1 crédit"],
+    "provider": ["Valeur invalide. Doit être 'orange-money' ou 'mvola'"]
+  }
+}
+```
+
+**Response 400 (paiement) :**
 ```json
 {
   "error": "payment_failed",
@@ -1664,7 +2103,22 @@ POST /credits/recharge
 }
 ```
 
----
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
+**Response 429 (rate limiting) :**
+```json
+{
+  "error": "rate_limited",
+  "message": "Trop de recharges. Maximum 3 par heure.",
+  "retryAfter": 3600
+}
+```
 
 ### 5.3 🆕 Historique transactions
 
@@ -1832,6 +2286,44 @@ POST /admin/listings/:id/action
   "message": "Action appliquée et notifiée au vendeur."
 }
 ```
+
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "Données invalides",
+  "details": {
+    "action": ["Valeur invalide. Doit être 'block_temporary', 'archive_permanent' ou 'request_clarification'"],
+    "reason": ["Minimum 10 caractères requis", "Maximum 500 caractères"]
+  }
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
+**Response 403 :**
+```json
+{
+  "error": "forbidden",
+  "message": "Accès réservé aux modérateurs"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "listing_not_found",
+  "message": "Annonce introuvable"
+}
+```
+
+---
 
 ### 7.3 Historique Modération (Admin)
 
@@ -2158,6 +2650,23 @@ GET /ai/health
 - Rôle IA clarifié (suggère, pas bloque)
 - Zones structurées
 - **Validation frontend ET backend spécifiée (exigence respectée)**
+
+**🆕 Audit Erreurs Complet (27 Décembre 2024) :**
+- **16 endpoints corrigés** avec erreurs manquantes
+- Ajout systématique des codes : 400 (validation détaillée), 401, 403, 404, 409, 422, 429
+- `/auth/register` : ajout `phone_exists`, validation password complète (majuscule, minuscule, chiffre), 429 rate limiting
+- `/auth/login` : ajout 429 rate limiting
+- `/auth/google` : ajout 400 invalid_google_token
+- `/listings/publish` : ajout 422 invalid_mime_type, 429 listing_limit
+- `PUT /listings/:id` : ajout 400, 401, 404
+- `/listings/:id/renew|availability|archive` : ajout 401, 403, 404
+- `/listings/:id/report` : ajout 400, 401, 404, 409 (already_reported)
+- `POST /reservations` : ajout 400, 401, 403 (cannot_reserve_own), 404
+- `DELETE /reservations/:id` : ajout 400 (too_late), 401, 403, 404
+- `POST /reservations/:id/confirm|reject` : ajout 401, 403, 404, 409
+- `POST /feedback` : ajout 400 validation, 401, 404
+- `POST /credits/recharge` : ajout 400 validation, 401, 429
+- `POST /admin/listings/:id/action` : ajout 400, 401, 403, 404
 
 
 ---
