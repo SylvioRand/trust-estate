@@ -916,44 +916,18 @@ GET /auth/check-phone?phone=+261340000000
 }
 ```
 
+**Response 429 :**
+```json
+{
+  "error": "rate_limited",
+  "message": "Trop de requêtes. Réessayez plus tard.",
+  "retryAfter": 60
+}
+```
+
+> **Sécurité :** Rate limiting strict (10 requêtes/minute par IP) pour éviter l'énumération des numéros de téléphone.
+
 ---
-
-### 1.14 🆕 Vérifier Disponibilité Slot (UX)
-
-```http
-GET /reservations/check-slot?listingId=l1&slot=2025-01-20T10:00:00Z
-```
-
-**Description :** Vérifie si un créneau est toujours disponible avant de consommer un crédit. Retourne une "réservation temporaire" de 5 minutes.
-
-**Auth :** Cookie HttpOnly (`realestate_access_token`)
-
-**Response 200 :**
-```json
-{
-  "available": true,
-  "expiresIn": 300
-}
-```
-
-**Response 409 :**
-```json
-{
-  "available": false,
-  "message": "Créneau déjà réservé",
-  "nextAvailable": "2025-01-20T14:00:00Z"
-}
-```
-
-> **Utilité :** Évite à l'utilisateur de perdre 1 crédit si le slot vient d'être pris par quelqu'un d'autre.
-
-**Response 401 :**
-```json
-{
-  "error": "unauthorized",
-  "message": "Authentification requise"
-}
-```
 
 ---
 
@@ -1676,8 +1650,46 @@ POST /listings/generate-description
 
 ## 3. Réservations (reservations-service)
 
+### 3.1 🆕 Vérifier Disponibilité Slot (UX)
 
-### 3.1 Créer réservation
+```http
+GET /reservations/check-slot?listingId=l1&slot=2025-01-20T10:00:00Z
+```
+
+**Description :** Vérifie si un créneau est toujours disponible avant de consommer un crédit. Retourne une "réservation temporaire" de 5 minutes.
+
+**Auth :** Cookie HttpOnly (`realestate_access_token`)
+
+**Response 200 :**
+```json
+{
+  "available": true,
+  "expiresIn": 300
+}
+```
+
+**Response 409 :**
+```json
+{
+  "available": false,
+  "message": "Créneau déjà réservé",
+  "nextAvailable": "2025-01-20T14:00:00Z"
+}
+```
+
+> **Utilité :** Évite à l'utilisateur de perdre 1 crédit si le slot vient d'être pris par quelqu'un d'autre.
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Authentification requise"
+}
+```
+
+---
+
+### 3.2 Créer réservation
 
 ```http
 POST /reservations
@@ -1800,7 +1812,7 @@ POST /reservations
 
 ---
 
-### 3.2 🆕 Lister mes réservations
+### 3.3 🆕 Lister mes réservations
 
 ```http
 GET /reservations/mine
@@ -1839,7 +1851,7 @@ GET /reservations/mine
 
 ---
 
-### 3.3 🆕 Annuler réservation
+### 3.4 🆕 Annuler réservation
 
 #### `DELETE /reservations/:id`
 **Rôle :** Annulation d'une réservation (autorisé jusqu'à 2h avant le slot).
@@ -1887,7 +1899,7 @@ GET /reservations/mine
 }
 ```
 
-### 3.4 🆕 Confirmer réservation (Vendeur)
+### 3.5 🆕 Confirmer réservation (Vendeur)
 
 **Rôle :** Le vendeur accepte la demande de visite.
 **Action :** Le statut passe à `confirmed`. L'acheteur est notifié.
@@ -1941,7 +1953,7 @@ POST /reservations/:id/confirm
 
 ---
 
-### 3.5 🆕 Refuser réservation (Vendeur)
+### 3.6 🆕 Refuser réservation (Vendeur)
 
 **Rôle :** Le vendeur refuse la demande de visite.
 **Action :** Le statut passe à `rejected`. L'acheteur est notifié.
