@@ -34,6 +34,50 @@ Refléter la base de données réelle nécessaire pour les nouvelles features.
 
 ---
 
+## 🔒 Contraintes de Validation
+
+> **Référence :** Voir `Niveau_3.2_Contrats_API_CORRIGE.md` section "Règles de Validation" pour les détails complets.
+
+### Principes
+
+- Toutes les contraintes sont appliquées **frontend ET backend** (défense en profondeur)
+- Le backend utilise `additionalProperties: false` pour rejeter les champs non définis
+- Les limites de taille sont **identiques** entre frontend et backend
+
+### Contraintes par Champ
+
+| Modèle | Champ | Min | Max | Format/Règles |
+|--------|-------|-----|-----|---------------|
+| `User` | `email` | 5 | 255 | Format email valide |
+| `User` | `firstName` | 2 | 50 | Lettres et espaces uniquement |
+| `User` | `lastName` | 2 | 50 | Lettres et espaces uniquement |
+| `User` | `phone` | 13 | 13 | Regex: `^\+261(32\|33\|34\|38)\d{7}$` |
+| `User` | `password` | 8 | 128 | 1 majuscule, 1 minuscule, 1 chiffre |
+| `Listing` | `title` | 10 | 100 | Sanitization XSS |
+| `Listing` | `description` | 50 | 2000 | Sanitization XSS |
+| `Listing` | `price` | 1 | 999999999999 | Nombre positif |
+| `Listing` | `surface` | 1 | 10000 | m² |
+| `Feedback` | `comment` | 10 | 500 | Sanitization XSS |
+| `ModerationAction` | `reason` | 10 | 500 | Justification |
+
+### Enums Partagés (Source Unique)
+
+```typescript
+// shared/constants/enums.ts
+export const LISTING_TYPE = ['sale', 'rent'] as const;
+export const LISTING_STATUS = ['active', 'blocked', 'archived'] as const;
+export const PARKING_TYPE = ['none', 'street', 'garage', 'covered'] as const;
+export const RESERVATION_STATUS = ['pending', 'confirmed', 'rejected', 'cancelled', 'done'] as const;
+export const REPORT_REASON = ['fraud', 'spam', 'incorrect_info', 'inappropriate'] as const;
+export const MOD_ACTION = ['block_temporary', 'archive_permanent', 'request_clarification'] as const;
+export const CREDIT_PROVIDER = ['orange-money', 'mvola'] as const;
+export const FEEDBACK_RATING = [1, 2, 3, 4, 5] as const;
+```
+
+> ⚠️ **Cohérence obligatoire :** Ces valeurs doivent être **strictement identiques** entre les schémas Zod (frontend) et JSON Schema (backend).
+
+---
+
 ## 1. User
 
 ```typescript
@@ -292,7 +336,7 @@ interface Reservation {
 
 **Règles Feedback :**
 - Un seul feedback par réservation
-- `feedbackComment.length` doit être entre 128 et 256 caractères
+- `feedbackComment.length` doit être entre 10 et 500 caractères
 - Feedback disponible uniquement si `status = 'done'`
 
 **Passage automatique à 'done' :**

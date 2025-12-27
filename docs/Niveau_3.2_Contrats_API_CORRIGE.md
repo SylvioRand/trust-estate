@@ -59,6 +59,233 @@ Ces endpoints sont répartis entre 4 services Fastify derrière un Nginx gateway
 
 ---
 
+## 🔒 Règles de Validation (Frontend & Backend)
+
+### Principe de Défense en Profondeur
+
+Toutes les validations frontend **DOIVENT** être répliquées au backend. Le frontend améliore l'UX, le backend garantit la sécurité.
+
+```
+┌────────────────────┐     ┌────────────────────┐
+│  FRONTEND (UX)     │     │  BACKEND (Sécurité)│
+│  ─────────────     │     │  ──────────────    │
+│  • Feedback rapide │ ──► │  • Validation data │
+│  • Désactive submit│     │  • Sanitization XSS│
+│  • Erreurs inline  │     │  • Rate limiting   │
+│  • Format hints    │     │  • Auth/Permissions│
+└────────────────────┘     └────────────────────┘
+```
+
+### Validation Frontend (React)
+
+- **Outils :** `react-hook-form` + `zod` pour la validation
+- **UX :** Afficher erreurs en temps réel (onChange/onBlur)
+- **Submit :** Désactiver bouton si formulaire invalide
+- **Feedback :** Messages d'erreur localisés sous chaque champ
+
+### Validation Backend (Fastify)
+
+- **Outils :** `@fastify/schema` (JSON Schema) ou `zod` avec `fastify-type-provider-zod`
+- **Ordre :** Valider **AVANT** toute opération en base de données
+- **Réponses :** Retourner erreurs détaillées (400 avec `details`)
+- **Sécurité :** Sanitization XSS sur tous les champs texte
+
+### Codes HTTP Standardisés (Validation)
+
+| Code  | Signification             | Exemple                             |
+|-------|---------------------------|-------------------------------------|
+| `400` | Validation échouée        | Champs invalides (format, longueur) |
+| `401` | Token manquant/invalide   | Cookie absent ou JWT expiré         |
+| `402` | Paiement requis           | Crédits insuffisants                |
+| `403` | Action interdite          | Pas propriétaire / mauvais rôle     |
+| `409` | Conflit                   | Slot déjà réservé, email existe     |
+| `413` | Fichier trop volumineux   | Image > 5MB                         |
+| `422` | Entité non traitable      | Format image invalide               |
+| `429` | Rate limit dépassé        | Trop de tentatives                  |
+
+### Structure Standard des Erreurs de Validation (400)
+
+```json
+{
+  "error": "validation_failed",
+  "message": "Données invalides",
+  "details": {
+    "email": ["Format email invalide"],
+    "password": ["Minimum 8 caractères requis", "Doit contenir 1 majuscule"],
+    "photos": ["Maximum 10 images autorisées"]
+  }
+}
+```
+
+### Structure Erreur de Permission (403)
+
+```json
+{
+  "error": "forbidden",
+  "message": "Vous ne pouvez modifier que vos propres annonces",
+  "requiredRole": null,
+  "requiredOwnership": true
+}
+```
+
+### Sanitization Anti-XSS
+
+Tous les champs texte (`title`, `description`, `comment`, `firstName`, etc.) doivent être nettoyés :
+
+```javascript
+// Backend (Node.js)
+import xss from 'xss';
+const cleanTitle = xss(req.body.title);
+```
+
+### Rate Limiting par Endpoint
+
+| Endpoint                    | Limite       | Période   | Blocage après                |
+|-----------------------------|--------------|-----------|------------------------------|
+| `/auth/login`               | 5 tentatives | 15 min    | 10 échecs → compte bloqué 1h |
+| `/auth/register`            | 3 comptes    | 1 heure   | Par IP                       |
+| `/auth/resend-verification` | 3 demandes   | 1 heure   | Par email                    |
+| `/listings/publish`         | 10 annonces  | 24 heures | Par utilisateur              |
+| `/credits/recharge`         | 3 recharges  | 1 heure   | Par utilisateur              |
+| `/ai/generate`              | 10 requêtes  | 1 minute  | Par utilisateur              |
+
+### Upload de Fichiers (Images)
+
+| Règle                | Valeur                                  |
+|----------------------|-----------------------------------------|
+| Formats acceptés     | `image/jpeg`, `image/png`, `image/webp` |
+| Taille max par image | 5 MB                                    |
+| Taille max total     | 50 MB                                   |
+| Nombre min           | 3 images                                |
+| Nombre max           | 10 images                               |
+| Vérification         | MIME type réel (pas juste extension)    |
+
+### 🛡️ Règles de Sécurité Strictes
+
+#### Rejet des Champs Non Définis
+
+Le backend **DOIT** rejeter tout champ non prévu dans le schéma pour éviter l'injection de données parasites :
+
+```json
+// JSON Schema (Fastify)
+{
+  "type": "object",
+  "properties": { ... },
+  "additionalProperties": false,  // ⚠️ OBLIGATOIRE
+  "required": ["email", "password"]
+}
+```
+
+```typescript
+// Zod (Frontend & Backend)
+const schema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8)
+}).strict();  // ⚠️ Équivalent à additionalProperties: false
+```
+
+#### Limites de Taille Synchronisées (Anti-DoS)
+
+Les limites de longueur **DOIVENT** être identiques frontend ET backend :
+
+| Champ                 | Min | Max  | Raison                  |
+|-----------------------|-----|------|-------------------------|
+| `email`               | 5   | 255  | Standard RFC            |
+| `firstName`           | 2   | 50   | Évite les abus          |
+| `lastName`            | 2   | 50   | Évite les abus          |
+| `password`            | 8   | 128  | Sécurité + bcrypt limit |
+| `title`               | 10  | 100  | Lisibilité annonces     |
+| `description`         | 50  | 2000 | Balance UX/stockage     |
+| `comment`             | 10  | 500  | Feedback raisonnable    |
+| `reason` (modération) | 10  | 500  | Justification claire    |
+
+> ⚠️ **Protection DoS** : Si le frontend limite à 2000 caractères, le backend DOIT avoir la même limite pour éviter les attaques sur la base de données.
+
+### 📱 Validation Téléphone Madagascar
+
+Le format téléphone doit être validé avec les préfixes opérateurs malgaches :
+
+```regex
+^\\+261(32|33|34|38)\\d{7}$
+```
+
+| Opérateur      | Préfixe | Exemple valide    |
+|----------------|---------|-------------------|
+| Telma          | +261 34 | +261341234567     |
+| Orange         | +261 32 | +261321234567     |
+| Airtel         | +261 33 | +261331234567     |
+| Mvola (Orange) | +261 38 | +261381234567     |
+
+**Implémentation partagée :**
+
+<!-- Note : La validation regex doit être strictement identique sur toutes les couches de l'application pour garantir l'intégrité des données -->
+
+
+```typescript
+// shared/validation/phone.ts (utilisable front & back)
+export const MADAGASCAR_PHONE_REGEX = /^\+261(32|33|34|38)\d{7}$/;
+
+export const phoneSchema = z.string()
+  .regex(MADAGASCAR_PHONE_REGEX, "Format: +261 32/33/34/38 + 7 chiffres");
+```
+
+### 📋 Enums Partagés (Source Unique de Vérité)
+
+Les valeurs autorisées **DOIVENT** être strictement identiques entre le frontend (Zod) et le backend (JSON Schema) :
+
+```typescript
+// shared/constants/enums.ts
+export const LISTING_TYPE = ['sale', 'rent'] as const;
+export const LISTING_STATUS = ['active', 'blocked', 'archived'] as const;
+export const PARKING_TYPE = ['none', 'street', 'garage', 'covered'] as const;
+export const RESERVATION_STATUS = ['pending', 'confirmed', 'rejected', 'cancelled', 'done'] as const;
+export const REPORT_REASON = ['fraud', 'spam', 'incorrect_info', 'inappropriate'] as const;
+export const MOD_ACTION = ['block_temporary', 'archive_permanent', 'request_clarification'] as const;
+export const CREDIT_PROVIDER = ['orange-money', 'mvola'] as const;
+export const FEEDBACK_RATING = [1, 2, 3, 4, 5] as const;
+```
+
+**Utilisation dans les schémas :**
+
+```typescript
+// Frontend (Zod)
+import { LISTING_TYPE } from '@/shared/constants/enums';
+const listingSchema = z.object({
+  type: z.enum(LISTING_TYPE)
+});
+
+// Backend (Fastify JSON Schema)
+const listingSchema = {
+  type: { enum: ['sale', 'rent'] }  // Doit correspondre exactement
+};
+```
+
+| Enum                 | Valeurs autorisées                                              |
+|----------------------|-----------------------------------------------------------------|
+| `type` (listing)     | `sale`, `rent`                                                  |
+| `status` (listing)   | `active`, `blocked`, `archived`                                 |
+| `parking_type`       | `none`, `street`, `garage`, `covered`                           |
+| `reservation.status` | `pending`, `confirmed`, `rejected`, `cancelled`, `done`         |
+| `report.reason`      | `fraud`, `spam`, `incorrect_info`, `inappropriate`              |
+| `mod.action`         | `block_temporary`, `archive_permanent`, `request_clarification` |
+| `credit.provider`    | `orange-money`, `mvola`                                         |
+| `feedback.rating`    | `1`, `2`, `3`, `4`, `5`                                         |
+
+### ✅ Checklist Validation Complète
+
+Avant chaque endpoint POST/PUT, vérifier :
+
+- [ ] Schema JSON avec `additionalProperties: false`
+- [ ] Limites de taille identiques frontend/backend
+- [ ] Enums stricts avec valeurs partagées
+- [ ] Regex téléphone Madagascar appliquée
+- [ ] Sanitization XSS sur champs texte
+- [ ] Rate limiting configuré
+- [ ] Vérification crédits avant opération (402)
+- [ ] Transaction atomique si multi-opérations
+
+---
+
 ## 1. Authentification (auth-service)
 
 ### 1.1 Inscription
@@ -88,13 +315,44 @@ POST /auth/register
 
 > **Note :** Pas de token retourné. L'utilisateur doit vérifier son email avant de pouvoir se connecter.
 
-**Response 400 :**
+**Response 400 (email existant) :**
 ```json
 {
   "error": "email_exists",
   "message": "Cet email est déjà utilisé"
 }
 ```
+
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "details": {
+    "email": ["Format invalide"],
+    "password": ["Trop court (min 8 caractères)"]
+  }
+}
+```
+
+#### Règles de Validation
+
+**Frontend :**
+
+| Champ       | Règles                                                    |
+|-------------|-----------------------------------------------------------|
+| `email`     | Format email valide (regex), max 255 caractères           |
+| `firstName` | 2-50 caractères, lettres et espaces uniquement            |
+| `lastName`  | 2-50 caractères, lettres et espaces uniquement            |
+| `phone`     | Format international (+261...), exactement 13 caractères  |
+| `password`  | Min 8 caractères, 1 majuscule, 1 minuscule, 1 chiffre     |
+
+**Backend (CRITIQUE) :**
+- ✅ Toutes les règles frontend PLUS :
+- ✅ Vérifier unicité email en base de données
+- ✅ Vérifier unicité téléphone
+- ✅ Hash du mot de passe (bcrypt, 12 rounds)
+- ✅ Sanitization anti-XSS sur tous les champs texte
+- ✅ Rate limiting : 3 comptes/heure par IP
 
 ---
 
@@ -314,6 +572,22 @@ POST /auth/login
 }
 ```
 
+#### Règles de Validation
+
+**Frontend :**
+
+| Champ | Règles |
+|-------|--------|
+| `email` | Format email valide |
+| `password` | Non vide, min 8 caractères |
+
+**Backend :**
+- ✅ Vérifier si email existe en base
+- ✅ Comparer hash du mot de passe (bcrypt)
+- ✅ Vérifier que `emailVerified = true`
+- ✅ Rate limiting : 5 tentatives / 15 min par IP
+- ✅ Bloquer compte après 10 échecs successifs (1h)
+
 ---
 
 
@@ -475,6 +749,100 @@ PUT /users/me/phone
   "message": "Format de téléphone invalide"
 }
 ```
+
+---
+
+### 1.12 🆕 Vérifier Disponibilité Email (UX)
+
+```http
+GET /auth/check-email?email=user@mail.com
+```
+
+**Description :** Endpoint de confort UX pour vérifier en temps réel si un email existe déjà (avant soumission du formulaire d'inscription).
+
+**Auth :** Aucune
+
+**Response 200 :**
+```json
+{
+  "available": true
+}
+```
+
+**Response 200 (email déjà utilisé) :**
+```json
+{
+  "available": false,
+  "message": "Cet email est déjà utilisé"
+}
+```
+
+**Response 429 :**
+```json
+{
+  "error": "rate_limited",
+  "message": "Trop de requêtes. Réessayez plus tard."
+}
+```
+
+> **Sécurité :** Rate limiting strict (10 requêtes/minute par IP) pour éviter l'énumération des utilisateurs.
+
+---
+
+### 1.13 🆕 Vérifier Disponibilité Téléphone (UX)
+
+```http
+GET /auth/check-phone?phone=+261340000000
+```
+
+**Description :** Vérifie si un numéro de téléphone est déjà associé à un compte.
+
+**Auth :** Aucune
+
+**Response 200 :**
+```json
+{
+  "available": true
+}
+```
+
+**Response 200 (téléphone déjà utilisé) :**
+```json
+{
+  "available": false
+}
+```
+
+---
+
+### 1.14 🆕 Vérifier Disponibilité Slot (UX)
+
+```http
+GET /reservations/check-slot?listingId=l1&slot=2025-01-20T10:00:00Z
+```
+
+**Description :** Vérifie si un créneau est toujours disponible avant de consommer un crédit. Retourne une "réservation temporaire" de 5 minutes.
+
+**Auth :** Cookie HttpOnly (`realestate_access_token`)
+
+**Response 200 :**
+```json
+{
+  "available": true,
+  "expiresIn": 300
+}
+```
+
+**Response 409 :**
+```json
+{
+  "available": false,
+  "message": "Créneau déjà réservé",
+  "nextAvailable": "2025-01-20T14:00:00Z"
+}
+```
+
+> **Utilité :** Évite à l'utilisateur de perdre 1 crédit si le slot vient d'être pris par quelqu'un d'autre.
 
 ---
 
@@ -692,6 +1060,50 @@ POST /listings/publish
   "message": "Authentification requise"
 }
 ```
+
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "details": {
+    "photos": ["Maximum 10 images autorisées"],
+    "price": ["Prix doit être positif"]
+  }
+}
+```
+
+**Response 413 :**
+```json
+{
+  "error": "file_too_large",
+  "message": "Image 1 dépasse 5MB"
+}
+```
+
+#### Règles de Validation
+
+**Frontend :**
+
+| Champ                | Règles                                             |
+|----------------------|----------------------------------------------------|
+| `title`              | 10-100 caractères                                  |
+| `description`        | 50-2000 caractères                                 |
+| `price`              | Nombre positif, max 999 999 999 999                |
+| `surface`            | Nombre positif, max 10 000 m²                      |
+| `zone`               | Doit exister dans la liste `/zones`                |
+| `photos`             | 3-10 images, max 5MB chacune, formats JPG/PNG/WebP |
+| `features.bedrooms`  | 0-20                                               |
+| `features.bathrooms` | 0-10                                               |
+
+**Backend (CRITIQUE) :**
+- ✅ Toutes les règles frontend PLUS :
+- ✅ Vérifier que l'utilisateur a ≥1 crédit
+- ✅ Vérifier que `zone` existe réellement en BDD
+- ✅ Analyser images (vérification MIME type réel)
+- ✅ Sanitization anti-XSS sur `title` et `description`
+- ✅ Limiter : 10 annonces actives max par utilisateur
+- ✅ Vérifier JWT valide et non expiré
+- ✅ Transaction atomique : débit crédit + création annonce
 
 ---
 
@@ -1032,6 +1444,23 @@ POST /reservations
   ]
 }
 ```
+
+#### Règles de Validation
+
+**Frontend :**
+
+| Champ       | Règles                                           |
+|-------------|--------------------------------------------------|
+| `listingId` | UUID valide (format v4)                          |
+| `slot`      | ISO 8601, doit être dans le futur (>2h minimum)  |
+
+**Backend (CRITIQUE) :**
+- ✅ Vérifier que l'utilisateur a ≥1 crédit
+- ✅ Vérifier que le `slot` existe dans `/listings/:id/slots`
+- ✅ Vérifier que le slot n'est pas déjà réservé (protection race condition avec lock)
+- ✅ **Transaction atomique** : débit crédit + création réservation
+- ✅ Empêcher l'utilisateur de réserver sa propre annonce
+- ✅ Vérifier que l'annonce est `active` (pas `blocked` ou `archived`)
 
 ---
 
@@ -1648,6 +2077,8 @@ GET /ai/health
 |                      | `POST`   | `/auth/google`                              |
 |                      | `POST`   | `/auth/refresh`                             |
 |                      | `POST`   | `/auth/logout`                              |
+|                      | `GET`    | `/auth/check-email` 🆕                      |
+|                      | `GET`    | `/auth/check-phone` 🆕                      |
 | **Profil**           | `GET`    | `/users/me`                                 |
 |                      | `PUT`    | `/users/me`                                 |
 | **Annonces**         | `GET`    | `/listings`                                 |
@@ -1663,6 +2094,7 @@ GET /ai/health
 |                      | `POST`   | `/listings/generate-description`            |
 | **Réservations**     | `GET`    | `/reservations/mine`                        |
 |                      | `POST`   | `/reservations`                             |
+|                      | `GET`    | `/reservations/check-slot` 🆕               |
 |                      | `POST`   | `/reservations/:id/confirm`                 |
 |                      | `POST`   | `/reservations/:id/reject`                  |
 |                      | `DELETE` | `/reservations/:id`                         |
@@ -1680,13 +2112,21 @@ GET /ai/health
 |                      | `POST`   | `/ai/index`                                 |
 |                      | `GET`    | `/ai/index-status/:listingId`               |
 |                      | `DELETE` | `/ai/index/:listingId`                      |
-| **TOTAL**            |          | **36 Endpoints**                            |
+| **TOTAL**            |          | **39 Endpoints**                            |
 
 ---
 
 ## 10. Changelog (Version Corrigée)
 
-**🆕 Ajouts :**
+**🆕 Ajouts (Validation & UX) :**
+- **Section "Règles de Validation"** complète (défense en profondeur, sanitization XSS, rate limiting)
+- Endpoints validation temps réel : `GET /auth/check-email`, `GET /auth/check-phone`, `GET /reservations/check-slot`
+- Règles de validation détaillées par endpoint critique (register, login, publish, reservations)
+- Codes d'erreur 400 avec structure `details` standardisée
+- Tableau rate limiting par endpoint
+- Règles upload fichiers (formats, tailles, MIME type)
+
+**🆕 Ajouts (Endpoints) :**
 - Resend email verification (POST /auth/resend-verification)
 - Inscription utilisateur (POST /auth/register)
 - Logout
@@ -1703,7 +2143,7 @@ GET /ai/health
 
 
 **🔧 Améliorations :**
-- Gestion erreurs enrichie (400, 403, 409, 410, 429)
+- Gestion erreurs enrichie (400, 402, 403, 409, 413, 422, 429)
 - Réponses IA validation détaillées
 - Pagination sur toutes les listes
 - Query params exhaustifs
@@ -1713,6 +2153,7 @@ GET /ai/health
 - Workflow téléphone complet
 - Rôle IA clarifié (suggère, pas bloque)
 - Zones structurées
+- **Validation frontend ET backend spécifiée (exigence respectée)**
 
 
 ---

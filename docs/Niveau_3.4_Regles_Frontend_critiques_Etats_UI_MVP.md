@@ -48,6 +48,45 @@ Définir sans ambiguïté les règles frontend critiques afin que le prototype :
 - **Transport :** Utiliser exclusivement des **Cookies HttpOnly**.
 - **API Client :** Configurer Axios/Fetch avec `withCredentials: true` (ou `credentials: 'include'`).
 
+### 1.5 🆕 Validation des Formulaires
+
+> **Référence :** Voir `Niveau_3.2_Contrats_API_CORRIGE.md` section "Règles de Validation" pour les détails complets.
+
+**Outils obligatoires :**
+- `react-hook-form` pour la gestion des formulaires
+- `zod` pour la validation de schéma
+
+**Règles d'affichage :**
+- Validation en temps réel (onChange/onBlur)
+- Bouton submit **désactivé** si formulaire invalide
+- Messages d'erreur localisés **sous chaque champ**
+
+**Validation téléphone Madagascar :**
+```typescript
+const MADAGASCAR_PHONE_REGEX = /^\+261(32|33|34|38)\d{7}$/;
+```
+
+**Gestion des erreurs API (400) :**
+
+| Code  | Action Frontend                                    |
+|-------|----------------------------------------------------|
+| `400` | Afficher `details` sous chaque champ concerné      |
+| `402` | Modal "Crédits insuffisants" avec CTA recharge     |
+| `409` | Message contextuel (ex: "Email déjà utilisé")      |
+| `422` | Message d'erreur générique ("Format invalide")     |
+| `429` | Message "Trop de tentatives, réessayez dans X min" |
+
+**Structure erreur 400 attendue :**
+```json
+{
+  "error": "validation_failed",
+  "details": {
+    "email": ["Format email invalide"],
+    "password": ["Minimum 8 caractères requis"]
+  }
+}
+```
+
 ---
 
 ## 2. Règles de masquage / révélation
