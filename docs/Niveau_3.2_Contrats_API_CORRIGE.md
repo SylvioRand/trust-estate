@@ -464,7 +464,8 @@ POST /auth/resend-verification
 ```json
 {
   "error": "rate_limited",
-  "message": "Trop de requêtes. Veuillez réessayer plus tard."
+  "message": "Trop de requêtes. Veuillez réessayer plus tard.",
+  "retryAfter": 3600
 }
 ```
 
@@ -503,7 +504,8 @@ POST /auth/forgot-password
 ```json
 {
   "error": "rate_limited",
-  "message": "Trop de demandes. Veuillez patienter."
+  "message": "Trop de demandes. Veuillez patienter.",
+  "retryAfter": 3600
 }
 ```
 
@@ -881,7 +883,8 @@ GET /auth/check-email?email=user@mail.com
 ```json
 {
   "error": "rate_limited",
-  "message": "Trop de requêtes. Réessayez plus tard."
+  "message": "Trop de requêtes. Réessayez plus tard.",
+  "retryAfter": 60
 }
 ```
 
@@ -1663,8 +1666,9 @@ POST /listings/generate-description
 **Response 429 :**
 ```json
 {
-  "error": "rate_limit",
-  "message": "Limite de génération atteinte. Réessayez dans 1 minute."
+  "error": "rate_limited",
+  "message": "Limite de génération atteinte. Réessayez dans 1 minute.",
+  "retryAfter": 60
 }
 ```
 
