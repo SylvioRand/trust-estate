@@ -216,9 +216,9 @@ Le format téléphone doit être validé avec les préfixes opérateurs malgache
 | Opérateur      | Préfixe | Exemple valide    |
 |----------------|---------|-------------------|
 | Telma          | +261 34 | +261341234567     |
+| Telma          | +261 38 | +261381234567     |
 | Orange         | +261 32 | +261321234567     |
 | Airtel         | +261 33 | +261331234567     |
-| Mvola (Orange) | +261 38 | +261381234567     |
 
 **Implémentation partagée :**
 
