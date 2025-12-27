@@ -867,6 +867,7 @@ GET /auth/check-email?email=user@mail.com
 ```json
 {
   "available": true
+  "message": "Cet email est disponible"
 }
 ```
 
