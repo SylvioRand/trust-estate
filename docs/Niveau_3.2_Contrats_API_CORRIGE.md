@@ -483,8 +483,8 @@ POST /auth/resend-verification
 **Response 500 :**
 ```json
 {
-  "error": "Internal server error",
-  "message": "Internal server error"
+  "error": "internal_server_error",
+  "message": "common.internal_server_error"
 }
 ```
 
