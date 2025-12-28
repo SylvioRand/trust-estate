@@ -355,7 +355,7 @@ POST /auth/register
     "email": ["validation.email.invalid_format", "validation.email.too_long"],
     "firstName": ["validation.firstname.too_short", "validation.firstname.too_long", "validation.firstname.invalid_chars"],
     "lastName": ["validation.lastname.too_short", "validation.lastname.too_long", "validation.lastname.invalid_chars"],
-    "phone": ["validation.phone.invalid_format"],
+    "phone": "validation.phone.invalid_format",
     "password": [
       "validation.password.too_short",
       "validation.password.too_long",
