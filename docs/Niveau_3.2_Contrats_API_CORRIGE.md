@@ -103,19 +103,30 @@ Toutes les validations frontend **DOIVENT** être répliquées au backend. Le fr
 | `422` | Entité non traitable      | Format image invalide               |
 | `429` | Rate limit dépassé        | Trop de tentatives                  |
 
-### Structure Standard des Erreurs de Validation (400)
+### Format de réponse standard (Erreur & i18n)
+
+Toutes les erreurs (4xx, 5xx) suivent ce format JSON.
+**IMPORTANT (i18n) :** Le champ `message` contient une **clé de traduction** (ex: `auth.user_not_found`) et non un texte brut. Le frontend doit utiliser cette clé pour afficher le message dans la langue de l'utilisateur.
 
 ```json
 {
+  "error": "code_erreur_machine",
+  "message": "namespace.error_key",
+  "details": { // Optionnel (pour 400 validation)
+    "field_name": ["validation.rule_key"]
+  }
+}
+```
+
+#### Exemple Validation (400)
+```json
+{
   "error": "validation_failed",
-  "message": "Données invalides",
+  "message": "common.validation_failed",
   "details": {
     "password": [
-      "Minimum 8 caractères requis",
-      "Maximum 128 caractères autorisé",
-      "Doit contenir au moins une majuscule",
-      "Doit contenir au moins une minuscule",
-      "Doit contenir au moins un chiffre"
+      "validation.password.too_short",
+      "validation.password.missing_caps"
     ]
   }
 }
@@ -313,7 +324,7 @@ POST /auth/register
 ```json
 {
   "userId": "u1",
-  "message": "Un email de vérification a été envoyé."
+  "message": "auth.verification_email_sent"
 }
 ```
 
@@ -323,7 +334,7 @@ POST /auth/register
 ```json
 {
   "error": "email_exists",
-  "message": "Cet email est déjà utilisé"
+  "message": "auth.email_already_exists"
 }
 ```
 
@@ -331,7 +342,7 @@ POST /auth/register
 ```json
 {
   "error": "phone_exists",
-  "message": "Ce numéro de téléphone est déjà utilisé"
+  "message": "auth.phone_already_exists"
 }
 ```
 
@@ -339,18 +350,18 @@ POST /auth/register
 ```json
 {
   "error": "validation_failed",
-  "message": "Données invalides",
+  "message": "common.validation_failed",
   "details": {
-    "email": ["Format email invalide", "Maximum 255 caractères"],
-    "firstName": ["Minimum 2 caractères requis", "Maximum 50 caractères", "Lettres et espaces uniquement"],
-    "lastName": ["Minimum 2 caractères requis", "Maximum 50 caractères", "Lettres et espaces uniquement"],
-    "phone": ["Format invalide (+261 32/33/34/38 + 7 chiffres)"],
+    "email": ["validation.email.invalid_format", "validation.email.too_long"],
+    "firstName": ["validation.firstname.too_short", "validation.firstname.too_long", "validation.firstname.invalid_chars"],
+    "lastName": ["validation.lastname.too_short", "validation.lastname.too_long", "validation.lastname.invalid_chars"],
+    "phone": ["validation.phone.invalid_format"],
     "password": [
-      "Minimum 8 caractères requis",
-      "Maximum 128 caractères autorisé",
-      "Doit contenir au moins une majuscule",
-      "Doit contenir au moins une minuscule",
-      "Doit contenir au moins un chiffre"
+      "validation.password.too_short",
+      "validation.password.too_long",
+      "validation.password.missing_uppercase",
+      "validation.password.missing_lowercase",
+      "validation.password.missing_digit"
     ]
   }
 }
@@ -360,7 +371,7 @@ POST /auth/register
 ```json
 {
   "error": "rate_limited",
-  "message": "Trop de comptes créés depuis cette adresse IP. Réessayez dans 1 heure.",
+  "message": "common.rate_limited",
   "retryAfter": 3600
 }
 ```
@@ -424,7 +435,7 @@ POST /auth/verify-email
     "creditBalance": 45,
     "createdAt": "2025-12-26T08:55:19.215Z"
   },
-  "message": "Compte activé avec succès. 5 crédits offerts !"
+  "message": "auth.account_activated_bonus"
 }
 ```
 
@@ -432,7 +443,7 @@ POST /auth/verify-email
 ```json
 {
   "error": "invalid_or_expired_token",
-  "message": "Le lien de vérification est invalide ou expiré"
+  "message": "auth.verification_token_invalid"
 }
 ```
 
@@ -456,7 +467,7 @@ POST /auth/resend-verification
 ```json
 {
   "userId": "u1",
-  "message": "Un email de vérification a été envoyé si le compte existe."
+  "message": "auth.verification_email_sent_if_exists"
 }
 ```
 
@@ -464,7 +475,7 @@ POST /auth/resend-verification
 ```json
 {
   "error": "rate_limited",
-  "message": "Trop de requêtes. Veuillez réessayer plus tard.",
+  "message": "common.rate_limited",
   "retryAfter": 3600
 }
 ```
@@ -495,7 +506,7 @@ POST /auth/forgot-password
 **Response 200 :**
 ```json
 {
-  "message": "Si cet email existe, un lien de réinitialisation a été envoyé."
+  "message": "auth.reset_password_email_sent"
 }
 ```
 > **Securité :** Message générique pour éviter l'énumération des utilisateurs.
@@ -504,7 +515,7 @@ POST /auth/forgot-password
 ```json
 {
   "error": "rate_limited",
-  "message": "Trop de demandes. Veuillez patienter.",
+  "message": "common.rate_limited",
   "retryAfter": 3600
 }
 ```
@@ -529,7 +540,7 @@ POST /auth/reset-password
 ```json
 {
   "success": true,
-  "message": "Mot de passe modifié avec succès."
+  "message": "auth.password_reset_success"
 }
 ```
 > **Securité :** Cette action révoque/déconnecte immédiatement toutes les sessions actives de l'utilisateur.
@@ -538,7 +549,7 @@ POST /auth/reset-password
 ```json
 {
   "error": "invalid_token",
-  "message": "Le lien est invalide ou expiré."
+  "message": "auth.reset_token_invalid"
 }
 ```
 
@@ -593,7 +604,7 @@ POST /auth/login
 ```json
 {
   "error": "email_not_verified",
-  "message": "Veuillez vérifier votre email avant de vous connecter."
+  "message": "auth.email_verification_required"
 }
 ```
 
@@ -601,7 +612,7 @@ POST /auth/login
 ```json
 {
   "error": "invalid_credentials",
-  "message": "Email ou mot de passe incorrect"
+  "message": "auth.invalid_credentials"
 }
 ```
 
@@ -609,7 +620,7 @@ POST /auth/login
 ```json
 {
   "error": "rate_limited",
-  "message": "Trop de tentatives de connexion. Compte temporairement bloqué.",
+  "message": "auth.login_max_attempts_exceeded",
   "retryAfter": 3600
 }
 ```
@@ -678,7 +689,7 @@ POST /auth/google
 ```json
 {
   "error": "invalid_google_token",
-  "message": "Token Google invalide ou expiré"
+  "message": "auth.google_token_invalid"
 }
 ```
 
@@ -702,7 +713,7 @@ GET /auth/logout
 ```json
 {
   "success": true,
-  "message": "Déconnexion réussie"
+  "message": "auth.logout_success"
 }
 ```
 
@@ -739,7 +750,7 @@ GET /users/me
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -777,11 +788,11 @@ PUT /users/me
 ```json
 {
   "error": "validation_failed",
-  "message": "Données invalides",
+  "message": "common.validation_failed",
   "details": {
-    "firstName": ["Minimum 2 caractères", "Maximum 50 caractères", "Lettres et espaces uniquement"],
-    "lastName": ["Minimum 2 caractères", "Maximum 50 caractères", "Lettres et espaces uniquement"],
-    "phone": ["Format invalide (+261 32/33/34/38 + 7 chiffres)"]
+    "firstName": ["validation.firstname.too_short", "validation.firstname.too_long", "validation.firstname.invalid_chars"],
+    "lastName": ["validation.lastname.too_short", "validation.lastname.too_long", "validation.lastname.invalid_chars"],
+    "phone": ["validation.phone.invalid_format"]
   }
 }
 ```
@@ -790,7 +801,7 @@ PUT /users/me
 ```json
 {
   "error": "phone_exists",
-  "message": "Ce numéro de téléphone est déjà utilisé par un autre compte"
+  "message": "auth.phone_already_exists"
 }
 ```
 
@@ -798,7 +809,7 @@ PUT /users/me
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -825,7 +836,7 @@ PUT /users/me/phone
     "id": "u1",
     "phone": "+261340000002"
   },
-  "message": "Numéro de téléphone mis à jour avec succès"
+  "message": "auth.phone_update_success"
 }
 ```
 
@@ -833,7 +844,7 @@ PUT /users/me/phone
 ```json
 {
   "error": "invalid_phone_format",
-  "message": "Format de téléphone invalide (+261 32/33/34/38 + 7 chiffres)"
+  "message": "validation.phone.invalid_format"
 }
 ```
 
@@ -841,7 +852,7 @@ PUT /users/me/phone
 ```json
 {
   "error": "phone_exists",
-  "message": "Ce numéro de téléphone est déjà utilisé par un autre compte"
+  "message": "auth.phone_already_exists"
 }
 ```
 
@@ -849,7 +860,7 @@ PUT /users/me/phone
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -883,7 +894,7 @@ GET /auth/check-email?email=user@mail.com
 ```json
 {
   "error": "rate_limited",
-  "message": "Trop de requêtes. Réessayez plus tard.",
+  "message": "common.rate_limited",
   "retryAfter": 60
 }
 ```
@@ -920,7 +931,7 @@ GET /auth/check-phone?phone=+261340000000
 ```json
 {
   "error": "rate_limited",
-  "message": "Trop de requêtes. Réessayez plus tard.",
+  "message": "common.rate_limited",
   "retryAfter": 60
 }
 ```
@@ -1076,7 +1087,7 @@ GET /listings/:id
 ```json
 {
   "error": "listing_not_found",
-  "message": "Annonce introuvable"
+  "message": "listing.not_found"
 }
 ```
 
@@ -1124,7 +1135,7 @@ POST /listings/publish
   "status": "active",
   "creditConsumed": 1,
   "remainingCredits": 4,
-  "message": "Annonce publiée avec succès"
+  "message": "listing.publish_success"
 }
 ```
 
@@ -1132,7 +1143,7 @@ POST /listings/publish
 ```json
 {
   "error": "insufficient_credits",
-  "message": "Crédits insuffisants pour publier",
+  "message": "payment.insufficient_credits_publish",
   "required": 1,
   "balance": 0
 }
@@ -1142,17 +1153,16 @@ POST /listings/publish
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
 **Response 400 (validation) :**
 ```json
 {
-  "error": "validation_failed",
   "details": {
-    "photos": ["Maximum 10 images autorisées"],
-    "price": ["Prix doit être positif"]
+    "photos": ["validation.listing.photos.max_count"],
+    "price": ["validation.listing.price.positive"]
   }
 }
 ```
@@ -1161,7 +1171,7 @@ POST /listings/publish
 ```json
 {
   "error": "file_too_large",
-  "message": "Image 1 dépasse 5MB"
+  "message": "validation.file.too_large"
 }
 ```
 
@@ -1169,7 +1179,7 @@ POST /listings/publish
 ```json
 {
   "error": "invalid_mime_type",
-  "message": "Format d'image non supporté (JPG, PNG, WebP uniquement)",
+  "message": "validation.file.invalid_format",
   "invalidFiles": ["photo_3.gif"]
 }
 ```
@@ -1178,7 +1188,7 @@ POST /listings/publish
 ```json
 {
   "error": "listing_limit_reached",
-  "message": "Limite de 10 annonces actives atteinte"
+  "message": "listing.limit_reached"
 }
 ```
 
@@ -1253,10 +1263,10 @@ PUT /listings/:id
 ```json
 {
   "error": "validation_failed",
-  "message": "Données invalides",
+  "message": "common.validation_failed",
   "details": {
-    "title": ["Maximum 100 caractères"],
-    "description": ["Maximum 2000 caractères"]
+    "title": ["validation.listing.title.too_long"],
+    "description": ["validation.listing.description.too_long"]
   }
 }
 ```
@@ -1265,7 +1275,7 @@ PUT /listings/:id
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -1273,7 +1283,7 @@ PUT /listings/:id
 ```json
 {
   "error": "forbidden",
-  "message": "Vous ne pouvez modifier que vos propres annonces"
+  "message": "listing.permission_denied"
 }
 ```
 
@@ -1281,7 +1291,7 @@ PUT /listings/:id
 ```json
 {
   "error": "listing_not_found",
-  "message": "Annonce introuvable"
+  "message": "listing.not_found"
 }
 ```
 
@@ -1303,7 +1313,7 @@ POST /listings/:id/renew
   "success": true,
   "newExpiresAt": "2025-03-11T08:00:00Z",
   "creditConsumed": 0.5,
-  "message": "Annonce renouvelée pour 30 jours."
+  "message": "listing.renew_success"
 }
 ```
 
@@ -1311,7 +1321,7 @@ POST /listings/:id/renew
 ```json
 {
   "error": "insufficient_credits",
-  "message": "Solde insuffisant (0.5 crédit requis)"
+  "message": "payment.insufficient_credits_renew"
 }
 ```
 
@@ -1319,7 +1329,7 @@ POST /listings/:id/renew
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -1327,7 +1337,7 @@ POST /listings/:id/renew
 ```json
 {
   "error": "forbidden",
-  "message": "Vous ne pouvez renouveler que vos propres annonces"
+  "message": "listing.permission_denied"
 }
 ```
 
@@ -1335,7 +1345,7 @@ POST /listings/:id/renew
 ```json
 {
   "error": "listing_not_found",
-  "message": "Annonce introuvable"
+  "message": "listing.not_found"
 }
 ```
 
@@ -1364,7 +1374,7 @@ POST /listings/:id/availability
 ```json
 {
   "success": true,
-  "message": "Disponibilités mises à jour."
+  "message": "listing.availability_updated"
 }
 ```
 
@@ -1372,9 +1382,9 @@ POST /listings/:id/availability
 ```json
 {
   "error": "validation_failed",
-  "message": "Données invalides",
+  "message": "common.validation_failed",
   "details": {
-    "weeklySchedule": ["dayOfWeek doit être entre 0 et 6", "startTime doit être au format HH:mm"]
+    "weeklySchedule": ["validation.listing.schedule.invalid_day", "validation.listing.schedule.invalid_time"]
   }
 }
 ```
@@ -1383,7 +1393,7 @@ POST /listings/:id/availability
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -1391,7 +1401,7 @@ POST /listings/:id/availability
 ```json
 {
   "error": "forbidden",
-  "message": "Vous ne pouvez définir les disponibilités que de vos propres annonces"
+  "message": "listing.permission_denied"
 }
 ```
 
@@ -1399,7 +1409,7 @@ POST /listings/:id/availability
 ```json
 {
   "error": "listing_not_found",
-  "message": "Annonce introuvable"
+  "message": "listing.not_found"
 }
 ```
 
@@ -1457,9 +1467,9 @@ POST /listings/:id/archive
 ```json
 {
   "error": "validation_failed",
-  "message": "Données invalides",
+  "message": "common.validation_failed",
   "details": {
-    "finalStatus": ["Valeur invalide. Doit être 'sold' ou 'rented'"]
+    "finalStatus": ["validation.listing.status.invalid"]
   }
 }
 ```
@@ -1468,7 +1478,7 @@ POST /listings/:id/archive
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -1476,7 +1486,7 @@ POST /listings/:id/archive
 ```json
 {
   "error": "forbidden",
-  "message": "Vous ne pouvez archiver que vos propres annonces"
+  "message": "listing.permission_denied"
 }
 ```
 
@@ -1484,7 +1494,7 @@ POST /listings/:id/archive
 ```json
 {
   "error": "listing_not_found",
-  "message": "Annonce introuvable"
+  "message": "listing.not_found"
 }
 ```
 
@@ -1537,7 +1547,7 @@ GET /listings/mine?status=active&page=1
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -1563,7 +1573,7 @@ POST /listings/:id/report
 ```json
 {
   "success": true,
-  "message": "Signalement enregistré. Merci de votre vigilance."
+  "message": "listing.report_success"
 }
 ```
 
@@ -1571,10 +1581,10 @@ POST /listings/:id/report
 ```json
 {
   "error": "validation_failed",
-  "message": "Données invalides",
+  "message": "common.validation_failed",
   "details": {
-    "reason": ["Valeur invalide. Doit être 'fraud', 'spam', 'incorrect_info' ou 'inappropriate'"],
-    "comment": ["Minimum 10 caractères requis", "Maximum 500 caractères"]
+    "reason": ["validation.listing.report_reason.invalid"],
+    "comment": ["validation.listing.report_comment.too_short", "validation.listing.report_comment.too_long"]
   }
 }
 ```
@@ -1583,7 +1593,7 @@ POST /listings/:id/report
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -1591,7 +1601,7 @@ POST /listings/:id/report
 ```json
 {
   "error": "listing_not_found",
-  "message": "Annonce introuvable"
+  "message": "listing.not_found"
 }
 ```
 
@@ -1599,7 +1609,7 @@ POST /listings/:id/report
 ```json
 {
   "error": "already_reported",
-  "message": "Vous avez déjà signalé cette annonce"
+  "message": "listing.already_reported"
 }
 ```
 
@@ -1641,7 +1651,7 @@ POST /listings/generate-description
 ```json
 {
   "error": "rate_limited",
-  "message": "Limite de génération atteinte. Réessayez dans 1 minute.",
+  "message": "common.rate_limited",
   "retryAfter": 60
 }
 ```
@@ -1672,7 +1682,7 @@ GET /reservations/check-slot?listingId=l1&slot=2025-01-20T10:00:00Z
 ```json
 {
   "available": false,
-  "message": "Créneau déjà réservé",
+  "message": "reservation.slot_already_reserved",
   "nextAvailable": "2025-01-20T14:00:00Z"
 }
 ```
@@ -1683,7 +1693,7 @@ GET /reservations/check-slot?listingId=l1&slot=2025-01-20T10:00:00Z
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -1714,7 +1724,9 @@ POST /reservations
   "creditConsumed": 1,
   "remainingCredits": 4,
   "sellerContactVisible": false,
-  "message": "Réservation envoyée. 1 crédit débité."
+  "remainingCredits": 4,
+  "sellerContactVisible": false,
+  "message": "reservation.created_success"
 }
 ```
 
@@ -1729,7 +1741,7 @@ POST /reservations
     "name": "Jean Rakoto",
     "phone": "+261XXXXXXXX"
   },
-  "message": "Réservation confirmée"
+  "message": "reservation.confirmed_success"
 }
 ```
 
@@ -1739,10 +1751,10 @@ POST /reservations
 ```json
 {
   "error": "validation_failed",
-  "message": "Données invalides",
+  "message": "common.validation_failed",
   "details": {
-    "listingId": ["Format UUID invalide"],
-    "slot": ["Format ISO 8601 requis", "Doit être dans le futur (minimum 2h)"]
+    "listingId": ["validation.uuid.invalid"],
+    "slot": ["validation.reservation.slot.invalid_format", "validation.reservation.slot.past_or_too_soon"]
   }
 }
 ```
@@ -1751,7 +1763,7 @@ POST /reservations
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -1759,7 +1771,7 @@ POST /reservations
 ```json
 {
   "error": "insufficient_credits",
-  "message": "Solde insuffisant pour réserver (Coût: 1 crédit)",
+  "message": "payment.insufficient_credits_reservation",
   "required": 1,
   "balance": 0
 }
@@ -1769,7 +1781,7 @@ POST /reservations
 ```json
 {
   "error": "cannot_reserve_own_listing",
-  "message": "Vous ne pouvez pas réserver votre propre annonce"
+  "message": "reservation.cannot_reserve_own"
 }
 ```
 
@@ -1777,7 +1789,7 @@ POST /reservations
 ```json
 {
   "error": "listing_not_found",
-  "message": "Annonce introuvable ou inactive"
+  "message": "listing.not_found"
 }
 ```
 
@@ -1785,7 +1797,7 @@ POST /reservations
 ```json
 {
   "error": "slot_unavailable",
-  "message": "Créneau indisponible",
+  "message": "reservation.slot_unavailable",
   "availableSlots": [
     "2025-01-20T14:00:00Z",
     "2025-01-21T10:00:00Z"
@@ -1845,7 +1857,7 @@ GET /reservations/mine
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -1871,7 +1883,7 @@ GET /reservations/mine
 ```json
 {
   "error": "cancellation_too_late",
-  "message": "Annulation impossible moins de 2h avant le rendez-vous"
+  "message": "reservation.cancellation_too_late"
 }
 ```
 
@@ -1879,7 +1891,7 @@ GET /reservations/mine
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -1887,7 +1899,7 @@ GET /reservations/mine
 ```json
 {
   "error": "forbidden",
-  "message": "Vous ne pouvez annuler que vos propres réservations"
+  "message": "reservation.permission_denied"
 }
 ```
 
@@ -1895,7 +1907,7 @@ GET /reservations/mine
 ```json
 {
   "error": "reservation_not_found",
-  "message": "Réservation introuvable"
+  "message": "reservation.not_found"
 }
 ```
 
@@ -1923,7 +1935,7 @@ POST /reservations/:id/confirm
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -1931,7 +1943,7 @@ POST /reservations/:id/confirm
 ```json
 {
   "error": "forbidden",
-  "message": "Seul le vendeur peut confirmer cette réservation"
+  "message": "reservation.permission_denied_confirmation"
 }
 ```
 
@@ -1939,7 +1951,7 @@ POST /reservations/:id/confirm
 ```json
 {
   "error": "reservation_not_found",
-  "message": "Réservation introuvable"
+  "message": "reservation.not_found"
 }
 ```
 
@@ -1947,7 +1959,7 @@ POST /reservations/:id/confirm
 ```json
 {
   "error": "reservation_already_processed",
-  "message": "Cette réservation a déjà été traitée"
+  "message": "reservation.already_processed"
 }
 ```
 
@@ -1976,7 +1988,7 @@ POST /reservations/:id/reject
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -1984,7 +1996,7 @@ POST /reservations/:id/reject
 ```json
 {
   "error": "forbidden",
-  "message": "Seul le vendeur peut refuser cette réservation"
+  "message": "reservation.permission_denied_rejection"
 }
 ```
 
@@ -1992,7 +2004,7 @@ POST /reservations/:id/reject
 ```json
 {
   "error": "reservation_not_found",
-  "message": "Réservation introuvable"
+  "message": "reservation.not_found"
 }
 ```
 
@@ -2000,7 +2012,7 @@ POST /reservations/:id/reject
 ```json
 {
   "error": "reservation_already_processed",
-  "message": "Cette réservation a déjà été traitée"
+  "message": "reservation.already_processed"
 }
 ```
 
@@ -2034,7 +2046,8 @@ POST /feedback
 ```json
 {
   "feedbackId": "f1",
-  "saved": true
+  "saved": true,
+  "message": "feedback.created_success"
 }
 ```
 
@@ -2042,10 +2055,10 @@ POST /feedback
 ```json
 {
   "error": "validation_failed",
-  "message": "Données invalides",
+  "message": "common.validation_failed",
   "details": {
-    "rating": ["Doit être entre 1 et 5"],
-    "comment": ["Minimum 10 caractères requis", "Maximum 500 caractères"]
+    "rating": ["validation.feedback.rating.range"],
+    "comment": ["validation.feedback.comment.too_short", "validation.feedback.comment.too_long"]
   }
 }
 ```
@@ -2054,7 +2067,7 @@ POST /feedback
 ```json
 {
   "error": "feedback_already_exists",
-  "message": "Vous avez déjà laissé un feedback pour cette visite"
+  "message": "feedback.already_exists"
 }
 ```
 
@@ -2062,7 +2075,7 @@ POST /feedback
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -2070,7 +2083,7 @@ POST /feedback
 ```json
 {
   "error": "reservation_not_done",
-  "message": "Vous ne pouvez laisser un feedback qu'après la visite"
+  "message": "feedback.reservation_not_done"
 }
 ```
 
@@ -2078,7 +2091,7 @@ POST /feedback
 ```json
 {
   "error": "reservation_not_found",
-  "message": "Réservation introuvable"
+  "message": "reservation.not_found"
 }
 ```
 
@@ -2107,7 +2120,7 @@ GET /credits/balance
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -2142,10 +2155,10 @@ POST /credits/recharge
 ```json
 {
   "error": "validation_failed",
-  "message": "Données invalides",
+  "message": "common.validation_failed",
   "details": {
-    "amount": ["Doit être un nombre positif", "Minimum 1 crédit"],
-    "provider": ["Valeur invalide. Doit être 'orange-money' ou 'mvola'"]
+    "amount": ["validation.payment.amount.positive", "validation.payment.amount.min"],
+    "provider": ["validation.payment.provider.invalid"]
   }
 }
 ```
@@ -2154,7 +2167,7 @@ POST /credits/recharge
 ```json
 {
   "error": "payment_failed",
-  "message": "Paiement échoué. Vérifiez votre solde Mobile Money."
+  "message": "payment.transaction_failed"
 }
 ```
 
@@ -2162,7 +2175,7 @@ POST /credits/recharge
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -2170,7 +2183,7 @@ POST /credits/recharge
 ```json
 {
   "error": "rate_limited",
-  "message": "Trop de recharges. Maximum 3 par heure.",
+  "message": "payment.rate_limited_recharge",
   "retryAfter": 3600
 }
 ```
@@ -2215,7 +2228,7 @@ GET /credits/history
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -2313,7 +2326,7 @@ GET /admin/listings/flagged
 ```json
 {
   "error": "forbidden",
-  "message": "Accès réservé aux modérateurs"
+  "message": "admin.forbidden.moderator_only"
 }
 ```
 
@@ -2346,7 +2359,7 @@ POST /admin/listings/:id/action
   "success": true,
   "actionId": "ma2",
   "newStatus": "blocked",
-  "message": "Action appliquée et notifiée au vendeur."
+  "message": "admin.action_applied_successfully"
 }
 ```
 
@@ -2356,8 +2369,8 @@ POST /admin/listings/:id/action
   "error": "validation_failed",
   "message": "Données invalides",
   "details": {
-    "action": ["Valeur invalide. Doit être 'block_temporary', 'archive_permanent' ou 'request_clarification'"],
-    "reason": ["Minimum 10 caractères requis", "Maximum 500 caractères"]
+    "action": ["validation.admin.action.invalid"],
+    "reason": ["validation.admin.reason.too_short", "validation.admin.reason.too_long"]
   }
 }
 ```
@@ -2366,7 +2379,7 @@ POST /admin/listings/:id/action
 ```json
 {
   "error": "unauthorized",
-  "message": "Authentification requise"
+  "message": "common.unauthorized"
 }
 ```
 
@@ -2374,7 +2387,7 @@ POST /admin/listings/:id/action
 ```json
 {
   "error": "forbidden",
-  "message": "Accès réservé aux modérateurs"
+  "message": "admin.forbidden.moderator_only"
 }
 ```
 
@@ -2382,7 +2395,7 @@ POST /admin/listings/:id/action
 ```json
 {
   "error": "listing_not_found",
-  "message": "Annonce introuvable"
+  "message": "listing.not_found"
 }
 ```
 
