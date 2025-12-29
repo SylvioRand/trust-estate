@@ -1,0 +1,41 @@
+{
+	"button": {
+		"filter": {
+			"title": "Filtres",
+			"contract": {
+				"title": "Contrat",
+				"none": "Aucun",
+				"sale": "Vente",
+				"rent": "Location"
+			},
+			"area": {
+				"title": "Zone",
+				"none": "Tout"
+			},
+			"propertyType": {
+				"title": "Type de bien",
+				"none": "Tout",
+				"appartment": "Appartement",
+				"house": "Maison",
+				"loft": "Loft",
+				"land": "Terrain",
+				"commercial": "Commerce"
+			},
+			"price": {
+				"title": "Prix",
+				"none": "Pas de budget"
+			},
+			"room": {
+				"none": "Tout",
+				"title": "Pièces"
+			},
+			"tag": {
+				"title": "Tag",
+				"none": "Tout",
+				"urgent": "Urgent",
+				"exclusive": "Exclusif",
+				"discount": "Promotion"
+			}
+		}
+	}
+}

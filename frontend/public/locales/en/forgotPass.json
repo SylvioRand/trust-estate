@@ -1,0 +1,22 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+
+	"header": {
+		"title": "Forgot Password",
+		"subtitle": "Enter your email address, and we'll give you the reset instruction."
+	},
+
+	"form": {
+		"email": {
+			"label": "Email",
+			"placeholder": "vous@example.com"
+		}
+	},
+
+	"actions": {
+		"send": "Send Link",
+	"cancel": "Back to Sign In"
+	}
+}

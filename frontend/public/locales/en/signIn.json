@@ -1,0 +1,40 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+
+	"header": {
+		"title": "Connect to your account",
+		"subtitle": "Reconnect to {{brand}}"
+	},
+
+	"form": {
+		"email": {
+			"label": "Email",
+			"placeholder": "vous@example.com",
+			"error": {
+				"notRegistered" : "This email are not registered in our database."
+			}
+
+		},
+		"password": {
+			"label": "Password",
+			"placeholder": "************",
+			"error": {
+				"wrongPass" : "The password you entered may be wrong."
+			}
+		},
+		"forgotPassword": "Forgot Password?"
+	},
+
+	"actions": {
+		"connect": "Connect",
+		"continueWithGoogle": "Continue with Google",
+		"or": "OR"
+	},
+
+	"footer": {
+		"noAccount": "No account?",
+		"signUp": "Sign Up"
+	}
+}

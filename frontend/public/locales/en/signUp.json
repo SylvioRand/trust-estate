@@ -1,0 +1,58 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+
+	"header": {
+		"title": "Create an account",
+		"subtitle": "Join the community of {{brand}}"
+	},
+
+	"form": {
+		"firstName": {
+			"label": "First Name",
+			"placeholder": "Razan"
+		},
+		"lastName": {
+			"label": "Last Name",
+			"placeholder": "Ny Hasina"
+		},
+		"phone": {
+			"label": "Phone Number",
+			"placeholder": "+261 XX XX XXX XX",
+			"errors": {
+				"invalid": "Invalid number",
+				"country": "Only Malagasy numbers are accepted"
+			}
+		},
+		"email": {
+			"label": "Email",
+			"placeholder": "vous@example.com",
+			"error": {
+				"alreadyUsed": "This email are already used by another user."
+			}
+		},
+		"password": {
+			"label": "Password",
+			"placeholder": "************"
+		}
+	},
+
+	"actions": {
+		"createAccount": "Create my account",
+		"continueWithGoogle": "Continue with Google",
+		"or": "OR"
+	},
+
+	"legal": {
+		"accept": "By creating an account, you accept our",
+		"terms": "Terms of service",
+		"and": "and",
+		"privacy": "Privacy policy"
+	},
+
+	"footer": {
+		"alreadyHaveAccount": "Already have an account?",
+		"signIn": "Sign In"
+	}
+}

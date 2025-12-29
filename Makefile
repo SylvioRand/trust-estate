@@ -1,9 +1,3 @@
-# =============================================================================
-# Trust Estate - Makefile
-# =============================================================================
-# Usage: make all (after cloning the project)
-# =============================================================================
-
 .PHONY: all build up down clean logs restart
 
 # Default target: build and run everything

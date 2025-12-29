@@ -1,0 +1,36 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+	
+	"header": {
+		"title": "Trouvez le bien de vos rêves",
+		"subtitle": "Découvrez une nouvelle façon d'acheter ou de louer un bien immobilier. Notre intelligence artificielle vous accompagne pour trouver la propriété parfaite."
+	},
+
+	"aboutUs": {
+		"whyUs": {
+			"title": "Pourquoi choisir CASA?",
+			"reason": "Une plateforme conçue pour vous offrir une expérience immobilière exceptionnelle."
+		},
+
+		"card": {
+			"AI": {
+				"title": "IA Intelligente",
+				"content": "Notre assistant IA analyse vos critères pour vous proposer les biens parfaits."
+			},
+			"verifiedProperty": {
+				"title": "Biens Vérifiés",
+				"content": "Chaque annonce est minutieusement vérifiée par nos experts immobiliers."
+			},
+			"accurateValuation": {
+				"title": "Estimation Précise",
+				"content": "Obtenez une estimation de prix basée sur les données du marché en temps réel."
+			},
+			"instantNotification": {
+				"title": "Alertes Instantanées",
+				"content": "Soyez le premier informé des nouvelles opportunités correspondant à vos critères."
+			}
+		}
+	}
+}

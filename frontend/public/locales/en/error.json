@@ -1,0 +1,159 @@
+{
+	"common": {
+		"validation_failed": "Invalid data",
+		"rate_limited": "Too many requests. Please try again later.",
+		"unauthorized": "Authentication required",
+		"internal_server_error": "Internal server error"
+	},
+	"auth": {
+		"verification_email_sent": "A verification email has been sent.",
+		"verification_email_sent_if_exists": "A verification email has been sent if the account exists.",
+		"email_already_exists": "This email is already in use",
+		"phone_already_exists": "This phone number is already in use",
+		"account_activated_bonus": "Account successfully activated. 5 credits granted!",
+		"verification_token_invalid": "The verification link is invalid or expired",
+		"reset_password_email_sent": "If this email exists, a reset link has been sent.",
+		"password_reset_success": "Password successfully updated.",
+		"reset_token_invalid": "The link is invalid or expired.",
+		"email_verification_required": "Please verify your email before logging in.",
+		"invalid_credentials": "Invalid email or password",
+		"login_max_attempts_exceeded": "Too many login attempts. Account temporarily locked.",
+		"logout_success": "Successfully logged out",
+		"phone_update_success": "Phone number successfully updated"
+	},
+	"validation": {
+		"email": {
+			"invalid_format": "Invalid email format",
+			"too_long": "Maximum 255 characters"
+		},
+		"firstname": {
+			"too_short": "Minimum 2 characters required",
+			"too_long": "Maximum 50 characters",
+			"invalid_chars": "Letters and spaces only"
+		},
+		"lastname": {
+			"too_short": "Minimum 2 characters required",
+			"too_long": "Maximum 50 characters",
+			"invalid_chars": "Letters and spaces only"
+		},
+		"phone": {
+			"invalid_format": "Invalid format (+261 32/33/34/38 + 7 digits)"
+		},
+		"password": {
+			"too_short": "Minimum 8 characters required",
+			"too_long": "Maximum 128 characters allowed",
+			"missing_uppercase": "Must contain at least one uppercase letter",
+			"missing_lowercase": "Must contain at least one lowercase letter",
+			"missing_digit": "Must contain at least one digit"
+		},
+		"file": {
+			"too_large": "File exceeds the size limit (5MB)",
+			"invalid_format": "Unsupported file format"
+		},
+		"listing": {
+			"photos": {
+				"max_count": "Maximum 10 images allowed"
+			},
+			"price": {
+				"positive": "Price must be positive"
+			},
+			"title": {
+				"too_long": "Maximum 100 characters"
+			},
+			"description": {
+				"too_long": "Maximum 2000 characters"
+			},
+			"schedule": {
+				"invalid_day": "Day must be between 0 (Sunday) and 6 (Saturday)",
+				"invalid_time": "Invalid time format (HH:mm)"
+			},
+			"status": {
+				"invalid": "Invalid status"
+			},
+			"report_reason": {
+				"invalid": "Invalid report reason"
+			},
+			"report_comment": {
+				"too_short": "Comment too short (min 10 chars)",
+				"too_long": "Comment too long (max 500 chars)"
+			}
+		},
+		"uuid": {
+			"invalid": "Invalid UUID format"
+		},
+		"reservation": {
+			"slot": {
+				"invalid_format": "Invalid date format (ISO 8601)",
+				"past_or_too_soon": "Slot must be in the future (minimum 2 hours)"
+			}
+		},
+		"feedback": {
+			"rating": {
+				"range": "Rating must be between 1 and 5"
+			},
+			"comment": {
+				"too_short": "Comment too short",
+				"too_long": "Comment too long"
+			}
+		},
+		"payment": {
+			"amount": {
+				"positive": "Amount must be positive",
+				"min": "Minimum 1 credit"
+			},
+			"provider": {
+				"invalid": "Invalid payment provider"
+			}
+		},
+		"admin": {
+			"action": {
+				"invalid": "Invalid action"
+			},
+			"reason": {
+				"too_short": "Reason too short",
+				"too_long": "Reason too long"
+			}
+		}
+	},
+	"listing": {
+		"not_found": "Listing not found",
+		"publish_success": "Listing successfully published",
+		"limit_reached": "Limit of 10 active listings reached",
+		"permission_denied": "You can only modify your own listings",
+		"renew_success": "Listing renewed for 30 days.",
+		"availability_updated": "Availability updated.",
+		"report_success": "Report submitted. Thank you for your vigilance.",
+		"already_reported": "You have already reported this listing"
+	},
+	"reservation": {
+		"slot_already_reserved": "Slot already reserved",
+		"created_success": "Reservation sent. 1 credit deducted.",
+		"confirmed_success": "Reservation confirmed",
+		"cannot_reserve_own": "You cannot reserve your own listing",
+		"slot_unavailable": "Slot unavailable",
+		"cancellation_too_late": "Cancellation not allowed less than 2 hours before the appointment",
+		"permission_denied": "You can only cancel your own reservations",
+		"not_found": "Reservation not found",
+		"already_processed": "This reservation has already been processed",
+		"permission_denied_confirmation": "Only the seller can confirm this reservation",
+		"permission_denied_rejection": "Only the seller can reject this reservation"
+	},
+	"feedback": {
+		"created_success": "Feedback successfully recorded",
+		"already_exists": "You have already left feedback for this visit",
+		"reservation_not_done": "You can only leave feedback after the visit"
+	},
+	"payment": {
+		"insufficient_credits_publish": "Insufficient credits to publish",
+		"insufficient_credits_renew": "Insufficient balance (0.5 credit required)",
+		"insufficient_credits_reservation": "Insufficient balance to reserve (Cost: 1 credit)",
+		"transaction_failed": "Payment failed. Please check your Mobile Money balance.",
+		"rate_limited_recharge": "Too many recharges. Maximum 3 per hour."
+	},
+	"admin": {
+		"forbidden": {
+			"moderator_only": "Access restricted to moderators"
+		},
+		"action_applied_successfully": "Action successfully applied and seller notified."
+	}
+}
