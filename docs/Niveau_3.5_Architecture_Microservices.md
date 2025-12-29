@@ -10,7 +10,7 @@ Définir l'architecture technique des microservices pour la plateforme immobili�
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        FRONTEND (Next.js)                       │
+│               FRONTEND (React 19.1.2 + Tailwind)        │
 │                         Port 3000                               │
 └─────────────────────────────────────────────────────────────────┘
                                 │
@@ -60,14 +60,14 @@ Définir l'architecture technique des microservices pour la plateforme immobili�
 
 ## 🆕 Changements Majeurs
 
-### **1. Remplacement Ollama → OpenRouter + DeepSeek V3**
+### **1. Remplacement Ollama → Fournisseur LLM Cloud**
 
-| Avant (Ollama local) | Après (OpenRouter cloud) |
+| Avant (Ollama local) | Après (API Cloud) |
 |----------------------|--------------------------|
 | ❌ Lent (10s+ par requête sur ton PC) | ✅ Rapide (<1s par requête) |
 | ❌ Consomme 3GB RAM | ✅ 0 RAM local (cloud) |
 | ❌ Besoin de télécharger modèle | ✅ Prêt immédiatement |
-| ✅ Gratuit | ✅ Gratuit (illimité avec DeepSeek) |
+| ✅ Gratuit | ✅ Variable (selon fournisseur) |
 | ✅ Données locales | ⚠️ LLM cloud (ChromaDB reste local) |
 
 ### **2. Versions Fixes (au lieu de :latest)**
@@ -81,7 +81,7 @@ Définir l'architecture technique des microservices pour la plateforme immobili�
 ### **3. Ajout Conformité ft_transcendence**
 
 - ✅ **Error handling** explicite dans AI Service
-- ✅ **Rate limiting** (15 req/min - free tier OpenRouter)
+- ✅ **Rate limiting** (Adapté au fournisseur)
 - ✅ **Streaming support** pour LLM
 - ✅ **Health checks** robustes
 
@@ -97,7 +97,10 @@ La stratégie de base unique reste optimale pour le MVP.
 
 ## Services
 
-### 1-4. Auth, Listings, Reservations, Credits
+### 1-4. Auth, Listings, Reservations, Credits (Fastify + Prisma)
+
+Ces services utilisent **Fastify** pour la performance et **Prisma** comme ORM standardisé.
+
 
 *[Sections identiques à l'original - pas de changement]*
 
@@ -109,7 +112,7 @@ La stratégie de base unique reste optimale pour le MVP.
 
 | Endpoint            | Méthode | Description                      |
 |---------------------|---------|----------------------------------|
-| `/ai/chat`          | POST    | Chat RAG avec DeepSeek V3        |
+| `/ai/chat`          | POST    | Chat RAG avec LLM Externe        |
 | `/ai/generate`      | POST    | Génération texte (streaming)     |
 | `/ai/market-data`   | GET     | Données marché pour l'IA         |
 | `/ai/index`         | POST    | Indexer / Mettre à jour annonce  |
@@ -118,7 +121,8 @@ La stratégie de base unique reste optimale pour le MVP.
 | `/ai/health`        | GET     | Health check                     |
 
 **Stack technique :**
-- **LLM :** DeepSeek V3 via OpenRouter (gratuit, rapide)
+- **LLM :** API Externe (OpenAI, Anthropic, Mistral, etc.)
+
 - **Embeddings :** Sentence Transformers local (all-MiniLM-L6-v2)
 - **Vector DB :** ChromaDB 0.4.22 (local, persistent)
 - **Framework :** FastAPI avec rate limiting
@@ -133,7 +137,11 @@ La stratégie de base unique reste optimale pour le MVP.
 
 ---
 
-## API Gateway (Nginx) - **MISE À JOUR**
+## API Gateway (Nginx) - CONFIGURATION SUFFISANTE
+
+> [!NOTE]
+> **Décision Architecture** : Nginx est **suffisant** comme API Gateway unique.
+> L'ajout d'une Gateway Fastify supplémentaire ajouterait de la latence et de la complexité inutiles pour ce MVP. Nginx gère efficacement le reverse proxy, le SSL offloading et le rate limiting. L'authentification est vérifiée par les microservices (via JWT partagé) ou via `auth_request` si nécessaire.
 
 ### Configuration Routing
 
@@ -210,7 +218,7 @@ server {
 # Rate limiting général API
 limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
 
-# Rate limiting spécifique IA (respecte le free tier OpenRouter)
+# Rate limiting spécifique IA (protection budget/quota)
 limit_req_zone $binary_remote_addr zone=ai_limit:10m rate=15r/m;
 
 server {
@@ -310,7 +318,7 @@ services:
       - db
     restart: unless-stopped
 
-  # AI Service (OpenRouter)
+  # AI Service (External Provider)
   ai-service:
     build: ./services/ai
     ports:
@@ -319,9 +327,10 @@ services:
       # Base de données
       - DATABASE_URL=postgresql://user:pass@db:5432/realstate
       
-      # ✅ OpenRouter (LLM cloud rapide et gratuit)
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      - OPENROUTER_MODEL=deepseek/deepseek-chat
+      # ✅ Provider API (LLM cloud)
+      - LLM_API_KEY=${LLM_API_KEY}
+      - LLM_MODEL=provider/model-name
+
       
       # ✅ ChromaDB (vecteurs locaux)
       - CHROMADB_HOST=chromadb
@@ -402,12 +411,12 @@ volumes:
 
 ## 📊 Comparaison Ressources
 
-| Composant | Avant (Ollama) | Après (OpenRouter) | Économie |
+| Composant | Avant (Ollama) | Après (API Cloud) | Économie |
 |-----------|----------------|---------------------|----------|
 | **RAM totale** | 6.5 GB | 3.5 GB | **-46%** |
 | **Stockage** | 4 GB | 1 GB | **-75%** |
 | **Latence IA** | 10-20s | <1s | **10-20x plus rapide** |
-| **Coût/mois** | $0 | $0 | Même coût |
+| **Coût/mois** | $0 | Variable | Dépend du provider |
 
 ### Détail RAM :
 
@@ -447,8 +456,8 @@ Response 200:
   "timestamp": "2025-01-15T10:00:00Z",
   "providers": {
     "llm": {
-      "provider": "openrouter",
-      "model": "deepseek/deepseek-chat",
+      "provider": "external_provider",
+      "model": "gpt-4-or-similar",
       "status": "online"
     },
     "embeddings": {
@@ -470,7 +479,7 @@ Response 200:
 
 ```
 project/
-├── frontend/                 # Next.js
+├── frontend/                 # React 19.1.2 + Tailwind
 │   └── ...
 ├── services/
 │   ├── auth/                 # Fastify auth service
@@ -487,7 +496,7 @@ project/
 │   └── ai/                   # ✅ Python FastAPI AI service
 │       ├── main.py           # Point d'entrée
 │       ├── services/
-│       │   ├── openrouter.py      # ✅ Client OpenRouter
+│       │   ├── llm_provider.py    # ✅ Client API Generique
 │       │   ├── chromadb_client.py # Client ChromaDB
 │       │   └── embeddings.py      # Sentence Transformers
 │       ├── routers/
@@ -505,7 +514,7 @@ project/
 ├── nginx/
 │   └── nginx.conf
 ├── docker-compose.yml
-├── .env.example              # ✅ Template avec OPENROUTER_API_KEY
+├── .env.example              # ✅ Template avec LLM_API_KEY
 └── README.md
 ```
 
@@ -516,7 +525,7 @@ project/
 ```bash
 # 1. Configuration
 cp .env.example .env
-# Éditer .env et ajouter : OPENROUTER_API_KEY=sk-or-v1-...
+# Éditer .env et ajouter : LLM_API_KEY=sk-...
 
 # 2. Lancement
 docker-compose up -d
@@ -544,7 +553,8 @@ curl http://localhost:3005/ai/health
 **Preuve :** `/ai/generate` endpoint dans `services/ai/routers/generate.py`
 
 #### **Major : Complete RAG system (2 pts)**
-✅ **Implémenté via ChromaDB + Sentence Transformers + OpenRouter**
+✅ **Implémenté via API Externe**
+- Generate text from user input
 - Large dataset (10,000+ annonces immobilières)
 - Context retrieval (embeddings + semantic search)
 - Response generation (DeepSeek avec contexte)
@@ -552,7 +562,7 @@ curl http://localhost:3005/ai/health
 **Preuve :** `/ai/chat` endpoint dans `services/ai/routers/chat.py`
 
 #### **Minor : Content moderation AI (1 pt) - OPTIONNEL**
-✅ **Possible avec DeepSeek**
+✅ **Possible avec la plupart des LLM**
 - Classification de texte (approprié/inapproprié)
 - Filtrage automatique annonces suspectes
 
@@ -568,12 +578,12 @@ curl http://localhost:3005/ai/health
 # Database
 DATABASE_URL=postgresql://user:pass@db:5432/realstate
 
-# OpenRouter (LLM)
-OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxx
+# LLM Provider
+LLM_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
 
 # AI Configuration
-AI_PROVIDER=openrouter
-OPENROUTER_MODEL=deepseek/deepseek-chat
+AI_PROVIDER=external
+LLM_MODEL=provider/model-name
 EMBEDDING_MODEL=all-MiniLM-L6-v2
 
 # ChromaDB
@@ -598,11 +608,11 @@ LOG_LEVEL=info
 
 ## 📈 Performance Attendue
 
-| Métrique | Avant (Ollama) | Après (OpenRouter) |
+| Métrique | Avant (Ollama) | Après (API Cloud) |
 |----------|----------------|---------------------|
 | Cold start AI Service | 5-10 min | <30s |
 | Temps réponse LLM | 10-20s | <1s |
-| Requêtes/min possibles | 3-6 | 15 (free tier) |
+| Requêtes/min possibles | 3-6 | Variable (Quota) |
 | RAM serveur requise | 8 GB | 4 GB |
 | Stockage requis | 10 GB | 5 GB |
 
@@ -638,7 +648,7 @@ LOG_LEVEL=info
 
 ## 🎯 Checklist Avant Évaluation
 
-- [ ] `.env` configuré avec `OPENROUTER_API_KEY` valide
+- [ ] `.env` configuré avec `LLM_API_KEY` valide
 - [ ] `docker-compose up -d` fonctionne sans erreur
 - [ ] Tous les health checks retournent 200 OK
 - [ ] `/ai/chat` répond en <2s avec contexte pertinent
@@ -652,7 +662,7 @@ LOG_LEVEL=info
 
 ---
 
-**Version :** 2.0 (OpenRouter + Versions fixes)  
+**Version :** 2.1 (External Provider + Versions fixes)  
 **Statut :** Prêt pour ft_transcendence  
 **Date :** Décembre 2024  
 **Validation :** Architecture conforme sujet v19.0
@@ -661,11 +671,11 @@ LOG_LEVEL=info
 
 ## 🆘 Support & Troubleshooting
 
-### Problème : OpenRouter API Key invalide
+### Problème : API Key invalide
 ```bash
 # Vérifier que la clé est correcte
-curl https://openrouter.ai/api/v1/models \
-  -H "Authorization: Bearer $OPENROUTER_API_KEY"
+curl https://api.provider.com/v1/models \
+  -H "Authorization: Bearer $LLM_API_KEY"
 ```
 
 ### Problème : ChromaDB ne démarre pas
@@ -680,9 +690,9 @@ docker-compose up -d chromadb
 
 ### Problème : AI Service lent
 ```bash
-# Vérifier la latence réseau vers OpenRouter
+# Vérifier la latence réseau vers le provider
 curl -w "@curl-format.txt" -o /dev/null -s \
-  https://openrouter.ai/api/v1/models
+  https://api.provider.com/v1/models
 ```
 
 ### Problème : Rate limiting trop strict

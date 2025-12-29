@@ -1,0 +1,17 @@
+services:
+  # ==============================================
+  # NGINX - Serve Frontend (HTTPS Production)
+  # ==============================================
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: trust-estate-nginx
+    ports:
+      - "8443:443"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "--no-check-certificate", "https://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
