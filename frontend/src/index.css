@@ -1,75 +1,285 @@
 @import "tailwindcss";
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+	--push: 42px;
+	--push-speed: 0.2s;
+	--fade-speed: 0.75s;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+	--color-foreground: #EEEEEE;
+	--color-highlight: #666666;
+	--color-midtone: #363636;
+	--color-darktone: #262626;
+	--color-background: #1E1E1E;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	color-scheme: light dark;
+	font-family: arial;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-foreground: #1E1E1E;
+		--color-highlight: #262626;
+		--color-darktone: #666666;
+		--color-background: #DADADA;
+	}
 }
 
-a:hover {
-  color: #535bf2;
+@theme inline {
+
+	--color-accent: #FFC107;
+
+	--color-light-foreground: #EEEEEE;
+	--color-light-background: #1E1E1E;
+
+
+	--color-foreground: var(--color-foreground);
+	--color-highlight: var(--color-highlight);
+	--color-midtone: var(--color-midtone);
+	--color-darktone: var(--color-darktone);
+	--color-background: var(--color-background);
+
+	--font-inter: "Inter";
+	--font-icon: "Icons";
+	--font-higuen: "Higuen";
+	--font-geist: Geist;
+	--animate-jiggle: jiggle 1s ease-in-out infinite;
+	--animate-fade-in: fade_in var(--fade-speed) linear forwards;
+	--animate-fade-out: fade_out var(--fade-speed) linear forwards;
+	--animate-from-bottom: from_bottom var(--push-speed) ease-in-out forwards;
+	--animate-from-top: from_bottom var(--push-speed) ease-in-out forwards;
+	--animate-random-translation: random_translation 60s ease-in-out infinite;
+}
+
+@font-face {
+	font-family: "Icons";
+	src: url("./fonts/icons.ttf") format("truetype");
+	font-weight: normal;
+	font-style: normal;
+	font-display: block;
+}
+
+@font-face {
+	font-family: "Higuen";
+	src: url("./fonts/Higuen-Font/Higuen Serif.otf") format("opentype");
+	font-weight: normal;
+	font-style: normal;
+	font-display: block;
+}
+
+
+@font-face {
+	font-family: "Inter";
+	src: url("./fonts/Inter/Inter_28pt-Thin.ttf") format("truetype");
+	font-weight: 100;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("./fonts/Inter/Inter_28pt-ThinItalic.ttf") format("truetype");
+	font-weight: 100;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("./fonts/Inter/Inter_28pt-ExtraLight.ttf") format("truetype");
+	font-weight: 200;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("./fonts/Inter/Inter_28pt-Light.ttf") format("truetype");
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("./fonts/Inter/Inter_28pt-Regular.ttf") format("truetype");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("./fonts/Inter/Inter_28pt-Italic.ttf") format("truetype");
+	font-weight: 400;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("./fonts/Inter/Inter_28pt-Medium.ttf") format("truetype");
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("./fonts/Inter/Inter_28pt-SemiBold.ttf") format("truetype");
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("./fonts/Inter/Inter_28pt-Bold.ttf") format("truetype");
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("./fonts/Inter/Inter_28pt-ExtraBold.ttf") format("truetype");
+	font-weight: 800;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("./fonts/Inter/Inter_28pt-Black.ttf") format("truetype");
+	font-weight: 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background: #0a0a0a;
+		--foreground: #ededed;
+	}
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+	background: var(--background);
+	color: var(--foreground);
+	font-family: Arial, Helvetica, sans-serif;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+@keyframes jiggle {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	15% {
+		transform: rotate(5deg);
+	}
+
+	30% {
+		transform: rotate(-5deg);
+	}
+
+	45% {
+		transform: rotate(3deg);
+	}
+
+	60% {
+		transform: rotate(-2deg);
+	}
+
+	75% {
+		transform: rotate(1deg);
+	}
+
+	100% {
+		transform: rotate(0deg);
+	}
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+@keyframes fade_in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 255;
+	}
 }
 
-button:hover {
-  border-color: #646cff;
+@keyframes fade_out {
+	from {
+		opacity: 255;
+	}
+
+	to {
+		opacity: 0;
+	}
 }
 
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+@keyframes from_bottom {
+	from {
+		transform: translateY(var(--push));
+	}
+
+	to {
+		transform: translate(0px);
+	}
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
+@keyframes from_top {
+	from {
+		transform: translateY(-var(--push));
+	}
 
-  a:hover {
-    color: #747bff;
-  }
+	to {
+		transform: translate(0px);
+	}
+}
 
-  button {
-    background-color: #f9f9f9;
-  }
+@keyframes random_translation {
+	0% {
+		transform: translate(0, 0);
+	}
+
+	10% {
+		transform: translate(30px, -20px);
+	}
+
+	20% {
+		transform: translate(-40px, 10px);
+	}
+
+	30% {
+		transform: translate(20px, 40px);
+	}
+
+	40% {
+		transform: translate(-10px, -30px);
+	}
+
+	50% {
+		transform: translate(50px, 15px);
+	}
+
+	60% {
+		transform: translate(-35px, 25px);
+	}
+
+	70% {
+		transform: translate(15px, -45px);
+	}
+
+	80% {
+		transform: translate(-25px, 35px);
+	}
+
+	90% {
+		transform: translate(40px, -10px);
+	}
+
+	100% {
+		transform: translate(0, 0);
+	}
 }
