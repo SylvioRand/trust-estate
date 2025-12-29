@@ -1,0 +1,46 @@
+# =============================================================================
+# Trust Estate - Makefile
+# =============================================================================
+# Usage: make all (after cloning the project)
+# =============================================================================
+
+.PHONY: all build up down clean logs restart
+
+# Default target: build and run everything
+all: build up
+	@echo ""
+	@echo "✅ Trust Estate is running!"
+	@echo "🌐 Frontend: https://localhost:8443"
+	@echo ""
+
+# Build all containers
+build:
+	@echo "🔨 Building containers..."
+	docker-compose build --no-cache
+
+# Start all services
+up:
+	@echo "🚀 Starting services..."
+	docker-compose up -d
+
+# Stop all services
+down:
+	@echo "🛑 Stopping services..."
+	docker-compose down
+
+# Clean everything (containers, images, volumes)
+clean:
+	@echo "🧹 Cleaning up..."
+	docker-compose down -v --rmi local
+	@echo "✅ Cleanup complete"
+
+# View logs
+logs:
+	docker-compose logs -f
+
+# Restart services
+restart: down up
+
+# Check status
+status:
+	docker-compose ps
