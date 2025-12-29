@@ -1,0 +1,43 @@
+# =============================================================================
+# Trust Estate - .gitignore
+# =============================================================================
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.vite/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes data (if mounted locally)
+data/
+
+# SSL certificates (generated at build time)
+nginx/ssl/*.crt
+nginx/ssl/*.key
+
+# Cache
+.cache/
+.eslintcache
