@@ -1,11 +1,11 @@
 import type { FastifyInstance } from "fastify";
-import { authRoutes, emailAuthRoutes, oathAuthRoutes, profile } from "./auth.routes.ts";
+import { authRoutes, emailAuthRoutes, oathAuthRoutes, profile } from "./auth.routes";
 import fastifyCookie from "fastify-cookie";
-import jwtPlugin from "../../plugin/jwt.plugin.ts";
-import prismaPlugin from "../../plugin/prisma.plugin.ts";
-import mailPlugin from "../../plugin/mail.plugin.ts";
-import helmetPlugin from "../../plugin/helmet.plugin.ts";
-import rateLimitPlugin from "../../plugin/rate-limit.ts";
+import jwtPlugin from "../../plugin/jwt.plugin";
+import prismaPlugin from "../../plugin/prisma.plugin";
+import mailPlugin from "../../plugin/mail.plugin";
+import helmetPlugin from "../../plugin/helmet.plugin";
+import rateLimitPlugin from "../../plugin/rate-limit";
 
 export async function pluginRegister(app: FastifyInstance) {
 	await app.register(fastifyCookie, {

@@ -2,12 +2,12 @@ import fastify from "fastify";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import dotenv from 'dotenv';
 import fastifyEnv from '@fastify/env'
-import { envSchema } from "./config/env.schema.ts";
+import { envSchema } from "./config/env.schema";
 import fastifyCors from "@fastify/cors";
-import { authRegister, pluginRegister } from "./modules/auth/auth.module.ts";
-import { addHooks } from "./hooks/hooks.ts";
+import { authRegister, pluginRegister } from "./modules/auth/auth.module";
+import { addHooks } from "./hooks/hooks";
 import ajvErrors from 'ajv-errors';
-import { setErrorHandler } from "./hooks/errorHandle.ts";
+import { setErrorHandler } from "./hooks/errorHandle";
 
 const dir = "../../.env";
 

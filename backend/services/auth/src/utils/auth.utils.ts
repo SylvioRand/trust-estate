@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import type { UserInterface } from "../interfaces/auth.interface.ts";
-import type { User } from "../interfaces/auth.interface.ts";
-import { saveRefreshToken } from "../modules/auth/auth.services.ts";
+import type { UserInterface } from "../interfaces/auth.interface";
+import type { User } from "../interfaces/auth.interface";
+import { saveRefreshToken } from "../modules/auth/auth.services";
 
 export function generateTokens(app: FastifyInstance, user: UserInterface) {
 	const payload = {

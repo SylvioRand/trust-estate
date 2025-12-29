@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyPluginOptions } from "fastify";
-import * as authControllers from "../auth/auth.controllers.ts"
-import { ForgotPasswordSchema, LoginUserSchema, ResendEmailSchema, ResetPasswordSchema, SignUpUserSchema, UpdatePhoneNumberSchema, VerificationTokenSchema } from "./auth.schema.ts";
+import * as authControllers from "../auth/auth.controllers"
+import { ForgotPasswordSchema, LoginUserSchema, ResendEmailSchema, ResetPasswordSchema, SignUpUserSchema, UpdatePhoneNumberSchema, VerificationTokenSchema } from "./auth.schema";
 
 export async function authRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
 	app.post("/login", {schema: LoginUserSchema}, authControllers.loginUser);

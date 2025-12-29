@@ -2,8 +2,8 @@ import type { FastifyInstance, FastifyReply } from "fastify";
 import bcrypt from 'bcrypt'
 import crypto from "node:crypto";
 import { createHash } from 'node:crypto';
-import { generateForgotPasswordMail, generateMail } from "../../utils/text.ts";
-import type { UserGoogleInterface } from "../../interfaces/auth.interface.ts";
+import { generateForgotPasswordMail, generateMail } from "../../utils/text";
+import type { UserGoogleInterface } from "../../interfaces/auth.interface";
 
 export async function findUserByEmail(app: FastifyInstance, email: string, password: string) {
 	const user = await app.prisma.user.findUnique({

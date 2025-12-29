@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import fp from 'fastify-plugin'
 import fastifyMailer from "fastify-mailer";
-import { generateMail } from '../utils/text.ts';
+import { generateMail } from '../utils/text';
 import nodemailer from 'nodemailer'
 
 async function mailerPlugin(app: FastifyInstance, options: FastifyPluginOptions) {

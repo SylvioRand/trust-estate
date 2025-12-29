@@ -3,7 +3,7 @@ import type { FastifyBaseLogger, FastifyInstance, FastifyPluginOptions, FastifyR
 import fastifyJwt from "@fastify/jwt";
 import jwt from "jsonwebtoken";
 import fs from "fs";
-import type { UserInterface } from "../interfaces/auth.interface.ts";
+import type { UserInterface } from "../interfaces/auth.interface";
 
 function loadKey(path:string, log: FastifyBaseLogger) {
 	try {

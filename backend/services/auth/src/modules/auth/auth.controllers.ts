@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { LoginUserInterface, SignUpUserInterface, UserInterface } from "../../interfaces/auth.interface.ts";
-import * as authServices from './auth.services.ts'
-import { cookieOptions, generateAccessToken, responseUser } from "../../utils/auth.utils.ts";
+import type { LoginUserInterface, SignUpUserInterface, UserInterface } from "../../interfaces/auth.interface";
+import * as authServices from './auth.services'
+import { cookieOptions, generateAccessToken, responseUser } from "../../utils/auth.utils";
 
 export async function loginUser(request: FastifyRequest<{ Body: LoginUserInterface }>, reply: FastifyReply) {
 	const { email, password } = request.body;
