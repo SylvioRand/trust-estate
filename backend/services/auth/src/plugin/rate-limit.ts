@@ -5,15 +5,13 @@ import type { FastifyInstance } from "fastify";
 const rateLimitPlugin = async (app: FastifyInstance): Promise<void> => {
 	await app.register(fastifyRateLimit, {
 		max: 100,
-		timeWindow: '10 seconds',
+		timeWindow: '1 minute',
 		global: true,
-		errorResponseBuilder(req: any, context: any) {
-			console.log(`User ${context.key} has exceeded the rate limit`);
-			return {
-				statusCode: 429,
-				error: 'Too Many Requests',
-				message: `Rate limit exceeded, retry after ${context.ttl} seconds`
-			};
+		errorResponseBuilder: (request, context) => {
+			const err: any = new Error('Rate limit exceeded');
+			err.statusCode = 429;
+			err.retryAfter = Math.ceil(context.ttl / 1000);
+			throw err;
 		},
 		keyGenerator: (request) => {
 			const ip = (request.headers['x-forwarded-for'] as any)?.split(',')[0]

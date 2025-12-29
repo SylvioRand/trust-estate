@@ -2,7 +2,7 @@ import type { FastifyInstance, FastifyReply } from "fastify";
 import bcrypt from 'bcrypt'
 import crypto from "node:crypto";
 import { createHash } from 'node:crypto';
-import { generateMail } from "../../utils/text.ts";
+import { generateForgotPasswordMail, generateMail } from "../../utils/text.ts";
 import type { UserGoogleInterface } from "../../interfaces/auth.interface.ts";
 
 export async function findUserByEmail(app: FastifyInstance, email: string, password: string) {
@@ -30,12 +30,24 @@ export async function findUserByEmail(app: FastifyInstance, email: string, passw
 
 export async function createUserAccount(app: FastifyInstance,
 	email: string, firstName: string, lastName: string, phone: string, password: string) {
-	const userExist = await app.prisma.user.findUnique({
-		where: { email: email }
+	const userExist = await app.prisma.user.findFirst({
+		where: {
+			OR: [
+				{ email: email },
+				{ phone: phone }
+			]
+		}
 	});
-	if (userExist && userExist.email === email) {
-		throw new Error("Your email is already in use");
-	}
+
+	if (userExist) {
+		if (userExist.email === email) {
+			throw new Error("email_exists");
+		}
+		if (userExist.phone === phone) {
+			throw new Error("phone_exists");
+		}
+	};
+
 	try {
 		const salt = await bcrypt.genSalt(12);
 		const passwordHash = await bcrypt.hash(password, salt);
@@ -113,8 +125,8 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 	if (!user)
 		throw new Error("User not found");
 
-	if (user.emailVerified)
-		throw new Error("Your email is already in verified");
+	// if (user.emailVerified)
+	// 	throw new Error("Your email is already in verified");
 	const hash = crypto.randomBytes(32).toString('base64url');
 	const tokenHash = createHash('sha256').update(hash).digest('hex');
 	const expiresAt = new Date(Date.now() + 1000 * 60 * 24).toISOString();
@@ -283,6 +295,12 @@ export async function findUserById(app: FastifyInstance, id: string) {
 }
 
 export async function updatePhoneNumberUser(app: FastifyInstance, userId: string, phone: string) {
+	const phoneExist = await app.prisma.user.findFirst({
+		where: {phone: phone}
+	})
+	
+	if (phoneExist)
+		throw new Error("phone_exists");
 	await app.prisma.user.update({
 		where: {id: userId},
 		data: {
@@ -290,4 +308,61 @@ export async function updatePhoneNumberUser(app: FastifyInstance, userId: string
 			phoneVerified: true
 		}
 	});
+};
+
+export async function sendTokenForgotPassword(app: FastifyInstance, email: string) {
+	const user = await app.prisma.user.findUnique({
+		where: {email}
+	});
+
+	if (!user)
+		throw new Error("User not found");
+	const hash = crypto.randomBytes(32).toString('base64url');
+	const tokenHash = createHash('sha256').update(hash).digest('hex');
+	const expiresAt = new Date(Date.now() + 1000 * 60 * 24).toISOString();
+
+	await app.prisma.forgot_password_token.create({
+		data: {
+			userId: user.id,
+			tokenHash,
+			expiresAt
+		}
+	});
+
+	const baseUrl = app.config.FRONTEND_URL;
+	const resetPasswordUrl = `${baseUrl}/reset-password?token=${hash}`;
+	const { text, html } = generateForgotPasswordMail(resetPasswordUrl);
+	await (app as any).mailer.sendMail({
+		from: 'dinandrianom@gmail.com',
+		to: email,
+		subject: "Reinitialisation de mot de passe",
+		text: text,
+		html: html
+	});
+};
+
+export async function changePassword(app: FastifyInstance, token: string, password: string) {
+	const hash = createHash('sha256').update(token).digest('hex');
+	const tokenExist = await app.prisma.forgot_password_token.findUnique({
+		where: {tokenHash: hash}
+	});
+
+	if (!tokenExist)
+		throw new Error("Invalid token");
+
+	if (tokenExist.expiresAt < new Date())
+		throw new Error("Invalid token");
+
+	const salt = await bcrypt.genSalt(12);
+	const passwordHash = await bcrypt.hash(password, salt);
+	await app.prisma.user.update({
+		where: {id: tokenExist.userId},
+		data: {
+			password: passwordHash
+		}
+	});
+
+	await app.prisma.forgot_password_token.delete({
+		where: {userId: tokenExist.userId}
+	})
 }
