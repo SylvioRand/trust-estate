@@ -1,0 +1,14 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+
+	"header": {
+		"title": "Vérification de l’e-mail",
+		"subtitle": "Nous avons envoyé un lien à votre adresse e-mail afin de sécuriser et vérifier votre compte."
+	},
+
+	"actions": {
+		"back": "Retour à la connexion"
+	}
+}

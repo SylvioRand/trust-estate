@@ -1,0 +1,25 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+
+	"header": {
+		"title": "Reset Password",
+		"subtitle": "Enter your new password."
+	},
+
+	"form": {
+		"password": {
+			"label": "Password",
+			"placeholder": "************"
+		},
+		"confirm": {
+			"label": "Confirm Password",
+			"placeholder": "************"
+		}
+	},
+
+	"actions": {
+		"change": "Change Password"
+	}
+}

@@ -1,7 +1,3 @@
-# =============================================================================
-# Trust Estate - .gitignore
-# =============================================================================
-
 # Dependencies
 node_modules/
 .pnpm-store/
@@ -33,10 +29,6 @@ Thumbs.db
 
 # Docker volumes data (if mounted locally)
 data/
-
-# SSL certificates (generated at build time)
-nginx/ssl/*.crt
-nginx/ssl/*.key
 
 # Cache
 .cache/

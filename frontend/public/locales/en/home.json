@@ -1,0 +1,36 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+	
+	"header": {
+		"title": "Find the propriety of your dreams",
+		"subtitle": "Discover a new to buy or rent real estate. Our artificial intelligence guides you to find the perfect property."
+	},
+
+	"aboutUs": {
+		"whyUs": {
+			"title": "Why choosing CASA?",
+			"reason": "A platform designed to offer you an exceptional real estate experience."
+		},
+
+		"card": {
+			"AI": {
+				"title": "Smart AI",
+				"content": "Our AI assistant analyzes your criteria to suggest the perfect properties."
+			},
+			"verifiedProperty": {
+				"title": "Verified Property",
+				"content": "Each listing is meticulously verified by our real estate experts."
+			},
+			"accurateValuation": {
+				"title": "Accurate Valuation",
+				"content": "Get a price estimate base on real-time market data."
+			},
+			"instantNotification": {
+				"title": "Instant Notifications",
+				"content": "Be the first to know about new opportunities that match your criteria."
+			}
+		}
+	}
+}

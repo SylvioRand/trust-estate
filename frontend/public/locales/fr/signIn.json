@@ -1,0 +1,40 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+
+	"header": {
+		"title": "Connectez-vous à votre compte",
+		"subtitle": "Reconnectez-vous à {{brand}}"
+	},
+
+	"form": {
+		"email": {
+			"label": "E-mail",
+			"placeholder": "vous@example.com",
+			"error": {
+				"notRegistered": "Cette adresse e-mail n’est pas enregistrée dans notre base de données."
+			}
+		},
+		"password": {
+			"label": "Mot de passe",
+			"placeholder": "************",
+			"error": {
+				"wrongPass": "Le mot de passe que vous avez saisi est incorrect."
+			}
+		},
+		"forgotPassword": "Mot de passe oublié ?"
+	},
+
+	"actions": {
+		"connect": "Se connecter",
+		"continueWithGoogle": "Continuer avec Google",
+		"or": "OU"
+	},
+
+	"footer": {
+		"noAccount": "Pas de compte ?",
+		"signUp": "S’inscrire"
+	}
+}
+

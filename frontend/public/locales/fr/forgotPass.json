@@ -1,0 +1,23 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+
+	"header": {
+		"title": "Mot de passe oublié",
+		"subtitle": "Entrez votre adresse e-mail, et nous vous enverrons les instructions de réinitialisation."
+	},
+
+	"form": {
+		"email": {
+			"label": "E-mail",
+			"placeholder": "vous@example.com"
+		}
+	},
+
+	"actions": {
+		"send": "Envoyer le lien",
+		"cancel": "Retour à la connexion"
+	}
+}
+

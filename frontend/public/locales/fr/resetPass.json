@@ -1,0 +1,25 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+
+	"header": {
+		"title": "Réinitialiser le mot de passe",
+		"subtitle": "Entrez votre nouveau mot de passe."
+	},
+
+	"form": {
+		"password": {
+			"label": "Mot de passe",
+			"placeholder": "************"
+		},
+		"confirm": {
+			"label": "Confirmer le mot de passe",
+			"placeholder": "************"
+		}
+	},
+
+	"actions": {
+		"change": "Changer le mot de passe"
+	}
+}

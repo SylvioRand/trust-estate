@@ -1,0 +1,21 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+
+	"header": {
+		"title": "Add phone number",
+		"subtitle": "Add your phone number to secure your account and verify your identity."
+	},
+
+	"form": {
+		"phone": {
+			"label": "Phone Number",
+			"placeholder": "+261 XX XX XXX XX"
+		}
+	},
+
+	"actions": {
+		"confirm": "Confirm"
+	}
+}

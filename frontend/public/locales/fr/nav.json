@@ -1,0 +1,13 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+
+	"button": {
+		"home": "Acceuil",
+		"property": "Propriétés",
+		"ai": "IA",
+		"signIn": "Se Connecter",
+		"signUp": "Créer un compte"
+	}
+}

@@ -9,9 +9,79 @@ services:
     container_name: trust-estate-nginx
     ports:
       - "8443:443"
+    depends_on:
+      - auth-service
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "--no-check-certificate", "https://localhost/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+
+  # ==============================================
+  # AUTH SERVICE - Fastify + Prisma
+  # ==============================================
+  auth-service:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    container_name: trust-estate-auth
+    expose:
+      - "3001"
+    environment:
+      # Database
+      DATABASE_URL: ${DATABASE_URL}
+      # Server
+      PORT_AUTH_SERVICE: 3001
+      # JWT (paths inside container)
+      JWT_SECRET_PRIVATE_KEY: /app/secret/jwt_auth_private.key
+      JWT_SECRET_PUBLIC_KEY: /app/secret/jwt_auth_public.pem
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      # Google OAuth
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      REDIRECT_URI: ${REDIRECT_URI}
+      AUTH_URL: ${AUTH_URL}
+      TOKEN_URL: ${TOKEN_URL}
+      USER_INFO_URL: ${USER_INFO_URL}
+      # Email
+      GMAIL_USER: ${GMAIL_USER}
+      GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
+      # App
+      COOKIE_SECRET: ${COOKIE_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL:-https://localhost:8443}
+    volumes:
+      - ./secret/jwtTokenService:/app/secret:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/api/auth"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==============================================
+  # POSTGRESQL - Database
+  # ==============================================
+  db:
+    image: postgres:16.11-alpine3.23
+    container_name: trust-estate-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-trustestate}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trustestate_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-trustestate}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trustestate}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
