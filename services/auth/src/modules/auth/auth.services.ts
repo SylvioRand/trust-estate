@@ -296,13 +296,13 @@ export async function findUserById(app: FastifyInstance, id: string) {
 
 export async function updatePhoneNumberUser(app: FastifyInstance, userId: string, phone: string) {
 	const phoneExist = await app.prisma.user.findFirst({
-		where: {phone: phone}
+		where: { phone: phone }
 	})
-	
+
 	if (phoneExist)
 		throw new Error("phone_exists");
 	await app.prisma.user.update({
-		where: {id: userId},
+		where: { id: userId },
 		data: {
 			phone,
 			phoneVerified: true
@@ -312,7 +312,7 @@ export async function updatePhoneNumberUser(app: FastifyInstance, userId: string
 
 export async function sendTokenForgotPassword(app: FastifyInstance, email: string) {
 	const user = await app.prisma.user.findUnique({
-		where: {email}
+		where: { email }
 	});
 
 	if (!user)
@@ -344,7 +344,7 @@ export async function sendTokenForgotPassword(app: FastifyInstance, email: strin
 export async function changePassword(app: FastifyInstance, token: string, password: string) {
 	const hash = createHash('sha256').update(token).digest('hex');
 	const tokenExist = await app.prisma.forgot_password_token.findUnique({
-		where: {tokenHash: hash}
+		where: { tokenHash: hash }
 	});
 
 	if (!tokenExist)
@@ -356,13 +356,13 @@ export async function changePassword(app: FastifyInstance, token: string, passwo
 	const salt = await bcrypt.genSalt(12);
 	const passwordHash = await bcrypt.hash(password, salt);
 	await app.prisma.user.update({
-		where: {id: tokenExist.userId},
+		where: { id: tokenExist.userId },
 		data: {
 			password: passwordHash
 		}
 	});
 
 	await app.prisma.forgot_password_token.delete({
-		where: {userId: tokenExist.userId}
+		where: { userId: tokenExist.userId }
 	})
 }
