@@ -1,8 +1,8 @@
 export const envSchema = {
 	type: 'object',
 	required: [
-		'PORT_AUTH_SERVICE', 'INTERNAL_SECRET',
-		'JWT_SECRET', 'JWT_REFRESH_SECRET',
+		'PORT_AUTH_SERVICE',
+		'JWT_REFRESH_SECRET',
 		'JWT_SECRET_PRIVATE_KEY', 'JWT_SECRET_PUBLIC_KEY',
 		'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GMAIL_USER', 'GMAIL_APP_PASSWORD', 
 		'COOKIE_SECRET', 'FRONTEND_URL',
@@ -13,11 +13,6 @@ export const envSchema = {
 			type: 'number',
 			default: 3001
 		},
-		INTERNAL_SECRET: {
-			type: 'string',
-			default: 'INTERNAL_SERVICE_SECRET'
-		},
-		JWT_SECRET: { type: 'string'	},
 		JWT_REFRESH_SECRET: { type: 'string' },
 		JWT_SECRET_PRIVATE_KEY:{ type: 'string' },
 		JWT_SECRET_PUBLIC_KEY:{ type: 'string' },
