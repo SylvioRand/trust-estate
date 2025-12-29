@@ -20,7 +20,15 @@ model email_Verification_token {
 	id			Int		@id @default(autoincrement())
 	userId		String	@unique
 	tokenHash	String	@unique
-	expiresAt	String
+	expiresAt	DateTime
+	user		User	@relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model forgot_password_token {
+	id			Int		@id @default(autoincrement())
+	userId		String 	@unique
+	tokenHash	String	@unique
+	expiresAt	DateTime
 	user		User	@relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -47,6 +55,7 @@ model User {
 	sellerStats		SellerStats?
 	refreshToken	refresh_token?
 	emailVerificationToken	email_Verification_token?
+	forgotPasswordToken		forgot_password_token?
 }
 
 model SellerStats {

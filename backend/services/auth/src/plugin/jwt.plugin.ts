@@ -48,13 +48,13 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 			request.user = user;
 			if (!user.phoneVerified)
 				return reply.code(401).send({ 
-					"error": "PHONE_NOT_VERIFIED",
-					"message": "Missing token"
+					"error": "phone_number_not_verified",
+					"message": "Veuillez vérifier votre email avant de vous connecter."
 				});
 			if (!user.emailVerified)
 				return reply.code(401).send({ 
-					"error": "Veuillez verifier votre numero de telephone",
-					"message": "Veuillez verifier votre email"
+					"error": "email_not_verified",
+					"message": "Veuillez vérifier votre email avant de vous connecter."
 				});
 		} catch (err: any) {
 			return reply.code(401).send({ error: "Invalid token" });

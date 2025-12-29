@@ -15,12 +15,12 @@ export async function loginUser(request: FastifyRequest<{ Body: LoginUserInterfa
 		if (error.message === 'Email not verified')
 			return reply.status(403).send({
 				"error": "email_not_verified",
-				"message": "Veuillez vérifier votre email avant de vous connecter."
+				"message": "auth.email_verification_required"
 			});
 		else
 			return reply.status(400).send({
-				"error": "invalid_credentials",
-				"message": "Email ou mot de passe incorrect"
+					"error": "invalid_credentials",
+					"message": "auth.invalid_credentials"
 			})
 	}
 }
@@ -32,13 +32,18 @@ export async function signUpUser(request: FastifyRequest<{ Body: SignUpUserInter
 		const id = await authServices.createUserAccount(request.server, email, firstName, lastName, phone, password);
 		return reply.status(201).send({
 			"userId": id,
-			"message": "Un email de vérification a été envoyé."
+			"message": "auth.verification_email_sent"
 		})
 	} catch (error: any) {
-		if (error.message === 'Your email is already in use')
+		if (error.message === 'email_exists')
 			return reply.status(400).send({
 				"error": "email_exists",
-				"message": "Cet email est déjà utilisé"
+				"message": "auth.email_already_exists"
+			});
+		else if (error.message === 'phone_exists')
+			return reply.status(400).send({
+				"error": "email_exists",
+				"message": "auth.phone_already_exists"
 			});
 		else
 			return reply.status(500).send({
@@ -83,8 +88,8 @@ export async function refreshToken(request: FastifyRequest, reply: FastifyReply)
 				"message": "Token invalide ou expiré"
 			});
 		return reply.status(500).send({
-			"error": "Internal server error",
-			"message": "Internal server error"
+			"error": "internal_server_error",
+			"message": "common.internal_server_error"
 		});
 	}
 }
@@ -93,7 +98,7 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
 	const user = request.user;
 
 	if (!user) {
-		return reply.code(401).send({
+		return reply.code(400).send({
 			"error":"Error",
 			"message":"User is not authenticated"
 		});
@@ -107,8 +112,8 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
 	reply.clearCookie("realestate_access_token", { ...cookieOptions });
 	reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
 	return reply.status(200).send({
-			"success": true,
-			"message": "Déconnexion réussie"
+			"success": "true",
+    		"message": "auth.logout_success"
 		});
 }
 
@@ -118,11 +123,14 @@ export async function verifiedEmail(request: FastifyRequest<{ Body: { token: str
 	try {
 		const user = await authServices.verifyTokenEmail(request.server, token);
 		const responseUsers = await responseUser(request, reply, user);
-		return (reply.status(200).send(responseUsers));
+		return (reply.status(200).send({
+			responseUsers,
+			message: "Compte activé avec succès. 5 crédits offerts !"
+		}));
 	} catch (error: any) {
-		return reply.status(400).send({
-			"error": "invalid_credentials",
-			"message": "Invalid token"
+		return reply.status(401).send({
+			"error": "invalid_or_expired_token",
+			"message": "auth.verification_token_invalid"
 		});
 	}
 }
@@ -134,12 +142,12 @@ export async function resendEmailVerification(request: FastifyRequest<{ Body: { 
 		const id = await authServices.resendEmail(request.server, lastName, email);
 		return reply.status(201).send({
 			"userId": id,
-			"message": "Un email de vérification a été envoyé."
+			"message": "auth.verification_email_sent_if_exists"
 		})
 	} catch (error: any) {
 		return reply.status(500).send({
-			"error": "Internal server error",
-			"message": "Internal server error"
+			"error": "internal_server_error",
+			"message": "common.internal_server_error"
 		});
 	}
 }
@@ -165,7 +173,7 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 	if (!code)
 		return reply.status(400).send({
 			"error": "invalid_credentials",
-			"message": "Email incorrect"
+			"message": "Invalid credentials"
 		});
 
 	try {
@@ -177,18 +185,18 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 	} catch (error: any) {
 		if (error.message === "Invalid credential")
 			return reply.status(400).send({
-				"error": "invalid_credentials",
-				"message": "Email incorrect"
+				"error": "invalid_google_token",
+				"message": "auth.google_token_invalid"
 			});
 		else if (error.message === "Ce compte est déjà lié à un autre compte Google")
-			return reply.status(400).send({
-				"error": "invalid_credentials",
-				"message": "Ce compte est déjà lié à un autre compte Google"
+			return reply.status(403).send({
+				"error": "invalid_google_token",
+				"message": "auth.google_token_invalid"
 			});
 		else
 			return reply.status(500).send({
-				"error": "Internal server error",
-				"message": "Internal server error"
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
 			});
 	}
 }
@@ -204,18 +212,68 @@ export async function updatePhoneNumber(request: FastifyRequest <{Body: {phoneNu
 				"id": userId,
 				"phone": phoneNumber
 			},
-			"message": "Numero de telephone mis a jour avec succes"
+			"message": "auth.phone_update_success"
 		});
 	} catch (error: any) {
-		if (error.message === "User not found")
+		if (error.message === "phone_exists")
+			return reply.code(400).send({
+					"error": "phone_exists",
+					"message": "Ce numéro de téléphone est déjà utilisé par un autre compte"
+				});
+		else if (error.message === "User not found")
 			return reply.code(400).send({
 					"error": "invalid_credentials",
 					"message": "Token invalide ou expiré"
 				});
 		else
 			return reply.status(500).send({
-				"error": "Internal server error",
-				"message": "Internal server error"
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
+};
+
+export async function forgotPassword(request: FastifyRequest <{Body: {email:string}}>, reply: FastifyReply) {
+	const email = request.body.email;
+
+	try {
+		await authServices.sendTokenForgotPassword(request.server, email);
+		return reply.status(200).send({"message": "auth.reset_password_email_sent"})
+	} catch (error: any) {
+		if (error.message === "User not found")
+			return reply.status(403).send({
+				"error": "email_not_verified",
+				"message": "auth.email_verification_required"
+			});
+		else
+			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
+};
+
+export async function resetPassword(request: FastifyRequest <{
+	Body: {newPassword:string, token: string}}>, reply: FastifyReply) {
+	const token = request.body.token;
+	const newPassword = request.body.newPassword;
+
+	try {
+		await authServices.changePassword(request.server, token, newPassword);
+		return reply.status(200).send({
+			"success": true,
+			"message": "auth.password_reset_success"
+		});
+	} catch (error: any) {
+		if (error.message === "Invalid token")
+			return reply.status(401).send({
+				"error": "invalid_token",
+				"message": "auth.reset_token_invalid"
+			});
+		else
+			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
 			});
 	}
 }

@@ -6,6 +6,8 @@ import { envSchema } from "./config/env.schema.ts";
 import fastifyCors from "@fastify/cors";
 import { authRegister, pluginRegister } from "./modules/auth/auth.module.ts";
 import { addHooks } from "./hooks/hooks.ts";
+import ajvErrors from 'ajv-errors';
+import { setErrorHandler } from "./hooks/errorHandle.ts";
 
 const dir = "../../.env";
 
@@ -23,7 +25,13 @@ const options = {
 };
 
 const server = fastify({
-	logger: true
+	logger: true,
+	ajv: {
+	customOptions: {
+		allErrors: true
+	},
+	plugins: [ajvErrors]
+	}
 });
 
 await server.register(fastifyCors, {
@@ -34,6 +42,8 @@ await server.register(fastifyCors, {
 	credentials:true,
 	maxAge:600
 });
+
+await setErrorHandler(server);
 
 await server.register(fastifyEnv, options);
 

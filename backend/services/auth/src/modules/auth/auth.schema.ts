@@ -15,26 +15,29 @@ export const SignUpUserSchema = {
 		type: 'object',
 		required: ['email', 'firstName', 'lastName', 'phone', 'password'],
 		properties: {
-			email: { type: 'string', format: 'email' },
+			email: { type: 'string', format: 'email'},
 			firstName: {
 				type: 'string',
 				minLength: 3,
-				pattern: "^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$"
+				maxLength: 255,
+				pattern: "^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$",
 			},
 			lastName: {
 				type: 'string',
 				minLength: 3,
-				pattern: "^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$"
+				maxLength: 255,
+				pattern: "^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$",
 			},
 			phone: {
 				type: 'string',
 				minLength: 3,
-				pattern: '^\\+261(32|33|34|38)\\d{7}$'
+				maxLength: 13,
+				pattern: '^\\+261(32|33|34|38)\\d{7}$',
 			},
 			password: {
 				type: 'string',
 				minLength: 12,
-				pattern: '(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}'
+				pattern: '(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}',
 			},
 			avatarUrl: { type: 'string' }
 		},
@@ -51,7 +54,23 @@ export const VerificationTokenSchema = {
 		},
 		additionalProperties: false
 	}
-}
+};
+
+export const ResendEmailSchema = {
+	body: {
+		type: 'object',
+		required: ['email', 'lastName'],
+		properties: {
+			email: { type: 'string', format: 'email' },
+			lastName: {
+				type: 'string',
+				minLength: 3,
+				pattern: "^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$"
+			}
+		},
+		additionalProperties: false
+	}
+};
 
 export const UpdatePhoneNumberSchema = {
 	body: {
@@ -66,4 +85,32 @@ export const UpdatePhoneNumberSchema = {
 			},
 		additionalProperties: false
 	}
-}
+};
+
+
+export const ForgotPasswordSchema = {
+	body: {
+		type: 'object',
+		required: ['email'],
+		properties: {
+			email: { type: 'string', format: 'email' }
+		},
+		additionalProperties: false
+	}
+};
+
+export const ResetPasswordSchema = {
+	body: {
+		type: 'object',
+		required: ['token', 'newPassword'],
+		properties: {
+			token: { type: 'string' },
+			newPassword: {
+				type: 'string',
+				minLength: 12,
+				pattern: '(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}'
+			}
+		},
+		additionalProperties: false
+	}
+};
