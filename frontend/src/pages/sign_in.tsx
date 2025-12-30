@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { type APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
+import GoogleActionButton from "../components/GoogleButton";
 
 const SignInPage: React.FC = () => {
 	const { t } = useTranslation(["signIn", "error"]);
@@ -164,11 +165,12 @@ const SignInPage: React.FC = () => {
 						/>
 					</div>
 
-					<ActionButton
+					{/* <ActionButton
 						title={t("actions.continueWithGoogle")}
 						icon=""
 						type="submit"
-					/>
+					/> */}
+					<GoogleActionButton />
 
 					<div
 						className="flex items-center justify-center gap-1
