@@ -75,8 +75,23 @@ const SignInPage: React.FC = () => {
 		}
 	}
 
+	const	[googleButtonDisabled, setgoogleButtonDisabled] = useState<boolean>(true);
+	const	[googleProcessing, setgoogleProcessing] = useState<boolean>(false);
+
+    const triggerGoogleLogin = () => {
+		setgoogleProcessing(true);
+
+		if (googleButtonDisabled)
+		{
+			setgoogleProcessing(false);
+			return;
+		}
+		setgoogleProcessing(false);
+		window.location.href = '/api/auth/google';
+    };
+
 	return (
-		<div className="text-background w-full h-screen overflow-y-scroll">
+		<div className="text-background w-full h-screen overflow-y-scroll relative">
 			<div
 				className="flex flex-col items-center justify-center gap-3
 				xl:flex-row
@@ -89,11 +104,11 @@ const SignInPage: React.FC = () => {
 					w-full max-w-100"
 				>
 					<div className="font-higuen font-bold text-2xl">
-						{t("header.title")}
+						{ t("header.title") }
 					</div>
 
 					<div className="font-inter text-md opacity-75">
-						{t("header.subtitle", { brand: t("brand.name") })}
+						{ t("header.subtitle", { brand: t("brand.name") }) }
 					</div>
 				</div>
 
@@ -118,10 +133,10 @@ const SignInPage: React.FC = () => {
 				>
 					<SimpleInput
 						icon="󰇮"
-						title={t("form.email.label")}
+						title={ t("form.email.label") }
 						name="email"
 						type="email"
-						placeholder={t("form.email.placeholder")}
+						placeholder={ t("form.email.placeholder") }
 						error={errorEmail}
 					/>
 
@@ -130,26 +145,26 @@ const SignInPage: React.FC = () => {
 						w-full"
 					>
 						<PasswordInput
-							title={t("form.password.label")}
+							title={ t("form.password.label") }
 							name="password"
-							placeholder={t("form.password.placeholder")}
-							error={errorPassword}
+							placeholder={ t("form.password.placeholder") }
+							error={ errorPassword }
 						/>
 
 						<Link className="mr-auto" to="/forgot-pass">
 							<span className="hover:underline cursor-pointer font-bold text-[12px]">
-								{t("form.forgotPassword")}
+								{ t("form.forgotPassword") }
 							</span>
 						</Link>
 					</div>
 
 					<div className="mt-2 w-full">
 						<ActionButton
-							title={t("actions.connect")}
+							title={ t("actions.connect") }
 							icon=""
 							icon_place="right"
 							type="submit"
-							processing_action={processSignIn}
+							processing_action={ processSignIn }
 						/>
 					</div>
 
@@ -159,28 +174,29 @@ const SignInPage: React.FC = () => {
 						mask-alpha"
 					>
 						<ContentDivider
-							title={t("actions.or")}
+							title={ t("actions.or") }
 							title_color="var(--color-background)"
 							line_color="var(--color-background)"
 						/>
 					</div>
 
-					{/* <ActionButton
-						title={t("actions.continueWithGoogle")}
+					<ActionButton
+						title={ t("actions.continueWithGoogle") }
 						icon=""
-						type="submit"
-					/> */}
-					<GoogleActionButton />
+						disabled={ googleButtonDisabled }
+						onClick={ triggerGoogleLogin }
+						processing_action={ googleProcessing }
+					/>
 
 					<div
 						className="flex items-center justify-center gap-1
 						text-[12px]
 						w-full mb-4"
 					>
-						{t("footer.noAccount")}
+						{ t("footer.noAccount") }
 						<Link to="/sign-up">
 							<span className="underline cursor-pointer font-bold">
-								{t("footer.signUp")}
+								{ t("footer.signUp") }
 							</span>
 						</Link>
 					</div>
