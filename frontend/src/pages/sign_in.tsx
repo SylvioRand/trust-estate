@@ -88,11 +88,11 @@ const SignInPage: React.FC = () => {
 					xl:items-end
 					w-full max-w-100"
 				>
-					<div className="font-bold text-2xl">
+					<div className="font-higuen font-bold text-2xl">
 						{t("header.title")}
 					</div>
 
-					<div className="font-thin text-md opacity-75">
+					<div className="font-inter text-md opacity-75">
 						{t("header.subtitle", { brand: t("brand.name") })}
 					</div>
 				</div>
@@ -136,7 +136,7 @@ const SignInPage: React.FC = () => {
 							error={errorPassword}
 						/>
 
-						<Link className="mr-auto" to="/forgot_pass">
+						<Link className="mr-auto" to="/forgot-pass">
 							<span className="hover:underline cursor-pointer font-bold text-[12px]">
 								{t("form.forgotPassword")}
 							</span>

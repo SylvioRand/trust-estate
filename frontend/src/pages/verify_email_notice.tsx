@@ -20,11 +20,11 @@ const VerifyEmailNoticePage: React.FC = () => {
 					className="flex flex-col items-center justify-center
 					w-full max-w-100"
 				>
-					<div className="font-bold text-2xl">
+					<div className="font-higuen font-bold text-2xl">
 						{t("header.title")}
 					</div>
 
-					<div className="font-thin text-md opacity-75 text-center">
+					<div className="text-md opacity-75 text-center">
 						{t("header.subtitle", { brand: t("brand.name") })}
 					</div>
 				</div>

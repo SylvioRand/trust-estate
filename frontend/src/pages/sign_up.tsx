@@ -131,11 +131,11 @@ const SignUpPage: React.FC = () => {
 					xl:items-end
 					w-full max-w-100"
 				>
-					<div className="font-bold text-2xl">
+					<div className="font-higuen font-bold text-2xl">
 						{t("header.title")}
 					</div>
 
-					<div className="font-thin text-md opacity-75">
+					<div className="text-md opacity-75">
 						{t("header.subtitle", { brand: t("brand.name") })}
 					</div>
 				</div>

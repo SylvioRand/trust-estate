@@ -47,7 +47,7 @@ const	Card: React.FC<CardProps> = ({
 				</div>
 			</div>
 
-			<div className="text-md mt-auto"
+			<div className="font-inter font-light text-md mt-auto"
 			>
 				{ content }
 			</div>
@@ -134,7 +134,7 @@ const	HomePage: React.FC = () => {
 					<div className="font-higuen font-bold text-[42px] leading-tight">
 						{ t("header.title") }
 					</div>
-					<div className="text-md">
+					<div className="font-inter font-light text-md">
 						{ t("header.subtitle") }
 					</div>
 				</div>
@@ -152,7 +152,7 @@ const	HomePage: React.FC = () => {
 						{ t("aboutUs.whyUs.title") }
 					</div>
 					
-					<div className="text-md">
+					<div className="font-inter font-light text-md">
 						{ t("aboutUs.whyUs.reason") }
 					</div>
 				</div>

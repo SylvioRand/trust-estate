@@ -6,77 +6,77 @@ import LoadingPage from "./loading";
 type Status = "loading" | "success" | "error";
 
 const VerifyEmailCallbackPage: React.FC = () => {
-    const { t } = useTranslation("verifyEmail");
-    const [searchParams] = useSearchParams();
-    const [status, setStatus] = useState<Status>("loading");
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const { t } = useTranslation("verifyEmail");
+	const [searchParams] = useSearchParams();
+	const [status, setStatus] = useState<Status>("loading");
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    useEffect(() => {
-        const token = searchParams.get("token");
+	useEffect(() => {
+		const token = searchParams.get("token");
 
-        if (!token) {
-            setStatus("error");
-            setErrorMessage(t("errors.missing_token"));
-            return;
-        }
+		if (!token) {
+			setStatus("error");
+			setErrorMessage(t("errors.missing_token"));
+			return;
+		}
 
-        const verifyEmail = async () => {
-            try {
-                const response = await fetch("/api/auth/verify-email", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ token }),
-                });
+		const verifyEmail = async () => {
+			try {
+				const response = await fetch("/api/auth/verify-email", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ token }),
+				});
 
-                if (!response.ok) {
-                    throw new Error("verification_failed");
-                }
+				if (!response.ok) {
+					throw new Error("verification_failed");
+				}
 
-                setStatus("success");
-            } catch (error) {
-                setStatus("error");
-                setErrorMessage(t("errors.invalid_or_expired"));
-            }
-        };
+				setStatus("success");
+			} catch (error) {
+				setStatus("error");
+				setErrorMessage(t("errors.invalid_or_expired"));
+			}
+		};
 
-        verifyEmail();
-    }, [searchParams, t]);
+		verifyEmail();
+	}, [searchParams, t]);
 
-    return (
-        <div className="w-full h-screen flex items-center justify-center text-background p-4">
-            <div className="max-w-md w-full text-center flex flex-col gap-4">
-                {status === "loading" && (
-                    <LoadingPage />
-                )}
+	return (
+		<div className="w-full h-screen flex items-center justify-center text-background p-4">
+			<div className="max-w-md w-full text-center flex flex-col gap-4">
+				{status === "loading" && (
+					<LoadingPage />
+				)}
 
-                {status === "success" && (
-                    <>
-                        <Navigate to="/welcome" />
-                    </>
-                )}
+				{status === "success" && (
+					<>
+						<Navigate to="/welcome" />
+					</>
+				)}
 
-                {status === "error" && (
-                    <>
-                        <h1 className="text-2xl font-bold text-red-600">
-                            {t("error.title")}
-                        </h1>
-                        <p className="opacity-75">
-                            {errorMessage}
-                        </p>
+				{status === "error" && (
+					<>
+						<h1 className="text-2xl font-bold text-red-600">
+							{t("error.title")}
+						</h1>
+						<p className="opacity-75">
+							{errorMessage}
+						</p>
 
-                        <Link
-                            to="/sign_in"
-                            className="font-bold underline mt-2"
-                        >
-                            {t("actions.go_to_login")}
-                        </Link>
-                    </>
-                )}
-            </div>
-        </div>
-    );
+						<Link
+							to="/sign_in"
+							className="font-bold underline mt-2"
+						>
+							{t("actions.go_to_login")}
+						</Link>
+					</>
+				)}
+			</div>
+		</div>
+	);
 };
 
 export default VerifyEmailCallbackPage;

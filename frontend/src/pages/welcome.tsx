@@ -47,13 +47,13 @@ const	WelcomePage: React.FC = () => {
 						animationDelay: "300ms"
 					}}
 				>
-					<h3 className="animate-from-top"
+					<div className="animate-from-top font-inter font-light"
 						style={{
 							animationDelay: "300ms"
 						}}
 					>
 						{ t("header.content") }
-					</h3>
+					</div>
 				</div>
 
 				<div className="animate-fade-in max-w-75 w-full"

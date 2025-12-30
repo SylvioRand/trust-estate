@@ -80,15 +80,16 @@ const	PublicationCard: React.FC<PublicationCardProps> = ({
 				z-1"
 			>
 				<div className="flex items-center justify-center gap-1
+					font-inter
 					text-sm
 					opacity-80"
 				>
 					<div className="font-icon"></div>{ propertyData.data[0].zoneDisplay }
 				</div>
-				<div className="font-bold text-xl">
+				<div className="font-inter font-bold text-xl">
 					{ propertyData.data[0].title }
 				</div>
-				<div className="font-light">
+				<div className="font-inter font-light">
 					{ propertyData.data[0].price } AR
 				</div>
 			</div>
