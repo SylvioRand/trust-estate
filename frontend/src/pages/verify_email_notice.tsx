@@ -6,7 +6,7 @@ import ContentDivider from "../components/ContentDivider";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const VerifyEmailPage: React.FC = () => {
+const VerifyEmailNoticePage: React.FC = () => {
 	const { t } = useTranslation("verifyEmail");
 
 	return (
@@ -59,4 +59,4 @@ const VerifyEmailPage: React.FC = () => {
 	);
 }
 
-export default VerifyEmailPage;
+export default VerifyEmailNoticePage;

@@ -14,99 +14,116 @@ import ChatBot from './pages/ChatBot.tsx';
 import ForgotPassPage from './pages/forgot_pass.tsx';
 import ResetPassPage from './pages/reset_pass.tsx';
 import AddPhonePage from './pages/add_phone.tsx';
-import VerifyEmailPage from './pages/verify_email.tsx';
+import VerifyEmailNoticePage from './pages/verify_email_notice.tsx';
 import HomePage from './pages/home.tsx';
 import PropertyPage from './pages/property.tsx';
+import WelcomePage from './pages/welcome.tsx';
+import VerifyEmailCallbackPage from './pages/verify_email_callback.tsx';
 
 const router = createBrowserRouter([
-{
-		element: <MainLayout/>,
-		children:[
+	{
+		element: <MainLayout />,
+		children: [
 			// should be protected
 			{
-				path: "/verify_email",
+				path: "/verify-email-notice",
 				element:
 					<PublicRoot>
-						<VerifyEmailPage/>
+						<VerifyEmailNoticePage />
 					</PublicRoot>
-					
+
 			},
 			{
-				path: "/add_phone",
+				path: "/verify-email",
 				element:
 					<PublicRoot>
-						<AddPhonePage/>
+						<VerifyEmailCallbackPage />
 					</PublicRoot>
-					
+
 			},
 			{
-				path: "/reset_pass",
+				path: "/welcome",
 				element:
 					<PublicRoot>
-						<ResetPassPage/>
+						<WelcomePage />
 					</PublicRoot>
-					
 			},
 			{
-				path: "/forgot_pass",
+				path: "/add-phone",
 				element:
 					<PublicRoot>
-						<ForgotPassPage/>
+						<AddPhonePage />
 					</PublicRoot>
-					
+
 			},
-			
+			{
+				path: "/reset-pass",
+				element:
+					<PublicRoot>
+						<ResetPassPage />
+					</PublicRoot>
+
+			},
+			{
+				path: "/forgot-pass",
+				element:
+					<PublicRoot>
+						<ForgotPassPage />
+					</PublicRoot>
+
+			},
+
 
 
 			{
 				path: "/home",
 				element:
 					<PublicRoot>
-						<HomePage/>
+						<HomePage />
 					</PublicRoot>
-					
+
 			},
 			{
 				path: "/property",
 				element:
 					<PublicRoot>
-						<PropertyPage/>
+						<PropertyPage />
 					</PublicRoot>
-					
+
 			},
 			{
-				path: "/sign_up",
+				path: "/sign-up",
 				element:
 					<PublicRoot>
-						<SignUpPage/>
+						<SignUpPage />
 					</PublicRoot>
-					
+
 			},
 			{
-				path: "/sign_in",
+				path: "/sign-in",
 				element:
 					<PublicRoot>
-						<SignInPage/>
+						<SignInPage />
 					</PublicRoot>
-					
+
 			},
 			{
-				path: "/chat_bot",
+				path: "/chat-bot",
 				element:
 					<PublicRoot>
-						<ChatBot/>
+						<ChatBot />
 					</PublicRoot>
-					
+
 			},
 			{
 				path: "*",
 				element:
-					<Navigate to="/sign_in" replace/>
-					
+					<Navigate to="/sign-in" replace />
+
 			},
 		]
 
-},
+	},
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
