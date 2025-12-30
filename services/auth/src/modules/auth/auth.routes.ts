@@ -3,11 +3,11 @@ import * as authControllers from "../auth/auth.controllers"
 import { ForgotPasswordSchema, LoginUserSchema, ResendEmailSchema, ResetPasswordSchema, SignUpUserSchema, UpdatePhoneNumberSchema, VerificationTokenSchema } from "./auth.schema";
 
 export async function authRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
-	app.post("/login", {schema: LoginUserSchema}, authControllers.loginUser);
-	app.post("/register", {schema: SignUpUserSchema}, authControllers.signUpUser);
-	app.post("/logout",{preHandler: app.authentication }, authControllers.logoutUser);
+	app.post("/login", { schema: LoginUserSchema }, authControllers.loginUser);
+	app.post("/register", { schema: SignUpUserSchema }, authControllers.signUpUser);
+	app.post("/logout", { preHandler: app.authentication }, authControllers.logoutUser);
 	app.get("/refresh", authControllers.refreshToken);
-	app.post("/update-phone", {schema: UpdatePhoneNumberSchema}, authControllers.updatePhoneNumber);
+	app.post("/update-phone", { schema: UpdatePhoneNumberSchema }, authControllers.updatePhoneNumber);
 	app.post("/forgot-password", {
 		config: {
 			rateLimit: {
@@ -23,12 +23,13 @@ export async function authRoutes(app: FastifyInstance, options: FastifyPluginOpt
 				}
 			}
 		},
-		schema: ForgotPasswordSchema}, authControllers.forgotPassword);
-	app.post("/reset-password", {schema: ResetPasswordSchema}, authControllers.resetPassword)
+		schema: ForgotPasswordSchema
+	}, authControllers.forgotPassword);
+	app.post("/reset-password", { schema: ResetPasswordSchema }, authControllers.resetPassword)
 }
 
 export async function emailAuthRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
-	app.post("/verify-email", {schema: VerificationTokenSchema }, authControllers.verifiedEmail);
+	app.post("/verify-email", { schema: VerificationTokenSchema }, authControllers.verifiedEmail);
 	app.post("/resend-email", {
 		config: {
 			rateLimit: {
@@ -54,5 +55,5 @@ export async function oathAuthRoutes(app: FastifyInstance, options: FastifyPlugi
 }
 
 export async function profile(app: FastifyInstance, options: FastifyPluginOptions) {
-	app.get("/me", {preHandler: app.authentication },authControllers.profile);
+	app.get("/me", { preHandler: app.authentication }, authControllers.profile);
 }
