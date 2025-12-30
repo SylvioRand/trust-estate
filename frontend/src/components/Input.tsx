@@ -59,7 +59,7 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 			<div className="flex items-center justify-start
 				w-full"
 			>
-				<div className="font-bold text-[14px]">
+				<div className="font-inter font-bold text-[14px]">
 					{ title }
 				</div>
 			</div>
