@@ -108,7 +108,7 @@ const router = createBrowserRouter([
 
 			},
 			{
-				path: "/chat-bot",
+				path: "/ai",
 				element:
 					<PublicRoot>
 						<ChatBot />
