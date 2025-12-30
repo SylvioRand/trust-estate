@@ -1,8 +1,4 @@
-import React, { useState, useRef } from 'react';
-import { GoogleLogin } from '@react-oauth/google';
-import { useNavigate } from 'react-router-dom';
-import { handleGoogleSuccess } from '../utils/login/handleGoogleSuccess';
-import type { CredentialResponse } from '@react-oauth/google';
+import React, { useState } from 'react';
 
 interface GoogleActionButtonProps {
     icon?: string;
@@ -21,18 +17,13 @@ const GoogleActionButton: React.FC<GoogleActionButtonProps> = ({
     title = 'Google',
     disabled = false,
 }) => {
-    const navigate = useNavigate();
     const [hovered, setHovered] = useState(false);
-    const googleBtnRef = useRef<HTMLDivElement>(null);
 
     const hasIcon = !!icon;
 
     const triggerGoogleLogin = () => {
         if (disabled) return;
-        const inner = googleBtnRef.current?.querySelector(
-            'div[role="button"]'
-        ) as HTMLDivElement | null;
-        inner?.click();
+        window.location.href = '/api/auth/google';
     };
 
     return (
@@ -67,18 +58,6 @@ const GoogleActionButton: React.FC<GoogleActionButtonProps> = ({
                 )}
                 <span className="font-bold text-[18px]">{title}</span>
             </button>
-
-            <div ref={googleBtnRef} className="absolute inset-0 z-0 opacity-0">
-                <GoogleLogin
-                    onSuccess={() => handleGoogleSuccess(navigate)}
-                    onError={() => console.log('Échec login Google')}
-                    width="350"
-                    theme="filled_blue"
-                    size="large"
-                    text="continue_with"
-                    shape="rectangular"
-                />
-            </div>
         </div>
     );
 };
