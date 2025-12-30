@@ -11,44 +11,98 @@ interface NavButtonProps {
 	path: string;
 }
 
-const NavButton: React.FC<NavButtonProps> = ({
+const MobileNavButton: React.FC<NavButtonProps> = ({
 	icon = "",
 	icon_size = 32,
 	title = "Title",
 	path = "/sign-in" // by default just go back to sign-in
 }) => {
-	const active: boolean = useLocation().pathname === path;
-	const [hovered, setHovered] = useState<boolean>(false);
+	const	location = useLocation();
+	const	[active, setActive] = useState<boolean>(false);
+	const	[hovered, setHovered] = useState<boolean>(false);
+
+	useEffect(() => {
+		setActive(location.pathname === path);
+	}, [location.pathname, path]);
 
 	return (
-		<Link className="flex items-center justify-center gap-2
-			transition-all duration-200"
-			style={{
-				padding: "4px 12px",
-				borderRadius: "var(--radius-lg)",
-				backgroundColor: active ? "var(--color-background)" : (hovered ? "color-mix(in srgb, var(--color-background) 25%, var(--color-foreground))" : "transparent"),
-				color: active ? "var(--color-foreground)" : "var(--color-background)"
-			}}
-			onPointerEnter={() => setHovered(true)}
-			onPointerLeave={() => setHovered(false)}
-			to={path}
+		<Link
+			className="flex items-center justify-start
+				relative
+				p-2
+				w-full h-12"
+			to={ path }
+			onPointerEnter={ () => setHovered(true) }
+			onPointerLeave={ () => setHovered(false) }
 		>
-			{
-				icon && <div className="relative
-					w-4 h-8
-					flex items-center justify-center
-					font-icon"
-					style={{
-						fontSize: icon_size
-					}}
+			<div className="absolute top-0 left-0
+				bg-linear-to-r from-accent to-transparent
+				transition-opacity duration-500
+				w-full h-full"
+				style={{
+					opacity: active ? "50%" : "0%"
+				}}
+			>
+			</div>
+
+			<div className="absolute left-0
+				flex items-center justify-center
+				-translate-x-[50%]
+				rounded-full
+				bg-accent
+				blur-sm
+				transition-opacity duration-500
+				h-[70%] aspect-square"
+				style={{
+					opacity: active ? "100%" : "0%"
+				}}
+			>
+				<div className="h-[50%] aspect-square
+					bg-background
+					rounded-full"
 				>
-					<div className="absolute">
-						{icon}
-					</div>
 				</div>
-			}
-			<div className="md:hidden xl:block font-bold text-[14px]">
-				{title}
+			</div>
+
+
+			<div className="absolute
+				-translate-x-9 translate-y-3
+				blur-md
+				rotate-z-90
+				scale-x-400
+				transition-opacity duration-500"
+				style={{
+					opacity: active ? "100%" : "0%"
+				}}
+			>
+				<svg
+					width="80"
+					height="110"
+					viewBox="0 0 210 297"
+					version="1.1"
+					id="svg1"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<g id="layer1">
+						<path
+							d="M103.89355,128.09256 L128.6209,186.10211 L27.137833,186.10211 L51.956802,128.09256 L77.87937,41.231752 Z"
+							id="path3"
+							fill="var(--color-accent)"
+							stroke="none"
+						/>
+					</g>
+				</svg>
+			</div>
+
+
+
+			<div className="z-1
+				transition-colors duration-500"
+				style={{
+					color: active ? "var(--color-foreground)" : "var(--color-background)"
+				}}
+			>
+				{ title }
 			</div>
 		</Link>
 	);
@@ -78,10 +132,10 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 			>
 			</div>
 			<div className="flex flex-col items-start justify-start gap-3
-				p-4
 				transition-transform duration-200
 				w-full h-full
 				border-l border-background/25
+				overflow-hidden
 				bg-foreground"
 				style={{
 					transform: open ? "translateX(0px)" : "translateX(100%)",
@@ -89,6 +143,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 				}}
 			>
 				<div className="font-icon text-4xl text-background
+					p-2
 					ml-auto"
 					onClick={onClose}
 				>
@@ -97,7 +152,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 				{
 					data.map((value: NavButtonProps, index: number) => {
 						return (
-							<NavButton
+							<MobileNavButton
 								key={index}
 								icon={value.icon}
 								title={value.title}
@@ -165,7 +220,7 @@ const	NavigationButton: React.FC<NavButtonProps> = ({
 			
 			<div className="absolute
 				blur-md
-				transition-opacity durationn-500
+				transition-opacity duration-500
 				translate-x-3 translate-y-5"
 				style={{
 					opacity: active ? "100%" : "0%"
@@ -210,6 +265,7 @@ const	NavigationButton: React.FC<NavButtonProps> = ({
 }
 
 const	NavBar: React.FC = () => {
+
 	const { t } = useTranslation("nav");
 
 	const dataNavButton: NavButtonProps[] = [
@@ -311,7 +367,7 @@ const	NavBar: React.FC = () => {
 
 				<HamburgerMenu
 					open={openHamburger}
-					data={dataNavButton}
+					data={ dataNavButton }
 					onClose={() => setOpenHamburger(false)}
 				/>
 
