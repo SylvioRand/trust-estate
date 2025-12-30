@@ -2,8 +2,9 @@
 
 :root {
 	--push: 42px;
-	--push-speed: 0.2s;
+	--push-speed: 0.75s;
 	--fade-speed: 0.75s;
+	--scale-speed: 1s;
 
 	--color-foreground: #EEEEEE;
 	--color-highlight: #666666;
@@ -47,6 +48,10 @@
 	--animate-fade-out: fade_out var(--fade-speed) linear forwards;
 	--animate-from-bottom: from_bottom var(--push-speed) ease-in-out forwards;
 	--animate-from-top: from_bottom var(--push-speed) ease-in-out forwards;
+	--animate-scale-in-x: scale_in_x var(--scale-speed) ease-in-out forwards;
+	--animate-scale-out-x: scale_out_x var(--scale-speed) ease-in-out forwards;
+	--animate-scale-in-y: scale_in_y var(--scale-speed) ease-in-out forwards;
+	--animate-scale-out-y: scale_out_y var(--scale-speed) ease-in-out forwards;
 	--animate-random-translation: random_translation 60s ease-in-out infinite;
 }
 
@@ -219,22 +224,70 @@ body {
 }
 
 @keyframes from_bottom {
-	from {
+	0% {
 		transform: translateY(var(--push));
 	}
 
-	to {
+	50% {
+		transform: translateY(-25px);
+	}
+
+	100% {
 		transform: translate(0px);
 	}
 }
 
 @keyframes from_top {
-	from {
+	0% {
 		transform: translateY(-var(--push));
 	}
 
-	to {
+	50% {
+		transform: translateY(25px);
+	}
+
+	100% {
 		transform: translate(0px);
+	}
+}
+
+@keyframes scale_in_x {
+	from {
+		transform: scaleX(0%);
+	}
+
+	to {
+		transform: scaleX(100%);
+	}
+}
+
+@keyframes scale_out_x {
+	from {
+		transform: scaleX(100%);
+	}
+
+	to {
+		transform: scaleX(0%);
+	}
+}
+
+@keyframes scale_in_y {
+	from {
+		transform: scaleY(0%);
+	}
+
+	to {
+		transform: scaleY(100%);
+	}
+}
+
+@keyframes scale_out_y {
+	from {
+		transform: scaleY(100%);
+	}
+
+	to {
+		transform: scaleY(0%);
 	}
 }
 
