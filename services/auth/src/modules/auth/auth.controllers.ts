@@ -19,8 +19,8 @@ export async function loginUser(request: FastifyRequest<{ Body: LoginUserInterfa
 			});
 		else
 			return reply.status(400).send({
-					"error": "invalid_credentials",
-					"message": "auth.invalid_credentials"
+				"error": "invalid_credentials",
+				"message": "auth.invalid_credentials"
 			})
 	}
 }
@@ -99,12 +99,12 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
 
 	if (!user) {
 		return reply.code(400).send({
-			"error":"Error",
-			"message":"User is not authenticated"
+			"error": "Error",
+			"message": "User is not authenticated"
 		});
 	}
 
-	const realestate_refresh_token  = request.cookies.realestate_refresh_token;
+	const realestate_refresh_token = request.cookies.realestate_refresh_token;
 	if (realestate_refresh_token) {
 		await authServices.deleteRefreshToken(request.server, realestate_refresh_token);
 	}
@@ -112,9 +112,9 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
 	reply.clearCookie("realestate_access_token", { ...cookieOptions });
 	reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
 	return reply.status(200).send({
-			"success": "true",
-    		"message": "auth.logout_success"
-		});
+		"success": "true",
+		"message": "auth.logout_success"
+	});
 }
 
 export async function verifiedEmail(request: FastifyRequest<{ Body: { token: string } }>, reply: FastifyReply) {
@@ -153,7 +153,7 @@ export async function resendEmailVerification(request: FastifyRequest<{ Body: { 
 }
 
 export async function loginOauth(request: FastifyRequest, reply: FastifyReply) {
-	const params = new URLSearchParams({
+	const params = new URLSearchParams({ // TODO need to change to POST and get idTOken from body
 		client_id: request.server.config.GOOGLE_CLIENT_ID,
 		redirect_uri: request.server.config.REDIRECT_URI,
 		response_type: 'code',
@@ -163,6 +163,7 @@ export async function loginOauth(request: FastifyRequest, reply: FastifyReply) {
 		include_granted_scopes: 'true',
 		state: 'state_parameter_passthrough_value'
 	});
+	console.log("check params : ", params.toString());
 
 	return reply.redirect(`${request.server.config.AUTH_URL}?${params.toString()}`)
 }
@@ -183,6 +184,7 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 
 		return (reply.redirect(request.server.config.FRONTEND_URL));
 	} catch (error: any) {
+		console.log("error : ", error);
 		if (error.message === "Invalid credential")
 			return reply.status(400).send({
 				"error": "invalid_google_token",
@@ -201,7 +203,7 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 	}
 }
 
-export async function updatePhoneNumber(request: FastifyRequest <{Body: {phoneNumber: string}}>, reply: FastifyReply) {
+export async function updatePhoneNumber(request: FastifyRequest<{ Body: { phoneNumber: string } }>, reply: FastifyReply) {
 	const phoneNumber = request.body.phoneNumber;
 	const userId = (request.user as UserInterface).id;
 
@@ -217,14 +219,14 @@ export async function updatePhoneNumber(request: FastifyRequest <{Body: {phoneNu
 	} catch (error: any) {
 		if (error.message === "phone_exists")
 			return reply.code(400).send({
-					"error": "phone_exists",
-					"message": "Ce numéro de téléphone est déjà utilisé par un autre compte"
-				});
+				"error": "phone_exists",
+				"message": "Ce numéro de téléphone est déjà utilisé par un autre compte"
+			});
 		else if (error.message === "User not found")
 			return reply.code(400).send({
-					"error": "invalid_credentials",
-					"message": "Token invalide ou expiré"
-				});
+				"error": "invalid_credentials",
+				"message": "Token invalide ou expiré"
+			});
 		else
 			return reply.status(500).send({
 				"error": "internal_server_error",
@@ -233,12 +235,12 @@ export async function updatePhoneNumber(request: FastifyRequest <{Body: {phoneNu
 	}
 };
 
-export async function forgotPassword(request: FastifyRequest <{Body: {email:string}}>, reply: FastifyReply) {
+export async function forgotPassword(request: FastifyRequest<{ Body: { email: string } }>, reply: FastifyReply) {
 	const email = request.body.email;
 
 	try {
 		await authServices.sendTokenForgotPassword(request.server, email);
-		return reply.status(200).send({"message": "auth.reset_password_email_sent"})
+		return reply.status(200).send({ "message": "auth.reset_password_email_sent" })
 	} catch (error: any) {
 		if (error.message === "User not found")
 			return reply.status(403).send({
@@ -253,8 +255,9 @@ export async function forgotPassword(request: FastifyRequest <{Body: {email:stri
 	}
 };
 
-export async function resetPassword(request: FastifyRequest <{
-	Body: {newPassword:string, token: string}}>, reply: FastifyReply) {
+export async function resetPassword(request: FastifyRequest<{
+	Body: { newPassword: string, token: string }
+}>, reply: FastifyReply) {
 	const token = request.body.token;
 	const newPassword = request.body.newPassword;
 
