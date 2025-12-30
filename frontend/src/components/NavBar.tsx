@@ -11,14 +11,14 @@ interface NavButtonProps {
 	path: string;
 }
 
-const	NavButton: React.FC<NavButtonProps> = ({
+const NavButton: React.FC<NavButtonProps> = ({
 	icon = "",
 	icon_size = 32,
 	title = "Title",
-	path = "/sign_in" // by default just go back to sign_in
+	path = "/sign-in" // by default just go back to sign-in
 }) => {
-	const	active: boolean = useLocation().pathname === path;
-	const	[hovered, setHovered] = useState<boolean>(false);
+	const active: boolean = useLocation().pathname === path;
+	const [hovered, setHovered] = useState<boolean>(false);
 
 	return (
 		<Link className="flex items-center justify-center gap-2
@@ -29,9 +29,9 @@ const	NavButton: React.FC<NavButtonProps> = ({
 				backgroundColor: active ? "var(--color-background)" : (hovered ? "color-mix(in srgb, var(--color-background) 25%, var(--color-foreground))" : "transparent"),
 				color: active ? "var(--color-foreground)" : "var(--color-background)"
 			}}
-			onPointerEnter={ () => setHovered(true) }
-			onPointerLeave={ () => setHovered(false) }
-			to={ path }
+			onPointerEnter={() => setHovered(true)}
+			onPointerLeave={() => setHovered(false)}
+			to={path}
 		>
 			{
 				icon && <div className="relative
@@ -43,12 +43,12 @@ const	NavButton: React.FC<NavButtonProps> = ({
 					}}
 				>
 					<div className="absolute">
-						{ icon }
+						{icon}
 					</div>
 				</div>
 			}
 			<div className="md:hidden xl:block font-bold text-[14px]">
-				{ title }
+				{title}
 			</div>
 		</Link>
 	);
@@ -60,7 +60,7 @@ interface HamburgerMenuProps {
 	onClose: () => void;
 }
 
-const	HamburgerMenu: React.FC<HamburgerMenuProps> = ({
+const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 	open = false,
 	data = [],
 	onClose = () => console.error("Error: HamburgerMenu doesn't have onClose func!")
@@ -74,7 +74,7 @@ const	HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 			}}
 		>
 			<div className="w-full h-full"
-				onClick={ onClose }
+				onClick={onClose}
 			>
 			</div>
 			<div className="flex flex-col items-start justify-start gap-3
@@ -90,7 +90,7 @@ const	HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 			>
 				<div className="font-icon text-4xl text-background
 					ml-auto"
-					onClick={ onClose }
+					onClick={onClose}
 				>
 					
 				</div>
@@ -98,10 +98,10 @@ const	HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 					data.map((value: NavButtonProps, index: number) => {
 						return (
 							<NavButton
-								key = { index }
-								icon = { value.icon }
-								title = { value.title }
-								path = { value.path }
+								key={index}
+								icon={value.icon}
+								title={value.title}
+								path={value.path}
 							/>
 						);
 					})
@@ -111,17 +111,17 @@ const	HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 	);
 }
 
-const	NavBar: React.FC = () => {
-	const	{ t } = useTranslation("nav");
+const NavBar: React.FC = () => {
+	const { t } = useTranslation("nav");
 
-	const	dataNavButton: NavButtonProps[] = [
+	const dataNavButton: NavButtonProps[] = [
 		{ icon: "", title: t("button.home"), path: "/home" },
 		{ icon: "", icon_size: 22, title: t("button.property"), path: "/property" },
 		{ icon: "", icon_size: 34, title: t("button.ai"), path: "/ai" },
-		{ icon: "󰍂", icon_size: 28, title: t("button.signIn"), path: "/sign_in" },
-		{ icon: "󰆓", icon_size: 24,title: t("button.signUp"), path: "/sign_up" },
+		{ icon: "󰍂", icon_size: 28, title: t("button.signIn"), path: "/sign-in" },
+		{ icon: "󰆓", icon_size: 24, title: t("button.signUp"), path: "/sign-up" },
 	]; // this data should be wrapped by a useState since the signIn and signUp will merge into profile once connected.
-	const	[openHamburger, setOpenHamburger] = useState<boolean>(false);
+	const [openHamburger, setOpenHamburger] = useState<boolean>(false);
 
 	return (
 		<div className="fixed top-0 left-0
@@ -155,11 +155,11 @@ const	NavBar: React.FC = () => {
 							dataNavButton.map((value: NavButtonProps, index: number) => {
 								return (
 									<NavButton
-										key = { index }
-										icon = { value.icon }
-										icon_size = { value.icon_size ?? 32 }
-										title = { value.title }
-										path = { value.path }
+										key={index}
+										icon={value.icon}
+										icon_size={value.icon_size ?? 32}
+										title={value.title}
+										path={value.path}
 									/>
 								);
 							})
@@ -168,9 +168,9 @@ const	NavBar: React.FC = () => {
 
 					<select
 						name="langage"
-						onChange={ (e) => {
-								i18n.changeLanguage(e.target.value);
-							}
+						onChange={(e) => {
+							i18n.changeLanguage(e.target.value);
+						}
 						}
 					>
 						<option value="en">🇬🇧</option>
@@ -181,16 +181,16 @@ const	NavBar: React.FC = () => {
 					<div className="block justify-self-end
 						md:hidden
 						font-icon text-background text-4xl"
-						onClick={ () => setOpenHamburger(true) }
+						onClick={() => setOpenHamburger(true)}
 					>
-							
+						
 					</div>
 				</div>
 
 				<HamburgerMenu
-					open={ openHamburger }
-					data={ dataNavButton }
-					onClose={ () => setOpenHamburger(false) }
+					open={openHamburger}
+					data={dataNavButton}
+					onClose={() => setOpenHamburger(false)}
 				/>
 
 			</div>

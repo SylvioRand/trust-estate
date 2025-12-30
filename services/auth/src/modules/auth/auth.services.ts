@@ -74,7 +74,7 @@ export async function createUserAccount(app: FastifyInstance,
 		});
 
 		const baseUrl = app.config.FRONTEND_URL;
-		const verificationUrl = `${baseUrl}/verify-email.html?token=${hash}`;
+		const verificationUrl = `${baseUrl}/verify-email?token=${hash}`;
 		const { text, html } = generateMail(lastName, verificationUrl);
 		const info = await (app as any).mailer.sendMail({
 			from: 'dinandrianom@gmail.com',
