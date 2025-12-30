@@ -178,7 +178,7 @@ const SignInPage: React.FC = () => {
 						w-full mb-4"
 					>
 						{t("footer.noAccount")}
-						<Link to="/sign_up">
+						<Link to="/sign-up">
 							<span className="underline cursor-pointer font-bold">
 								{t("footer.signUp")}
 							</span>
