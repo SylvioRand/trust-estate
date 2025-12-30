@@ -215,10 +215,14 @@ const	NavBar: React.FC = () => {
 	const dataNavButton: NavButtonProps[] = [
 		{ icon: "", title: t("button.home"), path: "/home" },
 		{ icon: "", icon_size: 22, title: t("button.property"), path: "/property" },
-		{ icon: "", icon_size: 34, title: t("button.ai"), path: "/ai" },
+		{ icon: "", icon_size: 34, title: t("button.ai"), path: "/ai" }
+	];
+
+	const	userNavButton: NavButtonProps[] = [
 		{ icon: "󰍂", icon_size: 28, title: t("button.signIn"), path: "/sign-in" },
-		{ icon: "󰆓", icon_size: 24, title: t("button.signUp"), path: "/sign-up" },
-	]; // this data should be wrapped by a useState since the signIn and signUp will merge into profile once connected.
+		{ icon: "󰆓", icon_size: 24, title: t("button.signUp"), path: "/sign-up" }
+	]
+
 	const [openHamburger, setOpenHamburger] = useState<boolean>(false);
 
 	return (
@@ -234,7 +238,7 @@ const	NavBar: React.FC = () => {
 				boxShadow: "0px 0px 10px rgba(0,0,0,0.25)"
 			}}
 		>
-			<div className="grid grid-cols-[auto_1fr] grid-rows-1 place-items-center
+			<div className="grid grid-cols-[auto_1fr] md:grid-cols-[1fr_auto_1fr] grid-rows-1 place-items-center
 				px-4 md:px-7 xl:px-64
 				z-1
 				w-full h-full"
@@ -245,13 +249,32 @@ const	NavBar: React.FC = () => {
 					{t("brand.name")}
 				</div>
 
-				<div className="flex items-center justify-center justify-self-end gap-3 h-full">
-					<div className="md:flex items-center justify-center justify-self-end gap-3
+				<div className="md:flex items-center justify-center gap-3
 						h-full
 						hidden"
 					>
 						{
 							dataNavButton.map((value: NavButtonProps, index: number) => {
+								return (
+									<NavigationButton
+										key={index}
+										icon={value.icon}
+										icon_size={value.icon_size ?? 32}
+										title={value.title}
+										path={value.path}
+									/>
+								);
+							})
+						}
+				</div>
+
+				<div className="flex items-center justify-center justify-self-end gap-3 h-full">
+					<div className="md:flex items-center justify-center gap-3
+						h-full
+						hidden"
+					>
+						{
+							userNavButton.map((value: NavButtonProps, index: number) => {
 								return (
 									<NavigationButton
 										key={index}
