@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { authRoutes, emailAuthRoutes, oathAuthRoutes, profile } from "./auth.routes";
+import { authRoutes, emailAuthRoutes, oathAuthRoutes } from "./auth.routes";
 import fastifyCookie from "fastify-cookie";
 import jwtPlugin from "../../plugin/jwt.plugin";
 import prismaPlugin from "../../plugin/prisma.plugin";
@@ -22,5 +22,4 @@ export async function authRegister(app: FastifyInstance) {
 	await app.register(authRoutes, {prefix: "/auth"});
 	await app.register(emailAuthRoutes, {prefix: "/auth"})
 	await app.register(oathAuthRoutes, {prefix: "/auth"});
-	await app.register(profile, {prefix: "/auth"});
 }
