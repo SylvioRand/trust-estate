@@ -108,13 +108,42 @@ async function handleLogin(event) {
             credentials: 'include'
         });
 
-        const data = await handleResponse(response);
+        const data = await response.json();
+        
+        // Vérifier si l'email n'est pas vérifié (403)
+        if (response.status === 403 && data.error === 'email_not_verified') {
+            window.location.href = 'request-email-verification.html';
+            return;
+        }
+        
+        if (!response.ok) {
+			throw new Error(data.message || 'Erreur de connexion');
+        }
+
         console.log('Login réussi:', data);
 
-        // Stocker l'utilisateur dans un cookie (ex: 1 heure d'expiration)
+        // Stocker l'utilisateur dans un cookie
         setCookie('user_data', JSON.stringify(data), 1);
 
-        // Redirection vers la page profil
+        // Essayer d'accéder au profil pour vérifier les statuts
+        const profileResponse = await fetch(`${API_BASE_URL}/users/me`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+		
+		console.log(profileResponse);
+        if (profileResponse.ok) {
+            window.location.href = 'profile.html';
+        } else if (profileResponse.status === 403) {
+            // Téléphone non vérifié
+            const errorData = await profileResponse.json();
+            if (errorData.error === 'phone_number_not_verified') {
+                window.location.href = 'add-phone.html';
+                return;
+            }
+        }
+
+        // Par défaut, aller au profil
         window.location.href = 'profile.html';
 
     } catch (error) {
@@ -152,9 +181,8 @@ async function handleSignup(event) {
         const data = await handleResponse(response);
         console.log('Signup réussi:', data);
 
-        // Afficher la section de vérification
-        document.getElementById('auth-section').classList.add('hidden');
-        showVerification(email, lastName);
+        // Rediriger vers la page de vérification d'email
+        window.location.href = 'request-email-verification.html';
 
     } catch (error) {
         console.error('Erreur Signup:', error);
@@ -208,13 +236,27 @@ function setCookie(name, value, hours) {
 // Au chargement, si cookie user existe, rediriger
 window.addEventListener('DOMContentLoaded', async () => {
 	try {
-		const res = await fetch(`${API_BASE_URL}/auth/me`, {
+		const res = await fetch(`${API_BASE_URL}/users/me`, {
 			method: 'GET',
             credentials: 'include'
 		});
-		if (res.ok)
-			window.location.href = 'profile.html';
-	} catch (error) {
 		
+		if (res.ok) {
+			window.location.href = 'profile.html';
+		} else if (res.status === 403) {
+			// Téléphone non vérifié
+			const errorData = await res.json();
+			if (errorData.error === 'phone_number_not_verified') {
+				window.location.href = 'add-phone.html';
+			}
+		} else if (res.status === 401) {
+			// Email non vérifié ou non authentifié
+			const errorData = await res.json();
+			if (errorData.error === 'email_not_verified') {
+				window.location.href = 'request-email-verification.html';
+			}
+		}
+	} catch (error) {
+		console.log("Erreur lors de la vérification de l'authentification:", error);
 	}
 });

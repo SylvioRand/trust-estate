@@ -54,8 +54,7 @@ export async function generateAccessToken(request: FastifyRequest, reply: Fastif
 	return (realestate_refresh_token);
 }
 
-export async function responseUser(request: FastifyRequest,reply: FastifyReply, user: any) {
-	const realestate_refresh_token = await generateAccessToken(request, reply, user);
+export function responseUser(user: any) {
 	const responseUser: User = {
 		id: user.id,
 		email: user.email,
@@ -64,14 +63,20 @@ export async function responseUser(request: FastifyRequest,reply: FastifyReply, 
 		lastName: user.lastName,
 		phone: user.phone,
 		phoneVerified: user.phoneVerified,
-		sub: user.sub,
 		role: user.role,
 		sellerStats: {
 			totalListings: user.sellerStats?.totalListings || 0,
 			averageRating: user.sellerStats?.averageRating || 0,
+			activeListings: user.sellerStats?.activeListings || 0,
+			successfulSales: user.sellerStats?.successfulSales || 0
 		},
 		creditBalance: user.creditBalance,
 		createdAt: user.createAt.toISOString(),
 	};
 	return (responseUser);
+}
+
+export async function responseUserAddToken(request: FastifyRequest,reply: FastifyReply, user: any) {
+	await generateAccessToken(request, reply, user);
+	return (responseUser(user));
 }

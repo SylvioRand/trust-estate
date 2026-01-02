@@ -46,7 +46,7 @@ model User {
 	password		String?
 	sub				String?		@unique
 	phone			String?		@unique
-	phoneVerified	Boolean		@default(true)
+	phoneVerified	Boolean		@default(false)
 	role			Role		@default(USER)
 	trustScore		Int			@default(0)
 	creditBalance	Int			@default(10)

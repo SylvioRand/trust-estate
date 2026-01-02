@@ -31,6 +31,89 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 	});
 	app.decorate("privateKey", privateKey);
 	app.decorate("refreshSecret", JWT_REFRESH_SECRET);
+
+	app.decorate("partialAuthentication", async function (request: FastifyRequest, reply: FastifyReply) {
+		const {realestate_access_token, realestate_refresh_token} = request.cookies;
+
+		try {
+			if (!realestate_access_token)
+			{
+				if (realestate_refresh_token)
+					return reply.redirect("/auth/refresh");
+				return reply.code(401).send({
+					"error": "invalid_or_expired_token",
+					"message": "auth.verification_token_invalid"
+				});
+			}
+			const user = jwt.verify(realestate_access_token, publicKey, { algorithms: ["RS256"] }) as UserInterface;
+			request.user = user;
+		} catch (err: any) {
+			return reply.code(401).send({
+				"error": "invalid_or_expired_token",
+				"message": "auth.verification_token_invalid"
+			});
+		}
+	});
+
+	app.decorate("phoneAuthentication", async function (request: FastifyRequest, reply: FastifyReply) {
+		const {realestate_access_token, realestate_refresh_token} = request.cookies;
+
+		try {
+			if (!realestate_access_token)
+			{
+				if (realestate_refresh_token)
+					return reply.redirect("/auth/refresh");
+				return reply.code(401).send({
+					"error": "invalid_or_expired_token",
+					"message": "auth.verification_token_invalid"
+				});
+			}
+			const user = jwt.verify(realestate_access_token, publicKey, { algorithms: ["RS256"] }) as UserInterface;
+			request.user = user;
+
+			if (!user.emailVerified)
+				return reply.code(401).send({
+					"error": "email_not_verified",
+					"message": "auth.email_verification_required",
+					"redirect": "/request-email-verification.html"
+				});
+		} catch (err: any) {
+			return reply.code(401).send({
+				"error": "invalid_or_expired_token",
+				"message": "auth.verification_token_invalid"
+			});
+		}
+	});
+
+	app.decorate("emailAuthentication", async function (request: FastifyRequest, reply: FastifyReply) {
+		const {realestate_access_token, realestate_refresh_token} = request.cookies;
+
+		try {
+			if (!realestate_access_token)
+			{
+				if (realestate_refresh_token)
+					return reply.redirect("/auth/refresh");
+				return reply.code(401).send({
+					"error": "invalid_or_expired_token",
+					"message": "auth.verification_token_invalid"
+				});
+			}
+			const user = jwt.verify(realestate_access_token, publicKey, { algorithms: ["RS256"] }) as UserInterface;
+			request.user = user;
+
+			if (!user.phoneVerified)
+				return reply.code(403).send({
+					"error": "phone_number_not_verified",
+					"message": "auth.phone_number_verification_required",
+				});
+		} catch (err: any) {
+			return reply.code(401).send({
+				"error": "invalid_or_expired_token",
+				"message": "auth.verification_token_invalid"
+			});
+		}
+	});
+	
 	app.decorate("authentication", async function (request: FastifyRequest, reply: FastifyReply) {
 		const {realestate_access_token, realestate_refresh_token} = request.cookies;
 
@@ -39,25 +122,32 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 			{
 				if (realestate_refresh_token)
 					return reply.redirect("/auth/refresh");
-				return reply.code(401).send({ 
-					"error": "invalid_refresh_token",
-  					"message": "Missing token"
+				return reply.code(401).send({
+					"error": "invalid_or_expired_token",
+					"message": "auth.verification_token_invalid"
 				});
 			}
 			const user = jwt.verify(realestate_access_token, publicKey, { algorithms: ["RS256"] }) as UserInterface;
 			request.user = user;
+			console.log(user);
 			if (!user.phoneVerified)
-				return reply.code(401).send({ 
+				return reply.code(403).send({
 					"error": "phone_number_not_verified",
-					"message": "Veuillez vérifier votre email avant de vous connecter."
+					"message": "auth.phone_number_verification_required",
+					"redirect": "/add-phone.html"
 				});
-			if (!user.emailVerified)
-				return reply.code(401).send({ 
+			if (!user.emailVerified) {
+				return reply.code(403).send({
 					"error": "email_not_verified",
-					"message": "Veuillez vérifier votre email avant de vous connecter."
+					"message": "auth.email_verification_required",
+					"redirect": "/request-email-verification.html"
 				});
+			}
 		} catch (err: any) {
-			return reply.code(401).send({ error: "Invalid token" });
+			return reply.code(401).send({
+				"error": "invalid_or_expired_token",
+				"message": "auth.verification_token_invalid"
+			});
 		}
 	});
 };
