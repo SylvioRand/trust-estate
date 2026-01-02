@@ -46,7 +46,6 @@ await server.register(fastifyCors, {
 await setErrorHandler(server);
 
 await server.register(fastifyEnv, options);
-
 await addHooks(server);
 await pluginRegister(server);
 await authRegister(server);
