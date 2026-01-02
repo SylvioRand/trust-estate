@@ -53,7 +53,7 @@ const	ChatBot: React.FC = () => {
                 )}
             </div>
          
-            <TextInput type="text" value={text} onChange={(e) => setText(e.target.value)}
+            <TextInput value={text} onChange={(e) => setText(e.target.value)}
               onSubmit={handleSubmit} onKeyDown={handleKeyDown}/>
         </div>
     );
