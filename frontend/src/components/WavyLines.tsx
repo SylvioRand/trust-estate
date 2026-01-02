@@ -83,7 +83,7 @@ const	WaveCanvas: React.FC<WaveCanvasProps> = ({
 				ctx.stroke();
 			}
 
-			requestAnimationFrame(animate);
+			// requestAnimationFrame(animate); // Don't animate the lines
 		};
 
 		animate();

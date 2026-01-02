@@ -31,8 +31,6 @@ const SignInPage: React.FC = () => {
 
 
 		try {
-			// const baseUrl: string = p		try {
-			console.log("Here we are");
 			const response = await fetch("/api/auth/login", {
 				method: "POST",
 				headers: {
@@ -75,19 +73,13 @@ const SignInPage: React.FC = () => {
 		}
 	}
 
-	const	[googleButtonDisabled, setgoogleButtonDisabled] = useState<boolean>(true);
 	const	[googleProcessing, setgoogleProcessing] = useState<boolean>(false);
 
     const triggerGoogleLogin = () => {
 		setgoogleProcessing(true);
 
-		if (googleButtonDisabled)
-		{
-			setgoogleProcessing(false);
-			return;
-		}
-		setgoogleProcessing(false);
 		window.location.href = '/api/auth/google';
+		setgoogleProcessing(false);
     };
 
 	return (
@@ -183,7 +175,7 @@ const SignInPage: React.FC = () => {
 					<ActionButton
 						title={ t("actions.continueWithGoogle") }
 						icon=""
-						disabled={ googleButtonDisabled }
+						disabled={ false }
 						onClick={ triggerGoogleLogin }
 						processing_action={ googleProcessing }
 					/>

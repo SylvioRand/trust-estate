@@ -5,6 +5,7 @@ import ContentDivider from "../components/ContentDivider";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useAuthRedirect } from "../hooks/useAuthRedirect";
 
 export type APIResponse = {
 	error: string;
@@ -21,6 +22,8 @@ const SignUpPage: React.FC = () => {
 	const [errorFirstName, setErrorFirstName] = useState<string[]>([]);
 	const [errorLastName, setErrorLastName] = useState<string[]>([]);
 	const [errorPassword, setErrorPassword] = useState<string[]>([]);
+
+	useAuthRedirect();
 
 
 	const debugURL = [
@@ -111,6 +114,15 @@ const SignUpPage: React.FC = () => {
 			setProcessSignUp(false);
 		}
 	}
+
+	const	[googleProcessing, setgoogleProcessing] = useState<boolean>(false);
+
+    const triggerGoogleLogin = () => {
+		setgoogleProcessing(true);
+
+		window.location.href = '/api/auth/google';
+		setgoogleProcessing(false);
+    };
 
 	return (
 		<div className="text-background w-full h-screen overflow-y-scroll">
@@ -237,7 +249,9 @@ const SignUpPage: React.FC = () => {
 					<ActionButton
 						title={t("actions.continueWithGoogle")}
 						icon=""
-						type="submit"
+						type="button"
+						onClick={ triggerGoogleLogin }
+						processing_action={ googleProcessing }
 					/>
 
 					<div

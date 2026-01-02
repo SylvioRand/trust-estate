@@ -4,8 +4,29 @@
 	},
 
 	"header": {
-		"title": "Vérification de l’e-mail",
-		"subtitle": "Nous avons envoyé un lien à votre adresse e-mail afin de sécuriser et vérifier votre compte."
+		"title": "Vérifiez votre e-mail",
+		"subtitle": "Un lien de vérification a été envoyé à votre adresse e-mail pour sécuriser et confirmer votre compte."
+	},
+
+	"steps": {
+		"one": "Accédez à votre boîte de réception.",
+		"two": "Trouvez l'e-mail de CASA contenant le lien de vérification.",
+		"three": "Cliquez sur le lien de vérification fourni.",
+		"four": "Retournez ici et connectez-vous à votre compte."
+	},
+
+	"buttons": {
+		"resendEmail": {
+			"title": "Renvoyer",
+			"success": "Un lien de vérification a été renvoyé à votre adresse e-mail.",
+			"error": {
+				"invalidOrExpiredToken": "Votre jeton est invalide ou a expiré."
+			}
+		},
+
+		"logOut": {
+			"title": "Se déconnecter"
+		}
 	},
 
 	"actions": {

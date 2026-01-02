@@ -14,11 +14,10 @@ import ChatBot from './pages/ChatBot.tsx';
 import ForgotPassPage from './pages/forgot_pass.tsx';
 import ResetPassPage from './pages/reset_pass.tsx';
 import AddPhonePage from './pages/add_phone.tsx';
-import VerifyEmailNoticePage from './pages/verify_email_notice.tsx';
 import HomePage from './pages/home.tsx';
 import PropertyPage from './pages/property.tsx';
 import WelcomePage from './pages/welcome.tsx';
-import VerifyEmailCallbackPage from './pages/verify_email_callback.tsx';
+import VerifyEmail from './pages/verify_email.tsx';
 
 const router = createBrowserRouter([
 	{
@@ -26,18 +25,10 @@ const router = createBrowserRouter([
 		children: [
 			// should be protected
 			{
-				path: "/verify-email-notice",
-				element:
-					<PublicRoot>
-						<VerifyEmailNoticePage />
-					</PublicRoot>
-
-			},
-			{
 				path: "/verify-email",
 				element:
 					<PublicRoot>
-						<VerifyEmailCallbackPage />
+						<VerifyEmail />
 					</PublicRoot>
 
 			},

@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n/i18n";
+import ActionButton from "./ActionButton";
 
 interface NavButtonProps {
 	icon: string;
@@ -266,9 +267,9 @@ const	NavigationButton: React.FC<NavButtonProps> = ({
 
 const	NavBar: React.FC = () => {
 
-	const { t } = useTranslation("nav");
+	const	{ t } = useTranslation("nav");
 
-	const dataNavButton: NavButtonProps[] = [
+	const	dataNavButton: NavButtonProps[] = [
 		{ icon: "", title: t("button.home"), path: "/home" },
 		{ icon: "", icon_size: 22, title: t("button.property"), path: "/property" },
 		{ icon: "", icon_size: 34, title: t("button.ai"), path: "/ai" }
@@ -279,7 +280,9 @@ const	NavBar: React.FC = () => {
 		{ icon: "󰆓", icon_size: 24, title: t("button.signUp"), path: "/sign-up" }
 	]
 
-	const [openHamburger, setOpenHamburger] = useState<boolean>(false);
+	const	[openHamburger, setOpenHamburger] = useState<boolean>(false);
+
+	const	navigate = useNavigate();
 
 	return (
 		<div className="fixed top-0 left-0
@@ -342,6 +345,26 @@ const	NavBar: React.FC = () => {
 								);
 							})
 						}
+
+
+						<button
+							onClick={ async () => {
+								try {
+									const	response = await fetch("/api/auth/logout", {
+										method: "POST",
+										credentials: "include"
+									});
+								} catch (e) {
+									console.error("VerifyEmailPage: handleOnLogOut: error logging out.");
+								} finally {
+									navigate("/home");
+								}
+							}}
+						>
+							LOGOUT
+						</button>
+
+
 					</div>
 
 					<select

@@ -5,7 +5,7 @@ import LoadingPage from "./loading";
 
 type Status = "loading" | "success" | "error";
 
-const VerifyEmailCallbackPage: React.FC = () => {
+const VerifyEmail: React.FC = () => {
 	const { t } = useTranslation("verifyEmail");
 	const [searchParams] = useSearchParams();
 	const [status, setStatus] = useState<Status>("loading");
@@ -79,4 +79,4 @@ const VerifyEmailCallbackPage: React.FC = () => {
 	);
 };
 
-export default VerifyEmailCallbackPage;
+export default VerifyEmail;
