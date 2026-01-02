@@ -364,13 +364,23 @@
         // Fonction de déconnexion
         async function logout() {
             try {
-                await fetch(`${API_BASE_URL}/auth/logout`, {
+                const response = await fetch(`${API_BASE_URL}/auth/logout`, {
                     method: 'POST',
                     credentials: 'include'
                 });
+
+                if (response.ok) {
+                    // Les cookies sont maintenant effacés par le serveur
+                    // Attendre un peu avant de rediriger
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 500);
+                } else {
+                    console.error("Erreur logout:", response.status);
+                    window.location.href = 'index.html';
+                }
             } catch (error) {
                 console.error("Erreur logout:", error);
-            } finally {
                 window.location.href = 'index.html';
             }
         }
@@ -397,7 +407,7 @@
                     }
                     
                     // Redirection si email non vérifié
-                    if (response.status === 401 && errorData.error === 'email_not_verified') {
+                    if (response.status === 403 && errorData.error === 'email_not_verified') {
                         window.location.href = 'request-email-verification.html';
                         return;
                     }

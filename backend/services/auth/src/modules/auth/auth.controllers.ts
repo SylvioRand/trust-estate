@@ -136,7 +136,7 @@ export async function verifiedEmail(request: FastifyRequest<{ Body: { token: str
 
 export async function resendEmailVerification(request: FastifyRequest, reply: FastifyReply) {
 	const user = request.user as UserInterface;
-	
+
 	if (!user) {
 		return reply.status(401).send({
 			"error": "invalid_credentials",

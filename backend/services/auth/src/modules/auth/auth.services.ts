@@ -24,8 +24,8 @@ export async function findUserByEmail(app: FastifyInstance, email: string, passw
 	if (!isValid)
 		throw new Error("Mot de passe incorrect");
 	
-	if (!user.emailVerified)
-		throw new Error("Email not verified");
+	// if (!user.emailVerified)
+	// 	throw new Error("Email not verified");
 
 	return (user);
 }
@@ -63,6 +63,7 @@ export async function createUserAccount(app: FastifyInstance,
 				lastName,
 				password: passwordHash,
 				phone,
+				phoneVerified: true,
 				emailVerificationToken: {
 					create: {
 						tokenHash,
