@@ -17,7 +17,7 @@ import AddPhonePage from './pages/add_phone.tsx';
 import HomePage from './pages/home.tsx';
 import PropertyPage from './pages/property.tsx';
 import WelcomePage from './pages/welcome.tsx';
-import VerifyEmail from './pages/verify_email.tsx';
+import VerifyEmailPage from './pages/verify_email.tsx';
 
 const router = createBrowserRouter([
 	{
@@ -28,7 +28,7 @@ const router = createBrowserRouter([
 				path: "/verify-email",
 				element:
 					<PublicRoot>
-						<VerifyEmail />
+						<VerifyEmailPage />
 					</PublicRoot>
 
 			},
