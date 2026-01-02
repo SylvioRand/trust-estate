@@ -18,10 +18,12 @@ export async function findUserByEmail(app: FastifyInstance, email: string, passw
 
 	if (user.password === null)
 		throw new Error("Veuillez vous connecter par mail");
+
 	const isValid = await bcrypt.compare(password, user.password);
 
 	if (!isValid)
 		throw new Error("Mot de passe incorrect");
+	
 	if (!user.emailVerified)
 		throw new Error("Email not verified");
 
@@ -91,8 +93,11 @@ export async function createUserAccount(app: FastifyInstance,
 
 export async function verifyTokenEmail(app: FastifyInstance, token: string) {
 	const hash = createHash('sha256').update(token).digest('hex');
-	const verificationToken = await app.prisma.email_Verification_token.findUnique({
-		where: { tokenHash: hash }
+	const verificationToken = await app.prisma.email_Verification_token.findFirst({
+		where: { 
+			tokenHash: hash,
+			expiresAt: { gt: new Date() }
+		}
 	});
 
 	if (!verificationToken)
@@ -125,8 +130,8 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 	if (!user)
 		throw new Error("User not found");
 
-	// if (user.emailVerified)
-	// 	throw new Error("Your email is already in verified");
+	if (user.emailVerified)
+		throw new Error("Your email is already in verified");
 	const hash = crypto.randomBytes(32).toString('base64url');
 	const tokenHash = createHash('sha256').update(hash).digest('hex');
 	const expiresAt = new Date(Date.now() + 1000 * 60 * 24).toISOString();
@@ -293,22 +298,6 @@ export async function findUserById(app: FastifyInstance, id: string) {
 	if (!user) throw new Error("User not found");
 	return (user);
 }
-
-export async function updatePhoneNumberUser(app: FastifyInstance, userId: string, phone: string) {
-	const phoneExist = await app.prisma.user.findFirst({
-		where: {phone: phone}
-	})
-	
-	if (phoneExist)
-		throw new Error("phone_exists");
-	await app.prisma.user.update({
-		where: {id: userId},
-		data: {
-			phone,
-			phoneVerified: true
-		}
-	});
-};
 
 export async function sendTokenForgotPassword(app: FastifyInstance, email: string) {
 	const user = await app.prisma.user.findUnique({

@@ -19,19 +19,20 @@ export interface UserInterface {
 }
 
 export interface SellerStats {
-  totalListings: number;
-  averageRating: number;
+	totalListings: number;
+	activeListings: number;
+	successfulSales: number,
+	averageRating: number
 }
 
 export interface User {
   id: string;
   email: string;
   emailVerified: boolean;
+  phone: string;
   firstName: string;
   lastName: string;
-  phone: string;
   phoneVerified: boolean,
-  sub: string;
   role: string;
   sellerStats: SellerStats;
   creditBalance: number;
