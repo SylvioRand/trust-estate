@@ -10,31 +10,31 @@ all: build up
 # Build all containers
 build:
 	@echo "🔨 Building containers..."
-	docker-compose build --no-cache
+	DOCKER_BUILDKIT=0 docker-compose build --no-cache
 
 # Start all services
 up:
 	@echo "🚀 Starting services..."
-	docker-compose up -d
+	DOCKER_BUILDKIT=0 docker-compose up -d
 
 # Stop all services
 down:
 	@echo "🛑 Stopping services..."
-	docker-compose down
+	DOCKER_BUILDKIT=0 docker-compose down
 
 # Clean everything (containers, images, volumes)
 clean:
 	@echo "🧹 Cleaning up..."
-	docker-compose down -v --rmi local
+	DOCKER_BUILDKIT=0 docker-compose down -v --rmi local
 	@echo "✅ Cleanup complete"
 
 # View logs
 logs:
-	docker-compose logs -f
+	DOCKER_BUILDKIT=0 docker-compose logs -f
 
 # Restart services
 restart: down up
 
 # Check status
 status:
-	docker-compose ps
+	DOCKER_BUILDKIT=0 docker-compose ps
