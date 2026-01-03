@@ -25,15 +25,6 @@ const SignUpPage: React.FC = () => {
 
 	useAuthRedirect();
 
-
-	const debugURL = [
-		"https://mock.apidog.com/m1/1162080-1155411-default/register", // 200 Success [OK]
-		"https://mock.apidog.com/m1/1162080-1155411-default/register?apidogResponseId=183293900", // 400 Email Exists [OK]
-		"https://mock.apidog.com/m1/1162080-1155411-default/register?apidogResponseId=156854327", // 400 Phone Exists [OK]
-		"https://mock.apidog.com/m1/1162080-1155411-default/register?apidogResponseId=156281196", // 400 Validation [OK]
-		"https://mock.apidog.com/m1/1162080-1155411-default/register?apidogResponseId=119839537" // 429 Rate Limiting [OK]
-	]
-
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
@@ -106,7 +97,7 @@ const SignUpPage: React.FC = () => {
 				}
 			}
 
-			navigate("/verify-email");
+			navigate("/email-sent");
 
 		} catch (error) {
 			console.error("Error: ", error);

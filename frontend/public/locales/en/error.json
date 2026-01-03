@@ -1,159 +1,164 @@
 {
 	"common": {
-		"validation_failed": "Invalid data",
+		"validation_failed": "The provided data is invalid.",
 		"rate_limited": "Too many requests. Please try again later.",
-		"unauthorized": "Authentication required",
-		"internal_server_error": "Internal server error"
+		"unauthorized": "Authentication is required.",
+		"internal_server_error": "An internal server error occurred."
 	},
 	"auth": {
 		"verification_email_sent": "A verification email has been sent.",
 		"verification_email_sent_if_exists": "A verification email has been sent if the account exists.",
-		"email_already_exists": "This email is already in use",
-		"phone_already_exists": "This phone number is already in use",
-		"account_activated_bonus": "Account successfully activated. 5 credits granted!",
-		"verification_token_invalid": "The verification link is invalid or expired",
-		"reset_password_email_sent": "If this email exists, a reset link has been sent.",
-		"password_reset_success": "Password successfully updated.",
-		"reset_token_invalid": "The link is invalid or expired.",
-		"email_verification_required": "Please verify your email before logging in.",
-		"invalid_credentials": "Invalid email or password",
-		"login_max_attempts_exceeded": "Too many login attempts. Account temporarily locked.",
-		"logout_success": "Successfully logged out",
-		"phone_update_success": "Phone number successfully updated"
+		"email_already_exists": "This email address is already in use.",
+		"phone_already_exists": "This phone number is already in use.",
+		"account_activated_bonus": "The account has been successfully activated. Five credits have been granted.",
+		"verification_token_invalid": "The verification link is invalid or has expired.",
+		"reset_password_email_sent": "If the email address exists, a reset link has been sent.",
+		"password_reset_success": "The password has been successfully updated.",
+		"reset_token_invalid": "The reset link is invalid or has expired.",
+		"email_verification_required": "Email verification is required before logging in.",
+		"invalid_credentials": "The email address or password is incorrect.",
+		"login_max_attempts_exceeded": "Too many login attempts. The account has been temporarily locked.",
+		"logout_success": "You have been successfully logged out.",
+		"phone_update_success": "The phone number has been successfully updated.",
+		"invalid_or_expired_token": "The token is invalid or has expired."
 	},
 	"validation": {
 		"email": {
-			"invalid_format": "Invalid email format",
-			"too_long": "Maximum 255 characters"
+			"invalid_format": "The email address format is invalid.",
+			"too_long": "The email address must not exceed 255 characters."
 		},
 		"firstname": {
-			"too_short": "Minimum 2 characters required",
-			"too_long": "Maximum 50 characters",
-			"invalid_chars": "Letters and spaces only"
+			"too_short": "The first name must contain at least 2 characters.",
+			"too_long": "The first name must not exceed 50 characters.",
+			"invalid_chars": "The first name may contain letters and spaces only."
 		},
 		"lastname": {
-			"too_short": "Minimum 2 characters required",
-			"too_long": "Maximum 50 characters",
-			"invalid_chars": "Letters and spaces only"
+			"too_short": "The last name must contain at least 2 characters.",
+			"too_long": "The last name must not exceed 50 characters.",
+			"invalid_chars": "The last name may contain letters and spaces only."
 		},
 		"phone": {
-			"invalid_format": "Invalid format (+261 32/33/34/38 + 7 digits)"
+			"invalid_format": "The phone number format is invalid (+261 32/33/34/38 followed by 7 digits)."
 		},
 		"password": {
-			"too_short": "Minimum 8 characters required",
-			"too_long": "Maximum 128 characters allowed",
-			"missing_uppercase": "Must contain at least one uppercase letter",
-			"missing_lowercase": "Must contain at least one lowercase letter",
-			"missing_digit": "Must contain at least one digit"
+			"too_short": "The password must contain at least 8 characters.",
+			"too_long": "The password must not exceed 128 characters.",
+			"missing_uppercase": "The password must contain at least one uppercase letter.",
+			"missing_lowercase": "The password must contain at least one lowercase letter.",
+			"missing_digit": "The password must contain at least one digit."
 		},
 		"file": {
-			"too_large": "File exceeds the size limit (5MB)",
-			"invalid_format": "Unsupported file format"
+			"too_large": "The file exceeds the maximum allowed size of 5 MB.",
+			"invalid_format": "The file format is not supported."
 		},
 		"listing": {
 			"photos": {
-				"max_count": "Maximum 10 images allowed"
+				"max_count": "A maximum of 10 images is allowed."
 			},
 			"price": {
-				"positive": "Price must be positive"
+				"positive": "The price must be a positive value."
 			},
 			"title": {
-				"too_long": "Maximum 100 characters"
+				"too_long": "The title must not exceed 100 characters."
 			},
 			"description": {
-				"too_long": "Maximum 2000 characters"
+				"too_long": "The description must not exceed 2000 characters."
 			},
 			"schedule": {
-				"invalid_day": "Day must be between 0 (Sunday) and 6 (Saturday)",
-				"invalid_time": "Invalid time format (HH:mm)"
+				"invalid_day": "The day must be between 0 (Sunday) and 6 (Saturday).",
+				"invalid_time": "The time format is invalid (HH:mm)."
 			},
 			"status": {
-				"invalid": "Invalid status"
+				"invalid": "The status value is invalid."
 			},
 			"report_reason": {
-				"invalid": "Invalid report reason"
+				"invalid": "The report reason is invalid."
 			},
 			"report_comment": {
-				"too_short": "Comment too short (min 10 chars)",
-				"too_long": "Comment too long (max 500 chars)"
+				"too_short": "The comment is too short (minimum 10 characters).",
+				"too_long": "The comment is too long (maximum 500 characters)."
 			}
 		},
 		"uuid": {
-			"invalid": "Invalid UUID format"
+			"invalid": "The UUID format is invalid."
 		},
 		"reservation": {
 			"slot": {
-				"invalid_format": "Invalid date format (ISO 8601)",
-				"past_or_too_soon": "Slot must be in the future (minimum 2 hours)"
+				"invalid_format": "The date format is invalid (ISO 8601 expected).",
+				"past_or_too_soon": "The selected slot must be in the future by at least two hours."
 			}
 		},
 		"feedback": {
 			"rating": {
-				"range": "Rating must be between 1 and 5"
+				"range": "The rating must be between 1 and 5."
 			},
 			"comment": {
-				"too_short": "Comment too short",
-				"too_long": "Comment too long"
+				"too_short": "The comment is too short.",
+				"too_long": "The comment is too long."
 			}
 		},
 		"payment": {
 			"amount": {
-				"positive": "Amount must be positive",
-				"min": "Minimum 1 credit"
+				"positive": "The amount must be a positive value.",
+				"min": "The minimum required amount is 1 credit."
 			},
 			"provider": {
-				"invalid": "Invalid payment provider"
+				"invalid": "The payment provider is invalid."
 			}
 		},
 		"admin": {
 			"action": {
-				"invalid": "Invalid action"
+				"invalid": "The requested action is invalid."
 			},
 			"reason": {
-				"too_short": "Reason too short",
-				"too_long": "Reason too long"
+				"too_short": "The reason provided is too short.",
+				"too_long": "The reason provided is too long."
 			}
 		}
 	},
 	"listing": {
-		"not_found": "Listing not found",
-		"publish_success": "Listing successfully published",
-		"limit_reached": "Limit of 10 active listings reached",
-		"permission_denied": "You can only modify your own listings",
-		"renew_success": "Listing renewed for 30 days.",
-		"availability_updated": "Availability updated.",
-		"report_success": "Report submitted. Thank you for your vigilance.",
-		"already_reported": "You have already reported this listing"
+		"not_found": "The listing could not be found.",
+		"publish_success": "The listing has been successfully published.",
+		"limit_reached": "The maximum limit of 10 active listings has been reached.",
+		"permission_denied": "You may only modify your own listings.",
+		"renew_success": "The listing has been renewed for 30 days.",
+		"availability_updated": "The availability has been updated.",
+		"report_success": "The report has been submitted successfully.",
+		"already_reported": "This listing has already been reported."
 	},
 	"reservation": {
-		"slot_already_reserved": "Slot already reserved",
-		"created_success": "Reservation sent. 1 credit deducted.",
-		"confirmed_success": "Reservation confirmed",
-		"cannot_reserve_own": "You cannot reserve your own listing",
-		"slot_unavailable": "Slot unavailable",
-		"cancellation_too_late": "Cancellation not allowed less than 2 hours before the appointment",
-		"permission_denied": "You can only cancel your own reservations",
-		"not_found": "Reservation not found",
-		"already_processed": "This reservation has already been processed",
-		"permission_denied_confirmation": "Only the seller can confirm this reservation",
-		"permission_denied_rejection": "Only the seller can reject this reservation"
+		"slot_already_reserved": "The selected slot is already reserved.",
+		"created_success": "The reservation has been sent. One credit has been deducted.",
+		"confirmed_success": "The reservation has been confirmed.",
+		"cannot_reserve_own": "You cannot reserve your own listing.",
+		"slot_unavailable": "The selected slot is unavailable.",
+		"cancellation_too_late": "Cancellation is not allowed less than two hours before the appointment.",
+		"permission_denied": "You may only cancel your own reservations.",
+		"not_found": "The reservation could not be found.",
+		"already_processed": "This reservation has already been processed.",
+		"permission_denied_confirmation": "Only the seller may confirm this reservation.",
+		"permission_denied_rejection": "Only the seller may reject this reservation."
 	},
 	"feedback": {
-		"created_success": "Feedback successfully recorded",
-		"already_exists": "You have already left feedback for this visit",
-		"reservation_not_done": "You can only leave feedback after the visit"
+		"created_success": "The feedback has been successfully recorded.",
+		"already_exists": "Feedback has already been submitted for this visit.",
+		"reservation_not_done": "Feedback may only be submitted after the visit."
 	},
 	"payment": {
-		"insufficient_credits_publish": "Insufficient credits to publish",
-		"insufficient_credits_renew": "Insufficient balance (0.5 credit required)",
-		"insufficient_credits_reservation": "Insufficient balance to reserve (Cost: 1 credit)",
-		"transaction_failed": "Payment failed. Please check your Mobile Money balance.",
-		"rate_limited_recharge": "Too many recharges. Maximum 3 per hour."
+		"insufficient_credits_publish": "There are insufficient credits to publish the listing.",
+		"insufficient_credits_renew": "There is insufficient balance to renew the listing (0.5 credit required).",
+		"insufficient_credits_reservation": "There is insufficient balance to make a reservation (1 credit required).",
+		"transaction_failed": "The payment failed. Please verify your Mobile Money balance.",
+		"rate_limited_recharge": "Too many recharge attempts. A maximum of three per hour is allowed."
 	},
 	"admin": {
 		"forbidden": {
-			"moderator_only": "Access restricted to moderators"
+			"moderator_only": "Access is restricted to moderators."
 		},
-		"action_applied_successfully": "Action successfully applied and seller notified."
+		"action_applied_successfully": "The action has been successfully applied and the seller has been notified."
+	},
+	"global":
+	{
+		"500": "An internal server error occurred. Retry after a moment."
 	}
 }

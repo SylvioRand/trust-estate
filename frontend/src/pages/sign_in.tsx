@@ -48,7 +48,7 @@ const SignInPage: React.FC = () => {
 
 				if (response.status === 403) {
 					if (errorData.error === "email_not_verified") {
-						navigate("/verify-email");
+						navigate("/email-sent");
 					}
 					else if (errorData.error === "email_not_verified") {
 						navigate("/add-phone");

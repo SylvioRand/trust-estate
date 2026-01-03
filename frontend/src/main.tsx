@@ -18,6 +18,7 @@ import AddPhonePage from './pages/add_phone.tsx';
 import HomePage from './pages/home.tsx';
 import PropertyPage from './pages/property.tsx';
 import WelcomePage from './pages/welcome.tsx';
+import EmailSentPage from './pages/email_sent.tsx';
 import VerifyEmailPage from './pages/verify_email.tsx';
 
 const router = createBrowserRouter([
@@ -29,43 +30,32 @@ const router = createBrowserRouter([
 			// ==========================================
 			{
 				path: "/sign-in",
-				element:
-					<PublicRoot>
-						<SignInPage />
-					</PublicRoot>
+				element: <SignInPage />
 			},
 			{
 				path: "/sign-up",
-				element:
-					<PublicRoot>
-						<SignUpPage />
-					</PublicRoot>
+				element: <SignUpPage />
 			},
 			{
 				path: "/forgot-pass",
-				element:
-					<PublicRoot>
-						<ForgotPassPage />
-					</PublicRoot>
+				element: <ForgotPassPage />
 			},
 			{
 				path: "/reset-pass",
-				element:
-					<PublicRoot>
-						<ResetPassPage />
-					</PublicRoot>
+				element: <ResetPassPage />
 			},
 			{
 				path: "/welcome",
-				element:
-					<PublicRoot>
-						<WelcomePage />
-					</PublicRoot>
+				element: <WelcomePage />
 			},
 
 			// ==========================================
 			// PAGES DE VÉRIFICATION (semi-protégées)
 			// ==========================================
+			{
+				path: "email-sent",
+				element: <EmailSentPage />
+			},
 			{
 				path: "/verify-email",
 				element: <VerifyEmailPage />
@@ -80,24 +70,15 @@ const router = createBrowserRouter([
 			// ==========================================
 			{
 				path: "/home",
-				element:
-					<ProtectedRoute>
-						<HomePage />
-					</ProtectedRoute>
+				element: <HomePage />
 			},
 			{
 				path: "/property",
-				element:
-					<ProtectedRoute>
-						<PropertyPage />
-					</ProtectedRoute>
+				element: <PropertyPage />
 			},
 			{
 				path: "/ai",
-				element:
-					<ProtectedRoute>
-						<ChatBot />
-					</ProtectedRoute>
+				element: <ChatBot />
 			},
 
 			// ==========================================
@@ -105,11 +86,11 @@ const router = createBrowserRouter([
 			// ==========================================
 			{
 				path: "/",
-				element: <Navigate to="/sign-in" replace />
+				element: <Navigate to="/home" replace />
 			},
 			{
 				path: "*",
-				element: <Navigate to="/sign-in" replace />
+				element: <Navigate to="/home" replace />
 			},
 		]
 	},

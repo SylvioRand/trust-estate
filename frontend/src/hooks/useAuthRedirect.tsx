@@ -26,7 +26,6 @@ export function useAuthRedirect() {
 				});
 				
 				if (res.ok) {
-					navigate("/home", { replace: true });
 					return;
 				}
 
@@ -38,7 +37,7 @@ export function useAuthRedirect() {
 						return;
 					}
 					if (errorData.error === "email_not_verified") {
-						navigate("/verify-email", { replace: true });
+						navigate("/email-sent", { replace: true });
 						return;
 					}
 				}

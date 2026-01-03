@@ -6,61 +6,54 @@ import ContentDivider from "../components/ContentDivider";
 import ActionButton from "../components/ActionButton";
 import { toast } from "react-toastify";
 
-const	debugURL: string[] = [
-	"https://mock.apidog.com/m1/1162080-1155411-default/auth/resend-verification", // 201 Success
-	"https://mock.apidog.com/m1/1162080-1155411-default/auth/resend-verification?apidogResponseId=139669037", // 429 Rate Limited
-]
+type	EmailVerificationStatus = "loading" | "confirmed" | "invalid";
 
 const VerifyEmailPage: React.FC = () => {
-	const	{ t } = useTranslation("verifyEmail");
-	const	[processResend, setProcessResend] = useState<boolean>(false);
-	const	[processLogOut, setProcessLogOut] = useState<boolean>(false);
-	const	[resendButtonDisabled, setResendButtonDisabled] = useState<boolean>(false);
+	const	{ t } = useTranslation(["verifyEmail", "error"]);
+	const	[searchParams] = useSearchParams();
+	const	token = searchParams.get("token");
+	const	[status, setStatus] = useState<EmailVerificationStatus>("loading");
 	const	navigate = useNavigate();
 
-	const	handleOnResend = async () => {
-		setProcessResend(true);
-
+	const	verifyToken = async () => {
 		try {
-			const	response = await fetch("/api/auth/resend-email", {
+			const	response = await fetch("/api/auth/verify-email", {
 				method: "POST",
-				credentials: "include"
-			})
-
-			const	data = await response.json();
-
-			if (!response.ok)
-			{
-				throw new Error("Invalid or Expired Token");
-			}
-
-			toast.success(t("buttons.resendEmail.success"));
-
-		} catch (e) {
-			console.error("VerifyEmailPage: ", e);
-		} finally {
-			setProcessResend(false);
-		}
-	}
-
-	const	handleOnLogOut = async () => {
-		setProcessLogOut(true);
-
-		try {
-			const	response = await fetch("/api/auth/logout", {
-				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ token }),
 				credentials: "include"
 			});
+
+			if (!response.ok)
+				throw new Error("Invalid or Expired Token");
+
 		} catch (e) {
-			console.error("VerifyEmailPage: handleOnLogOut: error logging out.");
+			toast.error(t("error:auth.invalid_or_expired_token"));
+			setStatus("invalid");
+
+			setTimeout(() => {
+				navigate("/home");
+			}, 2000);
+
 		} finally {
-			navigate("/home");
-			setProcessLogOut(false);
+			toast.success(t("success"));
+			setStatus("confirmed");
+
+			setTimeout(() => {
+				navigate("/property");
+			}, 2000);
 		}
 	}
+
+	useEffect(() => {
+		verifyToken(); // verify the token sent
+	}, []);
 
 	return (
 		<div className="text-background w-full h-screen overflow-y-scroll">
+
 			<div
 				className="flex flex-col items-center justify-center gap-3
 				xl:flex-row
@@ -94,32 +87,23 @@ const VerifyEmailPage: React.FC = () => {
 					/>
 				</div>
 
-				<div className="flex flex-col items-center justify-center gap-4">
-					<ol className="list-disc pl-3">
-						<li>{ t("steps.one") }</li>
-						<li>{ t("steps.two") }</li>
-						<li>{ t("steps.three") }</li>
-						<li>{ t("steps.four") }</li>
-					</ol>
-
-					<ActionButton
-						icon=""
-						icon_place="right"
-						title={ t("buttons.resendEmail.title") }
-						processing_action={ processResend }
-						onClick={ handleOnResend }
-						disabled={ resendButtonDisabled }
-					/>
-
-					<ActionButton
-						icon="󰍃"
-						icon_place="right"
-						title={ t("buttons.logOut.title") }
-						processing_action={ processLogOut }
-						onClick={ handleOnLogOut }
-					/>
+				<div className="flex items-center justify-center
+					m-4
+					select-none
+					relative">
+					<div
+						className="font-icon
+							absolute
+							origin-center
+							text-[42px]"
+						style={{
+							animation: status === "loading" ? "var(--animate-spin)" : "var(--animate-jiggle)",
+							color: status === "loading" ? "var(--color-background)" : (status === "confirmed" ? "var(--color-green-500)" : "var(--color-red-500)")
+						}}
+					>
+						{ status === "loading" ? "󱥸" : (status === "confirmed" ? "󰄬" : "") }
+					</div>
 				</div>
-
 			</div>
 		</div>
 	);
