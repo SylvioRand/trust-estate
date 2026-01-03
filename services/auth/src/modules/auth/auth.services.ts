@@ -47,16 +47,16 @@ export async function findUserByEmail(app: FastifyInstance, email: string, passw
 		throw new Error("Mot de passe incorrect");
 	}
 
-	if (!user.emailVerified) {
-		app.log.warn({
-			userId: user.id,
-			email: user.email,
-			action: 'login_failed',
-			reason: 'email_not_verified',
-			timestamp: new Date().toISOString()
-		});
-		throw new Error("Email not verified");
-	}
+	// if (!user.emailVerified) {
+	// 	app.log.warn({
+	// 		userId: user.id,
+	// 		email: user.email,
+	// 		action: 'login_failed',
+	// 		reason: 'email_not_verified',
+	// 		timestamp: new Date().toISOString()
+	// 	});
+	// 	throw new Error("Email not verified");
+	// }
 
 	app.log.info({
 		userId: user.id,

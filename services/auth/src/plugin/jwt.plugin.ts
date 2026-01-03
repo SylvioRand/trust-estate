@@ -79,7 +79,7 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 		request.user = user;
 
 		if (!user.emailVerified)
-			return reply.code(401).send({
+			return reply.code(403).send({
 				"error": "email_not_verified",
 				"message": "auth.email_verification_required",
 				"redirect": "/request-email-verification.html"
