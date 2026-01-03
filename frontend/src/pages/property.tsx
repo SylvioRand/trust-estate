@@ -5,6 +5,7 @@ import house0 from "../../src/images/house0.webp";
 import house1 from "../../src/images/house1.webp";
 import house2 from "../../src/images/house2.webp";
 import house3 from "../../src/images/house3.webp";
+import { useNavigate } from "react-router-dom";
 
 type ListingType = "sale" | "rent"
 
@@ -40,6 +41,7 @@ const	PublicationCard: React.FC<PublicationCardProps> = ({
 	propertyData
 }) => {
 	const	[hovered, setHovered] = useState<boolean>(false);
+	const	navigate = useNavigate();
 
 	return (
 		<div className="flex items-center justify-center
@@ -54,6 +56,7 @@ const	PublicationCard: React.FC<PublicationCardProps> = ({
 			overflow-hidden"
 			onPointerOver={ () => setHovered(true) }
 			onPointerLeave={ () => setHovered(false) }
+			onClick={ () => navigate(`/listings?id=${ propertyData.data[0].id }`) }
 		>
 			<img
 				className="absolute w-full h-full object-cover

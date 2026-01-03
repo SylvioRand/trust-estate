@@ -20,6 +20,7 @@ import PropertyPage from './pages/property.tsx';
 import WelcomePage from './pages/welcome.tsx';
 import EmailSentPage from './pages/email_sent.tsx';
 import VerifyEmailPage from './pages/verify_email.tsx';
+import ListingsPage from './pages/listings.tsx';
 
 const router = createBrowserRouter([
 	{
@@ -48,6 +49,12 @@ const router = createBrowserRouter([
 				path: "/welcome",
 				element: <WelcomePage />
 			},
+			{
+				path: "/listings",
+				element: <ListingsPage />
+			},
+
+
 
 			// ==========================================
 			// PAGES DE VÉRIFICATION (semi-protégées)
