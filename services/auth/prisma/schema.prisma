@@ -42,11 +42,11 @@ model User {
 	email			String		@unique
 	emailVerified	Boolean		@default(false)
 	firstName		String
-	lastName		String
+	lastName		String?
 	password		String?
 	sub				String?		@unique
 	phone			String?		@unique
-	phoneVerified	Boolean		@default(true)
+	phoneVerified	Boolean		@default(false)
 	role			Role		@default(USER)
 	trustScore		Int			@default(0)
 	creditBalance	Int			@default(10)

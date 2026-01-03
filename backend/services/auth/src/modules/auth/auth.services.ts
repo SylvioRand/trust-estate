@@ -13,19 +13,57 @@ export async function findUserByEmail(app: FastifyInstance, email: string, passw
 		}
 	});
 
-	if (!user)
+	if (!user) {
+		app.log.warn({
+			email,
+			action: 'login_failed',
+			reason: 'user_not_found',
+			timestamp: new Date().toISOString()
+		});
 		throw new Error("User not found");
+	}
 
-	if (user.password === null)
+	if (user.password === null) {
+		app.log.warn({
+			userId: user.id,
+			email: user.email,
+			action: 'login_failed',
+			reason: 'oauth_user_password_login_attempt',
+			timestamp: new Date().toISOString()
+		});
 		throw new Error("Veuillez vous connecter par mail");
+	}
 
 	const isValid = await bcrypt.compare(password, user.password);
 
-	if (!isValid)
+	if (!isValid) {
+		app.log.warn({
+			userId: user.id,
+			email: user.email,
+			action: 'login_failed',
+			reason: 'invalid_password',
+			timestamp: new Date().toISOString()
+		});
 		throw new Error("Mot de passe incorrect");
-	
-	// if (!user.emailVerified)
-	// 	throw new Error("Email not verified");
+	}
+
+	if (!user.emailVerified) {
+		app.log.warn({
+			userId: user.id,
+			email: user.email,
+			action: 'login_failed',
+			reason: 'email_not_verified',
+			timestamp: new Date().toISOString()
+		});
+		throw new Error("Email not verified");
+	}
+
+	app.log.info({
+		userId: user.id,
+		email: user.email,
+		action: 'login_success',
+		timestamp: new Date().toISOString()
+	});
 
 	return (user);
 }
@@ -86,14 +124,22 @@ export async function createUserAccount(app: FastifyInstance,
 			text: text,
 			html: html
 		});
-		return (user.id);
-	} catch (error: any) {
-		throw new Error(error);
-	}
-};
 
-export async function verifyTokenEmail(app: FastifyInstance, token: string) {
+	app.log.info({
+		userId: user.id,
+		email,
+		phone,
+		action: 'account_created',
+		timestamp: new Date().toISOString()
+	});
+	
+	return (user);
+} catch (error: any) {
+	throw new Error(error);
+}
+};export async function verifyTokenEmail(app: FastifyInstance, token: string) {
 	const hash = createHash('sha256').update(token).digest('hex');
+
 	const verificationToken = await app.prisma.email_Verification_token.findFirst({
 		where: { 
 			tokenHash: hash,
@@ -104,28 +150,34 @@ export async function verifyTokenEmail(app: FastifyInstance, token: string) {
 	if (!verificationToken)
 		throw new Error("Invalid or expired verification token");
 
-	const expiresAtTimestamp = new Date(verificationToken.expiresAt).getTime();
-	if (expiresAtTimestamp < Date.now()) {
-		throw new Error("Verification token has expired");
-	}
-	await app.prisma.user.update({
-		where: { id: verificationToken.userId },
-		data: {
-			emailVerified: true
-		}
+	const user = await app.prisma.$transaction(async (prisma: any) => {
+		await prisma.user.update({
+			where: { id: verificationToken.userId },
+			data: { emailVerified: true }
+		});
+
+		await prisma.email_Verification_token.delete({
+			where: { userId: verificationToken.userId }
+		});
+
+		return prisma.user.findUnique({
+			where: { id: verificationToken.userId }
+		});
 	});
-	const user = await app.prisma.user.findUnique({
-		where: { id: verificationToken.userId }
+
+	app.log.info({
+		userId: verificationToken.userId,
+		action: 'email_verified',
+		timestamp: new Date().toISOString()
 	});
-	await app.prisma.email_Verification_token.delete({
-		where: { userId: verificationToken.userId }
-	});
+
 	return (user);
-};
+	}
 
 export async function resendEmail(app: FastifyInstance, lastName: string, email: string) {
 	const user = await app.prisma.user.findUnique({
-		where: { email: email }
+		where: { email: email },
+		include: { emailVerificationToken: true }
 	});
 
 	if (!user)
@@ -133,9 +185,28 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 
 	if (user.emailVerified)
 		throw new Error("Your email is already in verified");
+
+	if (user.emailVerificationToken) {
+		const tokenCreatedAt = new Date(user.emailVerificationToken.expiresAt.getTime() - 24 * 60 * 1000);
+		const timeSinceCreation = Date.now() - tokenCreatedAt.getTime();
+		const ONE_MINUTE = 60 * 1000;
+
+		if (timeSinceCreation < ONE_MINUTE) {
+			const remainingSeconds = Math.ceil((ONE_MINUTE - timeSinceCreation) / 1000);
+			app.log.warn({
+				userId: user.id,
+				email: user.email,
+				action: 'resend_email_rate_limited',
+				remainingSeconds
+			});
+			throw new Error(`Please wait ${remainingSeconds} seconds before requesting a new verification email`);
+		}
+	}
+
 	const hash = crypto.randomBytes(32).toString('base64url');
 	const tokenHash = createHash('sha256').update(hash).digest('hex');
 	const expiresAt = new Date(Date.now() + 1000 * 60 * 24).toISOString();
+	
 	await app.prisma.email_Verification_token.upsert({
 		where: { userId: user.id },
 		update: {
@@ -152,6 +223,7 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 	const baseUrl = app.config.FRONTEND_URL;
 	const verificationUrl = `${baseUrl}/verify-email?token=${hash}`;
 	const { text, html } = generateMail(lastName, verificationUrl);
+	
 	await (app as any).mailer.sendMail({
 		from: 'dinandrianom@gmail.com',
 		to: email,
@@ -159,11 +231,19 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 		text: text,
 		html: html
 	});
+
+	app.log.info({
+		userId: user.id,
+		email: user.email,
+		action: 'verification_email_sent',
+		timestamp: new Date().toISOString()
+	});
+
 	return (user.id);
 };
 
 export async function getUserInfo(app: FastifyInstance, code: string): Promise<UserGoogleInterface> {
-	const tokentResponse = await fetch("https://oauth2.googleapis.com/token", {
+	const tokentResponse = await fetch(app.config.TOKEN_URL, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded",
@@ -176,9 +256,9 @@ export async function getUserInfo(app: FastifyInstance, code: string): Promise<U
 			redirect_uri: app.config.REDIRECT_URI,
 		}),
 	});
+	console.log("=====>", tokentResponse);
 
 	const tokens = await tokentResponse.json();
-
 	if (!tokens)
 		throw new Error("Invalid credentials");
 

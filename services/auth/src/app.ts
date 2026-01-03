@@ -8,6 +8,7 @@ import { authRegister, pluginRegister } from "./modules/auth/auth.module";
 import { addHooks } from "./hooks/hooks";
 import ajvErrors from 'ajv-errors';
 import { setErrorHandler } from "./hooks/errorHandle";
+import { userRegister } from "./modules/user/user.module";
 
 const dir = "../../.env";
 
@@ -35,7 +36,7 @@ const server = fastify({
 });
 
 await server.register(fastifyCors, {
-	origin: ['http://127.0.0.1:3001', 'http://127.0.0.1:5500'],
+	origin: ['http://127.0.0.1:3001', 'http://127.0.0.1:5500', 'http://localhost:5500'],
 	methods: ['GET','POST','PUT'],
 	allowedHeaders: ['Content-Type','Authorization'],
 	exposedHeaders: ['X-Total-Count'],
@@ -46,10 +47,10 @@ await server.register(fastifyCors, {
 await setErrorHandler(server);
 
 await server.register(fastifyEnv, options);
-
 await addHooks(server);
 await pluginRegister(server);
 await authRegister(server);
+await userRegister(server);
 
 server.get("/api/auth", async (req:FastifyRequest, reply: FastifyReply) => {
 	return reply.status(200).send("Bonjour depuis auth");

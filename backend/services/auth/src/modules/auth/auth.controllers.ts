@@ -28,9 +28,10 @@ export async function signUpUser(request: FastifyRequest<{ Body: SignUpUserInter
 	const { email, firstName, lastName, phone, password } = request.body;
 
 	try {
-		const id = await authServices.createUserAccount(request.server, email, firstName, lastName, phone, password);
+		const user = await authServices.createUserAccount(request.server, email, firstName, lastName, phone, password);
+		const data = await responseUserAddToken(request, reply, user);
 		return reply.status(201).send({
-			"userId": id,
+			data,
 			"message": "auth.verification_email_sent"
 		})
 	} catch (error: any) {
@@ -82,7 +83,7 @@ export async function refreshToken(request: FastifyRequest, reply: FastifyReply)
 		}))
 	} catch (error: any) {
 		if (error.message === "User not found")
-			return reply.status(400).send({
+			return reply.status(404).send({
 				"error": "invalid_credentials",
 				"message": "auth.invalid_credentials"
 			});
@@ -121,9 +122,9 @@ export async function verifiedEmail(request: FastifyRequest<{ Body: { token: str
 
 	try {
 		const user = await authServices.verifyTokenEmail(request.server, token);
-		const responseUsers = await responseUserAddToken(request, reply, user);
+		const data = await responseUserAddToken(request, reply, user);
 		return (reply.status(200).send({
-			responseUsers,
+			data,
 			message: "Compte activé avec succès. 5 crédits offerts !"
 		}));
 	} catch (error: any) {
@@ -136,7 +137,7 @@ export async function verifiedEmail(request: FastifyRequest<{ Body: { token: str
 
 export async function resendEmailVerification(request: FastifyRequest, reply: FastifyReply) {
 	const user = request.user as UserInterface;
-
+	console.log(user);
 	if (!user) {
 		return reply.status(401).send({
 			"error": "invalid_credentials",
@@ -158,6 +159,11 @@ export async function resendEmailVerification(request: FastifyRequest, reply: Fa
 				"message": "auth.email_already_verified"
 			});
 		}
+		else if (error.message === "User not found")
+			return reply.status(404).send({
+				"error": "invalid_credentials",
+				"message": "auth.invalid_credentials"
+			});
 		return reply.status(500).send({
 			"error": "internal_server_error",
 			"message": "common.internal_server_error"
@@ -222,7 +228,7 @@ export async function forgotPassword(request: FastifyRequest <{Body: {email:stri
 		return reply.status(200).send({"message": "auth.reset_password_email_sent"})
 	} catch (error: any) {
 		if (error.message === "User not found")
-			return reply.status(403).send({
+			return reply.status(404).send({
 				"error": "email_not_verified",
 				"message": "auth.email_verification_required"
 			});
