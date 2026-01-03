@@ -9,5 +9,8 @@ declare module 'fastify' {
 	refreshSecret: string
 	privateKey: any
     authentication: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
+    partialAuthentication: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
+    emailVerifiedAuthentication: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
+	phoneVerifiedAuthentication: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
   }
 }
