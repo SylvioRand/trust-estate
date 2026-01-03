@@ -8,8 +8,8 @@ export async function loginUser(request: FastifyRequest<{ Body: LoginUserInterfa
 
 	try {
 		const user = await authServices.findUserByEmail(request.server, email, password);
-		const responseUsers = await responseUserAddToken(request, reply, user);
-		return (reply.status(200).send(responseUsers));
+		const data = await responseUserAddToken(request, reply, user);
+		return (reply.status(200).send(data));
 	} catch (error: any) {
 		if (error.message === 'Email not verified')
 			return reply.status(403).send({
