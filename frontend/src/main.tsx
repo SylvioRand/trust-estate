@@ -5,6 +5,7 @@ import "./index.css"
 import "./i18n/i18n.ts";
 
 import PublicRoot from './components/PublicRoot.tsx';
+import ProtectedRoute from './components/ProtectedRoot.tsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import SignUpPage from './pages/sign_up.tsx';
 import NavBar from './components/NavBar.tsx';
@@ -23,14 +24,36 @@ const router = createBrowserRouter([
 	{
 		element: <MainLayout />,
 		children: [
-			// should be protected
+			// ==========================================
+			// PAGES PUBLIQUES (non-authentifiés uniquement)
+			// ==========================================
 			{
-				path: "/verify-email",
+				path: "/sign-in",
 				element:
 					<PublicRoot>
-						<VerifyEmailPage />
+						<SignInPage />
 					</PublicRoot>
-
+			},
+			{
+				path: "/sign-up",
+				element:
+					<PublicRoot>
+						<SignUpPage />
+					</PublicRoot>
+			},
+			{
+				path: "/forgot-pass",
+				element:
+					<PublicRoot>
+						<ForgotPassPage />
+					</PublicRoot>
+			},
+			{
+				path: "/reset-pass",
+				element:
+					<PublicRoot>
+						<ResetPassPage />
+					</PublicRoot>
 			},
 			{
 				path: "/welcome",
@@ -39,81 +62,56 @@ const router = createBrowserRouter([
 						<WelcomePage />
 					</PublicRoot>
 			},
+
+			// ==========================================
+			// PAGES DE VÉRIFICATION (semi-protégées)
+			// ==========================================
+			{
+				path: "/verify-email",
+				element: <VerifyEmailPage />
+			},
 			{
 				path: "/add-phone",
-				element:
-					<PublicRoot>
-						<AddPhonePage />
-					</PublicRoot>
-
-			},
-			{
-				path: "/reset-pass",
-				element:
-					<PublicRoot>
-						<ResetPassPage />
-					</PublicRoot>
-
-			},
-			{
-				path: "/forgot-pass",
-				element:
-					<PublicRoot>
-						<ForgotPassPage />
-					</PublicRoot>
-
+				element: <AddPhonePage />
 			},
 
-
-
+			// ==========================================
+			// PAGES PROTÉGÉES (authentifiés uniquement)
+			// ==========================================
 			{
 				path: "/home",
 				element:
-					<PublicRoot>
+					<ProtectedRoute>
 						<HomePage />
-					</PublicRoot>
-
+					</ProtectedRoute>
 			},
 			{
 				path: "/property",
 				element:
-					<PublicRoot>
+					<ProtectedRoute>
 						<PropertyPage />
-					</PublicRoot>
-
-			},
-			{
-				path: "/sign-up",
-				element:
-					<PublicRoot>
-						<SignUpPage />
-					</PublicRoot>
-
-			},
-			{
-				path: "/sign-in",
-				element:
-					<PublicRoot>
-						<SignInPage />
-					</PublicRoot>
-
+					</ProtectedRoute>
 			},
 			{
 				path: "/ai",
 				element:
-					<PublicRoot>
+					<ProtectedRoute>
 						<ChatBot />
-					</PublicRoot>
+					</ProtectedRoute>
+			},
 
+			// ==========================================
+			// REDIRECTIONS PAR DÉFAUT
+			// ==========================================
+			{
+				path: "/",
+				element: <Navigate to="/sign-in" replace />
 			},
 			{
 				path: "*",
-				element:
-					<Navigate to="/sign-in" replace />
-
+				element: <Navigate to="/sign-in" replace />
 			},
 		]
-
 	},
 ]);
 
