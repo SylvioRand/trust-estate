@@ -106,7 +106,7 @@ const SignUpPage: React.FC = () => {
 				}
 			}
 
-			navigate("/verify-email-notice");
+			navigate("/verify-email");
 
 		} catch (error) {
 			console.error("Error: ", error);
