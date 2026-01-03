@@ -2,15 +2,26 @@
 # Auth Service - Fastify + Prisma
 # =============================================================================
 
-FROM node:22-alpine AS builder
+FROM node:22-alpine AS deps
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# Install dependencies (cached layer)
 RUN npm ci
+
+# =============================================================================
+# Builder stage
+# =============================================================================
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY package*.json ./
 
 # Copy prisma schema
 COPY prisma ./prisma/
@@ -19,7 +30,8 @@ COPY prisma ./prisma/
 RUN npx prisma generate
 
 # Copy source code
-COPY . .
+COPY tsconfig.json tsup.config.ts ./
+COPY src ./src/
 
 # Build TypeScript
 RUN npm run build
