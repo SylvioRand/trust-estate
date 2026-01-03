@@ -41,6 +41,9 @@ const	Card: React.FC<CardProps> = ({
 					w-5 h-5"
 				>
 					<div className="absolute
+						bg-linear-to-t from-[color-mix(in_srgb,var(--color-foreground)_25%,var(--color-accent))] via-[color-mix(in_srgb,var(--color-foreground)_25%,var(--color-accent))] to-accent
+						bg-clip-text
+						text-transparent
 						font-icon text-4xl"
 					>
 						{ icon }
@@ -56,9 +59,42 @@ const	Card: React.FC<CardProps> = ({
 	);
 }
 
+interface DataAboutUsProps {
+	title: string;
+	value: string;
+}
+
+const	DataAbousUs: React.FC<DataAboutUsProps> = ({
+	title = "Title",
+	value = "2+"
+
+}) => {
+	return (
+		<div className="flex flex-col items-center justify-center">
+			<div className="font-bold text-3xl
+				mr-auto ml-0 xl:ml-auto xl:mr-0
+				bg-linear-to-t from-[color-mix(in_srgb,var(--color-foreground)_25%,var(--color-accent))] via-[color-mix(in_srgb,var(--color-foreground)_25%,var(--color-accent))] to-accent
+				bg-clip-text
+				text-transparent">
+				{ value }
+			</div>
+			<div className="font-light text-sm">
+				{ title }
+			</div>
+		</div>
+	)
+}
+
 const	HomePage: React.FC = () => {
 	const	{ t } = useTranslation("home");
 	const	imgStyle = "w-full aspect-square rounded-xl max-w-80";
+
+	const	statsData: DataAboutUsProps[] = [
+		{ title: t("aboutUs.stats.0"), value: "24/7" },
+		{ title: t("aboutUs.stats.1"), value: "42+" },
+		{ title: t("aboutUs.stats.2"), value: "4.8/5" },
+		{ title: t("aboutUs.stats.3"), value: "7+" }
+	]
 
 	const	cardData: CardProps[] = [
 		{ icon: "󰓎", title: t("aboutUs.card.AI.title"), content: t("aboutUs.card.AI.content") },
@@ -102,11 +138,13 @@ const	HomePage: React.FC = () => {
 					>
 						<img
 							className="w-full rounded-xl shadow-2xl"
+							alt="Picture of a modern house"
 							src={ house0 }
 						/>
 
 						<img
 							className="w-full rounded-xl shadow-2xl"
+							alt="Picture of a modern house"
 							src={ house2 }
 						/>
 					</div>
@@ -116,29 +154,61 @@ const	HomePage: React.FC = () => {
 					>
 						<img
 							className="w-full rounded-xl shadow-2xl"
+							alt="Picture of a modern house"
 							src={ house1 }
 						/>
 
 						<img
 							className="w-full rounded-xl shadow-2xl"
+							alt="Picture of a modern house"
 							src={ house3 }
 						/>
 					</div>
 				</div>
 
-				<div className="flex flex-col items-start xl:items-end justify-center gap-3
-					justify-self-center xl:justify-self-end
-					order-2 xl:order-1
-					xl:max-w-145
-					xl:text-right"
+				<div className="flex flex-col items-center justify-center gap-4
+					xl:grid xl:grid-cols-1 xl:grid-rows-2 xl:h-[30%]
+					place-items-center
+					order-2 xl:order-1"
 				>
-					<div className="font-higuen font-bold text-[42px] leading-tight">
-						{ t("header.title") }
+					<div className="flex flex-col items-start xl:items-end justify-center gap-4
+						justify-self-center xl:justify-self-end
+						xl:max-w-145
+						xl:text-right"
+					>
+						<div className="font-higuen font-bold text-[42px] leading-tight
+							bg-linear-to-t from-[color-mix(in_srgb,var(--color-foreground)_25%,var(--color-background))] to-background
+							bg-clip-text text-transparent
+							">
+							{ t("header.title") }
+						</div>
+						<div className="font-inter font-light text-md">
+							{ t("header.subtitle") }
+						</div>
+
+
 					</div>
-					<div className="font-inter font-light text-md">
-						{ t("header.subtitle") }
+
+					<div className="grid grid-cols-2 grid-rows-2
+						my-4
+						md:grid-cols-4 md:grid-rows-1
+						w-full
+						gap-4
+						place-items-start
+						xl:place-items-end"
+					>
+						{ statsData.map((value: DataAboutUsProps, index: number) => {
+							return (
+								<DataAbousUs
+									key={ index }
+									title={ value.title }
+									value={ value.value }
+								/>
+							);
+						})}
 					</div>
 				</div>
+
 			</div>
 
 			<div className="flex flex-col items-center justify-center gap-12

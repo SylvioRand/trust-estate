@@ -14,6 +14,13 @@
 			"reason": "Une plateforme conçue pour vous offrir une expérience immobilière exceptionnelle."
 		},
 
+		"stats": {
+			"0": "Support Premium",
+			"1": "Biens de Prestige",
+			"2": "Score Client",
+			"3": "Expert Immobilier"
+		},
+
 		"card": {
 			"AI": {
 				"title": "IA Intelligente",

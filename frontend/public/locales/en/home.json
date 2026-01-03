@@ -9,6 +9,13 @@
 	},
 
 	"aboutUs": {
+		"stats": {
+			"0": "Premium Support",
+			"1": "Luxury Property",
+			"2": "Satisfaction Rate",
+			"3": "Real Estate Expert"
+		},
+
 		"whyUs": {
 			"title": "Why choosing CASA?",
 			"reason": "A platform designed to offer you an exceptional real estate experience."
