@@ -47,16 +47,16 @@ export async function findUserByEmail(app: FastifyInstance, email: string, passw
 		throw new Error("Mot de passe incorrect");
 	}
 
-	if (!user.emailVerified) {
-		app.log.warn({
-			userId: user.id,
-			email: user.email,
-			action: 'login_failed',
-			reason: 'email_not_verified',
-			timestamp: new Date().toISOString()
-		});
-		throw new Error("Email not verified");
-	}
+	// if (!user.emailVerified) {
+	// 	app.log.warn({
+	// 		userId: user.id,
+	// 		email: user.email,
+	// 		action: 'login_failed',
+	// 		reason: 'email_not_verified',
+	// 		timestamp: new Date().toISOString()
+	// 	});
+	// 	throw new Error("Email not verified");
+	// }
 
 	app.log.info({
 		userId: user.id,
@@ -339,10 +339,10 @@ export async function saveRefreshToken(app: FastifyInstance, userId: string, tok
 
 export async function refreshTokenExists(app: FastifyInstance, userId: string, token: string): Promise<boolean> {
 	const tokenHash = createHash('sha256').update(token).digest('hex');
+
 	const storedToken = await app.prisma.refresh_token.findUnique({
 		where: { userId }
 	});
-
 	if (!storedToken) return false;
 
 	return (

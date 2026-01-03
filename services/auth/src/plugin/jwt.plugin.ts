@@ -23,7 +23,7 @@ export async function verifyAccessToken(
 
 	if (!realestate_access_token) {
 		if (realestate_refresh_token) {
-			reply.redirect("/auth/refresh");
+			reply.redirect("/api/auth/refresh");
 			return;
 		}
 
@@ -111,7 +111,6 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 				"redirect": "/add-phone.html"
 			});
 		if (!user.emailVerified) {
-			console.log("FDFDGFDG");
 			return reply.code(403).send({
 				"error": "email_not_verified",
 				"message": "auth.email_verification_required",
