@@ -77,6 +77,7 @@ export function responseUser(user: any) {
 }
 
 export async function responseUserAddToken(request: FastifyRequest,reply: FastifyReply, user: any) {
+	console.log(user);
 	await generateAccessToken(request, reply, user);
 	return (responseUser(user));
 }

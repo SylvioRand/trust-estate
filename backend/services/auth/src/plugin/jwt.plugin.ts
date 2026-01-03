@@ -100,7 +100,6 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 			}
 			const user = jwt.verify(realestate_access_token, publicKey, { algorithms: ["RS256"] }) as UserInterface;
 			request.user = user;
-
 			if (!user.phoneVerified)
 				return reply.code(403).send({
 					"error": "phone_number_not_verified",
@@ -129,7 +128,6 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 			}
 			const user = jwt.verify(realestate_access_token, publicKey, { algorithms: ["RS256"] }) as UserInterface;
 			request.user = user;
-			console.log(user);
 			if (!user.phoneVerified)
 				return reply.code(403).send({
 					"error": "phone_number_not_verified",
@@ -137,6 +135,7 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 					"redirect": "/add-phone.html"
 				});
 			if (!user.emailVerified) {
+				console.log("FDFDGFDG");
 				return reply.code(403).send({
 					"error": "email_not_verified",
 					"message": "auth.email_verification_required",
