@@ -13,17 +13,57 @@ export async function findUserByEmail(app: FastifyInstance, email: string, passw
 		}
 	});
 
-	if (!user)
+	if (!user) {
+		app.log.warn({
+			email,
+			action: 'login_failed',
+			reason: 'user_not_found',
+			timestamp: new Date().toISOString()
+		});
 		throw new Error("User not found");
+	}
 
-	if (user.password === null)
+	if (user.password === null) {
+		app.log.warn({
+			userId: user.id,
+			email: user.email,
+			action: 'login_failed',
+			reason: 'oauth_user_password_login_attempt',
+			timestamp: new Date().toISOString()
+		});
 		throw new Error("Veuillez vous connecter par mail");
+	}
+
 	const isValid = await bcrypt.compare(password, user.password);
 
-	if (!isValid)
+	if (!isValid) {
+		app.log.warn({
+			userId: user.id,
+			email: user.email,
+			action: 'login_failed',
+			reason: 'invalid_password',
+			timestamp: new Date().toISOString()
+		});
 		throw new Error("Mot de passe incorrect");
-	if (!user.emailVerified)
+	}
+
+	if (!user.emailVerified) {
+		app.log.warn({
+			userId: user.id,
+			email: user.email,
+			action: 'login_failed',
+			reason: 'email_not_verified',
+			timestamp: new Date().toISOString()
+		});
 		throw new Error("Email not verified");
+	}
+
+	app.log.info({
+		userId: user.id,
+		email: user.email,
+		action: 'login_success',
+		timestamp: new Date().toISOString()
+	});
 
 	return (user);
 }
@@ -61,6 +101,7 @@ export async function createUserAccount(app: FastifyInstance,
 				lastName,
 				password: passwordHash,
 				phone,
+				phoneVerified: true,
 				emailVerificationToken: {
 					create: {
 						tokenHash,
@@ -74,7 +115,7 @@ export async function createUserAccount(app: FastifyInstance,
 		});
 
 		const baseUrl = app.config.FRONTEND_URL;
-		const verificationUrl = `${baseUrl}/verify-email?token=${hash}`;
+		const verificationUrl = `${baseUrl}/verify-email.html?token=${hash}`;
 		const { text, html } = generateMail(lastName, verificationUrl);
 		const info = await (app as any).mailer.sendMail({
 			from: 'dinandrianom@gmail.com',
@@ -83,53 +124,89 @@ export async function createUserAccount(app: FastifyInstance,
 			text: text,
 			html: html
 		});
-		return (user.id);
-	} catch (error: any) {
-		throw new Error(error);
-	}
-};
 
-export async function verifyTokenEmail(app: FastifyInstance, token: string) {
+	app.log.info({
+		userId: user.id,
+		email,
+		phone,
+		action: 'account_created',
+		timestamp: new Date().toISOString()
+	});
+	
+	return (user);
+} catch (error: any) {
+	throw new Error(error);
+}
+};export async function verifyTokenEmail(app: FastifyInstance, token: string) {
 	const hash = createHash('sha256').update(token).digest('hex');
-	const verificationToken = await app.prisma.email_Verification_token.findUnique({
-		where: { tokenHash: hash }
+
+	const verificationToken = await app.prisma.email_Verification_token.findFirst({
+		where: { 
+			tokenHash: hash,
+			expiresAt: { gt: new Date() }
+		}
 	});
 
 	if (!verificationToken)
 		throw new Error("Invalid or expired verification token");
 
-	const expiresAtTimestamp = new Date(verificationToken.expiresAt).getTime();
-	if (expiresAtTimestamp < Date.now()) {
-		throw new Error("Verification token has expired");
-	}
-	await app.prisma.user.update({
-		where: { id: verificationToken.userId },
-		data: {
-			emailVerified: true
-		}
+	const user = await app.prisma.$transaction(async (prisma: any) => {
+		await prisma.user.update({
+			where: { id: verificationToken.userId },
+			data: { emailVerified: true }
+		});
+
+		await prisma.email_Verification_token.delete({
+			where: { userId: verificationToken.userId }
+		});
+
+		return prisma.user.findUnique({
+			where: { id: verificationToken.userId }
+		});
 	});
-	const user = await app.prisma.user.findUnique({
-		where: { id: verificationToken.userId }
+
+	app.log.info({
+		userId: verificationToken.userId,
+		action: 'email_verified',
+		timestamp: new Date().toISOString()
 	});
-	await app.prisma.email_Verification_token.delete({
-		where: { userId: verificationToken.userId }
-	});
+
 	return (user);
-};
+	}
 
 export async function resendEmail(app: FastifyInstance, lastName: string, email: string) {
 	const user = await app.prisma.user.findUnique({
-		where: { email: email }
+		where: { email: email },
+		include: { emailVerificationToken: true }
 	});
 
 	if (!user)
 		throw new Error("User not found");
 
-	// if (user.emailVerified)
-	// 	throw new Error("Your email is already in verified");
+	if (user.emailVerified)
+		throw new Error("Your email is already in verified");
+
+	if (user.emailVerificationToken) {
+		const tokenCreatedAt = new Date(user.emailVerificationToken.expiresAt.getTime() - 24 * 60 * 1000);
+		const timeSinceCreation = Date.now() - tokenCreatedAt.getTime();
+		const ONE_MINUTE = 60 * 1000;
+
+		if (timeSinceCreation < ONE_MINUTE) {
+			const remainingSeconds = Math.ceil((ONE_MINUTE - timeSinceCreation) / 1000);
+			app.log.warn({
+				userId: user.id,
+				email: user.email,
+				action: 'resend_email_rate_limited',
+				remainingSeconds
+			});
+			throw new Error(`Please wait ${remainingSeconds} seconds before requesting a new verification email`);
+		}
+	}
+
 	const hash = crypto.randomBytes(32).toString('base64url');
 	const tokenHash = createHash('sha256').update(hash).digest('hex');
 	const expiresAt = new Date(Date.now() + 1000 * 60 * 24).toISOString();
+	
 	await app.prisma.email_Verification_token.upsert({
 		where: { userId: user.id },
 		update: {
@@ -146,6 +223,7 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 	const baseUrl = app.config.FRONTEND_URL;
 	const verificationUrl = `${baseUrl}/verify-email?token=${hash}`;
 	const { text, html } = generateMail(lastName, verificationUrl);
+	
 	await (app as any).mailer.sendMail({
 		from: 'dinandrianom@gmail.com',
 		to: email,
@@ -153,11 +231,19 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 		text: text,
 		html: html
 	});
+
+	app.log.info({
+		userId: user.id,
+		email: user.email,
+		action: 'verification_email_sent',
+		timestamp: new Date().toISOString()
+	});
+
 	return (user.id);
 };
 
 export async function getUserInfo(app: FastifyInstance, code: string): Promise<UserGoogleInterface> {
-	const tokentResponse = await fetch("https://oauth2.googleapis.com/token", {
+	const tokentResponse = await fetch(app.config.TOKEN_URL, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded",
@@ -170,9 +256,9 @@ export async function getUserInfo(app: FastifyInstance, code: string): Promise<U
 			redirect_uri: app.config.REDIRECT_URI,
 		}),
 	});
+	console.log("=====>", tokentResponse);
 
 	const tokens = await tokentResponse.json();
-
 	if (!tokens)
 		throw new Error("Invalid credentials");
 
@@ -294,25 +380,9 @@ export async function findUserById(app: FastifyInstance, id: string) {
 	return (user);
 }
 
-export async function updatePhoneNumberUser(app: FastifyInstance, userId: string, phone: string) {
-	const phoneExist = await app.prisma.user.findFirst({
-		where: { phone: phone }
-	})
-
-	if (phoneExist)
-		throw new Error("phone_exists");
-	await app.prisma.user.update({
-		where: { id: userId },
-		data: {
-			phone,
-			phoneVerified: true
-		}
-	});
-};
-
 export async function sendTokenForgotPassword(app: FastifyInstance, email: string) {
 	const user = await app.prisma.user.findUnique({
-		where: { email }
+		where: {email}
 	});
 
 	if (!user)
@@ -344,7 +414,7 @@ export async function sendTokenForgotPassword(app: FastifyInstance, email: strin
 export async function changePassword(app: FastifyInstance, token: string, password: string) {
 	const hash = createHash('sha256').update(token).digest('hex');
 	const tokenExist = await app.prisma.forgot_password_token.findUnique({
-		where: { tokenHash: hash }
+		where: {tokenHash: hash}
 	});
 
 	if (!tokenExist)
@@ -356,13 +426,13 @@ export async function changePassword(app: FastifyInstance, token: string, passwo
 	const salt = await bcrypt.genSalt(12);
 	const passwordHash = await bcrypt.hash(password, salt);
 	await app.prisma.user.update({
-		where: { id: tokenExist.userId },
+		where: {id: tokenExist.userId},
 		data: {
 			password: passwordHash
 		}
 	});
 
 	await app.prisma.forgot_password_token.delete({
-		where: { userId: tokenExist.userId }
+		where: {userId: tokenExist.userId}
 	})
 }

@@ -44,7 +44,7 @@ export async function emailAuthRoutes(app: FastifyInstance, options: FastifyPlug
 				}
 			}
 		},
-		preHandler: app.emailAuthentication
+		preHandler: app.partialAuthentication
 	}, authControllers.resendEmailVerification)
 }
 
