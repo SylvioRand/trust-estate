@@ -83,3 +83,4 @@ public/uploads/
 *.tgz
 *.bak
 
+.obsidian
