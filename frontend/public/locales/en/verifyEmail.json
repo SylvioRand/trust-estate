@@ -4,33 +4,9 @@
 	},
 
 	"header": {
-		"title": "Verify Your Email",
-		"subtitle": "A verification link has been sent to your email address to secure and confirm your account."
+		"title": "Email Verification",
+		"subtitle": "Please wait while we confirm the validity of your email address."
 	},
 
-	"steps": {
-		"one": "Access your email inbox.",
-		"two": "Locate the email from CASA containing the verification link.",
-		"three": "Click on the provided verification link.",
-		"four": "Return here and sign in to your account."
-	},
-
-	"buttons": {
-		"resendEmail": {
-			"title": "Resend",
-			"success": "An verification link has been re-sent to your email address.",
-			"error": {
-				"invalidOrExpiredToken": "Your token is invalid or expired."
-			}
-		},
-
-		"logOut": {
-			"title": "Log Out"
-		}
-	},
-
-	"actions": {
-		"back": "Return to Sign In"
-	}
+	"success": "Your email was verified."
 }
-

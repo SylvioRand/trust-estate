@@ -10,41 +10,41 @@ all: build up
 # Build all containers
 build:
 	@echo "🔨 Building containers..."
-	DOCKER_BUILDKIT=1 docker-compose build
+	DOCKER_BUILDKIT=0 docker-compose build
 
 # Rebuild without cache (use only when needed)
 rebuild:
 	@echo "🔨 Rebuilding containers without cache..."
-	DOCKER_BUILDKIT=1 docker-compose build --no-cache
+	DOCKER_BUILDKIT=0 docker-compose build --no-cache
 
 # Start all services
 up:
 	@echo "🚀 Starting services..."
-	DOCKER_BUILDKIT=1 docker-compose up -d
+	DOCKER_BUILDKIT=0 docker-compose up -d
 
 # Stop all services
 down:
 	@echo "🛑 Stopping services..."
-	DOCKER_BUILDKIT=1 docker-compose down
+	DOCKER_BUILDKIT=0 docker-compose down
 
 # Clean everything (containers, images, volumes)
 clean:
 	@echo "🧹 Cleaning up..."
-	DOCKER_BUILDKIT=1 docker-compose down -v --rmi local
+	DOCKER_BUILDKIT=0 docker-compose down -v --rmi local
 	@echo "✅ Cleanup complete"
 
 # View logs
 logs:
-	DOCKER_BUILDKIT=1 docker-compose logs -f
+	DOCKER_BUILDKIT=0 docker-compose logs -f
 
 # Restart services
 restart: down up
 
 # Check status
 status:
-	DOCKER_BUILDKIT=1 docker-compose ps
+	DOCKER_BUILDKIT=0 docker-compose ps
 
 # Development mode: build and start with logs
 dev: build
 	@echo "🔧 Starting in development mode..."
-	DOCKER_BUILDKIT=1 docker-compose up
+	DOCKER_BUILDKIT=0 docker-compose up

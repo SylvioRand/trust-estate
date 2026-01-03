@@ -46,9 +46,9 @@ const	ActionButton: React.FC<ActionButtonProps> = ({
 				backgroundColor: disabled ? "color-mix(in srgb, var(--color-background) 25%, var(--color-foreground))" : "var(--color-background)",
 				cursor: disabled ? "not-allowed" : "pointer",
 				flexDirection: icon_place === "left" ? "row" : "row-reverse",
-				borderRadius: hovered ? "var(--radius-4xl)" : "var(--radius-lg)",
-				filter: hovered ? "drop-shadow(0px 0px 3px var(--color-accent))" : "none",
-				transform: hovered ? "scale(98%)" : "none"
+				borderRadius: hovered || processing_action ? "var(--radius-4xl)" : "var(--radius-lg)",
+				filter: hovered || processing_action ? "drop-shadow(0px 0px 3px var(--color-accent))" : "none",
+				transform: hovered || processing_action ? "scale(98%)" : "none"
 			}}
 			{...(onClick ? { onClick } : {})}
 		>
@@ -59,8 +59,8 @@ const	ActionButton: React.FC<ActionButtonProps> = ({
 				ease-in-out
 				bg-accent"
 				style={{
-					opacity: hovered ? "100%" : "0%",
-					transform: hovered ? "none" : "translateY(100px)"
+					opacity: hovered || processing_action ? "100%" : "0%",
+					transform: hovered || processing_action ? "none" : "translateY(100px)"
 				}}
 			>
 			</div>

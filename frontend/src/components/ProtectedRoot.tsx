@@ -44,7 +44,7 @@ const ProtectedRoute: React.FC<IProtectedRoot> = ({ children }) => {
           if (errorData.error === 'phone_number_not_verified') {
             setRedirectTo('/add-phone');
           } else if (errorData.error === 'email_not_verified') {
-            setRedirectTo('/verify-email');
+            setRedirectTo('/email-sent');
           } else {
             setIsAuthenticated(false);
           }
