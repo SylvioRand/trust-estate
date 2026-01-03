@@ -5,7 +5,7 @@ import { ForgotPasswordSchema, LoginUserSchema, ResendEmailSchema, ResetPassword
 export async function authRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
 	app.post("/login", {schema: LoginUserSchema}, authControllers.loginUser);
 	app.post("/register", {schema: SignUpUserSchema}, authControllers.signUpUser);
-	app.post("/logout",{preHandler: app.phoneAuthentication }, authControllers.logoutUser);
+	app.post("/logout",{preHandler: app.partialAuthentication }, authControllers.logoutUser);
 	app.get("/refresh", authControllers.refreshToken);
 	app.post("/forgot-password", {
 		config: {
