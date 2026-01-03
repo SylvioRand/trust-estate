@@ -63,7 +63,6 @@ export async function refreshToken(request: FastifyRequest, reply: FastifyReply)
 		});
 	try {
 		const decoded: any = request.server.jwt.verify(oldToken, { key: request.server.refreshSecret });
-
 		if (decoded.type !== 'refresh' || !decoded.userId) {
 			return reply.code(401).send({
 				"error": "invalid_credentials",
@@ -77,6 +76,7 @@ export async function refreshToken(request: FastifyRequest, reply: FastifyReply)
 			});
 		const user = await authServices.updateRefrechToken(request.server, decoded, oldToken);
 		await generateAccessToken(request, reply, user);
+
 		return (reply.status(200).send({
 			"success": true,
 			"expiresIn": 900

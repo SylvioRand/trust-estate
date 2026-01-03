@@ -339,10 +339,10 @@ export async function saveRefreshToken(app: FastifyInstance, userId: string, tok
 
 export async function refreshTokenExists(app: FastifyInstance, userId: string, token: string): Promise<boolean> {
 	const tokenHash = createHash('sha256').update(token).digest('hex');
+
 	const storedToken = await app.prisma.refresh_token.findUnique({
 		where: { userId }
 	});
-
 	if (!storedToken) return false;
 
 	return (

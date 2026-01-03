@@ -1,43 +1,56 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * Hook pour rediriger automatiquement un utilisateur authentifié
+ * Utilisé sur les pages publiques (login, signup) pour éviter qu'un utilisateur
+ * connecté puisse y accéder
+ * 
+ * NOTE: Ce hook n'est plus nécessaire si vous utilisez <PublicRoot>
+ * qui gère déjà cette logique. Conservé pour compatibilité.
+ * 
+ * Les tokens JWT sont dans les cookies HTTP-only, pas dans localStorage.
+ * Le navigateur les envoie automatiquement avec credentials: 'include'
+ */
 export function useAuthRedirect() {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-
 		const checkAuth = async () => {
 			try {
+				// Vérifier si l'utilisateur est authentifié
+				// Les cookies sont envoyés automatiquement
 				const res = await fetch(`/api/users/me`, {
 					method: "GET",
-					credentials: "include",
+					credentials: "include", // Envoie les cookies automatiquement
 				});
-				console.log("=====>", res);
+				
 				if (res.ok) {
-					console.log("HERE");
 					navigate("/home", { replace: true });
+					return;
 				}
-				else if (res.status === 403) {
-					console.log("HERE 403");
+
+				if (res.status === 403) {
 					const errorData = await res.json();
+					
 					if (errorData.error === "phone_number_not_verified") {
 						navigate("/add-phone", { replace: true });
+						return;
 					}
-				}
-				else if (res.status === 401) {
-					console.log("HERE 401");
-					const errorData = await res.json();
 					if (errorData.error === "email_not_verified") {
 						navigate("/verify-email", { replace: true });
+						return;
 					}
 				}
+
 			} catch (err) {
+				// Erreur réseau réelle
 				console.error("Auth check failed:", err);
 			}
 		};
 
 		checkAuth();
-	}, []);
+	}, [navigate]);
 }
 
 
