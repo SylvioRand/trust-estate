@@ -12,7 +12,7 @@ export function useAuthRedirect() {
 					method: "GET",
 					credentials: "include",
 				});
-
+				console.log("=====>", res);
 				if (res.ok) {
 					console.log("HERE");
 					navigate("/home", { replace: true });
