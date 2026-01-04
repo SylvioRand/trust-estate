@@ -1,5 +1,33 @@
 {
 	"brand": {
 		"name": "CASA"
+	},
+
+	"section": {
+		"features": {
+			"bedrooms": "Bedroom",
+			"bathrooms": "Bathroom",
+			"area": "Area",
+			"parking_type": "Parking",
+			"water_access": "Water",
+			"electricity_access": "Electricity",
+			"garden_private": "Garden",
+			"wc_separate": "Toilet Separate"
+		},
+
+		"description": {
+			"title": "Description"
+		},
+
+		"quickButtons": {
+			"favorites": "Add to favorites",
+			"visit": "Plan a visit"
+		},
+
+		"pictures": {
+			"buttons": {
+				"seeMore": "See more"
+			}
+		}
 	}
 }

@@ -39,6 +39,8 @@
 	--color-darktone: var(--color-darktone);
 	--color-background: var(--color-background);
 
+	--shadow-standard: 0px 7px 12px rgba(0,0,0,0.12);
+
 	--font-inter: "Inter";
 	--font-icon: "Icons";
 	--font-higuen: "Higuen";
