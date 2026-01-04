@@ -42,6 +42,7 @@ const	PublicationCard: React.FC<PublicationCardProps> = ({
 }) => {
 	const	[hovered, setHovered] = useState<boolean>(false);
 	const	navigate = useNavigate();
+	const	formatter = new Intl.NumberFormat("de-DE");
 
 	return (
 		<div className="flex items-center justify-center
@@ -93,7 +94,7 @@ const	PublicationCard: React.FC<PublicationCardProps> = ({
 					{ propertyData.data[0].title }
 				</div>
 				<div className="font-inter font-light">
-					{ propertyData.data[0].price } AR
+					{ formatter.format(propertyData.data[0].price) } AR
 				</div>
 			</div>
 		</div>

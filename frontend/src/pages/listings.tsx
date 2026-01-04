@@ -3,8 +3,10 @@ import house0 from "../../src/images/house0.webp";
 import house1 from "../../src/images/house1.webp";
 import house2 from "../../src/images/house2.webp";
 import house3 from "../../src/images/house3.webp";
-import { useTranslation } from "react-i18next";
+import { useTranslation, type UseTranslationResponse } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
+import type { TFunction } from "i18next";
+import ActionButton from "../components/ActionButton";
 
 interface ListingsData
 {
@@ -38,52 +40,174 @@ interface ListingsData
   expiresAt: string;
 }
 
-
-
-interface PicturesCarrouselProps {
-	pictures: string[];
+interface	PicturesLayoutProps {
+	data: string[];
+	translationSingleton: TFunction<"listings">;
 }
 
-const	PicturesCarrousel: React.FC<PicturesCarrouselProps> = ({
-	pictures = [],
+const	PicturesLayout: React.FC<PicturesLayoutProps> = ({
+	data = [],
+	translationSingleton
 }) => {
-	const	[displayID, setDisplayID] = useState<number>(1);
+
+	function Img({ src, see_more = false }: { src: string; see_more?: boolean }) {
+		const	[hovered, setHovered] = useState<boolean>(false);
+
+		return (
+			<div className="w-full h-full
+				select-none
+				cursor-pointer
+				relative"
+			>
+				<img
+					className="w-full h-full object-cover
+					shadow-xl
+					select-none
+					cursor-pointer
+					transition-transform duration-500"
+					src={src}
+					alt="House Picture"
+					onPointerEnter={ () => setHovered(true) }
+					onPointerLeave={ () => setHovered(false) }
+					style={{
+						transform: hovered ? "scale(110%)" : "none"
+					}}
+				/>
+
+				<div className="absolute top-0 left-0
+					flex items-center justify-center
+					pointer-events-none
+					w-full h-full
+					transition-colors duration-500"
+					style={{
+						backgroundColor: hovered ? "rgba(0,0,0,0.75)" : "transparent"
+					}}
+				>
+					<div className="font-icon text-light-foreground text-4xl
+						transition-opacity duration-500"
+						style={{
+							opacity: hovered ? "100%" : "0%"
+						}}
+					>
+						
+					</div>
+				</div>
+
+				{
+					see_more &&
+					<div className="absolute top-0 left-0
+						flex items-center justify-center
+						bg-light-background/75
+						w-full h-full"
+					>
+						<div className="font-light text-center text-lg text-light-foreground">
+							{ translationSingleton("section.pictures.buttons.seeMore") }
+						</div>
+					</div>
+				}
+			</div>
+		);
+    }
 
 	return (
-		<div className="relative
-			flex items-center justify-center
-			max-w-300
-			w-full h-120"
-		>
-			{ pictures.map((value: string, index: number) => {
-				return (
-					<img
-						key={ index }
-						className="absolute
-							w-[80%] aspect-square object-cover
-							max-w-100
-							rounded-2xl
-							flex-none
-							shadow-xl
-							transition-transform duration-500 ease-in-out"
-						src={ value }
-						alt="House Picture"
-						onClick={ () => setDisplayID(index) }
-						style={{
-							zIndex: (index === displayID) ? 10 : 0,
-							transform: `translateX(${ ((Math.abs(index - displayID) === 1 ? 106 : 104) * (index - displayID)) }%)
-										${ index === displayID ? "scale(110%)" : "scale(100%)" }`
-						}}
-					/>
-				);
-			})}
+		<div className="grid grid-cols-1 grid-rows-1 place-items-center
+			gap-3
+			md:grid-cols-[50%_1fr_1fr] md:grid-rows-2
+			overflow-hidden
+			flex-none
+			w-full h-56 md:h-71 xl:h-120 aspect-video rounded-2xl">
+			<div className="w-full h-full
+				md:row-start-1 md:row-end-3
+				overflow-hidden
+				bg-red-500">
+				<Img
+					src={ data[0] }
+				/>
+			</div>
 
+			<div className="hidden md:block
+				w-full h-full
+				overflow-hidden
+				bg-blue-500">
+				<Img
+					src={ data[1] }
+				/>
+			</div>
+
+			<div className="hidden md:block
+				w-full h-full
+				overflow-hidden
+				bg-green-500">
+				<Img
+					src={ data[2] }
+				/>
+			</div>
+
+			{
+				data.length > 3 && 
+				<div className="hidden md:block
+					w-full h-full
+					overflow-hidden
+					bg-green-500">
+					<Img
+						src={ data[3] }
+					/>
+				</div>
+			}
+
+			{
+				data.length > 4 &&
+				<div className="hidden md:block
+					w-full h-full
+					overflow-hidden
+					bg-green-500">
+					<Img
+						src={ data[4] }
+						see_more={ data.length > 5 }
+					/>
+				</div>
+			}
+
+		</div>
+	);
+}
+
+interface	FeaturesCardProps {
+	icon: string;
+	value: string;
+	title: string;
+}
+
+const	FeaturesCard: React.FC<FeaturesCardProps> = ({
+	icon = "X",
+	value = "0",
+	title = "Title"
+}) => {
+	return (
+		<div className="flex flex-col items-center justify-center
+			shadow-standard
+			rounded-2xl
+			border border-background/25
+			w-35 h-35"
+		>
+			<div className="font-icon text-[42px] text-accent
+				select-none
+				drop-shadow-md">
+				{ icon }
+			</div>
+			<div className="font-bold text-lg">
+				{ value }
+			</div>
+			<div className="font-light text-md mb-2">
+				{ title }
+			</div>
 		</div>
 	);
 }
 
 const	ListingsPage: React.FC = () => {
 	const	{ t } = useTranslation("listings");
+	const	formatter = new Intl.NumberFormat("de-DE");
 
 	const	[searchParams] = useSearchParams();
 	const	listingsID = searchParams.get("id"); // retrieve the value of the listings here
@@ -91,13 +215,10 @@ const	ListingsPage: React.FC = () => {
 	const	pictures: string[] = [
 		house2,
 		house0,
+		house1,
 		house2,
-		house0,
-		house2,
-		house0,
-		house2,
-		house0,
-		house1
+		house1,
+		house0
 	]
 
 	// const	FetchListingsAndDisplay = async () => {
@@ -109,7 +230,7 @@ const	ListingsPage: React.FC = () => {
 	const	dataExample: ListingsData = {
 		id: "l1",
 		title: "Maison T3 Analakely",
-		description: "Maison lumineuse avec jardin...",
+		description: "Maison lumineuse avec jardin. Situer dans les plus beaux quartier d'Antananarivo. Vous ne pourrez pas trouver mieux en terme de rapport qualite prix!",
 		price: 50000000,
 		type: "sale",
 		surface: 120,
@@ -140,50 +261,117 @@ const	ListingsPage: React.FC = () => {
 		expiresAt: "2025-02-09T08:00:00Z"
 	};
 
+	const	iconFeatures: Record<string, string> = {
+		bedrooms: "󰋣",
+		bathrooms: "󱠘",
+		wc_separate: "󰦫",
+		parking_type: "󰄋",
+		garden_private: "󰉊",
+		water_access: "󰖌",
+		electricity_access: ""
+	}
+
 	return (
-		<div className="flex flex-col items-center justify-start gap-4
+		<div className="flex flex-col items-center justify-start gap-7
 			overflow-y-scroll
 			overflow-x-hidden
 			relative
 			pointer-events-auto
-			p-4
+			px-4 md:px-7 xl:px-64
+			transition-discrete duration-500
 			w-full h-screen"
 		>
-			<div className="w-full h-5 md:h-20
+			<div className="w-full h-15 md:h-20
 				flex-none"
 			>
 			</div>
 
-
-			<PicturesCarrousel
-				pictures={ pictures }
+			<PicturesLayout
+				data={ pictures }
+				translationSingleton={ t }
 			/>
 
-			<div className="flex flex-col items-start justify-center
-				xl:px-64
+			<div className="grid grid-cols-1 grid-rows-2 gap-4
+				md:grid-cols-[1fr_auto] md:grid-rows-1
 				w-full"
 			>
 				<div className="flex flex-col items-start justify-end
-					text-light-foreground
-					p-4
 					gap-3
 					w-full h-full
 					z-1"
 				>
-					<div className="font-inter font-bold text-2xl">
-						{ dataExample.title }
+					<div className="flex flex-col items-start justify-center w-full">
+						<div className="font-inter font-bold text-2xl">
+							{ dataExample.title }
+						</div>
+						<div className="flex items-center justify-center gap-1
+							font-inter
+							text-md
+							opacity-80"
+						>
+							<div className="font-icon"></div>{ dataExample.zoneDisplay }
+						</div>
 					</div>
-					<div className="flex items-center justify-center gap-1
-						font-inter
-						text-md
-						opacity-80"
-					>
-						<div className="font-icon"></div>{ dataExample.zoneDisplay }
-					</div>
-					<div className="font-inter font-bold text-2xl">
-						{ dataExample.price } AR
+
+					<div className="font-inter font-bold text-3xl">
+						{ formatter.format(dataExample.price) } Ariary
 					</div>
 				</div>
+
+				<div className="grid grid-cols-1 grid-rows-2
+					w-full"
+				>
+					<ActionButton
+						title={ t("section.quickButtons.favorites") }
+						icon="󰋑"
+						accent_color="var(--color-red-500)"
+					/>
+
+					<ActionButton
+						title={ t("section.quickButtons.visit") }
+						icon="󰃭"
+					/>
+				</div>
+
+			</div>
+
+			<div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4
+				w-full
+				place-items-center"
+			>
+				{
+					Object.entries(dataExample.features).map(([key, value]) => {
+						return (
+							<FeaturesCard
+								key={ key }
+								title={ t(`section.features.${key}`) }
+								icon={ iconFeatures[key] }
+								value={ value.toString() }
+							/>
+						);
+					})
+				}
+			</div>
+
+			<div className="grid grid-cols-1 grid-rows-[auto_1fr] gap-4
+				place-items-start
+				shadow-standard
+				border border-background/25
+				w-full
+				p-4
+				rounded-2xl"
+			>
+				<div className="font-bold">
+					{ t("section.description.title") }
+				</div>
+				<div className="font-light">
+					{ dataExample.description }
+				</div>
+			</div>
+
+			<div className="w-full h-15
+				flex-none"
+			>
 			</div>
 
 		</div>
