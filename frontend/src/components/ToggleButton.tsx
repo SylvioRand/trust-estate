@@ -44,7 +44,7 @@ const	ToggleButton: React.FC<ToggleButtonProps> = ({
 			onPointerEnter = { () => setHovered(true) }
 			onPointerLeave = { () => setHovered(false) }
 			style={{
-				backgroundColor: hovered ? `color-mix(in srgb, ${ accent_color } 75%, var(--color-background))` : "var(--color-background)",
+				backgroundColor: hovered ? `color-mix(in srgb, ${ accent_color } 75%, var(--color-background))` : toggled ? "transparent" : "var(--color-background)",
 				flexDirection: icon_place === "left" ? "row" : "row-reverse",
 				borderRadius: toggled ? "var(--radius-4xl)" : "var(--radius-lg)",
 				filter: toggled ? `drop-shadow(0px 0px 3px ${ accent_color })` : "drop-shadow(0px 7px 7px rgba(0,0,0,0.25))",
