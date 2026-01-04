@@ -7,6 +7,7 @@ import { useTranslation, type UseTranslationResponse } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import type { TFunction } from "i18next";
 import ActionButton from "../components/ActionButton";
+import ToggleButton from "../components/ToggleButton";
 
 interface ListingsData
 {
@@ -271,6 +272,9 @@ const	ListingsPage: React.FC = () => {
 		electricity_access: ""
 	}
 
+	// need to fetch first to see if it's favorite or not, or maybe just send it through query
+	const	[isFavorite, setIsFavorite] = useState<boolean>(false);
+
 	return (
 		<div className="flex flex-col items-center justify-start gap-7
 			overflow-y-scroll
@@ -301,9 +305,21 @@ const	ListingsPage: React.FC = () => {
 					z-1"
 				>
 					<div className="flex flex-col items-start justify-center w-full">
-						<div className="font-inter font-bold text-2xl">
-							{ dataExample.title }
+						<div className="flex items-center justify-center gap-2">
+							<div className="font-inter font-bold text-2xl">
+								{ dataExample.title }
+							</div>
+							<div className="rounded-full
+								shadow-standard
+								px-3 py-1
+								select-none
+								text-sm
+								border border-background/25"
+							>
+								{ dataExample.type === "sale" ? t("section.listingType.sale") : t("section.listingType.rent") }
+							</div>
 						</div>
+
 						<div className="flex items-center justify-center gap-1
 							font-inter
 							text-md
@@ -321,10 +337,14 @@ const	ListingsPage: React.FC = () => {
 				<div className="grid grid-cols-1 grid-rows-2
 					w-full"
 				>
-					<ActionButton
+					<ToggleButton
 						title={ t("section.quickButtons.favorites") }
-						icon="󰋑"
+						icon=""
+						icon_toggled="󰋑"
 						accent_color="var(--color-red-500)"
+						toggled={ isFavorite }
+						translateY={1}
+						onClick={ () => setIsFavorite(isFavorite ? false : true) }
 					/>
 
 					<ActionButton
@@ -341,12 +361,14 @@ const	ListingsPage: React.FC = () => {
 			>
 				{
 					Object.entries(dataExample.features).map(([key, value]) => {
+						const	data: string = value.toString();
+
 						return (
 							<FeaturesCard
 								key={ key }
 								title={ t(`section.features.${key}`) }
 								icon={ iconFeatures[key] }
-								value={ value.toString() }
+								value={ (data === "true" || data === "false") ? (data === "true" ? t("yes") : t("no")) : data }
 							/>
 						);
 					})
