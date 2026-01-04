@@ -44,7 +44,7 @@ const	ActionButton: React.FC<ActionButtonProps> = ({
 			onPointerLeave = { () => setHovered(false) }
 			style={{
 				pointerEvents: disabled ? "none" : "auto",
-				backgroundColor: disabled ? "color-mix(in srgb, var(--color-background) 25%, var(--color-foreground))" : "var(--color-background)",
+				backgroundColor: disabled ? "color-mix(in srgb, var(--color-background) 25%, var(--color-foreground))" : hovered ? "transparent" : "var(--color-background)",
 				cursor: disabled ? "not-allowed" : "pointer",
 				flexDirection: icon_place === "left" ? "row" : "row-reverse",
 				borderRadius: hovered || processing_action ? "var(--radius-4xl)" : "var(--radius-lg)",
