@@ -48,7 +48,7 @@ const	ActionButton: React.FC<ActionButtonProps> = ({
 				cursor: disabled ? "not-allowed" : "pointer",
 				flexDirection: icon_place === "left" ? "row" : "row-reverse",
 				borderRadius: hovered || processing_action ? "var(--radius-4xl)" : "var(--radius-lg)",
-				filter: hovered || processing_action ? `drop-shadow(0px 0px 3px ${ accent_color })` : "none",
+				filter: hovered || processing_action ? `drop-shadow(0px 0px 3px ${ accent_color })` : "drop-shadow(0px 7px 7px rgba(0,0,0,0.25))",
 				transform: hovered || processing_action ? "scale(98%)" : "none"
 			}}
 			{...(onClick ? { onClick } : {})}
