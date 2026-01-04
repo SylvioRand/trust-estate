@@ -10,6 +10,7 @@ interface ActionButtonProps {
 	type?: "button" | "submit" | "reset" | undefined;
 	disabled?: boolean;
 	processing_action?: boolean;
+	accent_color?: string;
 	onClick?: () => void;
 }
 
@@ -21,6 +22,7 @@ const	ActionButton: React.FC<ActionButtonProps> = ({
 	type = "button",
 	disabled = false,
 	processing_action = false,
+	accent_color = "var(--color-accent)",
 	onClick
 }) => {
 	const	[hovered, setHovered] = useState(false);
@@ -33,7 +35,6 @@ const	ActionButton: React.FC<ActionButtonProps> = ({
 			max-h-10
 			text-foreground
 			p-3
-			bg-background
 			transition-all duration-500
 			ease-in-out
 			overflow-hidden
@@ -47,7 +48,7 @@ const	ActionButton: React.FC<ActionButtonProps> = ({
 				cursor: disabled ? "not-allowed" : "pointer",
 				flexDirection: icon_place === "left" ? "row" : "row-reverse",
 				borderRadius: hovered || processing_action ? "var(--radius-4xl)" : "var(--radius-lg)",
-				filter: hovered || processing_action ? "drop-shadow(0px 0px 3px var(--color-accent))" : "none",
+				filter: hovered || processing_action ? `drop-shadow(0px 0px 3px ${ accent_color })` : "none",
 				transform: hovered || processing_action ? "scale(98%)" : "none"
 			}}
 			{...(onClick ? { onClick } : {})}
@@ -56,9 +57,9 @@ const	ActionButton: React.FC<ActionButtonProps> = ({
 			<div className="absolute
 				w-[105%] h-[105%]
 				transition-all duration-500
-				ease-in-out
-				bg-accent"
+				ease-in-out"
 				style={{
+					backgroundColor: accent_color,
 					opacity: hovered || processing_action ? "100%" : "0%",
 					transform: hovered || processing_action ? "none" : "translateY(100px)"
 				}}
