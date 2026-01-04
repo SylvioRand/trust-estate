@@ -299,6 +299,7 @@ const	NavBar: React.FC = () => {
 		>
 			<div className="grid grid-cols-[auto_1fr] md:grid-cols-[1fr_auto_1fr] grid-rows-1 place-items-center
 				px-4 md:px-7 xl:px-64
+				transition-discrete duration-500
 				z-1
 				w-full h-full"
 			>
