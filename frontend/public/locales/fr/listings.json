@@ -3,7 +3,15 @@
 		"name": "CASA"
 	},
 
+	"yes": "Oui",
+	"no": "Non",
+
 	"section": {
+		"listingType": {
+			"rent": "A louer",
+			"sale": "A vendre"
+		},
+
 		"features": {
 			"bedrooms": "Chambres",
 			"bathrooms": "Salle de bains",
@@ -20,7 +28,7 @@
 		},
 
 		"quickButtons": {
-			"favorites": "Ajouter aux favoris",
+			"favorites": "Favoris",
 			"visit": "Planifier une visite"
 		},
 
