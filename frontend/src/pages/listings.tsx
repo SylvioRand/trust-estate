@@ -113,7 +113,10 @@ const	PicturesLayout: React.FC<PicturesLayoutProps> = ({
 						bg-light-background/75
 						w-full h-full"
 					>
-						<div className="font-light text-center text-lg text-light-foreground">
+						<div className="font-light text-center text-sm text-light-foreground
+								px-4 py-2
+								backdrop-blur-2xl
+								border border-light-foreground rounded-full">
 							{ translationSingleton("section.pictures.buttons.seeMore") }
 						</div>
 					</div>
