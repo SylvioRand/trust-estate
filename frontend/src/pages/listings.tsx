@@ -256,26 +256,86 @@ const	FeaturesCard: React.FC<FeaturesCardProps> = ({
 const	PicturesLayoutMobile: React.FC<PicturesLayoutProps> = ({
 	data = []
 }) => {
+	const	[displayID, setDisplayID] = useState<number>(0);
+	const	[openPhotoViewer, setOpenPhotoViewer] = useState<boolean>(false);
+	const	[photoToOpen, setPhotoToOpen] = useState<number>(0);
+
+
 	return (
 		<div className="flex items-center justify-center
 			relative
-			rounded-2xl
-			overflow-hidden
-			bg-red-500
 			md:hidden
 			flex-none
 			w-full h-60"
 		>
 			{
 				data.map((value: string, index: number) => {
+					const	active: boolean = index === displayID;
+
 					return (
 						<img
-							className=""
+							key={ index }
+							className="absolute
+							shadow-2xl
+							transition-transform duration-200
+							ease-in-out
+							rounded-2xl
+							w-full h-full object-cover"
 							src={ value }
 							alt="House Picture"
+							style={{
+								transform: `translateX(${ (98) * (index - displayID) }%) scale(${ active ? "100%" : "90%" })`
+							}}
+							onClick={ () => {
+								setOpenPhotoViewer(true)
+								setPhotoToOpen(index)
+							}}
 						/>
 					);
 				})
+			}
+
+			<button className="flex items-center justify-center
+				border border-background/25
+				bg-foreground/25
+				rounded-full
+				px-2
+				shadow-standard
+				backdrop-blur-2xl
+				absolute top-1/2 -left-1
+				-translate-y-3"
+				onClick={ () => setDisplayID(displayID === 0 ? data.length - 1 : displayID - 1 ) }
+			>
+				<div className="font-icon text-4xl pb-[0.1rem]">
+					
+				</div>
+			</button>
+
+			<button className="flex items-center justify-center
+				border border-background/25
+				bg-foreground/25
+				rounded-full
+				px-2
+				shadow-standard
+				backdrop-blur-2xl
+				absolute top-1/2 -right-1
+				-translate-y-3"
+				onClick={ () => setDisplayID(displayID === data.length - 1 ? 0 : displayID + 1 ) }
+			>
+				<div className="font-icon text-4xl pb-[0.1rem]">
+					
+				</div>
+			</button>
+
+			{ openPhotoViewer &&
+				<PhotoViewer
+					picture={ data }
+					startID={ photoToOpen }
+					onClose={ () => {
+						setPhotoToOpen(0);
+						setOpenPhotoViewer(false);
+					}}
+				/>
 			}
 		</div>
 	);
