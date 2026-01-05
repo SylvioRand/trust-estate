@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres - Gestion du mot de passe</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .settings-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .settings-section {
+            margin-bottom: 40px;
+        }
+
+        .settings-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-description {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(to right, #e5e7eb, transparent);
+            margin: 40px 0;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .password-strength {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+        }
+
+        .strength-weak { background: #ef4444; width: 33%; }
+        .strength-medium { background: #f59e0b; width: 66%; }
+        .strength-strong { background: #10b981; width: 100%; }
+
+        .user-info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .user-info-badge strong {
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .settings-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>⚙️ Paramètres du compte</h1>
+            <a href="profile.html" class="back-btn">← Retour au profil</a>
+        </div>
+
+        <!-- Settings Card -->
+        <div class="settings-card">
+            <!-- User Info -->
+            <div class="user-info-badge">
+                <span>👤</span>
+                <span>Connecté en tant que <strong id="user-email">Chargement...</strong></span>
+            </div>
+
+            <!-- Update Password Section (pour utilisateurs avec mot de passe) -->
+            <div class="settings-section" id="update-password-section" style="display: none;">
+                <div class="section-title">
+                    <span>🔐</span>
+                    <span>Modifier mon mot de passe</span>
+                </div>
+                <div class="section-description">
+                    Changez votre mot de passe actuel. Assurez-vous d'utiliser un mot de passe fort.
+                </div>
+
+                <div id="update-password-alert" class="alert"></div>
+
+                <form id="update-password-form">
+                    <div class="form-group">
+                        <label class="form-label" for="current-password">Mot de passe actuel</label>
+                        <input type="password" id="current-password" class="form-input" 
+                               placeholder="Entrez votre mot de passe actuel" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="new-password">Nouveau mot de passe</label>
+                        <input type="password" id="new-password" class="form-input" 
+                               placeholder="Entrez un nouveau mot de passe (min. 8 caractères)" 
+                               required minlength="8">
+                        <div class="password-strength">
+                            <div id="password-strength-bar" class="password-strength-bar"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="confirm-new-password">Confirmer le nouveau mot de passe</label>
+                        <input type="password" id="confirm-new-password" class="form-input" 
+                               placeholder="Confirmez le nouveau mot de passe" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Modifier le mot de passe</button>
+                </form>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Update Profile Section -->
+            <div class="settings-section" id="update-profile-section">
+                <div class="section-title">
+                    <span>👤</span>
+                    <span>Modifier mes informations</span>
+                </div>
+                <div class="section-description">
+                    Mettez à jour vos informations personnelles (prénom, nom, téléphone).
+                </div>
+
+                <div id="update-profile-alert" class="alert"></div>
+
+                <form id="update-profile-form">
+                    <div class="form-group">
+                        <label class="form-label" for="profile-firstname">Prénom</label>
+                        <input type="text" id="profile-firstname" class="form-input" 
+                               placeholder="Votre prénom" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="profile-lastname">Nom</label>
+                        <input type="text" id="profile-lastname" class="form-input" 
+                               placeholder="Votre nom" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="profile-phone">Téléphone</label>
+                        <input type="tel" id="profile-phone" class="form-input" 
+                               placeholder="+261 32 XX XXX XX" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                </form>
+            </div>
+
+            <div class="divider" id="divider" style="display: none;"></div>
+
+            <!-- Add Password Section (pour utilisateurs OAuth sans mot de passe) -->
+            <div class="settings-section" id="add-password-section" style="display: none;">
+                <div class="section-title">
+                    <span>🔑</span>
+                    <span>Ajouter un mot de passe</span>
+                </div>
+                <div class="section-description">
+                    Vous êtes connecté via Google. Ajoutez un mot de passe pour pouvoir vous connecter 
+                    directement avec votre email et mot de passe.
+                </div>
+
+                <div id="add-password-alert" class="alert"></div>
+
+                <form id="add-password-form">
+                    <div class="form-group">
+                        <label class="form-label" for="add-new-password">Nouveau mot de passe</label>
+                        <input type="password" id="add-new-password" class="form-input" 
+                               placeholder="Entrez un mot de passe (min. 8 caractères)" 
+                               required minlength="8">
+                        <div class="password-strength">
+                            <div id="add-password-strength-bar" class="password-strength-bar"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="confirm-add-password">Confirmer le mot de passe</label>
+                        <input type="password" id="confirm-add-password" class="form-input" 
+                               placeholder="Confirmez le mot de passe" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Ajouter le mot de passe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:3001';
+
+        // Vérifier si l'utilisateur a un mot de passe
+        async function checkUserPasswordStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/me`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                const user = await response.json();
+                document.getElementById('user-email').textContent = user.email;
+
+                // Pré-remplir le formulaire de mise à jour du profil
+                document.getElementById('profile-firstname').value = user.firstName || '';
+                document.getElementById('profile-lastname').value = user.lastName || '';
+                document.getElementById('profile-phone').value = user.phone || '';
+
+                // Utiliser le champ hasPassword retourné par l'API
+                if (user.hasPassword) {
+                    // L'utilisateur a déjà un mot de passe -> formulaire de modification
+                    document.getElementById('update-password-section').style.display = 'block';
+                } else {
+                    // L'utilisateur n'a pas de mot de passe (OAuth) -> formulaire d'ajout
+                    document.getElementById('add-password-section').style.display = 'block';
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Fonction pour évaluer la force du mot de passe
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+            return strength;
+        }
+
+        // Mise à jour de la barre de force (modification)
+        document.getElementById('new-password')?.addEventListener('input', (e) => {
+            const strength = checkPasswordStrength(e.target.value);
+            const bar = document.getElementById('password-strength-bar');
+            
+            bar.className = 'password-strength-bar';
+            if (strength <= 2) bar.classList.add('strength-weak');
+            else if (strength <= 3) bar.classList.add('strength-medium');
+            else bar.classList.add('strength-strong');
+        });
+
+        // Mise à jour de la barre de force (ajout)
+        document.getElementById('add-new-password')?.addEventListener('input', (e) => {
+            const strength = checkPasswordStrength(e.target.value);
+            const bar = document.getElementById('add-password-strength-bar');
+            
+            bar.className = 'password-strength-bar';
+            if (strength <= 2) bar.classList.add('strength-weak');
+            else if (strength <= 3) bar.classList.add('strength-medium');
+            else bar.classList.add('strength-strong');
+        });
+
+        // Fonction pour afficher les alertes
+        function showAlert(elementId, message, type) {
+            const alert = document.getElementById(elementId);
+            alert.className = `alert alert-${type} show`;
+            alert.textContent = message;
+            
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+
+        // Formulaire de modification de mot de passe
+        document.getElementById('update-password-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-new-password').value;
+
+            // Validation
+            if (newPassword !== confirmPassword) {
+                showAlert('update-password-alert', '❌ Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                showAlert('update-password-alert', '❌ Le mot de passe doit contenir au moins 8 caractères', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/me/update-password`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        password: currentPassword,
+                        newPassword: newPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('update-password-alert', '✅ ' + (data.message || 'Mot de passe modifié avec succès!'), 'success');
+                    e.target.reset();
+                    document.getElementById('password-strength-bar').className = 'password-strength-bar';
+                } else {
+                    showAlert('update-password-alert', '❌ ' + (data.message || 'Erreur lors de la modification'), 'error');
+                }
+            } catch (error) {
+                showAlert('update-password-alert', '❌ Erreur réseau. Veuillez réessayer.', 'error');
+                console.error('Erreur:', error);
+            }
+        });
+
+        // Formulaire d'ajout de mot de passe
+        document.getElementById('add-password-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const newPassword = document.getElementById('add-new-password').value;
+            const confirmPassword = document.getElementById('confirm-add-password').value;
+
+            // Validation
+            if (newPassword !== confirmPassword) {
+                showAlert('add-password-alert', '❌ Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                showAlert('add-password-alert', '❌ Le mot de passe doit contenir au moins 8 caractères', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/me/add-password`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        password: newPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('add-password-alert', '✅ ' + (data.message || 'Mot de passe ajouté avec succès!'), 'success');
+                    
+                    // Après 2 secondes, basculer vers le formulaire de modification
+                    setTimeout(() => {
+                        document.getElementById('add-password-section').style.display = 'none';
+                        document.getElementById('update-password-section').style.display = 'block';
+                        document.getElementById('divider').style.display = 'block';
+                    }, 2000);
+                } else {
+                    showAlert('add-password-alert', '❌ ' + (data.message || 'Erreur lors de l\'ajout'), 'error');
+                }
+            } catch (error) {
+                showAlert('add-password-alert', '❌ Erreur réseau. Veuillez réessayer.', 'error');
+                console.error('Erreur:', error);
+            }
+        });
+
+        // Formulaire de mise à jour du profil
+        document.getElementById('update-profile-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const firstName = document.getElementById('profile-firstname').value.trim();
+            const lastName = document.getElementById('profile-lastname').value.trim();
+            const phone = document.getElementById('profile-phone').value.trim();
+
+            // Validation
+            if (!firstName || !lastName || !phone) {
+                showAlert('update-profile-alert', '❌ Tous les champs sont requis', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/me`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        firstName: firstName,
+                        lastName: lastName,
+                        phone: phone
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('update-profile-alert', '✅ ' + (data.message || 'Informations mises à jour avec succès!'), 'success');
+                    // Mettre à jour l'affichage de l'email si nécessaire
+                    document.getElementById('user-email').textContent = data.user?.email || document.getElementById('user-email').textContent;
+                } else {
+                    showAlert('update-profile-alert', '❌ ' + (data.message || 'Erreur lors de la mise à jour'), 'error');
+                }
+            } catch (error) {
+                showAlert('update-profile-alert', '❌ Erreur réseau. Veuillez réessayer.', 'error');
+                console.error('Erreur:', error);
+            }
+        });
+
+        // Charger le statut au chargement de la page
+        window.addEventListener('DOMContentLoaded', checkUserPasswordStatus);
+    </script>
+</body>
+
+</html>

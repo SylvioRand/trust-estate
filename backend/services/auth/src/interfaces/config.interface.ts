@@ -1,5 +1,6 @@
 export interface EnvConfigInterface {
 	PORT_AUTH_SERVICE: string
+	REFRESH_TOKEN_URL: string
 	JWT_REFRESH_SECRET: string
 	GOOGLE_CLIENT_ID: string
 	GOOGLE_CLIENT_SECRET: string
