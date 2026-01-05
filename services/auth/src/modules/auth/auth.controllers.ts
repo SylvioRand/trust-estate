@@ -1,7 +1,8 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { LoginUserInterface, SignUpUserInterface, UserInterface } from "../../interfaces/auth.interface";
+import type { LoginUserInterface, SignUpUserInterface, UserInterface } from "./auth.interface";
 import * as authServices from './auth.services'
 import { cookieOptions, generateAccessToken, responseUserAddToken } from "../../utils/auth.utils";
+import { deleteRefreshToken } from "../../utils/token.utils";
 
 export async function loginUser(request: FastifyRequest<{ Body: LoginUserInterface }>, reply: FastifyReply) {
 	const { email, password } = request.body;
@@ -42,7 +43,7 @@ export async function signUpUser(request: FastifyRequest<{ Body: SignUpUserInter
 			});
 		else if (error.message === 'phone_exists')
 			return reply.status(400).send({
-				"error": "email_exists",
+				"error": "phone_exists",
 				"message": "auth.phone_already_exists"
 			});
 		else
@@ -50,47 +51,6 @@ export async function signUpUser(request: FastifyRequest<{ Body: SignUpUserInter
 				"error": "Internal server error",
 				"message": "Internal server error"
 			});
-	}
-}
-
-export async function refreshToken(request: FastifyRequest, reply: FastifyReply) {
-	const oldToken = request.cookies.realestate_refresh_token;
-
-	if (!oldToken)
-		return reply.code(401).send({
-			"error": "invalid_credentials",
-			"message": "auth.invalid_credentials"
-		});
-	try {
-		const decoded: any = request.server.jwt.verify(oldToken, { key: request.server.refreshSecret });
-		if (decoded.type !== 'refresh' || !decoded.userId) {
-			return reply.code(401).send({
-				"error": "invalid_credentials",
-				"message": "auth.invalid_credentials"
-			});
-		}
-		if (!await authServices.refreshTokenExists(request.server, decoded.userId, oldToken))
-			return reply.code(401).send({
-				"error": "invalid_credentials",
-				"message": "auth.invalid_credentials"
-			});
-		const user = await authServices.updateRefrechToken(request.server, decoded, oldToken);
-		await generateAccessToken(request, reply, user);
-
-		return (reply.status(200).send({
-			"success": true,
-			"expiresIn": 900
-		}))
-	} catch (error: any) {
-		if (error.message === "User not found")
-			return reply.status(404).send({
-				"error": "invalid_credentials",
-				"message": "auth.invalid_credentials"
-			});
-		return reply.status(500).send({
-			"error": "internal_server_error",
-			"message": "common.internal_server_error"
-		});
 	}
 }
 
@@ -106,7 +66,7 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
 
 	const realestate_refresh_token  = request.cookies.realestate_refresh_token;
 	if (realestate_refresh_token) {
-		await authServices.deleteRefreshToken(request.server, realestate_refresh_token);
+		await deleteRefreshToken(request.server, realestate_refresh_token);
 	}
 
 	reply.clearCookie("realestate_access_token", { ...cookieOptions });
