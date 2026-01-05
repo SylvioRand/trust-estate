@@ -104,7 +104,7 @@ export async function createUserAccount(app: FastifyInstance,
 		});
 
 		const baseUrl = app.config.FRONTEND_URL;
-		const verificationUrl = `${baseUrl}/verify-email.html?token=${hash}`;
+		const verificationUrl = `${baseUrl}/verify-email?token=${hash}`;
 		const { text, html } = generateMail(lastName, verificationUrl);
 		await (app as any).mailer.sendMail({
 			from: 'dinandrianom@gmail.com',
@@ -121,7 +121,7 @@ export async function createUserAccount(app: FastifyInstance,
 			action: 'account_created',
 			timestamp: new Date().toISOString()
 		});
-		
+
 		return (user);
 	} catch (error: any) {
 		throw new Error(error);
@@ -132,7 +132,7 @@ export async function verifyTokenEmail(app: FastifyInstance, token: string) {
 	const hash = createHash('sha256').update(token).digest('hex');
 
 	const verificationToken = await app.prisma.email_Verification_token.findFirst({
-		where: { 
+		where: {
 			tokenHash: hash,
 			expiresAt: { gt: new Date() }
 		}
@@ -163,7 +163,7 @@ export async function verifyTokenEmail(app: FastifyInstance, token: string) {
 	});
 
 	return (user);
-	}
+}
 
 export async function resendEmail(app: FastifyInstance, lastName: string, email: string) {
 	const user = await app.prisma.user.findUnique({
@@ -197,7 +197,7 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 	const hash = crypto.randomBytes(32).toString('base64url');
 	const tokenHash = createHash('sha256').update(hash).digest('hex');
 	const expiresAt = new Date(Date.now() + 1000 * 60 * 24).toISOString();
-	
+
 	await app.prisma.email_Verification_token.upsert({
 		where: { userId: user.id },
 		update: {
@@ -214,7 +214,7 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 	const baseUrl = app.config.FRONTEND_URL;
 	const verificationUrl = `${baseUrl}/verify-email?token=${hash}`;
 	const { text, html } = generateMail(lastName, verificationUrl);
-	
+
 	await (app as any).mailer.sendMail({
 		from: 'dinandrianom@gmail.com',
 		to: email,
@@ -322,7 +322,7 @@ export async function findUserById(app: FastifyInstance, id: string) {
 
 export async function sendTokenForgotPassword(app: FastifyInstance, email: string) {
 	const user = await app.prisma.user.findUnique({
-		where: {email}
+		where: { email }
 	});
 
 	if (!user)
@@ -354,7 +354,7 @@ export async function sendTokenForgotPassword(app: FastifyInstance, email: strin
 export async function changePassword(app: FastifyInstance, token: string, password: string) {
 	const hash = createHash('sha256').update(token).digest('hex');
 	const tokenExist = await app.prisma.forgot_password_token.findUnique({
-		where: {tokenHash: hash}
+		where: { tokenHash: hash }
 	});
 
 	if (!tokenExist)
@@ -366,13 +366,13 @@ export async function changePassword(app: FastifyInstance, token: string, passwo
 	const salt = await bcrypt.genSalt(12);
 	const passwordHash = await bcrypt.hash(password, salt);
 	await app.prisma.user.update({
-		where: {id: tokenExist.userId},
+		where: { id: tokenExist.userId },
 		data: {
 			password: passwordHash
 		}
 	});
 
 	await app.prisma.forgot_password_token.delete({
-		where: {userId: tokenExist.userId}
+		where: { userId: tokenExist.userId }
 	})
 }
