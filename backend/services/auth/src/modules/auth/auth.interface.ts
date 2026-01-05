@@ -32,11 +32,13 @@ export interface User {
   phone: string;
   firstName: string;
   lastName: string;
-  phoneVerified: boolean,
+  phoneVerified: boolean;
   role: string;
+  hasPassword: boolean;
   sellerStats: SellerStats;
   creditBalance: number;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface LoginResponse {

@@ -77,12 +77,12 @@ export const UpdatePhoneNumberSchema = {
 		type: 'object',
 		required: ['phoneNumber'],
 		properties: {
-				phoneNumber: {
-					type: 'string',
-					minLength: 3,
-					pattern: '^\\+261(32|33|34|38)\\d{7}$'
-				}
-			},
+			phoneNumber: {
+				type: 'string',
+				minLength: 3,
+				pattern: '^\\+261(32|33|34|38)\\d{7}$'
+			}
+		},
 		additionalProperties: false
 	}
 };

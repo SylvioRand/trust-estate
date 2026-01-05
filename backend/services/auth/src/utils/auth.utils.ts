@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import type { UserInterface } from "../interfaces/auth.interface";
-import type { User } from "../interfaces/auth.interface";
-import { saveRefreshToken } from "../modules/auth/auth.services";
+import type { UserInterface } from "../modules/auth/auth.interface";
+import type { User } from "../modules/auth/auth.interface";
+import { saveRefreshToken } from "./token.utils";
 
 export function generateTokens(app: FastifyInstance, user: UserInterface) {
 	const payload = {
@@ -64,6 +64,7 @@ export function responseUser(user: any) {
 		phone: user.phone,
 		phoneVerified: user.phoneVerified,
 		role: user.role,
+		hasPassword: user.password !== null,
 		sellerStats: {
 			totalListings: user.sellerStats?.totalListings || 0,
 			averageRating: user.sellerStats?.averageRating || 0,
@@ -72,6 +73,7 @@ export function responseUser(user: any) {
 		},
 		creditBalance: user.creditBalance,
 		createdAt: user.createAt.toISOString(),
+		updatedAt: user.updateAt.toISOString()
 	};
 	return (responseUser);
 }
