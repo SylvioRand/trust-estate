@@ -8,6 +8,7 @@ import { useSearchParams } from "react-router-dom";
 import type { TFunction } from "i18next";
 import ActionButton from "../components/ActionButton";
 import ToggleButton from "../components/ToggleButton";
+import PhotoViewer from "../components/PhotoViewer";
 
 interface ListingsData
 {
@@ -50,8 +51,18 @@ const	PicturesLayout: React.FC<PicturesLayoutProps> = ({
 	data = [],
 	translationSingleton
 }) => {
+	const	[openPhotoViewer, setOpenPhotoViewer] = useState<boolean>(false);
+	const	[photoToOpen, setPhotoToOpen] = useState<number>(0);
 
-	function Img({ src, see_more = false }: { src: string; see_more?: boolean }) {
+	function Img({
+		src,
+		see_more = false,
+		onClick = () => console.error("PicturesLayout: onClick not overrided.")
+	} : {
+		src: string;
+		see_more?: boolean,
+		onClick: () => void
+	}) {
 		const	[hovered, setHovered] = useState<boolean>(false);
 
 		return (
@@ -59,6 +70,7 @@ const	PicturesLayout: React.FC<PicturesLayoutProps> = ({
 				select-none
 				cursor-pointer
 				relative"
+				onClick={ onClick }
 			>
 				<img
 					className="w-full h-full object-cover
@@ -123,6 +135,10 @@ const	PicturesLayout: React.FC<PicturesLayoutProps> = ({
 				bg-red-500">
 				<Img
 					src={ data[0] }
+					onClick={ () => {
+						setPhotoToOpen(0);
+						setOpenPhotoViewer(true);
+					}}
 				/>
 			</div>
 
@@ -132,6 +148,10 @@ const	PicturesLayout: React.FC<PicturesLayoutProps> = ({
 				bg-blue-500">
 				<Img
 					src={ data[1] }
+					onClick={ () => {
+						setPhotoToOpen(1);
+						setOpenPhotoViewer(true);
+					}}
 				/>
 			</div>
 
@@ -141,6 +161,10 @@ const	PicturesLayout: React.FC<PicturesLayoutProps> = ({
 				bg-green-500">
 				<Img
 					src={ data[2] }
+					onClick={ () => {
+						setPhotoToOpen(2);
+						setOpenPhotoViewer(true);
+					}}
 				/>
 			</div>
 
@@ -152,6 +176,10 @@ const	PicturesLayout: React.FC<PicturesLayoutProps> = ({
 					bg-green-500">
 					<Img
 						src={ data[3] }
+						onClick={ () => {
+							setPhotoToOpen(3);
+							setOpenPhotoViewer(true);
+						}}
 					/>
 				</div>
 			}
@@ -165,8 +193,23 @@ const	PicturesLayout: React.FC<PicturesLayoutProps> = ({
 					<Img
 						src={ data[4] }
 						see_more={ data.length > 5 }
+						onClick={ () => {
+							setPhotoToOpen(4);
+							setOpenPhotoViewer(true);
+						}}
 					/>
 				</div>
+			}
+
+			{ openPhotoViewer &&
+				<PhotoViewer
+					picture={ data }
+					startID={ photoToOpen }
+					onClose={ () => {
+						setPhotoToOpen(0);
+						setOpenPhotoViewer(false);
+					}}
+				/>
 			}
 
 		</div>
@@ -301,8 +344,7 @@ const	ListingsPage: React.FC = () => {
 			>
 				<div className="flex flex-col items-start justify-end
 					gap-3
-					w-full h-full
-					z-1"
+					w-full h-full"
 				>
 					<div className="flex flex-col items-start justify-center w-full">
 						<div className="flex items-center justify-center gap-2">

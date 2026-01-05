@@ -3,7 +3,7 @@
 :root {
 	--push: 42px;
 	--push-speed: 0.75s;
-	--fade-speed: 0.75s;
+	--fade-speed: 0.3s;
 	--scale-speed: 1s;
 
 	--color-accent: #E6AC00;
