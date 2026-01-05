@@ -47,7 +47,7 @@ interface	PicturesLayoutProps {
 	translationSingleton: TFunction<"listings">;
 }
 
-const	PicturesLayout: React.FC<PicturesLayoutProps> = ({
+const	PicturesLayoutDesktopAndTablet: React.FC<PicturesLayoutProps> = ({
 	data = [],
 	translationSingleton
 }) => {
@@ -126,7 +126,8 @@ const	PicturesLayout: React.FC<PicturesLayoutProps> = ({
     }
 
 	return (
-		<div className="grid grid-cols-1 grid-rows-1 place-items-center
+		<div className="md:grid grid-cols-1 grid-rows-1 place-items-center
+			hidden
 			gap-3
 			md:grid-cols-[50%_1fr_1fr] md:grid-rows-2
 			overflow-hidden
@@ -252,6 +253,34 @@ const	FeaturesCard: React.FC<FeaturesCardProps> = ({
 	);
 }
 
+const	PicturesLayoutMobile: React.FC<PicturesLayoutProps> = ({
+	data = []
+}) => {
+	return (
+		<div className="flex items-center justify-center
+			relative
+			rounded-2xl
+			overflow-hidden
+			bg-red-500
+			md:hidden
+			flex-none
+			w-full h-60"
+		>
+			{
+				data.map((value: string, index: number) => {
+					return (
+						<img
+							className=""
+							src={ value }
+							alt="House Picture"
+						/>
+					);
+				})
+			}
+		</div>
+	);
+}
+
 const	ListingsPage: React.FC = () => {
 	const	{ t } = useTranslation("listings");
 	const	formatter = new Intl.NumberFormat("de-DE");
@@ -336,7 +365,12 @@ const	ListingsPage: React.FC = () => {
 			>
 			</div>
 
-			<PicturesLayout
+			<PicturesLayoutMobile
+				data={ pictures }
+				translationSingleton={ t }
+			/>
+
+			<PicturesLayoutDesktopAndTablet
 				data={ pictures }
 				translationSingleton={ t }
 			/>
