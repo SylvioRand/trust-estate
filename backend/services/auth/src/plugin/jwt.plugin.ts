@@ -3,7 +3,10 @@ import type { FastifyBaseLogger, FastifyInstance, FastifyPluginOptions, FastifyR
 import fastifyJwt from "@fastify/jwt";
 import jwt from "jsonwebtoken";
 import fs from "fs";
-import type { UserInterface } from "../interfaces/auth.interface";
+import { createHash } from "node:crypto";
+import type { UserInterface } from "../modules/auth/auth.interface";
+import { deleteRefreshToken, refreshTokenExists } from "../utils/token.utils";
+import { generateAccessToken } from "../utils/auth.utils";
 
 function loadKey(path:string, log: FastifyBaseLogger) {
 	try {
@@ -14,17 +17,75 @@ function loadKey(path:string, log: FastifyBaseLogger) {
 	}
 }
 
+async function autoRefreshToken(
+	request: FastifyRequest,
+	reply: FastifyReply,
+	refreshToken: string,
+	refreshSecret: string,
+	privateKey: string,
+	cookieOptions: any
+): Promise<UserInterface | null> {
+	try {
+		const decoded: any = jwt.verify(refreshToken, refreshSecret,{ algorithms: ["HS256"] });
+
+		if (decoded.type !== 'refresh' || !decoded.userId) {
+			return null;
+		}
+
+		const tokenHash = await refreshTokenExists(request.server, decoded.userId, refreshToken);
+
+		if (!tokenHash)
+		{
+			reply.clearCookie("realestate_access_token", { ...cookieOptions });
+			reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
+			return (null);
+		}
+
+		const user = await request.server.prisma.user.findUnique({
+			where: { id: decoded.userId },
+			include: { sellerStats: true }
+		});
+
+		if (!user) return null;
+		await deleteRefreshToken(request.server, refreshToken);
+		await generateAccessToken(request, reply, user);
+
+		return {
+			id: user.id,
+			role: user.role,
+			phoneVerified: user.phoneVerified,
+			emailVerified: user.emailVerified
+		} as UserInterface;
+	} catch (error) {
+		return null;
+	}
+}
+
 export async function verifyAccessToken(
 	request: FastifyRequest,
 	reply: FastifyReply,
-	publicKey: string
+	publicKey: string,
+	refreshSecret: string,
+	privateKey: string,
+	cookieOptions: any
 ): Promise<UserInterface | void> {
 	const { realestate_access_token, realestate_refresh_token } = request.cookies;
 
 	if (!realestate_access_token) {
 		if (realestate_refresh_token) {
-			reply.redirect("/api/auth/refresh");
-			return;
+			const user = await autoRefreshToken(
+				request,
+				reply,
+				realestate_refresh_token,
+				refreshSecret,
+				privateKey,
+				cookieOptions
+			);
+			
+			console.log(user);
+			if (user) {
+				return user;
+			}
 		}
 
 		reply.code(401).send({
@@ -40,7 +101,22 @@ export async function verifyAccessToken(
 			publicKey,
 			{ algorithms: ["RS256"] }
 		) as UserInterface;
-	} catch {
+	} catch (error: any) {
+		if (error.name === "TokenExpiredError" && realestate_refresh_token) {
+			const user = await autoRefreshToken(
+				request,
+				reply,
+				realestate_refresh_token,
+				refreshSecret,
+				privateKey,
+				cookieOptions
+			);
+
+			if (user) {
+				return (user);
+			}
+		}
+
 		reply.code(401).send({
 			error: "invalid_or_expired_token",
 			message: "auth.verification_token_invalid"
@@ -52,6 +128,14 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 	const JWT_REFRESH_SECRET = app.config.JWT_REFRESH_SECRET;
 	const privateKey = loadKey(app.config.JWT_SECRET_PRIVATE_KEY, app.log);
 	const publicKey = loadKey(app.config.JWT_SECRET_PUBLIC_KEY, app.log);
+
+	const cookieOptions = {
+		httpOnly: true,
+		secure: true,
+		sameSite: 'none' as const,
+		path: '/',
+		maxAge: 7 * 24 * 60 * 60 * 1000
+	};
 
 	await app.register(fastifyJwt, {
 		secret: {
@@ -67,19 +151,19 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 	app.decorate("refreshSecret", JWT_REFRESH_SECRET);
 
 	app.decorate("partialAuthentication", async function (request: FastifyRequest, reply: FastifyReply) {
-		const user = await verifyAccessToken(request, reply, publicKey);
+		const user = await verifyAccessToken(request, reply, publicKey, JWT_REFRESH_SECRET, privateKey, cookieOptions);
 		if (!user) return;
 		request.user = user;
 	});
 
 	app.decorate("emailVerifiedAuthentication", async function (request: FastifyRequest, reply: FastifyReply) {
-		const user = await verifyAccessToken(request, reply, publicKey);
+		const user = await verifyAccessToken(request, reply, publicKey, JWT_REFRESH_SECRET, privateKey, cookieOptions);
 
 		if (!user) return;
 		request.user = user;
 
 		if (!user.emailVerified)
-			return reply.code(403).send({
+			return reply.code(401).send({
 				"error": "email_not_verified",
 				"message": "auth.email_verification_required",
 				"redirect": "/request-email-verification.html"
@@ -87,7 +171,7 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 	});
 
 	app.decorate("phoneVerifiedAuthentication", async function (request: FastifyRequest, reply: FastifyReply) {
-		const user = await verifyAccessToken(request, reply, publicKey);
+		const user = await verifyAccessToken(request, reply, publicKey, JWT_REFRESH_SECRET, privateKey, cookieOptions);
 
 		if (!user) return;
 		request.user = user;
@@ -99,7 +183,7 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 	});
 	
 	app.decorate("authentication", async function (request: FastifyRequest, reply: FastifyReply) {
-		const user = await verifyAccessToken(request, reply, publicKey);
+		const user = await verifyAccessToken(request, reply, publicKey, JWT_REFRESH_SECRET, privateKey, cookieOptions);
 
 		if (!user) return;
 		request.user = user;

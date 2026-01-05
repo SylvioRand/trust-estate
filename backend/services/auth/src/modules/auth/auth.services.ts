@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import crypto from "node:crypto";
 import { createHash } from 'node:crypto';
 import { generateForgotPasswordMail, generateMail } from "../../utils/text";
-import type { UserGoogleInterface } from "../../interfaces/auth.interface";
+import type { UserGoogleInterface } from "./auth.interface";
 
 export async function findUserByEmail(app: FastifyInstance, email: string, password: string) {
 	const user = await app.prisma.user.findUnique({
@@ -46,17 +46,6 @@ export async function findUserByEmail(app: FastifyInstance, email: string, passw
 		});
 		throw new Error("Mot de passe incorrect");
 	}
-
-	// if (!user.emailVerified) {
-	// 	app.log.warn({
-	// 		userId: user.id,
-	// 		email: user.email,
-	// 		action: 'login_failed',
-	// 		reason: 'email_not_verified',
-	// 		timestamp: new Date().toISOString()
-	// 	});
-	// 	throw new Error("Email not verified");
-	// }
 
 	app.log.info({
 		userId: user.id,
@@ -117,7 +106,7 @@ export async function createUserAccount(app: FastifyInstance,
 		const baseUrl = app.config.FRONTEND_URL;
 		const verificationUrl = `${baseUrl}/verify-email.html?token=${hash}`;
 		const { text, html } = generateMail(lastName, verificationUrl);
-		const info = await (app as any).mailer.sendMail({
+		await (app as any).mailer.sendMail({
 			from: 'dinandrianom@gmail.com',
 			to: email,
 			subject: "✓ Confirmez votre adresse email",
@@ -125,19 +114,21 @@ export async function createUserAccount(app: FastifyInstance,
 			html: html
 		});
 
-	app.log.info({
-		userId: user.id,
-		email,
-		phone,
-		action: 'account_created',
-		timestamp: new Date().toISOString()
-	});
-	
-	return (user);
-} catch (error: any) {
-	throw new Error(error);
-}
-};export async function verifyTokenEmail(app: FastifyInstance, token: string) {
+		app.log.info({
+			userId: user.id,
+			email,
+			phone,
+			action: 'account_created',
+			timestamp: new Date().toISOString()
+		});
+		
+		return (user);
+	} catch (error: any) {
+		throw new Error(error);
+	}
+};
+
+export async function verifyTokenEmail(app: FastifyInstance, token: string) {
 	const hash = createHash('sha256').update(token).digest('hex');
 
 	const verificationToken = await app.prisma.email_Verification_token.findFirst({
@@ -256,7 +247,6 @@ export async function getUserInfo(app: FastifyInstance, code: string): Promise<U
 			redirect_uri: app.config.REDIRECT_URI,
 		}),
 	});
-	console.log("=====>", tokentResponse);
 
 	const tokens = await tokentResponse.json();
 	if (!tokens)
@@ -316,56 +306,6 @@ export async function createOrUpdateUserAccount(app: FastifyInstance, userData: 
 	await app.prisma.email_Verification_token.deleteMany({
 		where: { userId: user.id }
 	});
-	return (user);
-}
-
-export async function saveRefreshToken(app: FastifyInstance, userId: string, token: string) {
-	const tokenHash = createHash('sha256').update(token).digest('hex');
-	const expiresAt = new Date(Date.now() + 7 * 24 * 3600 * 1000);
-
-	await app.prisma.refresh_token.upsert({
-		where: { userId },
-		update: {
-			tokenHash,
-			expiresAt
-		},
-		create: {
-			userId,
-			tokenHash,
-			expiresAt
-		}
-	});
-}
-
-export async function refreshTokenExists(app: FastifyInstance, userId: string, token: string): Promise<boolean> {
-	const tokenHash = createHash('sha256').update(token).digest('hex');
-
-	const storedToken = await app.prisma.refresh_token.findUnique({
-		where: { userId }
-	});
-	if (!storedToken) return false;
-
-	return (
-		storedToken.tokenHash === tokenHash &&
-		storedToken.expiresAt > new Date()
-	);
-}
-
-export async function deleteRefreshToken(app: FastifyInstance, token: string): Promise<void> {
-	const tokenHash = createHash('sha256').update(token).digest('hex');
-	await app.prisma.refresh_token.deleteMany({
-		where: { tokenHash: tokenHash }
-	});
-}
-
-export async function updateRefrechToken(app: FastifyInstance, decoded: any, oldToken: string) {
-	const user = await app.prisma.user.findUnique({
-		where: { id: decoded.userId }
-	})
-
-	if (!user)
-		throw new Error("User not found");
-	await deleteRefreshToken(app, oldToken);
 	return (user);
 }
 
