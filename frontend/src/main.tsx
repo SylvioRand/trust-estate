@@ -21,6 +21,7 @@ import WelcomePage from './pages/welcome.tsx';
 import EmailSentPage from './pages/email_sent.tsx';
 import VerifyEmailPage from './pages/verify_email.tsx';
 import ListingsPage from './pages/listings.tsx';
+import Profile from './pages/profile.tsx';
 
 const router = createBrowserRouter([
 	{
