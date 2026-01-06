@@ -69,7 +69,6 @@ const SignInPage: React.FC = () => {
 			setErrorEmail([]);
 			setErrorPassword([]);
 			navigate("/home");
-
 		} catch (error) {
 			console.error("Error: ", error);
 		} finally {

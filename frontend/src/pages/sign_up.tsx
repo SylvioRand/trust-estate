@@ -55,11 +55,11 @@ const SignUpPage: React.FC = () => {
 				const errorData = responseData as APIResponse;
 
 				if (errorData.error === "email_exists") {
-					setErrorEmail(["error:" + errorData.message]);
+					setErrorEmail([errorData.message]);
 					throw new Error("Email already in used.");
 				}
 				else if (errorData.error === "phone_exists") {
-					setErrorPhone(["error:" + errorData.message]);
+					setErrorPhone([errorData.message]);
 					throw new Error("Phone already in used.");
 				}
 				else if (errorData.error === "validation_failed") {
@@ -92,7 +92,7 @@ const SignUpPage: React.FC = () => {
 					throw new Error("Invalid Request.");
 				}
 				else if (errorData.error === "rate_limited") {
-					toast.error(t("error:" + errorData.message));
+					toast.error(t(errorData.message));
 					throw new Error("Rate Limited.");
 				}
 			}
@@ -251,7 +251,7 @@ const SignUpPage: React.FC = () => {
 						w-full mb-4"
 					>
 						{t("footer.alreadyHaveAccount")}
-						<Link to="/sign_in">
+						<Link to="/sign-in">
 							<span className="underline cursor-pointer font-bold">
 								{t("footer.signIn")}
 							</span>
