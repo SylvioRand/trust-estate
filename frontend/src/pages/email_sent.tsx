@@ -9,7 +9,6 @@ import useCountdown from "../components/Countdown";
 
 const EmailSentPage: React.FC = () => {
 	const	{ t } = useTranslation(["emailSent", "error"]);
-	const	[clickCount, setClickCount] = useState<number>(0);
 	const	[processResend, setProcessResend] = useState<boolean>(false);
 	const	[processLogOut, setProcessLogOut] = useState<boolean>(false);
 	const	[resendButtonDisabled, setResendButtonDisabled] = useState<boolean>(false);
@@ -18,9 +17,6 @@ const EmailSentPage: React.FC = () => {
 
 	const	handleOnResend = async () => {
 		setProcessResend(true);
-
-		setClickCount(clickCount + 1);
-		console.log("CLICKED");
 
 		try {
 			const	response = await fetch("/api/auth/resend-email", {
@@ -116,7 +112,7 @@ const EmailSentPage: React.FC = () => {
 					<ActionButton
 						icon=""
 						icon_place="right"
-						title={ t(clickCount === 0 ? "buttons.resendEmail.titleOrigin" : "buttons.resendEmail.title") }
+						title={ t("buttons.resendEmail.title") }
 						processing_action={ processResend }
 						onClick={ handleOnResend }
 						disabled={ resendButtonDisabled }

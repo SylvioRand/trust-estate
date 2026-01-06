@@ -11,7 +11,6 @@ import SignUpPage from './pages/sign_up.tsx';
 import NavBar from './components/NavBar.tsx';
 import MainLayout from './layout/layout.tsx';
 import SignInPage from './pages/sign_in.tsx';
-import ChatBot from './pages/ChatBot.tsx';
 import ForgotPassPage from './pages/forgot_pass.tsx';
 import ResetPassPage from './pages/reset_pass.tsx';
 import AddPhonePage from './pages/add_phone.tsx';
@@ -21,14 +20,14 @@ import WelcomePage from './pages/welcome.tsx';
 import EmailSentPage from './pages/email_sent.tsx';
 import VerifyEmailPage from './pages/verify_email.tsx';
 import ListingsPage from './pages/listings.tsx';
+import DataProvider from './provider/DataProvider.tsx';
+import Profile from './pages/profile.tsx';
+import Ai from './pages/ai.tsx';
 
 const router = createBrowserRouter([
 	{
 		element: <MainLayout />,
 		children: [
-			// ==========================================
-			// PAGES PUBLIQUES (non-authentifiés uniquement)
-			// ==========================================
 			{
 				path: "/sign-in",
 				element: <SignInPage />
@@ -54,11 +53,6 @@ const router = createBrowserRouter([
 				element: <ListingsPage />
 			},
 
-
-
-			// ==========================================
-			// PAGES DE VÉRIFICATION (semi-protégées)
-			// ==========================================
 			{
 				path: "email-sent",
 				element: <EmailSentPage />
@@ -72,9 +66,6 @@ const router = createBrowserRouter([
 				element: <AddPhonePage />
 			},
 
-			// ==========================================
-			// PAGES PROTÉGÉES (authentifiés uniquement)
-			// ==========================================
 			{
 				path: "/home",
 				element: <HomePage />
@@ -85,12 +76,13 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/ai",
-				element: <ChatBot />
+				element: <Ai />
+			},
+			{
+				path: "/profile",
+				element: <Profile />
 			},
 
-			// ==========================================
-			// REDIRECTIONS PAR DÉFAUT
-			// ==========================================
 			{
 				path: "/",
 				element: <Navigate to="/home" replace />
@@ -106,7 +98,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
 		<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-			<RouterProvider router={router} />
+			<DataProvider>
+				<RouterProvider router={router} />
+			</DataProvider>
 		</GoogleOAuthProvider>
 	</React.StrictMode>,
 );

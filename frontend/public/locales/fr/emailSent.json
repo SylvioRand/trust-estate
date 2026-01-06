@@ -18,7 +18,6 @@
 	"buttons": {
 		"resendEmail": {
 			"title": "Renvoyer",
-			"titleOrigin": "Envoyer un lien",
 			"success": "Un lien de vérification a été renvoyé à votre adresse e-mail.",
 			"timeLeft": "Vous pourrez renvoyer un lien après le compte à rebours: ",
 			"error": {

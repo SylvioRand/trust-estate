@@ -4,7 +4,7 @@ import house0 from "../../src/images/house0.webp";
 import house1 from "../../src/images/house1.webp";
 import house2 from "../../src/images/house2.webp";
 import house3 from "../../src/images/house3.webp";
-import { useAuthRedirect } from "../hooks/useAuthRedirect";
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 interface CardProps {
 	icon: string;
@@ -102,7 +102,7 @@ const	HomePage: React.FC = () => {
 		{ icon: "", title: t("aboutUs.card.accurateValuation.title"), content: t("aboutUs.card.accurateValuation.content") },
 		{ icon: "󰥔", title: t("aboutUs.card.instantNotification.title"), content: t("aboutUs.card.instantNotification.content") }
 	]
-	useAuthRedirect();
+	VerifyUsersState();
 	return (
 		<div className="flex flex-col items-center justify-start gap-4
 			overflow-y-scroll
