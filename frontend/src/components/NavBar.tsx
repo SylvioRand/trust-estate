@@ -113,14 +113,18 @@ const MobileNavButton: React.FC<NavButtonProps> = ({
 interface HamburgerMenuProps {
 	open: boolean;
 	data: NavButtonProps[];
+	dataUser: NavButtonProps[];
 	onClose: () => void;
 }
 
 const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 	open = false,
 	data = [],
+	dataUser = [],
 	onClose = () => console.error("Error: HamburgerMenu doesn't have onClose func!")
 }) => {
+	const	{ isConnected } = useDataProvider();
+
 	return (
 		<div className="fixed top-0 right-0
 			grid grid-cols-[1fr_225px] grid-rows-1
@@ -133,7 +137,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 				onClick={onClose}
 			>
 			</div>
-			<div className="flex flex-col items-start justify-start gap-3
+			<div className="grid grid-cols-1 grid-rows-[auto_1fr_auto] gap-3
 				transition-transform duration-200
 				w-full h-full
 				border-l border-background/25
@@ -151,18 +155,48 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 				>
 					
 				</div>
-				{
-					data.map((value: NavButtonProps, index: number) => {
-						return (
+				<div className="flex flex-col items-start justify-start
+					w-full h-full"
+				>
+					{
+						data.map((value: NavButtonProps, index: number) => {
+							return (
+								<MobileNavButton
+									key={index}
+									icon={value.icon}
+									title={value.title}
+									path={value.path}
+								/>
+							);
+						})
+					}
+				</div>
+				<div className="flex flex-col items-start justify-end gap-3
+					flex-none
+					pb-4"
+				>
+					{
+						isConnected === false && dataUser.map((value: NavButtonProps, index: number) => {
+							return (
+								<MobileNavButton
+									key={index}
+									icon={value.icon}
+									title={value.title}
+									path={value.path}
+								/>
+							);
+						})
+					}
+
+					{
+						isConnected === true &&
 							<MobileNavButton
-								key={index}
-								icon={value.icon}
-								title={value.title}
-								path={value.path}
+								icon=""
+								title="djazejhasi@gmail.com"
+								path="/profile"
 							/>
-						);
-					})
-				}
+					}
+				</div>
 			</div>
 		</div>
 	);
@@ -420,6 +454,7 @@ const	NavBar: React.FC = () => {
 				<HamburgerMenu
 					open={openHamburger}
 					data={ dataNavButton }
+					dataUser={ userNavButton }
 					onClose={() => setOpenHamburger(false)}
 				/>
 
