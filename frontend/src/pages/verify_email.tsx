@@ -29,6 +29,13 @@ const VerifyEmailPage: React.FC = () => {
 			if (!response.ok)
 				throw new Error("Invalid or Expired Token");
 
+			toast.success(t("success"));
+			setStatus("confirmed");
+
+			setTimeout(() => {
+				navigate("/property");
+			}, 2000);
+
 		} catch (e) {
 			toast.error(t("error:auth.invalid_or_expired_token"));
 			setStatus("invalid");
@@ -37,13 +44,6 @@ const VerifyEmailPage: React.FC = () => {
 				navigate("/home");
 			}, 2000);
 
-		} finally {
-			toast.success(t("success"));
-			setStatus("confirmed");
-
-			setTimeout(() => {
-				navigate("/property");
-			}, 2000);
 		}
 	}
 
