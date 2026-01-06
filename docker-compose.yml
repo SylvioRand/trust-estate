@@ -83,5 +83,63 @@ services:
       retries: 5
     restart: unless-stopped
 
+  # ==============================================
+  # AI
+  # ==============================================
+
+  # Frontend
+  ft_frontend:
+    container_name: ft_frontend
+    image: ft_frontend:hehe
+    build: ./frontend
+    ports:
+      - "3000:80"
+    networks:
+      - frontend-network
+    restart: unless-stopped
+    depends_on:
+      - ft_ai
+  # Backend AI Service
+  ft_ai: 
+    container_name: ft_ai
+    image: ft_ai:bibidi
+    build: ./services/ai
+    ports: 
+      - "3005:3005"
+    env_file:
+      - .env
+    depends_on:
+      - ft_chromadb
+    networks: 
+      - frontend-network
+      - backend-network
+    volumes:
+      - ./services/ai/:/app
+    restart:  unless-stopped
+
+  # ChromaDB - Vector Database
+  ft_chromadb:
+    container_name: ft_chromadb
+    image: chromadb/chroma:0.6.3
+    ports:
+      - "8001:8000"
+    volumes:
+      - chromadb_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - CHROMA_TELEMETRY_ENABLED=False
+      - ANONYMIZED_TELEMETRY=False
+    networks: 
+      - backend-network
+    restart: unless-stopped
+
+networks: 
+  frontend-network: 
+    driver: bridge
+  backend-network:
+    driver: bridge
+
 volumes:
   postgres_data:
+  chromadb_data:
+    driver: local
