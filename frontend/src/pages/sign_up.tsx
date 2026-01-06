@@ -5,7 +5,8 @@ import ContentDivider from "../components/ContentDivider";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { useAuthRedirect } from "../hooks/useAuthRedirect";
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
+import useDataProvider from "../provider/useDataProvider";
 
 export type APIResponse = {
 	error: string;
@@ -14,16 +15,17 @@ export type APIResponse = {
 }
 
 const SignUpPage: React.FC = () => {
-	const { t } = useTranslation(["signUp", "error"]);
-	const navigate = useNavigate();
-	const [processSignUp, setProcessSignUp] = useState<boolean>(false);
-	const [errorEmail, setErrorEmail] = useState<string[]>([]);
-	const [errorPhone, setErrorPhone] = useState<string[]>([]);
-	const [errorFirstName, setErrorFirstName] = useState<string[]>([]);
-	const [errorLastName, setErrorLastName] = useState<string[]>([]);
-	const [errorPassword, setErrorPassword] = useState<string[]>([]);
+	const	{ t } = useTranslation(["signUp", "error"]);
+	const	navigate = useNavigate();
+	const	[processSignUp, setProcessSignUp] = useState<boolean>(false);
+	const	[errorEmail, setErrorEmail] = useState<string[]>([]);
+	const	[errorPhone, setErrorPhone] = useState<string[]>([]);
+	const	[errorFirstName, setErrorFirstName] = useState<string[]>([]);
+	const	[errorLastName, setErrorLastName] = useState<string[]>([]);
+	const	[errorPassword, setErrorPassword] = useState<string[]>([]);
+	const	{ setIsConnected } = useDataProvider();
 
-	useAuthRedirect();
+	VerifyUsersState();
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -97,6 +99,7 @@ const SignUpPage: React.FC = () => {
 				}
 			}
 
+			setIsConnected(true);
 			navigate("/email-sent");
 
 		} catch (error) {

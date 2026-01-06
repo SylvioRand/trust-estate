@@ -1,7 +1,7 @@
 import TextInput from "../components/texte_input";
 import { useState, useEffect, useRef } from "react";
 
-const	ChatBot: React.FC = () => {
+const	Ai: React.FC = () => {
     const [text, setText] = useState("");
     const [submitted, setSubmitted] = useState<string[]>([]);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -59,4 +59,4 @@ const	ChatBot: React.FC = () => {
     );
 }
 
-export default ChatBot;
+export default Ai;
