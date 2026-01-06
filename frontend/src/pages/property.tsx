@@ -43,12 +43,13 @@ const	PublicationCard: React.FC<PublicationCardProps> = ({
 	const	[hovered, setHovered] = useState<boolean>(false);
 	const	navigate = useNavigate();
 	const	formatter = new Intl.NumberFormat("de-DE");
+	const	{ t } = useTranslation("listings");
 
 	return (
 		<div className="flex items-center justify-center
 			flex-none
 			rounded-xl
-			shadow-xl
+			shadow-standard
 			relative
 			w-full h-full
 			min-h-90 max-h-90
@@ -59,6 +60,18 @@ const	PublicationCard: React.FC<PublicationCardProps> = ({
 			onPointerLeave={ () => setHovered(false) }
 			onClick={ () => navigate(`/listings?id=${ propertyData.data[0].id }`) }
 		>
+			<div className="absolute top-4 left-4
+				shadow-standard
+				rounded-full
+				backdrop-blur-2xl
+				bg-foreground/50
+				border border-background/25
+				px-3 py-1
+				z-1"
+			>
+				{ propertyData.data[0].type === "sale" ? t("section.listingType.sale") : t("section.listingType.rent") }
+			</div>
+
 			<img
 				className="absolute w-full h-full object-cover
 					ease-in-out
@@ -322,7 +335,7 @@ const	PropertyPage: React.FC = () => {
 					id: 0,
 					title: "Maison T3",
 					price: 50000000,
-					type: "sale",
+					type: "rent",
 					zone: "tana-analakely",
 					zoneDisplay: "Antananarivo - Analakely",
 					surface: 120,
@@ -372,7 +385,7 @@ const	PropertyPage: React.FC = () => {
 					id: 0,
 					title: "Appartment T4",
 					price: 150000000,
-					type: "sale",
+					type: "rent",
 					zone: "tana-analakely",
 					zoneDisplay: "Antananarivo - Ambatobe",
 					surface: 120,

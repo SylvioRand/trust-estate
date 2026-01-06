@@ -8,8 +8,8 @@
 
 	"section": {
 		"listingType": {
-			"rent": "To rent",
-			"sale": "To sell"
+			"rent": "Rent",
+			"sale": "Sell"
 		},
 
 		"features": {
