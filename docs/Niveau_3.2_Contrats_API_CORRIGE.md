@@ -940,6 +940,106 @@ GET /auth/check-phone?phone=+261340000000
 
 ---
 
+### 1.14 🆕 Vérification Token (Interne - Service-to-Service)
+
+**Description :** Endpoint **interne** permettant aux autres microservices (listings-service, reservations-service, etc.) de valider un token JWT et d'obtenir les informations utilisateur essentielles.
+
+**Cas d'usage :**
+- Le `listings-service` reçoit une requête de publication → appelle `auth-service` pour valider le token
+- Le `reservations-service` vérifie que l'utilisateur a le droit de réserver
+- Tout service ayant besoin de connaître l'identité de l'utilisateur
+
+**Auth :** Header `x-internal-key` (clé API interne partagée entre services)
+
+```http
+POST /auth/verify-token
+```
+
+**Headers requis :**
+```
+x-internal-key: ${INTERNAL_API_KEY}
+Content-Type: application/json
+```
+
+**Request :**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Response 200 (token valide) :**
+```json
+{
+  "valid": true,
+  "user": {
+    "id": "u123",
+    "role": "seller",
+    "phoneVerified": true,
+    "emailVerified": true
+  },
+  "expiresAt": "2025-01-07T12:00:00Z"
+}
+```
+
+**Response 401 (token invalide) :**
+```json
+{
+  "valid": false,
+  "reason": "token_invalid",
+  "message": "auth.token_invalid"
+}
+```
+
+**Response 401 (token expiré) :**
+```json
+{
+  "valid": false,
+  "reason": "token_expired",
+  "message": "auth.token_expired"
+}
+```
+
+**Response 401 (token révoqué) :**
+```json
+{
+  "valid": false,
+  "reason": "token_revoked",
+  "message": "auth.token_revoked"
+}
+```
+
+**Response 403 (clé interne invalide) :**
+```json
+{
+  "error": "forbidden",
+  "message": "auth.invalid_internal_key"
+}
+```
+
+> [!IMPORTANT]
+> **Sécurité :**
+> - Cet endpoint ne doit **jamais** être exposé via l'API Gateway public
+> - La clé `INTERNAL_API_KEY` doit être générée avec au moins 32 caractères aléatoires
+> - Communication interne en HTTPS ou via réseau Docker isolé
+
+**Exemple d'appel depuis un autre service (Node.js) :**
+```javascript
+const response = await fetch('http://auth-service:3001/auth/verify-token', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-internal-key': process.env.INTERNAL_API_KEY
+  },
+  body: JSON.stringify({ token: accessToken })
+});
+
+const { valid, user } = await response.json();
+if (!valid) throw new UnauthorizedException();
+```
+
+---
+
 ---
 
 ## 2. Annonces (listings-service)
@@ -2480,7 +2580,25 @@ POST /admin/listings/:id/archive-permanent
 > 
 > Voir [Niveau_3.5_Architecture_Microservices.md](./Niveau_3.5_Architecture_Microservices.md) pour la configuration Docker.
 
+> [!NOTE]
+> **Composants du système RAG (Retrieval-Augmented Generation) :**
+> - **ChromaDB** : Stocke les embeddings vectoriels des annonces et données marché
+> - **Sentence Transformers** : Convertit le texte en vecteurs pour la recherche sémantique
+> - **LLM (DeepSeek V3)** : Génère les réponses contextualisées à partir des documents récupérés
+
+---
+
 ### 8.1 Assistant Chat (RAG)
+
+**Description :** Chatbot intelligent permettant aux utilisateurs de poser des questions sur le marché immobilier malgache ou sur une annonce spécifique. Utilise la technologie RAG pour fournir des réponses précises basées sur les vraies données.
+
+**Workflow RAG :**
+1. L'utilisateur envoie une question
+2. Le système recherche les documents pertinents dans ChromaDB (annonces, rapports marché)
+3. Les documents trouvés sont injectés comme contexte au LLM
+4. Le LLM génère une réponse enrichie et sourcée
+
+**Auth :** Cookie HttpOnly (optionnel pour personnalisation)
 
 ```http
 POST /ai/chat
@@ -2489,22 +2607,86 @@ POST /ai/chat
 **Request :**
 ```json
 {
-  "message": "Quel est le prix moyen à Ivandry ?",
+  "message": "Quel est le prix moyen à Ivandry pour une villa T4 ?",
   "context": {
-    "listingId": "l1" // Optionnel
-  }
+    "listingId": "l1",         // Optionnel - pour chat contextuel sur une annonce
+    "conversationId": "conv1"  // Optionnel - pour maintenir l'historique
+  },
+  "language": "fr"             // "fr" | "mg" (malagasy)
 }
 ```
+
+**Règles de validation :**
+| Champ | Règle |
+|-------|-------|
+| `message` | Requis, 2-1000 caractères |
+| `context.listingId` | Optionnel, format UUID valide |
+| `context.conversationId` | Optionnel, format UUID valide |
+| `language` | Optionnel, défaut: "fr" |
 
 **Response 200 :**
 ```json
 {
-  "reply": "À Ivandry, le prix moyen au m² est d'environ 4.500.000 Ar...",
-  "sources": ["market_report_2024", "listing_l1"]
+  "reply": "À Ivandry, le prix moyen pour une villa T4 est d'environ 850.000.000 Ar à 1.200.000.000 Ar selon l'état et les équipements. Les biens avec piscine se situent généralement dans la fourchette haute.",
+  "sources": [
+    {
+      "type": "market_report",
+      "id": "market_2024_q4",
+      "title": "Rapport marché Ivandry Q4 2024"
+    },
+    {
+      "type": "listing",
+      "id": "l1",
+      "title": "Villa T4 Ivandry avec piscine"
+    }
+  ],
+  "conversationId": "conv1",
+  "confidence": 0.89
 }
 ```
 
-### 8.2 Génération Texte (Streaming)
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "common.validation_failed",
+  "details": {
+    "message": ["validation.ai.message.too_short", "validation.ai.message.too_long"]
+  }
+}
+```
+
+**Response 429 (rate limiting) :**
+```json
+{
+  "error": "rate_limited",
+  "message": "ai.rate_limited_chat",
+  "retryAfter": 60
+}
+```
+
+**Response 503 (LLM indisponible) :**
+```json
+{
+  "error": "llm_unavailable",
+  "message": "ai.llm_service_unavailable"
+}
+```
+
+---
+
+### 8.2 Génération Description Annonce
+
+**Description :** Génère automatiquement une description professionnelle pour une annonce immobilière à partir des caractéristiques saisies par le vendeur. Utilisé lors de la **création** ou **modification** d'une annonce.
+
+**Workflow d'utilisation :**
+1. Le vendeur remplit le formulaire de création/modification d'annonce
+2. Il clique sur le bouton **"Générer description IA"**
+3. Toutes les caractéristiques déjà saisies sont envoyées à l'API
+4. L'IA génère une description professionnelle
+5. Le vendeur peut modifier le texte avant publication
+
+**Auth :** Cookie HttpOnly (requis - vendeur authentifié)
 
 ```http
 POST /ai/generate
@@ -2513,82 +2695,355 @@ POST /ai/generate
 **Request :**
 ```json
 {
-  "prompt": "Rédige une description pour une villa T4...",
-  "stream": true
+  "listingData": {
+    "propertyType": "villa",           // "villa" | "apartment" | "house" | "land" | "commercial"
+    "transactionType": "sale",         // "sale" | "rent"
+    "title": "Villa T4 avec piscine",  // Optionnel - titre saisi par l'utilisateur
+    "bedrooms": 4,
+    "bathrooms": 2,
+    "area": 250,                       // en m²
+    "landArea": 500,                   // en m² (optionnel, pour terrain/villa)
+    "price": 850000000,                // en Ariary
+    "zone": "tana-ivandry",
+    "address": "Lot II B 45 Ivandry",  // Optionnel
+    "features": [                      // Liste des équipements
+      "piscine",
+      "jardin",
+      "garage",
+      "gardien",
+      "cuisine_equipee",
+      "climatisation"
+    ],
+    "condition": "excellent",          // "neuf" | "excellent" | "bon" | "a_renover"
+    "yearBuilt": 2020,                 // Optionnel
+    "floors": 2,                       // Optionnel
+    "furnished": true,                 // Optionnel
+    "parking": 2                       // Optionnel - nombre de places
+  },
+  "options": {
+    "style": "professional",           // "professional" | "casual" | "luxury" | "concise"
+    "length": "medium",                // "short" (50-100 mots) | "medium" (100-200) | "long" (200-300)
+    "highlights": ["piscine", "vue"],  // Optionnel - points à mettre en avant
+    "language": "fr"                   // "fr" | "mg"
+  }
 }
 ```
 
-**Response 200 (Stream) :**
-- Flux d'événements SSE (Server-Sent Events)
+**Règles de validation :**
+| Champ | Règle |
+|-------|-------|
+| `listingData.propertyType` | Requis, enum: villa, apartment, house, land, commercial |
+| `listingData.transactionType` | Requis, enum: sale, rent |
+| `listingData.bedrooms` | Optionnel, 0-20 |
+| `listingData.bathrooms` | Optionnel, 0-10 |
+| `listingData.area` | Requis, 1-100000 m² |
+| `listingData.price` | Requis, > 0 |
+| `listingData.zone` | Requis, zone valide |
+| `listingData.features` | Optionnel, tableau de strings |
+| `options.style` | Optionnel, défaut: "professional" |
+| `options.length` | Optionnel, défaut: "medium" |
 
-### 8.3 Données Marché (RAG source)
+**Response 200 :**
+```json
+{
+  "description": "Magnifique villa T4 de 250m² nichée dans le quartier prisé d'Ivandry. Ce bien d'exception, construit en 2020, vous séduira par ses prestations haut de gamme : 4 chambres spacieuses, 2 salles de bain modernes, une cuisine entièrement équipée et climatisée. Profitez d'une piscine privée au cœur d'un jardin arboré de 500m². Garage double et gardiennage 24h/24 pour votre sérénité. Une opportunité rare pour les familles recherchant confort et sécurité.",
+  "wordCount": 78,
+  "alternatives": [
+    {
+      "style": "concise",
+      "text": "Villa T4 250m² Ivandry - 4 ch, 2 sdb, piscine, jardin 500m², garage, gardien. État impeccable, construction 2020."
+    },
+    {
+      "style": "luxury",
+      "text": "Résidence d'exception au cœur d'Ivandry. Cette villa contemporaine de 250m² redéfinit l'art de vivre à Madagascar..."
+    }
+  ],
+  "suggestedTitle": "Villa T4 de standing avec piscine - Ivandry",
+  "keywords": ["villa", "piscine", "ivandry", "T4", "jardin", "sécurisé"]
+}
+```
+
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "common.validation_failed",
+  "details": {
+    "listingData.propertyType": ["validation.ai.property_type.required"],
+    "listingData.area": ["validation.ai.area.required", "validation.ai.area.positive"],
+    "listingData.zone": ["validation.ai.zone.invalid"]
+  }
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "common.unauthorized"
+}
+```
+
+**Response 429 (rate limiting) :**
+```json
+{
+  "error": "rate_limited",
+  "message": "ai.rate_limited_generate",
+  "retryAfter": 60
+}
+```
+
+> [!TIP]
+> **Rate Limiting :** 10 générations par minute par utilisateur. Encouragez les vendeurs à bien remplir les caractéristiques avant de générer pour obtenir un meilleur résultat dès la première tentative.
+
+**Response 503 (LLM indisponible) :**
+```json
+{
+  "error": "llm_unavailable",
+  "message": "ai.llm_service_unavailable"
+}
+```
+
+---
+
+### 8.3 Données Marché
+
+**Description :** Fournit les statistiques du marché immobilier pour une zone donnée. Utilisé comme source de données pour le système RAG et peut être affiché directement dans l'interface utilisateur.
+
+**Cas d'usage :**
+- Enrichir les réponses du chatbot avec des données marché actuelles
+- Afficher un widget "Prix du marché" sur la page d'une annonce
+- Aider les vendeurs à fixer un prix compétitif
+
+**Auth :** Aucune (endpoint public)
 
 ```http
 GET /ai/market-data
 ```
 
 **Query params :**
-- `zone`: string
-- `type`: `sale` | `rent`
+| Paramètre | Type | Requis | Description |
+|-----------|------|--------|-------------|
+| `zone` | string | Oui | ID de la zone (ex: "tana-ivandry") |
+| `type` | string | Non | "sale" \| "rent" (défaut: "sale") |
+| `propertyType` | string | Non | "villa" \| "apartment" \| "house" \| "land" |
+| `period` | string | Non | "3m" \| "6m" \| "1y" (défaut: "6m") |
+
+**Exemple :**
+```
+GET /ai/market-data?zone=tana-ivandry&type=sale&propertyType=villa&period=6m
+```
 
 **Response 200 :**
 ```json
 {
-  "averagePrice": 4500000,
-  "trend": "up",
-  "demandLevel": "high"
+  "zone": {
+    "id": "tana-ivandry",
+    "displayName": "Antananarivo - Ivandry"
+  },
+  "transactionType": "sale",
+  "propertyType": "villa",
+  "period": "6m",
+  "statistics": {
+    "averagePricePerSqm": 4500000,
+    "medianPrice": 750000000,
+    "minPrice": 350000000,
+    "maxPrice": 2500000000,
+    "totalListings": 45,
+    "averageDaysOnMarket": 62
+  },
+  "trends": {
+    "priceChange": "+5.2%",
+    "direction": "up",
+    "demandLevel": "high",
+    "supplyLevel": "medium"
+  },
+  "comparison": {
+    "vsCity": "+15%",
+    "vsLastPeriod": "+3.5%"
+  },
+  "generatedAt": "2025-01-07T08:00:00Z",
+  "disclaimer": "Données indicatives basées sur les annonces publiées sur la plateforme."
+}
+```
+
+**Response 400 :**
+```json
+{
+  "error": "validation_failed",
+  "message": "common.validation_failed",
+  "details": {
+    "zone": ["validation.ai.zone.required", "validation.ai.zone.invalid"]
+  }
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "zone_not_found",
+  "message": "ai.zone_not_found"
 }
 ```
 
 ---
 
-### 8.3 Indexation & Synchronisation
+### 8.4 Indexation & Synchronisation
 
-Ces endpoints sont utilisés pour synchroniser la base SQL principale avec le moteur de recherche vectoriel (ChromaDB).
+> [!IMPORTANT]
+> Ces endpoints sont **internes** et appelés automatiquement par le `listings-service`. Ils ne doivent pas être exposés publiquement via l'API Gateway.
 
-#### Indexer une annonce
+Ces endpoints synchronisent la base SQL principale avec le moteur de recherche vectoriel (ChromaDB) pour permettre la recherche sémantique et le RAG.
 
-**Utilisation :** Appelé par le `listings-service` après la création ou modification d'une annonce pour synchroniser les données avec le moteur vectoriel.
+---
+
+#### 8.4.1 Indexer une annonce
+
+**Description :** Crée ou met à jour les embeddings vectoriels d'une annonce dans ChromaDB.
+
+**Workflow automatique :**
+1. `listings-service` publie ou modifie une annonce
+2. Appel automatique à `POST /ai/index`
+3. Le service AI récupère les données complètes de l'annonce
+4. Génération des embeddings via Sentence Transformers
+5. Stockage dans ChromaDB
+
+**Auth :** Service-to-service (API Key interne)
 
 ```http
 POST /ai/index
 ```
 
-**Body :**
+**Request :**
 ```json
 {
-  "listingId": "l123"
+  "listingId": "l123",
+  "action": "upsert",        // "upsert" | "update" (défaut: "upsert")
+  "priority": "normal"       // "high" | "normal" | "low" (défaut: "normal")
 }
 ```
 
-**Response 200 :**
+**Response 200 (mode asynchrone) :**
 ```json
 {
   "status": "queued",
-  "jobId": "job_999"
+  "jobId": "job_999",
+  "estimatedTime": "5s",
+  "message": "ai.indexing_queued"
 }
 ```
 
-#### Vérifier le statut d'indexation
+**Response 200 (mode synchrone - priority: high) :**
+```json
+{
+  "status": "completed",
+  "listingId": "l123",
+  "vectorId": "vec_abc123",
+  "indexedAt": "2025-01-07T08:53:00Z",
+  "message": "ai.indexing_completed"
+}
+```
 
-**Utilisation :** Utilisé par le Frontend pour valider si le chat contextuel peut être activé (évite les réponses "Je ne connais pas ce bien").
+**Response 400 :**
+```json
+{
+  "error": "validation_failed",
+  "message": "common.validation_failed",
+  "details": {
+    "listingId": ["validation.ai.listing_id.required", "validation.ai.listing_id.invalid_format"]
+  }
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "listing_not_found",
+  "message": "listing.not_found"
+}
+```
+
+**Response 503 :**
+```json
+{
+  "error": "vector_db_unavailable",
+  "message": "ai.vector_db_unavailable"
+}
+```
+
+---
+
+#### 8.4.2 Vérifier le statut d'indexation
+
+**Description :** Vérifie si une annonce est correctement indexée dans ChromaDB.
+
+**Cas d'usage Frontend :**
+- Avant d'activer le bouton "Poser une question sur ce bien"
+- Évite les réponses "Je ne connais pas cette annonce"
+- Affiche un indicateur de chargement si l'indexation est en cours
+
+**Auth :** Aucune (endpoint public)
 
 ```http
 GET /ai/index-status/:listingId
 ```
 
-**Response 200 :**
+**Response 200 (indexé) :**
 ```json
 {
   "listingId": "l123",
   "isIndexed": true,
-  "lastIndexedAt": "2024-03-20T10:00:00Z"
+  "status": "ready",
+  "lastIndexedAt": "2025-01-07T08:00:00Z",
+  "vectorId": "vec_abc123",
+  "version": 3
 }
 ```
 
-#### Supprimer de l'index
+**Response 200 (en cours) :**
+```json
+{
+  "listingId": "l123",
+  "isIndexed": false,
+  "status": "processing",
+  "queuePosition": 5,
+  "estimatedTime": "30s"
+}
+```
 
-**Utilisation :** Appelé par le `listings-service` lors de la suppression d'une annonce pour nettoyer ChromaDB.
+**Response 200 (non indexé) :**
+```json
+{
+  "listingId": "l123",
+  "isIndexed": false,
+  "status": "not_found",
+  "message": "ai.listing_not_indexed"
+}
+```
+
+**Response 400 :**
+```json
+{
+  "error": "validation_failed",
+  "message": "common.validation_failed",
+  "details": {
+    "listingId": ["validation.ai.listing_id.invalid_format"]
+  }
+}
+```
+
+---
+
+#### 8.4.3 Supprimer de l'index
+
+**Description :** Supprime les embeddings vectoriels d'une annonce de ChromaDB.
+
+**Workflow automatique :**
+1. `listings-service` archive ou supprime une annonce
+2. Appel automatique à `DELETE /ai/index/:listingId`
+3. Nettoyage des vecteurs dans ChromaDB
+
+**Auth :** Service-to-service (API Key interne)
 
 ```http
 DELETE /ai/index/:listingId
@@ -2597,26 +3052,117 @@ DELETE /ai/index/:listingId
 **Response 200 :**
 ```json
 {
-  "success": true
+  "success": true,
+  "listingId": "l123",
+  "deletedAt": "2025-01-07T09:00:00Z",
+  "message": "ai.index_deleted"
 }
 ```
 
-#### Health Check
+**Response 404 :**
+```json
+{
+  "error": "index_not_found",
+  "message": "ai.listing_not_indexed"
+}
+```
+
+---
+
+### 8.5 Health Check
+
+**Description :** Vérifie l'état de santé du service AI et de ses dépendances.
+
+**Utilisé par :**
+- Kubernetes/Docker pour les health probes
+- Dashboard de monitoring
+- Alerting automatique
+
+**Auth :** Aucune (endpoint public)
 
 ```http
 GET /ai/health
 ```
 
-**Response 200 :**
+**Response 200 (healthy) :**
 ```json
 {
   "status": "healthy",
+  "uptime": "3d 5h 23m",
+  "version": "1.2.0",
   "providers": {
-    "llm": "online",
-    "vector_db": "connected"
+    "llm": {
+      "status": "online",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-chat",
+      "latency": "245ms"
+    },
+    "vector_db": {
+      "status": "connected",
+      "provider": "chromadb",
+      "collections": 3,
+      "totalVectors": 1250
+    },
+    "embeddings": {
+      "status": "loaded",
+      "model": "all-MiniLM-L6-v2"
+    }
+  },
+  "metrics": {
+    "requestsLast24h": 1523,
+    "averageResponseTime": "1.2s",
+    "errorRate": "0.5%"
   }
 }
 ```
+
+**Response 503 (degraded) :**
+```json
+{
+  "status": "degraded",
+  "uptime": "3d 5h 23m",
+  "version": "1.2.0",
+  "providers": {
+    "llm": {
+      "status": "offline",
+      "error": "Connection timeout to OpenRouter",
+      "lastCheck": "2025-01-07T08:50:00Z"
+    },
+    "vector_db": {
+      "status": "connected",
+      "provider": "chromadb"
+    },
+    "embeddings": {
+      "status": "loaded",
+      "model": "all-MiniLM-L6-v2"
+    }
+  },
+  "message": "ai.service_degraded"
+}
+```
+
+---
+
+### 8.6 Récapitulatif Endpoints AI
+
+| Endpoint | Méthode | Auth | Description |
+|----------|---------|------|-------------|
+| `/ai/chat` | POST | Optionnel | Chat RAG avec contexte annonces et marché |
+| `/ai/generate` | POST | Requise | Génération de description d'annonce |
+| `/ai/market-data` | GET | Public | Statistiques du marché par zone |
+| `/ai/index` | POST | Interne | Indexer une annonce dans ChromaDB |
+| `/ai/index-status/:id` | GET | Public | Vérifier statut d'indexation |
+| `/ai/index/:id` | DELETE | Interne | Supprimer de l'index |
+| `/ai/health` | GET | Public | Health check du service |
+
+### 8.7 Rate Limiting AI
+
+| Endpoint | Limite | Fenêtre | Scope |
+|----------|--------|---------|-------|
+| `/ai/chat` | 30 requêtes | 1 minute | Par utilisateur |
+| `/ai/generate` | 10 requêtes | 1 minute | Par utilisateur |
+| `/ai/market-data` | 60 requêtes | 1 minute | Par IP |
+| `/ai/index` | 100 requêtes | 1 minute | Par service |
 
 ---
 
@@ -2651,6 +3197,7 @@ GET /ai/health
 |                      | `POST`   | `/auth/logout`                              |
 |                      | `GET`    | `/auth/check-email` 🆕                      |
 |                      | `GET`    | `/auth/check-phone` 🆕                      |
+|                      | `POST`   | `/auth/verify-token` 🆕 (INTERNE)           |
 | **Profil**           | `GET`    | `/users/me`                                 |
 |                      | `PUT`    | `/users/me`                                 |
 | **Annonces**         | `GET`    | `/listings`                                 |
