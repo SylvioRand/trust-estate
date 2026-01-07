@@ -425,7 +425,7 @@ POST /auth/verify-email
     "phone": "+261340000000",
     "firstName": "Sydni",
     "lastName": "Ziemann",
-    "role": "user",
+    "role": "user", // Enum: "user", "moderator"
     "sellerStats": {
       "totalListings": 5,
       "activeListings": 4,
@@ -586,7 +586,7 @@ POST /auth/login
     "phone": "+261340000000",
     "firstName": "Sonya",
     "lastName": "Leuschke",
-    "role": "user",
+    "role": "user", // Enum: "user", "moderator"
     "sellerStats": {
       "totalListings": 5,
       "activeListings": 4,
@@ -672,7 +672,7 @@ POST /auth/google
     "phone": "+261340000000",
     "firstName": "Edwin",
     "lastName": "Bernier",
-    "role": "moderator",
+    "role": "moderator", // Enum: "user", "moderator"
     "sellerStats": {
       "totalListings": 5,
       "activeListings": 4,
@@ -734,7 +734,7 @@ GET /users/me
   "phone": "+261340000000",
   "firstName": "Jean",
   "lastName": "Rakoto",
-  "role": "user",
+  "role": "user", // Enum: "user", "moderator"
   "sellerStats": {
     "totalListings": 5,
     "activeListings": 2,
@@ -1072,14 +1072,17 @@ GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000
       "id": "l1",
       "title": "Maison T3 Analakely",
       "price": 50000000,
-      "type": "sale",
+      "type": "sale", // Enum: "sale", "rent"
+      "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial"
+      "mine": true,
       "zone": "tana-analakely",
       "zoneDisplay": "Antananarivo - Analakely",
       "surface": 120,
       "photos": [
         "https://mock-cdn.com/photo1.jpg"
       ],
-      "status": "active",
+      "status": "active", // Enum: "active", "reserved", "sold", "rented", "blocked", "archived"
+      "tags": ["urgent"], // Enum: "urgent", "exclusive", "discount"
       "createdAt": "2025-01-10T08:00:00Z",
       "expiresAt": "2025-02-09T08:00:00Z"
     }
@@ -1121,7 +1124,9 @@ GET /listings/:id
   "title": "Maison T3 Analakely",
   "description": "Maison lumineuse avec jardin...",
   "price": 50000000,
-  "type": "sale",
+  "type": "sale", // Enum: "sale", "rent"
+  "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial"
+  "mine": true,
   "surface": 120,
   "zone": "tana-analakely",
   "zoneDisplay": "Antananarivo - Analakely",
@@ -1133,18 +1138,20 @@ GET /listings/:id
     "bedrooms": 3,
     "bathrooms": 2,
     "wc_separate": true,
-    "parking_type": "garage",
+    "parking_type": "garage", // Enum: "garage", "box", "parking", "none"
     "garden_private": true,
     "water_access": true,
     "electricity_access": true
   },
-  "status": "active",
+  "status": "active", // Enum: "active", "blocked", "archived"
   "sellerVisible": false,
   "sellerStats": {
     "totalListings": 5,
     "successfulSales": 3,
+    "successfulSales": 3,
     "averageRating": 4.2
   },
+  "tags": ["urgent"], // Enum: "urgent", "exclusive", "discount"
   "createdAt": "2025-01-10T08:00:00Z",
   "updatedAt": "2025-01-12T14:30:00Z",
   "expiresAt": "2025-02-09T08:00:00Z"
@@ -1158,13 +1165,15 @@ GET /listings/:id
   "title": "Maison T3 Analakely",
   "description": "Maison lumineuse avec jardin...",
   "price": 50000000,
-  "type": "sale",
+  "type": "sale", // Enum: "sale", "rent"
+  "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial"
+  "mine": false,
   "surface": 120,
   "zone": "tana-analakely",
   "zoneDisplay": "Antananarivo - Analakely",
   "photos": [...],
   "features": {...},
-  "status": "active",
+  "status": "active", // Enum: "active", "blocked", "archived"
   "sellerVisible": true,
   "seller": {
     "id": "u5",
@@ -1176,8 +1185,10 @@ GET /listings/:id
   "sellerStats": {
     "totalListings": 5,
     "successfulSales": 3,
+    "successfulSales": 3,
     "averageRating": 4.2
   },
+  "tags": ["urgent"], // Enum: "urgent", "exclusive", "discount"
   "createdAt": "2025-01-10T08:00:00Z",
   "updatedAt": "2025-01-12T14:30:00Z"
 }
@@ -1204,7 +1215,8 @@ POST /listings/publish
 **Request :**
 ```json
 {
-  "type": "sale",
+  "type": "sale", // Enum: "sale", "rent" (Requis)
+  "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial" (Requis)
   "title": "Villa T4 avec piscine",
   "description": "Belle villa moderne...",
   "price": 120000000,
@@ -1218,13 +1230,13 @@ POST /listings/publish
     "bedrooms": 4,
     "bathrooms": 3,
     "wc_separate": true,
-    "parking_type": "garage",
+    "parking_type": "garage", // Enum: "garage", "box", "parking", "none"
     "garden_private": true,
     "pool": true,
     "water_access": true,
     "electricity_access": true
   },
-  "tags": ["exclusive"]
+  "tags": ["urgent"] // Enum: "urgent", "exclusive", "discount"
 }
 ```
 
@@ -1232,7 +1244,7 @@ POST /listings/publish
 ```json
 {
   "listingId": "l2",
-  "status": "active",
+  "status": "active", // Enum: "active", "blocked", "archived"
   "creditConsumed": 1,
   "remainingCredits": 4,
   "message": "listing.publish_success"
@@ -1341,12 +1353,14 @@ PUT /listings/:id
     "bedrooms": 4,
     "bathrooms": 3,
     "wc_separate": true,
-    "parking_type": "garage",
+    "parking_type": "garage", // Enum: "garage", "box", "parking", "none"
     "garden_private": true,
     "pool": true,
     "water_access": true,
+    "water_access": true,
     "electricity_access": true
-  }
+  },
+  "tags": ["exclusive"] // Enum: "urgent", "exclusive", "discount"
 }
 ```
 *Note : Tous les champs sont optionnels. Envoyez uniquement ceux à modifier.*
@@ -1549,7 +1563,7 @@ POST /listings/:id/archive
 **Request :**
 ```json
 {
-  "finalStatus": "sold" | "rented",
+  "finalStatus": "sold", // Enum: "sold", "rented"
   "soldTo": "u7" // optionnel
 }
 ```
@@ -1628,8 +1642,9 @@ GET /listings/mine?status=active&page=1
       "id": "l1",
       "title": "Maison T3 Analakely",
       "price": 50000000,
-      "type": "sale",
-      "status": "active",
+      "type": "sale", // Enum: "sale", "rent"
+      "status": "active", // Enum: "active", "reserved", "sold", "rented", "blocked", "archived"
+      "tags": ["discount"], // Enum: "urgent", "exclusive", "discount"
       "views": 150,
       "reservations": 3,
       "createdAt": "2025-01-10T08:00:00Z"
@@ -1664,7 +1679,7 @@ POST /listings/:id/report
 **Request :**
 ```json
 {
-  "reason": "fraud" | "spam" | "incorrect_info" | "inappropriate",
+  "reason": "fraud", // Enum: "fraud", "spam", "incorrect_info", "inappropriate"
   "comment": "Les photos ne correspondent pas à la description..."
 }
 ```
@@ -1819,7 +1834,7 @@ POST /reservations
 ```json
 {
   "reservationId": "r1",
-  "status": "pending",
+  "status": "pending", // Enum: "pending", "confirmed", "rejected", "cancelled", "done"
   "slot": "2025-01-20T10:00:00Z",
   "creditConsumed": 1,
   "remainingCredits": 4,
@@ -1945,7 +1960,7 @@ GET /reservations/mine
         "photo": "https://mock-cdn.com/photo1.jpg"
       },
       "slot": "2025-01-20T10:00:00Z",
-      "status": "confirmed",
+      "status": "confirmed", // Enum: "pending", "confirmed", "rejected", "cancelled", "done"
       "feedbackEligible": false,
       "createdAt": "2025-01-15T14:00:00Z"
     }
@@ -2026,7 +2041,7 @@ POST /reservations/:id/confirm
 **Response 200 :**
 ```json
 {
-  "status": "confirmed",
+  "status": "confirmed", // Enum: "pending", "confirmed", "rejected", "cancelled", "done"
   "confirmedAt": "2025-01-16T10:00:00Z"
 }
 ```
@@ -2080,7 +2095,7 @@ POST /reservations/:id/reject
 **Response 200 :**
 ```json
 {
-  "status": "rejected"
+  "status": "rejected" // Enum: "pending", "confirmed", "rejected", "cancelled", "done"
 }
 ```
 
@@ -2132,7 +2147,7 @@ POST /feedback
 ```json
 {
   "reservationId": "r1",
-  "rating": 4,
+  "rating": 4, // Enum: 1, 2, 3, 4, 5
   "comment": "Visite conforme. Vendeur sérieux.",
   "categories": {
     "listingAccurate": true,
@@ -2237,7 +2252,7 @@ POST /credits/recharge
 {
   "amount": 10,
   "method": "mobile-money",
-  "provider": "orange-money" | "mvola"
+  "provider": "orange-money" // Enum: "orange-money", "mvola"
 }
 ```
 
@@ -2304,9 +2319,9 @@ GET /credits/history
   "data": [
     {
       "id": "tx1",
-      "type": "recharge",
+      "type": "recharge", // Enum: "recharge", "consume", "bonus", "refund"
       "amount": +10,
-      "reason": "recharge_pack",
+      "reason": "recharge_pack", // Enum: "initial_bonus", "recharge_pack", "recharge_bonus", "publish_listing", "renew_listing", "reserve_visit", "refund_cancelled"
       "balanceAfter": 15,
       "createdAt": "2025-01-15T10:00:00Z"
     },
@@ -2353,7 +2368,7 @@ GET /zones
     {
       "id": "tana-analakely",
       "displayName": "Antananarivo - Analakely",
-      "level": "neighborhood",
+      "level": "neighborhood", // Enum: "city", "district", "neighborhood"
       "parentId": "tana-renivohitra"
     },
     {
@@ -2408,9 +2423,9 @@ GET /admin/listings/flagged
     {
       "listingId": "l5",
       "title": "Terrain 500m²",
-      "reason": "user_reported",
+      "reason": "user_reported", // Enum: "user_reported"
       "reportedBy": "u15",
-      "reportReason": "Photos suspectes",
+      "reportReason": "Photos suspectes", // Enum: "fraud", "spam", "incorrect_info", "inappropriate"
       "seller": {
         "id": "u10",
         "name": "Nom Vendeur",
@@ -2445,7 +2460,7 @@ POST /admin/listings/:id/action
 **Request :**
 ```json
 {
-  "action": "block_temporary" | "archive_permanent" | "request_clarification",
+  "action": "block_temporary", // Enum: "block_temporary", "archive_permanent", "request_clarification"
   "reason": "Non-respect des CGU (Photos non conformes)",
   "metadata": {
     "messageToSeller": "Veuillez mettre à jour vos photos sous 48h."
@@ -2458,7 +2473,7 @@ POST /admin/listings/:id/action
 {
   "success": true,
   "actionId": "ma2",
-  "newStatus": "blocked",
+  "newStatus": "blocked", // Enum: "active", "blocked", "archived"
   "message": "admin.action_applied_successfully"
 }
 ```
@@ -2522,7 +2537,7 @@ GET /admin/actions
     {
       "id": "ma1",
       "moderatorId": "m1",
-      "targetType": "listing",
+      "targetType": "listing", // Enum: "listing", "user", "feedback"
       "targetId": "l5",
       "action": "block_temporary",
       "reason": "Photos trompeuses confirmées",
@@ -2559,7 +2574,7 @@ POST /admin/listings/:id/archive-permanent
   "archived": true,
   "listing": {
     "id": "l5",
-    "status": "archived",
+    "status": "archived", // Enum: "active", "blocked", "archived"
     "archivedBy": "moderator",
     "archivedAt": "2025-01-15T14:00:00Z"
   }
@@ -2612,7 +2627,7 @@ POST /ai/chat
     "listingId": "l1",         // Optionnel - pour chat contextuel sur une annonce
     "conversationId": "conv1"  // Optionnel - pour maintenir l'historique
   },
-  "language": "fr"             // "fr" | "mg" (malagasy)
+  "language": "fr"             // Enum: "fr", "mg"
 }
 ```
 
@@ -2696,8 +2711,8 @@ POST /ai/generate
 ```json
 {
   "listingData": {
-    "propertyType": "villa",           // "villa" | "apartment" | "house" | "land" | "commercial"
-    "transactionType": "sale",         // "sale" | "rent"
+    "propertyType": "villa",           // Enum: "apartment", "house", "loft", "land", "commercial"
+    "transactionType": "sale",         // Enum: "sale", "rent"
     "title": "Villa T4 avec piscine",  // Optionnel - titre saisi par l'utilisateur
     "bedrooms": 4,
     "bathrooms": 2,
@@ -2714,17 +2729,17 @@ POST /ai/generate
       "cuisine_equipee",
       "climatisation"
     ],
-    "condition": "excellent",          // "neuf" | "excellent" | "bon" | "a_renover"
+    "condition": "excellent",          // Enum: "new", "excellent", "good", "to_renovate"
     "yearBuilt": 2020,                 // Optionnel
     "floors": 2,                       // Optionnel
     "furnished": true,                 // Optionnel
     "parking": 2                       // Optionnel - nombre de places
   },
   "options": {
-    "style": "professional",           // "professional" | "casual" | "luxury" | "concise"
-    "length": "medium",                // "short" (50-100 mots) | "medium" (100-200) | "long" (200-300)
+    "style": "professional",           // Enum: "professional", "casual", "luxury", "concise"
+    "length": "medium",                // Enum: "short", "medium", "long"
     "highlights": ["piscine", "vue"],  // Optionnel - points à mettre en avant
-    "language": "fr"                   // "fr" | "mg"
+    "language": "fr"                   // Enum: "fr", "mg"
   }
 }
 ```
@@ -2825,9 +2840,9 @@ GET /ai/market-data
 | Paramètre | Type | Requis | Description |
 |-----------|------|--------|-------------|
 | `zone` | string | Oui | ID de la zone (ex: "tana-ivandry") |
-| `type` | string | Non | "sale" \| "rent" (défaut: "sale") |
-| `propertyType` | string | Non | "villa" \| "apartment" \| "house" \| "land" |
-| `period` | string | Non | "3m" \| "6m" \| "1y" (défaut: "6m") |
+| `type` | string | Non | Enum: "sale", "rent" (défaut: "sale") |
+| `propertyType` | string | Non | Enum: "apartment", "house", "loft", "land", "commercial" |
+| `period` | string | Non | Enum: "3m", "6m", "1y" (défaut: "6m") |
 
 **Exemple :**
 ```
@@ -2918,15 +2933,15 @@ POST /ai/index
 ```json
 {
   "listingId": "l123",
-  "action": "upsert",        // "upsert" | "update" (défaut: "upsert")
-  "priority": "normal"       // "high" | "normal" | "low" (défaut: "normal")
+  "action": "upsert",        // Enum: "upsert", "update", "delete"
+  "priority": "normal"       // Enum: "high", "normal", "low"
 }
 ```
 
 **Response 200 (mode asynchrone) :**
 ```json
 {
-  "status": "queued",
+  "status": "queued", // Enum: "queued", "completed", "failed"
   "jobId": "job_999",
   "estimatedTime": "5s",
   "message": "ai.indexing_queued"
@@ -2936,7 +2951,7 @@ POST /ai/index
 **Response 200 (mode synchrone - priority: high) :**
 ```json
 {
-  "status": "completed",
+  "status": "completed", // Enum: "queued", "completed", "failed"
   "listingId": "l123",
   "vectorId": "vec_abc123",
   "indexedAt": "2025-01-07T08:53:00Z",
@@ -2993,7 +3008,7 @@ GET /ai/index-status/:listingId
 {
   "listingId": "l123",
   "isIndexed": true,
-  "status": "ready",
+  "status": "ready", // Enum: "ready", "processing", "not_found"
   "lastIndexedAt": "2025-01-07T08:00:00Z",
   "vectorId": "vec_abc123",
   "version": 3
@@ -3005,7 +3020,7 @@ GET /ai/index-status/:listingId
 {
   "listingId": "l123",
   "isIndexed": false,
-  "status": "processing",
+  "status": "processing", // Enum: "ready", "processing", "not_found"
   "queuePosition": 5,
   "estimatedTime": "30s"
 }
@@ -3016,7 +3031,7 @@ GET /ai/index-status/:listingId
 {
   "listingId": "l123",
   "isIndexed": false,
-  "status": "not_found",
+  "status": "not_found", // Enum: "ready", "processing", "not_found"
   "message": "ai.listing_not_indexed"
 }
 ```
@@ -3087,7 +3102,7 @@ GET /ai/health
 **Response 200 (healthy) :**
 ```json
 {
-  "status": "healthy",
+  "status": "healthy", // Enum: "healthy", "degraded", "down"
   "uptime": "3d 5h 23m",
   "version": "1.2.0",
   "providers": {
@@ -3119,7 +3134,7 @@ GET /ai/health
 **Response 503 (degraded) :**
 ```json
 {
-  "status": "degraded",
+  "status": "degraded", // Enum: "healthy", "degraded", "down"
   "uptime": "3d 5h 23m",
   "version": "1.2.0",
   "providers": {

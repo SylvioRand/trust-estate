@@ -65,7 +65,7 @@ Refléter la base de données réelle nécessaire pour les nouvelles features.
 ```typescript
 // shared/constants/enums.ts
 export const LISTING_TYPE = ['sale', 'rent'] as const;
-export const LISTING_STATUS = ['active', 'blocked', 'archived'] as const;
+export const LISTING_STATUS = ['active', 'reserved', 'sold', 'rented', 'blocked', 'archived'] as const;
 export const PARKING_TYPE = ['none', 'street', 'garage', 'covered'] as const;
 export const RESERVATION_STATUS = ['pending', 'confirmed', 'rejected', 'cancelled', 'done'] as const;
 export const REPORT_REASON = ['fraud', 'spam', 'incorrect_info', 'inappropriate'] as const;
@@ -182,7 +182,7 @@ interface Listing {
   features: ListingFeatures;
   
   // Marketing
-  tags: ('urgent' | 'exclusive' | 'new')[];
+  tags: ('urgent' | 'exclusive' | 'discount')[];
   
   // Visibilité (Expiration)
   expiresAt: string; // 🆕 Date d'expiration (Created + 30j)
