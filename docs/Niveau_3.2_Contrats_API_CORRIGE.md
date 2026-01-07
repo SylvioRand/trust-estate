@@ -8,7 +8,7 @@ Définir des contrats API REST clairs, stables et mockables, permettant :
 
 ⚠️ Ces contrats décrivent le comportement attendu, pas l'implémentation.
 
-**🆕 Cette version corrige et complète le document initial avec :**
+**Cette version corrige et complète le document initial avec :**
 - Workflow téléphone simple (sans OTP)
 - Endpoints zones
 - Endpoints modérateur
@@ -39,12 +39,12 @@ Ces endpoints sont répartis entre 4 services Fastify derrière un Nginx gateway
 
 **Auth :** Cookies HttpOnly (Standard strict)
 
-| Nom du cookie             | Contenu       | Durée (MVP) | Attributs requis                                      |
+| Nom du cookie             | Contenu       | Durée       | Attributs requis                                      |
 |---------------------------|---------------|-------------|-------------------------------------------------------|
 | `realestate_access_token` | JWT (String)  | 15 min      | `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/`     |
 | `realestate_refresh_token`| UUID (String) | 7 jours     | `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/auth` |
 
-> **Note pour les Mocks :** Le serveur de mock DOIT renvoyer ces headers `Set-Cookie` exacts.
+
 > **Note pour les Devs :** Le frontend ne manipule JAMAIS ces cookies directement.
 
 
@@ -251,8 +251,8 @@ Les valeurs autorisées **DOIVENT** être strictement identiques entre le fronte
 ```typescript
 // shared/constants/enums.ts
 export const LISTING_TYPE = ['sale', 'rent'] as const;
-export const LISTING_STATUS = ['active', 'blocked', 'archived'] as const;
-export const PARKING_TYPE = ['none', 'street', 'garage', 'covered'] as const;
+export const LISTING_STATUS = ['active', 'reserved', 'sold', 'rented', 'blocked', 'archived'] as const;
+export const PARKING_TYPE = ['none', 'garage', 'box', 'parking'] as const;
 export const RESERVATION_STATUS = ['pending', 'confirmed', 'rejected', 'cancelled', 'done'] as const;
 export const REPORT_REASON = ['fraud', 'spam', 'incorrect_info', 'inappropriate'] as const;
 export const MOD_ACTION = ['block_temporary', 'archive_permanent', 'request_clarification'] as const;
@@ -278,28 +278,15 @@ const listingSchema = {
 | Enum                 | Valeurs autorisées                                              |
 |----------------------|-----------------------------------------------------------------|
 | `type` (listing)     | `sale`, `rent`                                                  |
-| `status` (listing)   | `active`, `blocked`, `archived`                                 |
-| `parking_type`       | `none`, `street`, `garage`, `covered`                           |
+| `status` (listing)   | `active`, `reserved`, `sold`, `rented`, `blocked`, `archived` |
+| `parking_type`       | `none`, `garage`, `box`, `parking`                              |
 | `reservation.status` | `pending`, `confirmed`, `rejected`, `cancelled`, `done`         |
 | `report.reason`      | `fraud`, `spam`, `incorrect_info`, `inappropriate`              |
 | `mod.action`         | `block_temporary`, `archive_permanent`, `request_clarification` |
 | `credit.provider`    | `orange-money`, `mvola`                                         |
 | `feedback.rating`    | `1`, `2`, `3`, `4`, `5`                                         |
 
-### ✅ Checklist Validation Complète
 
-Avant chaque endpoint POST/PUT, vérifier :
-
-- [ ] Schema JSON avec `additionalProperties: false`
-- [ ] Limites de taille identiques frontend/backend
-- [ ] Enums stricts avec valeurs partagées
-- [ ] Regex téléphone Madagascar appliquée
-- [ ] Sanitization XSS sur champs texte
-- [ ] Rate limiting configuré
-- [ ] Vérification crédits avant opération (402)
-- [ ] Transaction atomique si multi-opérations
-
----
 
 ## 1. Authentification (auth-service)
 
@@ -421,7 +408,7 @@ POST /auth/verify-email
   "user": {
     "id": "235afa03-4130-44d5-8002-522a58ab164d",
     "email": "Icie64@hotmail.com",
-    "emailVerified": "true",
+    "emailVerified": true,
     "phone": "+261340000000",
     "firstName": "Sydni",
     "lastName": "Ziemann",
@@ -430,7 +417,9 @@ POST /auth/verify-email
       "totalListings": 5,
       "activeListings": 4,
       "successfulSales": 1,
-      "averageRating": 8.5
+      "successfulRents": 0,
+      "averageRating": 4.5,
+      "responseRate": 85
     },
     "creditBalance": 45,
     "createdAt": "2025-12-26T08:55:19.215Z"
@@ -490,7 +479,7 @@ POST /auth/resend-verification
 
 ---
 
-### 1.4 Mot de passe oublié (🆕 NOUVEAU)
+### 1.4 Mot de passe oublié (NOUVEAU)
 
 ```http
 POST /auth/forgot-password
@@ -522,7 +511,7 @@ POST /auth/forgot-password
 
 ---
 
-### 1.5 Réinitialiser Mot de passe (🆕 NOUVEAU)
+### 1.5 Réinitialiser Mot de passe (NOUVEAU)
 
 ```http
 POST /auth/reset-password
@@ -578,11 +567,10 @@ POST /auth/login
 
 ```json
 {
-{
   "user": {
     "id": "b016c7e2-9a78-4c86-a5ab-5f4166e6deaa",
     "email": "Destiny_Dickinson25@gmail.com",
-    "emailVerified": false,
+    "emailVerified": true,
     "phone": "+261340000000",
     "firstName": "Sonya",
     "lastName": "Leuschke",
@@ -591,12 +579,13 @@ POST /auth/login
       "totalListings": 5,
       "activeListings": 4,
       "successfulSales": 1,
-      "averageRating": 8.5
+      "successfulRents": 0,
+      "averageRating": 4.5,
+      "responseRate": 85
     },
     "creditBalance": 45,
     "createdAt": "2025-12-26T08:49:13.639Z"
   }
-}
 }
 ```
 
@@ -668,7 +657,7 @@ POST /auth/google
   "user": {
     "id": "8757f505-eb47-4078-8c64-b33239e264e6",
     "email": "Monty_Rempel@gmail.com",
-    "emailVerified": "true",
+    "emailVerified": true,
     "phone": "+261340000000",
     "firstName": "Edwin",
     "lastName": "Bernier",
@@ -677,7 +666,9 @@ POST /auth/google
       "totalListings": 5,
       "activeListings": 4,
       "successfulSales": 1,
-      "averageRating": 8.5
+      "successfulRents": 0,
+      "averageRating": 4.5,
+      "responseRate": 90
     },
     "creditBalance": 45,
     "createdAt": "2025-12-26T08:51:13.893Z"
@@ -693,7 +684,7 @@ POST /auth/google
 }
 ```
 
-**Règles mock MVP :**
+
 - Tout token accepté
 - Crée utilisateur auto si nouveau
 
@@ -739,7 +730,9 @@ GET /users/me
     "totalListings": 5,
     "activeListings": 2,
     "successfulSales": 3,
-    "averageRating": 4.2
+    "successfulRents": 1,
+    "averageRating": 4.2,
+    "responseRate": 92
   },
   "creditBalance": 10,
   "createdAt": "2025-01-10T08:00:00Z"
@@ -815,7 +808,7 @@ PUT /users/me
 
 ---
 
-### 1.11 Ajouter/Modifier Téléphone (🆕 NOUVEAU)
+### 1.11 Ajouter/Modifier Téléphone (NOUVEAU)
 
 ```http
 PUT /users/me/phone
@@ -866,7 +859,7 @@ PUT /users/me/phone
 
 ---
 
-### 1.12 🆕 Vérifier Disponibilité Email (UX)
+### 1.12 Vérifier Disponibilité Email (UX)
 
 ```http
 GET /auth/check-email?email=user@mail.com
@@ -903,7 +896,7 @@ GET /auth/check-email?email=user@mail.com
 
 ---
 
-### 1.13 🆕 Vérifier Disponibilité Téléphone (UX)
+### 1.13 Vérifier Disponibilité Téléphone (UX)
 
 ```http
 GET /auth/check-phone?phone=+261340000000
@@ -940,7 +933,7 @@ GET /auth/check-phone?phone=+261340000000
 
 ---
 
-### 1.14 🆕 Vérification Token (Interne - Service-to-Service)
+### 1.14 Vérification Token (Interne - Service-to-Service)
 
 **Description :** Endpoint **interne** permettant aux autres microservices (listings-service, reservations-service, etc.) de valider un token JWT et d'obtenir les informations utilisateur essentielles.
 
@@ -974,8 +967,7 @@ Content-Type: application/json
   "valid": true,
   "user": {
     "id": "u123",
-    "role": "seller",
-    "phoneVerified": true,
+    "role": "user",
     "emailVerified": true
   },
   "expiresAt": "2025-01-07T12:00:00Z"
@@ -1083,8 +1075,7 @@ GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000
       ],
       "status": "active", // Enum: "active", "reserved", "sold", "rented", "blocked", "archived"
       "tags": ["urgent"], // Enum: "urgent", "exclusive", "discount"
-      "createdAt": "2025-01-10T08:00:00Z",
-      "expiresAt": "2025-02-09T08:00:00Z"
+      "createdAt": "2025-01-10T08:00:00Z"
     }
   ],
   "pagination": {
@@ -1143,18 +1134,24 @@ GET /listings/:id
     "water_access": true,
     "electricity_access": true
   },
-  "status": "active", // Enum: "active", "blocked", "archived"
+  "status": "active", // Enum: "active", "reserved", "sold", "rented", "blocked", "archived"
   "sellerVisible": false,
   "sellerStats": {
     "totalListings": 5,
+    "activeListings": 2,
     "successfulSales": 3,
-    "successfulSales": 3,
-    "averageRating": 4.2
+    "successfulRents": 1,
+    "averageRating": 4.2,
+    "responseRate": 92
+  },
+  "stats": {                    // Visible uniquement si mine=true
+    "views": 245,
+    "reservations": 3,
+    "feedbacks": 2
   },
   "tags": ["urgent"], // Enum: "urgent", "exclusive", "discount"
   "createdAt": "2025-01-10T08:00:00Z",
-  "updatedAt": "2025-01-12T14:30:00Z",
-  "expiresAt": "2025-02-09T08:00:00Z"
+  "updatedAt": "2025-01-12T14:30:00Z"
 }
 ```
 
@@ -1173,7 +1170,7 @@ GET /listings/:id
   "zoneDisplay": "Antananarivo - Analakely",
   "photos": [...],
   "features": {...},
-  "status": "active", // Enum: "active", "blocked", "archived"
+  "status": "active", // Enum: "active", "reserved", "sold", "rented", "blocked", "archived"
   "sellerVisible": true,
   "seller": {
     "id": "u5",
@@ -1184,9 +1181,11 @@ GET /listings/:id
   },
   "sellerStats": {
     "totalListings": 5,
+    "activeListings": 2,
     "successfulSales": 3,
-    "successfulSales": 3,
-    "averageRating": 4.2
+    "successfulRents": 1,
+    "averageRating": 4.2,
+    "responseRate": 92
   },
   "tags": ["urgent"], // Enum: "urgent", "exclusive", "discount"
   "createdAt": "2025-01-10T08:00:00Z",
@@ -1201,6 +1200,10 @@ GET /listings/:id
   "message": "listing.not_found"
 }
 ```
+
+> [!NOTE]
+> **Choix de design (Privacy) :**
+> `sellerId` n'est **pas exposé directement** — le vendeur est révélé via l'objet `seller` uniquement après réservation confirmée (`sellerVisible: true`)
 
 ---
 
@@ -1331,7 +1334,7 @@ POST /listings/publish
 
 ---
 
-### 2.4 🆕 Modifier annonce
+### 2.4 Modifier annonce
 
 ```http
 PUT /listings/:id
@@ -1356,7 +1359,6 @@ PUT /listings/:id
     "parking_type": "garage", // Enum: "garage", "box", "parking", "none"
     "garden_private": true,
     "pool": true,
-    "water_access": true,
     "water_access": true,
     "electricity_access": true
   },
@@ -1411,61 +1413,7 @@ PUT /listings/:id
 
 ---
 
-### 2.5 Renouveler Annonce (Prolonger annonce)
-
-```http
-POST /listings/:id/renew
-```
-
-**Auth :** Cookie HttpOnly (`realestate_access_token`)
-
-**Description :** Prolonge la visibilité de 30 jours. Coût : 0.5 crédit.
-
-**Response 200 :**
-```json
-{
-  "success": true,
-  "newExpiresAt": "2025-03-11T08:00:00Z",
-  "creditConsumed": 0.5,
-  "message": "listing.renew_success"
-}
-```
-
-**Response 402 :**
-```json
-{
-  "error": "insufficient_credits",
-  "message": "payment.insufficient_credits_renew"
-}
-```
-
-**Response 401 :**
-```json
-{
-  "error": "unauthorized",
-  "message": "common.unauthorized"
-}
-```
-
-**Response 403 :**
-```json
-{
-  "error": "forbidden",
-  "message": "listing.permission_denied"
-}
-```
-
-**Response 404 :**
-```json
-{
-  "error": "listing_not_found",
-  "message": "listing.not_found"
-}
-```
-
----
-
-### 2.6 Définir Disponibilités (Seller)
+### 2.5 Définir Disponibilités (Seller)
 
 ```http
 POST /listings/:id/availability
@@ -1529,7 +1477,7 @@ POST /listings/:id/availability
 
 ---
 
-### 2.7 Récupérer créneaux disponibles
+### 2.6 Récupérer créneaux disponibles
 ```http
 GET /listings/:id/slots
 ```
@@ -1554,7 +1502,7 @@ GET /listings/:id/slots
 
 ---
 
-### 2.8 Archiver Annonce (Vendu/Loué)
+### 2.7 Archiver Annonce (Vendu/Loué)
 
 ```http
 POST /listings/:id/archive
@@ -1614,7 +1562,7 @@ POST /listings/:id/archive
 
 ---
 
-### 2.9 🆕 Mes Annonces
+### 2.8 Mes Annonces
 
 ```http
 GET /listings/mine
@@ -1668,7 +1616,7 @@ GET /listings/mine?status=active&page=1
 
 ---
 
-### 2.10 🆕 Signaler une annonce
+### 2.9 Signaler une annonce
 
 ```http
 POST /listings/:id/report
@@ -1732,7 +1680,7 @@ POST /listings/:id/report
 
 ---
 
-### 2.11 🆕 Génération Description IA
+### 2.10 Génération Description IA
 
 ```http
 POST /listings/generate-description
@@ -1775,7 +1723,7 @@ POST /listings/generate-description
 
 ## 3. Réservations (reservations-service)
 
-### 3.1 🆕 Vérifier Disponibilité Slot (UX)
+### 3.1 Vérifier Disponibilité Slot (UX)
 
 ```http
 GET /reservations/check-slot?listingId=l1&slot=2025-01-20T10:00:00Z
@@ -1837,8 +1785,6 @@ POST /reservations
   "status": "pending", // Enum: "pending", "confirmed", "rejected", "cancelled", "done"
   "slot": "2025-01-20T10:00:00Z",
   "creditConsumed": 1,
-  "remainingCredits": 4,
-  "sellerContactVisible": false,
   "remainingCredits": 4,
   "sellerContactVisible": false,
   "message": "reservation.created_success"
@@ -1939,7 +1885,7 @@ POST /reservations
 
 ---
 
-### 3.3 🆕 Lister mes réservations
+### 3.3 Lister mes réservations
 
 ```http
 GET /reservations/mine
@@ -1978,7 +1924,7 @@ GET /reservations/mine
 
 ---
 
-### 3.4 🆕 Annuler réservation
+### 3.4 Annuler réservation
 
 #### `DELETE /reservations/:id`
 **Rôle :** Annulation d'une réservation (autorisé jusqu'à 2h avant le slot).
@@ -2026,7 +1972,7 @@ GET /reservations/mine
 }
 ```
 
-### 3.5 🆕 Confirmer réservation (Vendeur)
+### 3.5 Confirmer réservation (Vendeur)
 
 **Rôle :** Le vendeur accepte la demande de visite.
 **Action :** Le statut passe à `confirmed`. L'acheteur est notifié.
@@ -2080,7 +2026,7 @@ POST /reservations/:id/confirm
 
 ---
 
-### 3.6 🆕 Refuser réservation (Vendeur)
+### 3.6 Refuser réservation (Vendeur)
 
 **Rôle :** Le vendeur refuse la demande de visite.
 **Action :** Le statut passe à `rejected`. L'acheteur est notifié.
@@ -2303,7 +2249,7 @@ POST /credits/recharge
 }
 ```
 
-### 5.3 🆕 Historique transactions
+### 5.3 Historique transactions
 
 ```http
 GET /credits/history
@@ -2321,7 +2267,7 @@ GET /credits/history
       "id": "tx1",
       "type": "recharge", // Enum: "recharge", "consume", "bonus", "refund"
       "amount": +10,
-      "reason": "recharge_pack", // Enum: "initial_bonus", "recharge_pack", "recharge_bonus", "publish_listing", "renew_listing", "reserve_visit", "refund_cancelled"
+      "reason": "recharge_pack", // Enum: "initial_bonus", "recharge_pack", "recharge_bonus", "publish_listing", "reserve_visit", "refund_cancelled"
       "balanceAfter": 15,
       "createdAt": "2025-01-15T10:00:00Z"
     },
@@ -2349,7 +2295,7 @@ GET /credits/history
 
 ---
 
-## 6. 🆕 Zones
+## 6. Zones
 
 ### 6.1 Lister zones disponibles
 
@@ -2387,7 +2333,7 @@ GET /zones
 }
 ```
 
-**Données mock MVP (20 zones principales Antananarivo) :**
+
 ```json
 [
   {"id": "tana-analakely", "displayName": "Antananarivo - Analakely"},
@@ -2401,7 +2347,7 @@ GET /zones
 
 ---
 
-## 7. 🆕 Modération (Admin)
+## 7. Modération (Admin)
 
 **⚠️ Tous les endpoints ci-dessous nécessitent `role = 'moderator'`**
 
@@ -2412,7 +2358,7 @@ GET /admin/listings/flagged
 ```
 
 **Query params :**
-- `reason` : `user_reported` (en MVP, seul le signalement utilisateur existe)
+- `reason` : `user_reported`
 
 
 
@@ -2585,7 +2531,7 @@ POST /admin/listings/:id/archive-permanent
 
 ---
 
-## 8. 🆕 Intelligence Artificielle (ai-service)
+## 8. Intelligence Artificielle (ai-service)
 
 > **🔧 Stack Technique :**
 > - **Service :** Python FastAPI (port 3005)
@@ -3181,22 +3127,7 @@ GET /ai/health
 
 ---
 
-## 9. Notes MVP
 
-**Toutes les données sont mockées :**
-- ✅ Aucune persistance réelle
-- ✅ Données statiques ou simulées
-- ✅ Tous les paiements simulés (succès automatique)
-- ✅ Tous les SMS simulés (jamais envoyés réellement)
-- ✅ Validation IA simulée (règles simples)
-
-**Objectif :** Tester les flows UX, pas la logique serveur.
-
-**Outils recommandés pour le mock :**
-- Apidog
-- MSW (Mock Service Worker)
-- JSON Server
-- Mirage JS
 
 
 ## Récapitulatif des Endpoints MVP
@@ -3206,20 +3137,22 @@ GET /ai/health
 | **Authentification** | `POST`   | `/auth/register`                            |
 |                      | `POST`   | `/auth/verify-email`                        |
 |                      | `POST`   | `/auth/resend-verification`                 |
+|                      | `POST`   | `/auth/forgot-password`                     |
+|                      | `POST`   | `/auth/reset-password`                      |
 |                      | `POST`   | `/auth/login`                               |
 |                      | `POST`   | `/auth/google`                              |
 |                      | `POST`   | `/auth/refresh`                             |
-|                      | `POST`   | `/auth/logout`                              |
-|                      | `GET`    | `/auth/check-email` 🆕                      |
-|                      | `GET`    | `/auth/check-phone` 🆕                      |
-|                      | `POST`   | `/auth/verify-token` 🆕 (INTERNE)           |
+|                      | `GET`    | `/auth/logout`                              |
+|                      | `GET`    | `/auth/check-email`                         |
+|                      | `GET`    | `/auth/check-phone`                         |
+|                      | `POST`   | `/auth/verify-token` (INTERNE)              |
 | **Profil**           | `GET`    | `/users/me`                                 |
 |                      | `PUT`    | `/users/me`                                 |
+|                      | `PUT`    | `/users/me/phone`                           |
 | **Annonces**         | `GET`    | `/listings`                                 |
 |                      | `GET`    | `/listings/:id`                             |
 |                      | `POST`   | `/listings/publish`                         |
 |                      | `PUT`    | `/listings/:id`                             |
-|                      | `POST`   | `/listings/:id/renew`                       |
 |                      | `POST`   | `/listings/:id/archive`                     |
 |                      | `POST`   | `/listings/:id/availability`                |
 |                      | `GET`    | `/listings/:id/slots`                       |
@@ -3228,7 +3161,7 @@ GET /ai/health
 |                      | `POST`   | `/listings/generate-description`            |
 | **Réservations**     | `GET`    | `/reservations/mine`                        |
 |                      | `POST`   | `/reservations`                             |
-|                      | `GET`    | `/reservations/check-slot` 🆕               |
+|                      | `GET`    | `/reservations/check-slot`                  |
 |                      | `POST`   | `/reservations/:id/confirm`                 |
 |                      | `POST`   | `/reservations/:id/reject`                  |
 |                      | `DELETE` | `/reservations/:id`                         |
@@ -3242,69 +3175,15 @@ GET /ai/health
 |                      | `POST`   | `/admin/listings/:id/action`                |
 |                      | `GET`    | `/admin/actions`                            |
 | **AI (Assistant)**   | `POST`   | `/ai/chat`                                  |
+|                      | `POST`   | `/ai/generate`                              |
 |                      | `GET`    | `/ai/market-data`                           |
-|                      | `POST`   | `/ai/index`                                 |
+|                      | `POST`   | `/ai/index` (INTERNE)                       |
 |                      | `GET`    | `/ai/index-status/:listingId`               |
-|                      | `DELETE` | `/ai/index/:listingId`                      |
-| **TOTAL**            |          | **39 Endpoints**                            |
-
----
-
-## 10. Changelog (Version Corrigée)
-
-**🆕 Ajouts (Validation & UX) :**
-- **Section "Règles de Validation"** complète (défense en profondeur, sanitization XSS, rate limiting)
-- Endpoints validation temps réel : `GET /auth/check-email`, `GET /auth/check-phone`, `GET /reservations/check-slot`
-- Règles de validation détaillées par endpoint critique (register, login, publish, reservations)
-- Codes d'erreur 400 avec structure `details` standardisée
-- Tableau rate limiting par endpoint
-- Règles upload fichiers (formats, tailles, MIME type)
-
-**🆕 Ajouts (Endpoints) :**
-- Resend email verification (POST /auth/resend-verification)
-- Inscription utilisateur (POST /auth/register)
-- Logout
-- Endpoints zones (GET /zones)
-- Endpoints modérateur (6 endpoints admin)
-- Historique crédits (GET /credits/history)
-- Modification annonce (PUT /listings/:id)
-- Archivage annonce (POST /listings/:id/archive)
-- Annulation réservation (DELETE /reservations/:id)
-- Mes réservations (GET /reservations/mine)
-- Mes annonces (GET /listings/mine)
-- Génération description IA
-- Profil utilisateur (GET/PUT /users/me)
-
-
-**🔧 Améliorations :**
-- Gestion erreurs enrichie (400, 402, 403, 409, 413, 422, 429)
-- Réponses IA validation détaillées
-- Pagination sur toutes les listes
-- Query params exhaustifs
-
-**✅ Cohérence :**
-- Aligné avec Niveau 2.4 (Décisions Produit)
-- Workflow téléphone complet
-- Rôle IA clarifié (suggère, pas bloque)
-- Zones structurées
-- **Validation frontend ET backend spécifiée (exigence respectée)**
-
-**🆕 Audit Erreurs Complet (27 Décembre 2024) :**
-- **16 endpoints corrigés** avec erreurs manquantes
-- Ajout systématique des codes : 400 (validation détaillée), 401, 403, 404, 409, 422, 429
-- `/auth/register` : ajout `phone_exists`, validation password complète (majuscule, minuscule, chiffre), 429 rate limiting
-- `/auth/login` : ajout 429 rate limiting
-- `/auth/google` : ajout 400 invalid_google_token
-- `/listings/publish` : ajout 422 invalid_mime_type, 429 listing_limit
-- `PUT /listings/:id` : ajout 400, 401, 404
-- `/listings/:id/renew|availability|archive` : ajout 401, 403, 404
-- `/listings/:id/report` : ajout 400, 401, 404, 409 (already_reported)
-- `POST /reservations` : ajout 400, 401, 403 (cannot_reserve_own), 404
-- `DELETE /reservations/:id` : ajout 400 (too_late), 401, 403, 404
-- `POST /reservations/:id/confirm|reject` : ajout 401, 403, 404, 409
-- `POST /feedback` : ajout 400 validation, 401, 404
-- `POST /credits/recharge` : ajout 400 validation, 401, 429
-- `POST /admin/listings/:id/action` : ajout 400, 401, 403, 404
+|                      | `DELETE` | `/ai/index/:listingId` (INTERNE)            |
+|                      | `GET`    | `/ai/health`                                |
+| **TOTAL**            |          | **47 Endpoints**                            |
 
 
 ---
+
+
