@@ -30,8 +30,7 @@ const	ComponentPhotoViewer: React.FC<PhotoViewerProps> = ({
 
 			<div className="grid grid-cols-1 grid-rows-1 place-items-center
 				max-w-200
-				bg-background/25
-				backdrop-blur-2xl
+				bg-black
 				rounded-2xl
 				relative
 				w-full h-full"
@@ -79,6 +78,7 @@ const	ComponentPhotoViewer: React.FC<PhotoViewerProps> = ({
 						shadow-standard
 						px-2
 						rounded-2xl
+						cursor-pointer
 						flex items-center justify-center"
 						onClick={ () => setDisplayID(displayID === 0 ? picture.length - 1 : displayID - 1) }
 					>
@@ -93,6 +93,7 @@ const	ComponentPhotoViewer: React.FC<PhotoViewerProps> = ({
 						shadow-standard
 						px-2
 						rounded-2xl
+						cursor-pointer
 						flex items-center justify-center"
 						onClick={ () => setDisplayID(displayID === picture.length - 1 ? 0 : displayID + 1) }
 					>
@@ -104,6 +105,7 @@ const	ComponentPhotoViewer: React.FC<PhotoViewerProps> = ({
 
 				<div className="absolute bottom-4
 					text-shadow-md
+					text-light-foreground
 					font-light
 					w-full
 					flex items-center justify-center"

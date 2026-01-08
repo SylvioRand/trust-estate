@@ -12,6 +12,7 @@ import PhotoViewer from "../components/PhotoViewer";
 import { type ListingsTags, type ListingsData, dataExampleListingsData as dataExample } from "../dataModel/modelListings";
 import BoxSection from "../components/BoxSection";
 import i18n from "../i18n/i18n";
+import PopUp from "../components/PopUp";
 
 interface	TagsComponentsProps {
 	tags: ListingsTags;
@@ -506,6 +507,8 @@ const	ListingsPage: React.FC = () => {
 		return (result);
 	}
 
+	const	[openPopupArchive, setOpenPopupArchive] = useState<boolean>(false);
+
 	return (
 		<div className="flex flex-col items-center justify-start gap-7
 			overflow-y-scroll
@@ -687,6 +690,14 @@ const	ListingsPage: React.FC = () => {
 									{ t("section.post.updateDate") + " " + CreateDateForPost(dataExample.updatedAt) }
 								</div>
 						}
+						{
+							dataExample.mine === true &&
+								<ActionButton
+									title={ t("section.archive.buttons.title") }
+									icon="󰀼"
+									onClick={ () => setOpenPopupArchive(true) }
+								/>
+						}
 					</BoxSection>
 
 					{
@@ -767,6 +778,30 @@ const	ListingsPage: React.FC = () => {
 				</div>
 
 			</div>
+
+			{
+				openPopupArchive && <PopUp
+					title={ t("section.archive.popup.title") }
+					onClose={ () => setOpenPopupArchive(false) }
+				>
+					<div className="flex flex-col items-center justify-center
+						w-full"
+					>
+						<div className="font-extralight text-sm">
+							{ t("section.archive.popup.warning") }
+						</div>
+						<div className="flex items-center justify-center gap-3
+							mt-7
+							ml-auto"
+						>
+							<ActionButton
+								title={ t("section.archive.popup.continue") }
+								accent_color="var(--color-red-500)"
+							/>
+						</div>
+					</div>
+				</PopUp>
+			}
 
 			<div className="w-full h-15
 				flex-none"

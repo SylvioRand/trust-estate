@@ -47,6 +47,18 @@
 
 		},
 
+		"archive": {
+			"buttons": {
+				"title": "Archive"
+			},
+
+			"popup": {
+				"title": "Archive post",
+				"warning": "Archived post will not be visible by other users. Are you sure?",
+				"continue": "Archive it"
+			}
+		},
+
 		"post": {
 			"title": "Post",
 			"publicationDate": "Posted the",

@@ -65,6 +65,18 @@
 			}
 		},
 
+		"archive": {
+			"buttons": {
+				"title": "Archiver"
+			},
+
+			"popup": {
+				"title": "Archiver la publication",
+				"warning": "Les postes archiver ne sont pas visibles par les autres utilisateurs. En êtes-vous sure?",
+				"continue": "Continuer"
+			}
+		},
+
 		"postStats": {
 			"title": "Statistiques de la publication",
 			"views": "Vues",
