@@ -9,37 +9,54 @@ import type { TFunction } from "i18next";
 import ActionButton from "../components/ActionButton";
 import ToggleButton from "../components/ToggleButton";
 import PhotoViewer from "../components/PhotoViewer";
+import { type ListingsTags, type ListingsData, dataExampleListingsData as dataExample } from "../dataModel/modelListings";
+import BoxSection from "../components/BoxSection";
+import i18n from "../i18n/i18n";
 
-interface ListingsData
-{
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  type: "sale" | "rent";
-  surface: number;
-  zone: string;
-  zoneDisplay: string;
-  photos: string[];
-  features: {
-    bedrooms: number;
-    bathrooms: number;
-    wc_separate: boolean;
-    parking_type: string;
-    garden_private: boolean;
-    water_access: boolean;
-    electricity_access: boolean
-  };
-  status: boolean;
-  sellerVisible: boolean;
-  sellerStats: {
-    totalListings: number;
-    successfulSales: number;
-    averageRating: number
-  };
-  createdAt: string;
-  updatedAt: string
-  expiresAt: string;
+interface	TagsComponentsProps {
+	tags: ListingsTags;
+}
+
+const	TagsComponents: React.FC<TagsComponentsProps> = ({
+	tags = "urgent"
+}) => {
+	const	icon: Record<ListingsTags, string> = {
+		urgent: "󰈸",
+		exclusive: "󱉏",
+		discount: ""
+	}
+
+	const	color: Record<ListingsTags, string> = {
+		urgent: "var(--color-red-600)",
+		exclusive: "var(--color-amber-600)",
+		discount: "var(--color-blue-600)"
+	}
+
+	const	{ t } = useTranslation("listings");
+
+	return (
+		<div className="flex items-center justify-center gap-2
+			border border-background/25
+			backdrop-blur-2xl
+			select-none
+			rounded-full
+			shadow-standard
+			text-light-foreground
+			flex-none
+			px-3"
+			style={{
+				backgroundColor: `color-mix(in srgb, ${color[tags]} 75%, transparent)`
+			}}
+		>
+			<div className="font-light text-sm"
+			>
+				{ t(`section.tags.${tags}`) }
+			</div>
+			<div className="font-icon text-xl text-shadow-md">
+				{ icon[tags] }
+			</div>
+		</div>
+	);
 }
 
 interface	PicturesLayoutProps {
@@ -128,6 +145,7 @@ const	PicturesLayoutDesktopAndTablet: React.FC<PicturesLayoutProps> = ({
 	return (
 		<div className="md:grid grid-cols-1 grid-rows-1 place-items-center
 			hidden
+			relative
 			gap-3
 			md:grid-cols-[50%_1fr_1fr] md:grid-rows-2
 			overflow-hidden
@@ -136,6 +154,7 @@ const	PicturesLayoutDesktopAndTablet: React.FC<PicturesLayoutProps> = ({
 			<div className="w-full h-full
 				md:row-start-1 md:row-end-3
 				overflow-hidden
+				relative
 				bg-red-500">
 				<Img
 					src={ data[0] }
@@ -144,6 +163,20 @@ const	PicturesLayoutDesktopAndTablet: React.FC<PicturesLayoutProps> = ({
 						setOpenPhotoViewer(true);
 					}}
 				/>
+
+				<div className="absolute top-2 left-2
+					flex items-center justify-center gap-2"
+				>
+					{
+						dataExample.tags.length > 0 && dataExample.tags.map((value: ListingsTags, index: number) => {
+							return (
+								<TagsComponents
+									tags={ value }
+								/>
+							)
+						})
+					}
+				</div>
 			</div>
 
 			<div className="hidden md:block
@@ -216,6 +249,13 @@ const	PicturesLayoutDesktopAndTablet: React.FC<PicturesLayoutProps> = ({
 				/>
 			}
 
+			{
+				dataExample.mine === false &&
+					<div className="absolute top-2 right-2">
+						<ReportButton/>
+					</div>
+			}
+
 		</div>
 	);
 }
@@ -240,7 +280,8 @@ const	FeaturesCard: React.FC<FeaturesCardProps> = ({
 		>
 			<div className="font-icon text-[42px] text-accent
 				select-none
-				drop-shadow-md">
+				drop-shadow-md"
+			>
 				{ icon }
 			</div>
 			<div className="font-bold text-lg">
@@ -341,6 +382,48 @@ const	PicturesLayoutMobile: React.FC<PicturesLayoutProps> = ({
 	);
 }
 
+const	ReportButton: React.FC = () => {
+	const	{ t } = useTranslation("listings");
+	const	[hovered, setHovered] = useState<boolean>(false);
+
+	// TODO: Make this button redirect to report page or open select tag
+	return (
+		<div className="backdrop-blur-2xl
+			border border-background/25
+			px-3 py-2 md:py-1
+			h-auto max-h-12
+			rounded-full
+			shadow-standard
+			cursor-pointer
+			font-light text-sm
+			flex items-center justify-center gap-2
+			bg-foreground/75
+			hover:bg-accent/20"
+			onPointerEnter={ () => setHovered(true) }
+			onPointerLeave={ () => setHovered(false) }
+			style={{
+				backgroundColor: `color-mix(in srgb, ${ !hovered ? "var(--color-foreground) 75%" : "var(--color-accent) 20%" }, transparent)`
+			}}
+		>
+			<div className="flex items-center justify-center
+				w-3 h-3
+				relative"
+			>
+				<div className="font-icon text-xl
+					absolute
+					translate-y-[0.05rem]
+					"
+				>
+					
+				</div>
+			</div>
+			<div className="font-light text-sm">
+				{ t("section.quickButtons.report") }
+			</div>
+		</div>
+	);
+}
+
 const	ListingsPage: React.FC = () => {
 	const	{ t } = useTranslation("listings");
 	const	formatter = new Intl.NumberFormat("de-DE");
@@ -362,40 +445,6 @@ const	ListingsPage: React.FC = () => {
 		// 	method: "GET"
 		// });
 	// }
-	
-	const	dataExample: ListingsData = {
-		id: "l1",
-		title: "Maison T3 Analakely",
-		description: "Maison lumineuse avec jardin. Situer dans les plus beaux quartier d'Antananarivo. Vous ne pourrez pas trouver mieux en terme de rapport qualite prix!",
-		price: 50000000,
-		type: "sale",
-		surface: 120,
-		zone: "tana-analakely",
-		zoneDisplay: "Antananarivo - Analakely",
-		photos: [
-		  "https://mock-cdn.com/photo1.jpg",
-		  "https://mock-cdn.com/photo2.jpg"
-		],
-		features: {
-		  bedrooms: 3,
-		  bathrooms: 2,
-		  wc_separate: true,
-		  parking_type: "garage",
-		  garden_private: true,
-		  water_access: true,
-		  electricity_access: true
-		},
-		status: true,
-		sellerVisible: false,
-		sellerStats: {
-		  totalListings: 5,
-		  successfulSales: 3,
-		  averageRating: 4.2
-		},
-		createdAt: "2025-01-10T08:00:00Z",
-		updatedAt: "2025-01-12T14:30:00Z",
-		expiresAt: "2025-02-09T08:00:00Z"
-	};
 
 	const	iconFeatures: Record<string, string> = {
 		bedrooms: "󰋣",
@@ -407,8 +456,19 @@ const	ListingsPage: React.FC = () => {
 		electricity_access: ""
 	}
 
-	// need to fetch first to see if it's favorite or not, or maybe just send it through query
+	// NOTE: need to fetch first to see if it's favorite or not, or maybe just send it through query
 	const	[isFavorite, setIsFavorite] = useState<boolean>(false);
+
+	function	CreateDateTime(data: string): string {
+		const	date = new Date(data);
+
+		const	result = new Intl.DateTimeFormat(i18n.language, {
+			month: "long",
+			year: "numeric"
+		}).format(date);
+
+		return (result);
+	}
 
 	return (
 		<div className="flex flex-col items-center justify-start gap-7
@@ -425,109 +485,190 @@ const	ListingsPage: React.FC = () => {
 			>
 			</div>
 
+
 			<PicturesLayoutMobile
-				data={ pictures }
+				data={ pictures } // NOTE: should send the pictures of the listings here
 				translationSingleton={ t }
 			/>
 
 			<PicturesLayoutDesktopAndTablet
-				data={ pictures }
+				data={ pictures } // NOTE: should send the pictures of the listings here
 				translationSingleton={ t }
 			/>
 
-			<div className="grid grid-cols-1 grid-rows-2 gap-4
-				md:grid-cols-[1fr_auto] md:grid-rows-1
+			<div className="grid grid-cols-1 grid-rows-2 gap-7
+				xl:grid-cols-[65%_1fr] xl:grid-rows-1
 				w-full"
 			>
-				<div className="flex flex-col items-start justify-end
-					gap-3
-					w-full h-full"
-				>
-					<div className="flex flex-col items-start justify-center w-full">
-						<div className="flex items-center justify-center gap-2">
-							<div className="font-inter font-bold text-2xl">
-								{ dataExample.title }
-							</div>
-							<div className="rounded-full
-								shadow-standard
-								px-3 py-1
-								select-none
-								text-sm
-								border border-background/25"
-							>
-								{ dataExample.type === "sale" ? t("section.listingType.sale") : t("section.listingType.rent") }
-							</div>
-						</div>
-
-						<div className="flex items-center justify-center gap-1
-							font-inter
-							text-md
-							opacity-80"
+				<div className="flex flex-col items-center justify-start gap-7">
+					<div className="grid grid-cols-[1fr_auto] grid-rows-1
+						md:hidden
+						gap-3
+						w-full"
+					>
+						<div className="flex items-center justify-start
+							gap-2
+							flex-none
+							overflow-y-scroll
+							w-full"
 						>
-							<div className="font-icon"></div>{ dataExample.zoneDisplay }
+							{
+								dataExample.tags.length > 0 && dataExample.tags.map((value: ListingsTags, index: number) => {
+									return (
+										<TagsComponents
+											tags={ value }
+										/>
+									)
+								})
+							}
 						</div>
+
+						{
+							dataExample.mine === false && <ReportButton/>
+						}
+
 					</div>
 
-					<div className="font-inter font-bold text-3xl">
-						{ formatter.format(dataExample.price) } Ariary
+					<div className="grid grid-cols-1 grid-rows-2 gap-4
+						md:grid-cols-[1fr_auto] md:grid-rows-1
+						w-full"
+					>
+						<div className="flex flex-col items-start justify-end
+							gap-3
+							w-full h-full"
+						>
+							<div className="flex flex-col items-start justify-center w-full">
+								<div className="flex items-center justify-center gap-2">
+									<div className="font-inter font-bold text-2xl">
+										{ dataExample.title }
+									</div>
+									<div className="rounded-full
+										shadow-standard
+										px-3 py-1
+										select-none
+										text-sm
+										border border-background/25"
+									>
+										{ dataExample.type === "sale" ? t("section.listingType.sale") : t("section.listingType.rent") }
+									</div>
+								</div>
+								<div className="flex items-center justify-center gap-1
+									font-inter
+									text-md
+									opacity-80"
+								>
+									<div className="font-icon"></div>{ dataExample.zoneDisplay }
+								</div>
+							</div>
+
+							<div className="font-inter font-bold text-3xl">
+								{ formatter.format(dataExample.price) } Ariary
+							</div>
+						</div>
+
+						<div className="grid grid-cols-1 grid-rows-2
+							w-full"
+						>
+							{
+								dataExample.mine === false &&
+								<>
+									<ToggleButton
+										title={ t("section.quickButtons.favorites") }
+										icon=""
+										icon_toggled="󰋑"
+										accent_color="var(--color-red-500)"
+										toggled={ isFavorite }
+										translateY={1}
+										onClick={ () => setIsFavorite(isFavorite ? false : true) }
+									/>
+
+									<ActionButton
+										title={ t("section.quickButtons.visit") }
+										icon="󰃭"
+									/>
+								</>
+							}
+
+							{
+								dataExample.mine === true &&
+								<>
+									<ActionButton
+										title={ t("section.quickButtons.editPost") } // NOTE: Should redirect to the edit post page
+										icon=""
+									/>
+
+									<ActionButton
+										title={ t("section.quickButtons.seeVisit") } // NOTE: Should redirect to the Reservation Page
+										icon="󰃭"
+									/>
+								</>
+							}
+						</div>
+
 					</div>
+
+					<div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4
+						w-full
+						place-items-center"
+					>
+						{
+							Object.entries(dataExample.features).map(([key, value]) => {
+								const	data: string = value.toString();
+
+								return (
+									<FeaturesCard
+										key={ key }
+										title={ t(`section.features.${key}`) }
+										icon={ iconFeatures[key] }
+										value={ (data === "true" || data === "false") ? (data === "true" ? t("yes") : t("no")) : data }
+									/>
+								);
+							})
+						}
+					</div>
+
+					<BoxSection
+						title={ t("section.description.title") }
+					>
+						<div className="font-light">
+							{ dataExample.description }
+						</div>
+					</BoxSection>
 				</div>
 
-				<div className="grid grid-cols-1 grid-rows-2
-					w-full"
+				<div className="flex flex-col items-center justify-start"
 				>
-					<ToggleButton
-						title={ t("section.quickButtons.favorites") }
-						icon=""
-						icon_toggled="󰋑"
-						accent_color="var(--color-red-500)"
-						toggled={ isFavorite }
-						translateY={1}
-						onClick={ () => setIsFavorite(isFavorite ? false : true) }
-					/>
-
-					<ActionButton
-						title={ t("section.quickButtons.visit") }
-						icon="󰃭"
-					/>
+					{ dataExample.mine === true && dataExample.sellerVisible === true &&
+						<BoxSection
+							title={ t("section.contact.title") }
+						>
+							<div className="flex flex-col items-start justify-center
+								w-full"
+							>
+								<div className="text-md">
+									{ dataExample.seller?.name }
+								</div>
+								<div className="font-extralight text-md">
+									{ dataExample.seller?.email }
+								</div>
+								<div className="font-extralight text-md">
+									{ dataExample.seller?.phone }
+								</div>
+								<div className="font-extralight text-md mt-4"
+								>
+									{
+										t("section.contact.memberSince") + " " + CreateDateTime(dataExample.seller?.memberSince ?? "2100-02-10T23:00:00Z")
+									}
+								</div>
+							</div>
+						</BoxSection>
+					}
+					{
+						dataExample.mine === true
+					}
 				</div>
 
-			</div>
 
-			<div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4
-				w-full
-				place-items-center"
-			>
-				{
-					Object.entries(dataExample.features).map(([key, value]) => {
-						const	data: string = value.toString();
-
-						return (
-							<FeaturesCard
-								key={ key }
-								title={ t(`section.features.${key}`) }
-								icon={ iconFeatures[key] }
-								value={ (data === "true" || data === "false") ? (data === "true" ? t("yes") : t("no")) : data }
-							/>
-						);
-					})
-				}
-			</div>
-
-			<div className="grid grid-cols-1 grid-rows-[auto_1fr] gap-4
-				place-items-start
-				shadow-standard
-				border border-background/25
-				w-full
-				p-4
-				rounded-2xl"
-			>
-				<div className="font-bold">
-					{ t("section.description.title") }
-				</div>
-				<div className="font-light">
-					{ dataExample.description }
-				</div>
 			</div>
 
 			<div className="w-full h-15
