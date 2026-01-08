@@ -424,6 +424,30 @@ const	ReportButton: React.FC = () => {
 	);
 }
 
+interface	StatsProps {
+	title: string;
+	value: any;
+}
+
+const	Stats: React.FC<StatsProps> = ({
+	title = "Title",
+	value = "0"
+}) => {
+	return (
+		<div className="flex flex-col items-center justify-center"
+		>
+			<div className="font-higuen font-bold text-3xl text-accent
+				text-shadow-md"
+			>
+				{ value }
+			</div>
+			<div className="font-extralight text-sm">
+				{ title }
+			</div>
+		</div>
+	);
+}
+
 const	ListingsPage: React.FC = () => {
 	const	{ t } = useTranslation("listings");
 	const	formatter = new Intl.NumberFormat("de-DE");
@@ -459,10 +483,22 @@ const	ListingsPage: React.FC = () => {
 	// NOTE: need to fetch first to see if it's favorite or not, or maybe just send it through query
 	const	[isFavorite, setIsFavorite] = useState<boolean>(false);
 
-	function	CreateDateTime(data: string): string {
+	function	CreateDateForMemberSince(data: string): string {
 		const	date = new Date(data);
 
 		const	result = new Intl.DateTimeFormat(i18n.language, {
+			month: "long",
+			year: "numeric"
+		}).format(date);
+
+		return (result);
+	}
+
+	function	CreateDateForPost(data: string): string {
+		const	date = new Date(data);
+
+		const	result = new Intl.DateTimeFormat(i18n.language, {
+			day: "numeric",
 			month: "long",
 			year: "numeric"
 		}).format(date);
@@ -557,7 +593,7 @@ const	ListingsPage: React.FC = () => {
 									text-md
 									opacity-80"
 								>
-									<div className="font-icon"></div>{ dataExample.zoneDisplay }
+									<div className="font-icon"></div>{ dataExample.zone}
 								</div>
 							</div>
 
@@ -636,9 +672,25 @@ const	ListingsPage: React.FC = () => {
 					</BoxSection>
 				</div>
 
-				<div className="flex flex-col items-center justify-start"
+				<div className="flex flex-col items-center justify-start gap-7"
 				>
-					{ dataExample.mine === true && dataExample.sellerVisible === true &&
+					<BoxSection
+						title={ t("section.post.title") }
+					>
+						<div className="font-light">
+							{ t("section.post.publicationDate") + " " + CreateDateForPost(dataExample.createdAt) }
+						</div>
+
+						{
+							dataExample.updatedAt && 
+								<div className="font-light text-sm">
+									{ t("section.post.updateDate") + " " + CreateDateForPost(dataExample.updatedAt) }
+								</div>
+						}
+					</BoxSection>
+
+					{
+						dataExample.mine === false && dataExample.sellerVisible === true &&
 						<BoxSection
 							title={ t("section.contact.title") }
 						>
@@ -657,17 +709,62 @@ const	ListingsPage: React.FC = () => {
 								<div className="font-extralight text-md mt-4"
 								>
 									{
-										t("section.contact.memberSince") + " " + CreateDateTime(dataExample.seller?.memberSince ?? "2100-02-10T23:00:00Z")
+										t("section.contact.memberSince") + " " + CreateDateForMemberSince(dataExample.seller?.memberSince ?? "2100-02-10T23:00:00Z")
 									}
 								</div>
 							</div>
 						</BoxSection>
 					}
 					{
-						dataExample.mine === true
+						dataExample.mine === false &&
+							<BoxSection
+								title={ t("section.stats.title") }
+							>
+								{
+									dataExample.sellerVisible === true &&
+										<div className="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] grid-rows-1
+											gap-7
+											mb-4
+											w-full"
+										>
+											{
+												Object.entries(dataExample.sellerStats).map(([key, value]) => {
+													return (
+														<Stats
+															title={ t(`section.stats.sellerStats.${key}`) }
+															value={ value }
+														/>
+													);
+												})
+											}
+										</div>
+								}
+							</BoxSection>
+					}
+					{
+						dataExample.mine === true &&
+							<BoxSection
+								title={ t("section.postStats.title") }
+							>
+								<div className="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] grid-rows-1
+									gap-7
+									mb-4
+									w-full"
+								>
+									{
+										Object.entries(dataExample.stats).map(([key, value]) => {
+											return (
+												<Stats
+													title={ t(`section.postStats.${key}`) }
+													value={ value }
+												/>
+											);
+										})
+									}
+								</div>
+							</BoxSection>
 					}
 				</div>
-
 
 			</div>
 

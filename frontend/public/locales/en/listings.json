@@ -47,6 +47,32 @@
 
 		},
 
+		"post": {
+			"title": "Post",
+			"publicationDate": "Posted the",
+			"updateDate": "Updated the"
+		},
+
+		"stats": {
+			"title": "Statistics of the seller",
+
+			"sellerStats": {
+				"totalListings": "Listings",
+				"activeListings": "On Market",
+				"successfulSales": "Sold Property",
+				"successfulRents": "Rented Property",
+				"averageRating": "Rating",
+				"responseRate": "Response Rate"
+			}
+		},
+
+		"postStats": {
+			"title": "Post Statistics",
+			"views": "Views",
+			"reservations": "Reservations",
+			"feedbacks": "Feedbacks"
+		},
+
 		"pictures": {
 			"buttons": {
 				"seeMore": "See more"

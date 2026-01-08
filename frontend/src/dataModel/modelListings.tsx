@@ -10,7 +10,6 @@ export type ListingsData = {
 	mine: boolean,
 	surface: number,
 	zone: string,
-	zoneDisplay: string,
 	photos: string[],
 	features: {
 		bedrooms: number,
@@ -45,7 +44,7 @@ export type ListingsData = {
 	},
 	tags: ListingsTags[], // Enum: urgent, exclusive, discount
 	createdAt: string,
-	updatedAt: string
+	updatedAt?: string
 }
 
 export const	dataExampleListingsData: ListingsData = {
@@ -55,10 +54,9 @@ export const	dataExampleListingsData: ListingsData = {
 	price: 4300000,
 	type: "rent",
 	propertyType: "loft",
-	mine: true,
+	mine: false,
 	surface: 184,
 	zone: "Antananarivo - Analakely",
-	zoneDisplay: "Analakely",
 	photos: [],
 	features: {
 		bedrooms: 3,

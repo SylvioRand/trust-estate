@@ -46,6 +46,32 @@
 			"memberSince": "Membre depuis"
 		},
 
+		"post": {
+			"title": "Publication",
+			"publicationDate": "Publié le",
+			"updateDate": "Mis à jour le"
+		},
+
+		"stats": {
+			"title": "Statistiques du vendeur",
+
+			"sellerStats": {
+				"totalListings": "Annonces",
+				"activeListings": "Sur le marché",
+				"successfulSales": "Biens Vendues",
+				"successfulRents": "Biens loués",
+				"averageRating": "Score",
+				"responseRate": "Score de réponse"
+			}
+		},
+
+		"postStats": {
+			"title": "Statistiques de la publication",
+			"views": "Vues",
+			"reservations": "Reservations",
+			"feedbacks": "Critiques"
+		},
+
 		"pictures": {
 			"buttons": {
 				"seeMore": "Voir plus"
