@@ -1598,7 +1598,8 @@ GET /listings/mine?status=active&page=1
       "title": "Maison T3 Analakely",
       "price": 50000000,
       "type": "sale", // Enum: "sale", "rent"
-      "status": "active", // Enum: "active", "reserved", "sold", "rented", "blocked", "archived"
+      "status": "active", // Enum: "active", "blocked", "archived"
+      "isAvailable": true,
       "tags": ["discount"], // Enum: "urgent", "exclusive", "discount"
       "views": 150,
       "reservations": 3,
