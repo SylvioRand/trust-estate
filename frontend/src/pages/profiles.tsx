@@ -13,8 +13,8 @@ const InfoBloc = ({type, value}) => {
 
 const UserPfp = () => {
     return (
-        <div className="h-[30%] w-full flex flex-col font-icon text-black 
-        rounded-lg border border-white bg-white items-center  p-3">
+        <div className="h-[30%] w-full flex flex-col font-icon text-white 
+        rounded-lg border border-white bg-gray-900 items-center  p-3">
             <div className="flex flex-row  justify-between items-center w-[95%] h-[20%]
             rounded-lg
             ">
@@ -37,14 +37,10 @@ const UserPfp = () => {
 const CircleChart = ({value , type , total, rate}) => {
     const percent = (value / total) * 100;
     return (
-        <div className="flex flex-col h-[20%] w-full items-center  rounded-lg">
-            <div>
-                <strong className="w-full h-[20%]" style={{ color: "#FFFF00" }}>
-                    {type}
-                </strong>
-            </div>
-            <div className="relative w-32 h-32 flex flex-justify-center items-center">
-                <svg className="w-full h-[95%]" viewBox="0 0 36 36">
+        <div className="flex flex-col h-[20%] w-full items-center rounded-lg bg-gray-900 justify-center border border-white">
+           
+            <div className="relative w-full h-[60%] flex flex-col justify-between items-center">
+                <svg className="w-full h-[50%]" viewBox="0 0 36 36">
                     <circle cx="18" cy="18" r="15.9155"
                         fill="none"
                         stroke="gray"
@@ -56,13 +52,22 @@ const CircleChart = ({value , type , total, rate}) => {
                         strokeWidth="3" 
                         strokeDasharray={`${percent}, 100`}
                         >
-                    </circle> 
-                
+                    </circle>
                 </svg>
-                <div className="font-icon inset-0 absolute text-yellow-200 
-                flex items-center justify-center text-xl font-bold"
-                style={{ color: "#FFFF00" }}>
-                    {rate} {value}
+
+                <div className="flex flex-col justify-center items-center text-center 
+                w-full h-[40%]">
+                    <strong  className="w-full block text-white">
+                        {type}
+                    </strong>
+                </div>
+
+                <div className="w-50% h-[50%] font-icon inset-0 absolute 
+                flex items-center justify-center font-bold 
+                text-sm sm:text-base md:text-lg lg:text-xl text-white">
+                    <div className="flex flex-row justify-center items-center w-[30%] aspect-square aspect-square text-center">
+                        <div> {value} </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -71,16 +76,16 @@ const CircleChart = ({value , type , total, rate}) => {
 
 const CoinBlock = ({value, type}) => {
     return (
-        <div className="flex flex-col justify-center h-[20%] w-full items-center rounded-lg">
-           <div className="flex flex-col w-full h-[50%] justify-center items-center border border-white rounded-lg">
+        <div className="flex flex-col justify-center h-[20%] w-full items-center rounded-lg bg-gray-900 border border-white">
+           <div className="flex flex-col w-full h-[50%] justify-center items-center rounded-lg space-y-2">
                 <div className="">
                     <strong className="w-full h-[10%]" style={{ color: "#FFFF00" }}>
                         {type}
                     </strong>
                 </div>
-                <div className="flex flex-row justify-center items-center space-x-2">
+                <div className="flex flex-row w-[50%] h-[80%] rounded-lg justify-center items-center space-x-2">
                     <div>
-                        <strong className="w-full h-[10%]" style={{ color: "#FFFF00" }}>
+                        <strong className="w-full h-[10%] text-white">
                             {value}
                         </strong>
                     </div>
@@ -96,11 +101,11 @@ const CoinBlock = ({value, type}) => {
 const StatBlock = () => {
     return (
         <div className="flex flex-col w-full h-[98%] items-center gap-2">
+            <CoinBlock value="2000" type="Credit Balance"/>
             <CircleChart value="1" type="Successful Sales" total="5"/>
             <CircleChart value="4" type="Active Listings" total="5"/>
             <CircleChart value="5" type="Total Listing" total="5"/>
-            <CircleChart value="3.5" type="Average Rating" total="5" rate="󰓎"/>
-            <CoinBlock value="2000" type="Credit Balance"/>
+            <CircleChart value="3.5" type="Average Rating" total="5"/>
         </div>
     );
 }
@@ -127,7 +132,7 @@ const BlockSetting = ({icon , type}) => {
 const SettingBloc = () => {
     return (
         <div className="flex flex-col w-full h-[99%] rounded-lg text-white items-center 
-        border border-white py-5 justify-between">
+        border border-white py-5 justify-between bg-gray-900">
             <div className="flex flex-col w-full h-[95%] items-center">
                 <BlockSetting icon="" type="Edit profile"/>
                 <BlockSetting icon="󰯄" type="Change password"/>
@@ -142,7 +147,7 @@ const SettingBloc = () => {
 
 const FavoritePost = () => {
     return (
-        <div className="h-[68%] w-full flex flex-col font-icon text-white 
+        <div className="h-[68%] w-full flex flex-col font-icon bg-gray-900 text-white 
         rounded-lg border border-white items-center  p-3">
 
         </div>
@@ -151,9 +156,9 @@ const FavoritePost = () => {
 
 const Profiles = () => {
     return (
-        <div className="flex flex-col w-screen h-screen">
-            <div className="h-20 w-full"></div>
-            <div className="flex flex-row w-full h-full gap-4">
+        <div className="flex flex-col w-screen h-screen justify-between items-center">
+            <div className="h-[8%] w-full"></div>
+            <div className="flex flex-row w-full h-[92%] gap-4">
                     <div className="flex flex-col items-center 
                     rounded-lg h-full w-[15%]">
                         <StatBlock/>
