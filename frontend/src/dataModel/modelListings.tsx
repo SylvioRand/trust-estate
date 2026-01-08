@@ -20,7 +20,8 @@ export type ListingsData = {
 		water_access: boolean,
 		electricity_access: boolean
 	},
-	status: "active" | "reserved" | "sold" | "rented" | "blocked" | "archived", // Enum: active, reserved, sold, rented, blocked, archived
+	status: "active" | "blocked" | "archived", // Enum: active, blocked, archived
+	isAvailable: boolean,
 	sellerVisible: boolean,
 	seller?: {
 		id: string,
@@ -54,7 +55,7 @@ export const	dataExampleListingsData: ListingsData = {
 	price: 4300000,
 	type: "rent",
 	propertyType: "loft",
-	mine: true,
+	mine: false,
 	surface: 184,
 	zone: "Antananarivo - Analakely",
 	photos: [],
@@ -68,7 +69,8 @@ export const	dataExampleListingsData: ListingsData = {
 		electricity_access: true
 	},
 	status: "active",
-	sellerVisible: true,
+	isAvailable: false,
+	sellerVisible: false,
 	seller: {
 		id: "",
 		name: "Rakotoarivony Razanajohary Ny Hasina",

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import house0 from "../../src/images/house0.webp";
 import house1 from "../../src/images/house1.webp";
 import house2 from "../../src/images/house2.webp";
@@ -12,7 +12,7 @@ import PhotoViewer from "../components/PhotoViewer";
 import { type ListingsTags, type ListingsData, dataExampleListingsData as dataExample } from "../dataModel/modelListings";
 import BoxSection from "../components/BoxSection";
 import i18n from "../i18n/i18n";
-import PopUp from "../components/PopUp";
+import PopUp, { type PopUpAPI } from "../components/PopUp";
 
 interface	TagsComponentsProps {
 	tags: ListingsTags;
@@ -507,7 +507,17 @@ const	ListingsPage: React.FC = () => {
 		return (result);
 	}
 
+	// NOTE: I invert the value of isAvailable to get the correct UI representation
+	const	[openPopupAvailability, setOpenPopupAvailability] = useState<boolean>(false);
+	const	availabilityPopupRef = useRef<PopUpAPI>(null);
+	const	[isAvailable, setIsAvailable] = useState<boolean>(dataExample.isAvailable);
+	const	availabilityActiveSection = 
+		(dataExample.type === "sale" ? "markSold"
+			: (isAvailable ? "markRented" : "unmarkRented"));
+
 	const	[openPopupArchive, setOpenPopupArchive] = useState<boolean>(false);
+	const	archivePopupRef = useRef<PopUpAPI>(null);
+	const	[isArchiveDisabled, setIsArchiveDisabled] = useState<boolean>(dataExample.status === "archived" || dataExample.status === "blocked");
 
 	return (
 		<div className="flex flex-col items-center justify-start gap-7
@@ -692,10 +702,45 @@ const	ListingsPage: React.FC = () => {
 						}
 						{
 							dataExample.mine === true &&
-								<ActionButton
-									title={ t("section.archive.buttons.title") }
-									icon="󰀼"
-									onClick={ () => setOpenPopupArchive(true) }
+								<>
+									{
+										<ToggleButton
+											icon=""
+											icon_toggled="󰄬"
+											title={
+												dataExample.type === "rent" ? (!isAvailable ? t("section.post.availability.buttons.rented") : t("section.post.availability.buttons.markRented"))
+													: (!isAvailable ? t("section.post.availability.buttons.sold") : t("section.post.availability.buttons.markSold"))
+											}
+											accent_color="var(--color-green-500)"
+											toggled={ !isAvailable }
+											customStyle={{
+												cursor: (dataExample.type === "sale" && !isAvailable ? "not-allowed" : "pointer")
+											}}
+											onClick={ () => {
+												if (dataExample.type === "sale" && !isAvailable)
+													return ;
+												setOpenPopupAvailability(true);
+											}}
+										/>
+									}
+
+									<ActionButton
+										title={ dataExample.status === "archived" ? t("section.post.archive.buttons.disabled") : t("section.post.archive.buttons.title") }
+										icon="󰀼"
+										onClick={ () => setOpenPopupArchive(true) }
+										disabled={ isArchiveDisabled }
+									/>
+								</>
+						}
+						{
+							dataExample.mine === false &&
+								<ToggleButton
+									title={ isAvailable ? t("section.post.availability.status.available") : t("section.post.availability.status.not_available") }
+									toggled={ true }
+									accent_color={ !isAvailable ? "var(--color-red-500)" : "var(--color-green-500)"}
+									customStyle={{
+										cursor: "auto"
+									}}
 								/>
 						}
 					</BoxSection>
@@ -731,25 +776,22 @@ const	ListingsPage: React.FC = () => {
 							<BoxSection
 								title={ t("section.stats.title") }
 							>
-								{
-									dataExample.sellerVisible === true &&
-										<div className="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] grid-rows-1
-											gap-7
-											mb-4
-											w-full"
-										>
-											{
-												Object.entries(dataExample.sellerStats).map(([key, value]) => {
-													return (
-														<Stats
-															title={ t(`section.stats.sellerStats.${key}`) }
-															value={ value }
-														/>
-													);
-												})
-											}
-										</div>
-								}
+								<div className="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] grid-rows-1
+									gap-7
+									mb-4
+									w-full"
+								>
+									{
+										Object.entries(dataExample.sellerStats).map(([key, value]) => {
+											return (
+												<Stats
+													title={ t(`section.stats.sellerStats.${key}`) }
+													value={ value }
+												/>
+											);
+										})
+									}
+								</div>
 							</BoxSection>
 					}
 					{
@@ -781,22 +823,73 @@ const	ListingsPage: React.FC = () => {
 
 			{
 				openPopupArchive && <PopUp
-					title={ t("section.archive.popup.title") }
+					ref={ archivePopupRef }
+					title={ t("section.post.archive.popup.title") }
 					onClose={ () => setOpenPopupArchive(false) }
 				>
 					<div className="flex flex-col items-center justify-center
 						w-full"
 					>
 						<div className="font-extralight text-sm">
-							{ t("section.archive.popup.warning") }
+							{ t("section.post.archive.popup.warning") }
 						</div>
 						<div className="flex items-center justify-center gap-3
+							whitespace-pre-line
 							mt-7
 							ml-auto"
 						>
 							<ActionButton
-								title={ t("section.archive.popup.continue") }
+								title={ t("section.post.archive.popup.continue") }
 								accent_color="var(--color-red-500)"
+								onClick={() => {
+									archivePopupRef.current?.close(); // ask the popup to close
+								}}
+							/>
+						</div>
+					</div>
+				</PopUp>
+			}
+
+			{
+				openPopupAvailability && <PopUp
+					ref={ availabilityPopupRef }
+					title={ t(`section.post.availability.popup.${ availabilityActiveSection }.title`) }
+					onClose={ () => setOpenPopupAvailability(false) }
+				>
+					<div className="flex flex-col items-center justify-center
+						w-full"
+					>
+						<div className="font-extralight text-sm">
+							{ t(`section.post.availability.popup.${ availabilityActiveSection }.explanation`) }
+						</div>
+						<div className="flex items-center justify-center gap-3
+							whitespace-pre-line
+							mt-7
+							ml-auto"
+						>
+							<ActionButton
+								title={ t(`section.post.availability.popup.${ availabilityActiveSection }.accept`) }
+								accent_color="var(--color-red-500)"
+								onClick={ () => {
+									if (dataExample.type === "sale")
+									{
+										setIsAvailable(false);
+									}
+									else if (dataExample.type === "rent")
+									{
+										if (isAvailable)
+										{
+											// TODO: send request to database and act in consequence
+											setIsAvailable(false);
+										}
+										else
+										{
+											// TODO: send request to database and act in consequence
+											setIsAvailable(true);
+										}
+									}
+									availabilityPopupRef.current?.close();
+								}}
 							/>
 						</div>
 					</div>

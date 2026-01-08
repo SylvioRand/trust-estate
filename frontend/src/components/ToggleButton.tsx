@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
 export type IconPlacement = "left" | "right";
 
@@ -12,6 +12,7 @@ interface ToggleButtonProps {
 	toggled: boolean;
 	translateX?: number;
 	translateY?: number;
+	customStyle?: CSSProperties;
 	onClick?: () => void;
 }
 
@@ -25,6 +26,7 @@ const	ToggleButton: React.FC<ToggleButtonProps> = ({
 	toggled = false,
 	translateX = 0,
 	translateY = 0,
+	customStyle = { cursor: "pointer" },
 	onClick
 }) => {
 	const	[hovered, setHovered] = useState(false);
@@ -39,7 +41,6 @@ const	ToggleButton: React.FC<ToggleButtonProps> = ({
 			transition-all duration-500
 			ease-in-out
 			overflow-hidden
-			cursor-pointer
 			w-full"
 			onPointerEnter = { () => setHovered(true) }
 			onPointerLeave = { () => setHovered(false) }
@@ -48,7 +49,8 @@ const	ToggleButton: React.FC<ToggleButtonProps> = ({
 				flexDirection: icon_place === "left" ? "row" : "row-reverse",
 				borderRadius: toggled ? "var(--radius-4xl)" : "var(--radius-lg)",
 				filter: toggled ? `drop-shadow(0px 0px 3px ${ accent_color })` : "drop-shadow(0px 7px 7px rgba(0,0,0,0.25))",
-				transform: toggled ? "scale(98%)" : "none"
+				transform: toggled ? "scale(98%)" : "none",
+				...customStyle
 			}}
 			{...(onClick ? { onClick } : {})}
 		>

@@ -49,7 +49,34 @@
 		"post": {
 			"title": "Publication",
 			"publicationDate": "Publié le",
-			"updateDate": "Mis à jour le"
+			"updateDate": "Mis à jour le",
+
+			"availability": {
+				"status": {
+					"available": "Cette offre est encore disponible.",
+					"not_available": "Cette offre n'est plus disponible."
+				},
+
+				"buttons": {
+					"rented": "Loué",
+					"sold": "Vendue",
+					"markRented": "Marquer comme louer",
+					"markSold": "Marquer comme vendue"
+				}
+			},
+
+			"archive": {
+				"buttons": {
+					"title": "Archiver",
+					"disabled": "Cette publication est archiver"
+				},
+
+				"popup": {
+					"title": "Archiver la publication",
+					"warning": "Les postes archiver ne sont plus visibles par les autres utilisateurs.\nCette action est irréversible.\nEn êtes-vous sure?",
+					"continue": "Continuer"
+				}
+			}
 		},
 
 		"stats": {
@@ -62,18 +89,6 @@
 				"successfulRents": "Biens loués",
 				"averageRating": "Score",
 				"responseRate": "Score de réponse"
-			}
-		},
-
-		"archive": {
-			"buttons": {
-				"title": "Archiver"
-			},
-
-			"popup": {
-				"title": "Archiver la publication",
-				"warning": "Les postes archiver ne sont pas visibles par les autres utilisateurs. En êtes-vous sure?",
-				"continue": "Continuer"
 			}
 		},
 
