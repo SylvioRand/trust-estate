@@ -1,0 +1,756 @@
+{
+  "version": "1.0",
+  "description": "Liste complète des quartiers (fokontany) d'Antananarivo avec champ arrondissement dédié",
+  "zones": [
+    {
+      "id": "tana-a1-ambalavao-isotry",
+      "displayName": "Ambalavao-Isotry",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-ambatonakanga",
+      "displayName": "Ambatonakanga-Ambohitsorohitra",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-ambatovinaky",
+      "displayName": "Ambatovinaky",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-ambodifilao-soarano",
+      "displayName": "Ambodifilao-Soarano II S",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-ampandrana-ankadivato",
+      "displayName": "Ampandrana-Ankadivato",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-amparibe",
+      "displayName": "Amparibe-Avaratr'Imahamasina",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-ampasamadinika",
+      "displayName": "Ampasamadinika-Amboasarikely",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-anatihazo-isotry",
+      "displayName": "Anatihazo Isotry",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-andavamamba-anatihazo-1",
+      "displayName": "Andavamamba-Anatihazo I",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-andavamamba-anatihazo-2",
+      "displayName": "Andavamamba-Anatihazo II",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-andavamamba-anjezika-1",
+      "displayName": "Andavamamba-Anjezika I",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-andavamamba-anjezika-2",
+      "displayName": "Andavamamba-Anjezika II",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-andohatapenaka-1",
+      "displayName": "Andohatapenaka I",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-andohatapenaka-2",
+      "displayName": "Andohatapenaka II",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-andohatapenaka-3",
+      "displayName": "Andohatapenaka III",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-andranomanalina-afovoany",
+      "displayName": "Andranomanalina Afovoany",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-andranomanalina-1",
+      "displayName": "Andranomanalina I",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-andranomanalina-isotry",
+      "displayName": "Andranomanalina-Isotry",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-ankasina",
+      "displayName": "Ankasina",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-antanimalalaka-analakely",
+      "displayName": "Antanimalalaka-Analakely",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-antetezana-fovoany-1",
+      "displayName": "Antetezana Fovoany I",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-antetezana-fovoany-2",
+      "displayName": "Antetezana Fovoany II",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-antohomadinika-afovoany-3",
+      "displayName": "Antohomadinika Afovoany III F",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-antohomadinika-atsimo",
+      "displayName": "Antohomadinika Atsimo",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-antohomadinika-antaniavo",
+      "displayName": "Antohomadinika-Antaniavo",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-antohomadinika-faami",
+      "displayName": "Antohomadinika-FAAMI",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-antohomadinika-3g",
+      "displayName": "Antohomadinika III G Hangar",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-avaratetezana-bekiraro",
+      "displayName": "Avaratetezana-Bekiraro",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-cite-ambodinisotry",
+      "displayName": "Cité-Ambodin'Isotry",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-cite-ampefiloha",
+      "displayName": "Cité Ampefiloha",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-cite-67ha-afovoany",
+      "displayName": "Cité 67 ha Afovoany-Andrefana",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-cite-67ha-atsimo",
+      "displayName": "Cité 67 ha Atsimo",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-cite-67ha-avaratro-andrefana",
+      "displayName": "Cité 67 ha Avaratra-Andrefana",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-cite-67ha-avaratra-atsinanana",
+      "displayName": "Cité 67 ha Avaratra-Atsinanana",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-lalamby",
+      "displayName": "Lalamby sy ny Manodidina",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-faravohitra-ambony",
+      "displayName": "Faravohitra Ambony",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-faravohitra-mandrosoa",
+      "displayName": "Faravohitra-Mandrosoa",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-isoraka-ampatsakana",
+      "displayName": "Isoraka-Ampatsakana",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-tsaralalana-isotry",
+      "displayName": "Tsaralalàna-Isotry FIATA",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-manarintsoa-afovoany",
+      "displayName": "Manarintsoa Afovoany",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-manarintsoa-anatihazo",
+      "displayName": "Manarintsoa Anatihazo",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-manarintsoa-atsinanana",
+      "displayName": "Manarintsoa Antsinanana",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a1-manarintsoa-isotry",
+      "displayName": "Manarintsoa Isotry",
+      "arrondissement": 1
+    },
+    {
+      "id": "tana-a2-ambohipo",
+      "displayName": "Ambohipo",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-ambolokandrina",
+      "displayName": "Ambolokandrina",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-androndrakely",
+      "displayName": "Androndrakely",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-morarano",
+      "displayName": "Morarano",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-tsiadana",
+      "displayName": "Tsiadana",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-ambohitsoa",
+      "displayName": "Ambohitsoa",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-faliarivo-ambanidia",
+      "displayName": "Faliarivo Ambanidia",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-mandroseza",
+      "displayName": "Mandroseza",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-antanimora-ampasanimalo",
+      "displayName": "Antanimora Ampasanimalo",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-ambatoroka",
+      "displayName": "Ambatoroka",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-ambohimiandra",
+      "displayName": "Ambohimiandra",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-miandrarivo",
+      "displayName": "Miandrarivo",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-manakambahiny",
+      "displayName": "Manakambahiny",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-mahazoarivo",
+      "displayName": "Mahazoarivo",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-andafiavaratra",
+      "displayName": "Andafiavaratra",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-manjakamiadana",
+      "displayName": "Manjakamiadana",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-ampamantanana",
+      "displayName": "Ampamantanana",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-andohanimandroseza",
+      "displayName": "Andohanimandroseza",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-antsahabe",
+      "displayName": "Antsahabe",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-volosarika",
+      "displayName": "Volosarika",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-ambohipotsy",
+      "displayName": "Ambohipotsy",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-ambohitsiroa",
+      "displayName": "Ambohitsiroa VN",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-ankazotokana-ambony",
+      "displayName": "Ankazotokana Ambony",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-andohamandry",
+      "displayName": "Andohamandry",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a2-fenomanana-antsahakely",
+      "displayName": "Fenomanana-Antsahakely",
+      "arrondissement": 2
+    },
+    {
+      "id": "tana-a3-ambohibary",
+      "displayName": "Ambohibary",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ankaditapaka-avaratra",
+      "displayName": "Ankaditapaka-Avaratra",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-behoririka-ambatomitsangana",
+      "displayName": "Behoririka-Ambatomitsangana",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ankadifotsy-antanifotsy",
+      "displayName": "Ankadifotsy Antanifotsy",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ambohibary-antanimena",
+      "displayName": "Ambohibary-Antanimena",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-befelatanana-ankadifotsy",
+      "displayName": "Befelatanana-Ankadifotsy",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-andravoahangy-tsena",
+      "displayName": "Andravoahangy Tsena",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-mandialaza-ambatomitsangana",
+      "displayName": "Mandialaza-Ambatomitsangana",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-andravoahangy-andrefana",
+      "displayName": "Andravoahangy Andrefana",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-behoririka",
+      "displayName": "Behoririka",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ampandrana-andrefana",
+      "displayName": "Ampandrana Andrefana",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ankadivato-iil",
+      "displayName": "Ankadivato IIL",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ampahibe",
+      "displayName": "Ampahibe",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-antsakaviro-ambodirotra",
+      "displayName": "Antsakaviro-Ambodirotra",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-antaninandro-ampandrana",
+      "displayName": "Antaninandro-Ampandrana",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ankorondrano-atsinanana",
+      "displayName": "Ankorondrano Atsinanana",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-soavinandriana",
+      "displayName": "Soavinandriana",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-avaradoha",
+      "displayName": "Avaradoha",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-betongolo",
+      "displayName": "Betongolo",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ampandrana-atsinanana",
+      "displayName": "Ampandrana Atsinanana",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ampandrana-besarety",
+      "displayName": "Ampandrana-Besarety",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-andravoahangy-atsinanana",
+      "displayName": "Andravoahangy Atsinanana",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ankazomanga-andraharo",
+      "displayName": "Ankazomanga Andraharo Avaratra",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-besarety",
+      "displayName": "Besarety",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-mahavoky",
+      "displayName": "Mahavoky",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-mandialaza-ankadifotsy",
+      "displayName": "Mandialaza-Ankadifotsy",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ambodivona-ankadifotsy",
+      "displayName": "Ambodivona-Ankadifotsy",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ambohitrakely",
+      "displayName": "Ambohitrakely",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a3-ampandrana-general",
+      "displayName": "Ampandrana",
+      "arrondissement": 3
+    },
+    {
+      "id": "tana-a4-ambanin-ampamarinana",
+      "displayName": "Ambanin'Ampamarinana",
+      "arrondissement": 4
+    },
+    {
+      "id": "tana-a4-ampefiloha-ambodirano",
+      "displayName": "Ampefiloha Ambodirano",
+      "arrondissement": 4
+    },
+    {
+      "id": "tana-a4-ampangabe-anjanakinifolo",
+      "displayName": "Ampangabe Anjanakinifolo",
+      "arrondissement": 4
+    },
+    {
+      "id": "tana-a4-ambodirano-ampefiloha",
+      "displayName": "Ambodirano-Ampefiloha",
+      "arrondissement": 4
+    },
+    {
+      "id": "tana-a4-anosibe-andrefana-1",
+      "displayName": "Anosibe-Andrefana I",
+      "arrondissement": 4
+    },
+    {
+      "id": "tana-a4-mandrangobato-anosibe-1",
+      "displayName": "Mandrangobato-Anosibe I",
+      "arrondissement": 4
+    },
+    {
+      "id": "tana-a4-ambohijanahary-3g-3m",
+      "displayName": "Ambohijanahary III G, III M",
+      "arrondissement": 4
+    },
+    {
+      "id": "tana-a4-ambohijanahary-3h-3o",
+      "displayName": "Ambohijanahary III H, III O",
+      "arrondissement": 4
+    },
+    {
+      "id": "tana-a4-andrefan-ankadimbahoaka",
+      "displayName": "Andrefan'Ankadimbahoaka",
+      "arrondissement": 4
+    },
+    {
+      "id": "tana-a4-andrefan-i-mananjara",
+      "displayName": "Andrefan'I Mananjara",
+      "arrondissement": 4
+    },
+    {
+      "id": "tana-a4-angarangarana",
+      "displayName": "Angarangarana",
+      "arrondissement": 4
+    },
+    {
+      "id": "tana-a4-ankadilalana",
+      "displayName": "Ankadilalana",
+      "arrondissement": 4
+    },
+    {
+      "id": "tana-a5-ambatobe",
+      "displayName": "Ambatobe",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-ambatokaranana",
+      "displayName": "Ambatokaranana",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-ambatomainty",
+      "displayName": "Ambatomainty",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-ambatomaro",
+      "displayName": "Ambatomaro",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-amboditsiry",
+      "displayName": "Amboditsiry",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-ambodivoanjo",
+      "displayName": "Ambodivoanjo",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-ambohidahy",
+      "displayName": "Ambohidahy",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-ambohimirary",
+      "displayName": "Ambohimirary",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-amboniloha",
+      "displayName": "Amboniloha",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-ampanotokana",
+      "displayName": "Ampanotokana",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-analamahintsy-cite",
+      "displayName": "Analamahintsy cité",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-analamahintsy-tanana",
+      "displayName": "Analamahintsy Tanàna",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-andraisoro",
+      "displayName": "Andraisoro",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-androhibe",
+      "displayName": "Androhibe",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-anjanahary-2a",
+      "displayName": "Anjanahary II A",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-anjanahary-2n",
+      "displayName": "Anjanahary II N",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-anjanahary-2o",
+      "displayName": "Anjanahary II O",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-anjanahary-2s",
+      "displayName": "Anjanahary II S",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-ankadindramamy",
+      "displayName": "Ankadindramamy",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-ivandry",
+      "displayName": "Ivandry",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-manjakaray-2b",
+      "displayName": "Manjakaray II B",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-manjakaray-2c",
+      "displayName": "Manjakaray II C",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-manjakaray-2d",
+      "displayName": "Manjakaray II D",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-morarano-ambatomainty",
+      "displayName": "Morarano Ambatomainty",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-nanisana",
+      "displayName": "Nanisana",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-soavimasoandro",
+      "displayName": "Soavimasoandro",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a5-tsarahonenana",
+      "displayName": "Tsarahonenana",
+      "arrondissement": 5
+    },
+    {
+      "id": "tana-a6-ambatolampy",
+      "displayName": "Ambatolampy",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-a6-amboavahy",
+      "displayName": "Amboavahy",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-a6-ambodihady",
+      "displayName": "Ambodihady",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-a6-ambodimita",
+      "displayName": "Ambodimita",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-a6-ambodivona",
+      "displayName": "Ambodivona",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-a6-ambodivonakely",
+      "displayName": "Ambodivonakely",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-a6-ambohidroa",
+      "displayName": "Ambohidroa",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-a6-ambohimanandray",
+      "displayName": "Ambohimanandray",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-a6-andranomena",
+      "displayName": "Andranomena",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-a6-avaratetezana",
+      "displayName": "Avaratetezana",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-a6-anosibe-zaivola",
+      "displayName": "Anosibe Zaivola",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-a6-antsararay",
+      "displayName": "Antsararay",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-a6-avaratanana",
+      "displayName": "Avaratanana",
+      "arrondissement": 6
+    },
+    {
+      "id": "tana-autre",
+      "displayName": "Autre quartier",
+      "arrondissement": 0
+    }
+  ]
+}

@@ -24,7 +24,7 @@ Ces endpoints sont répartis entre 4 services Fastify derrière un Nginx gateway
 | Service                  | Port | Endpoints                             |
 |--------------------------|------|---------------------------------------|
 | **auth-service**         | 3001 | `/auth/*`, `/users/*`                 |
-| **listings-service**     | 3002 | `/listings/*`, `/zones/*`, `/admin/*` |
+| **listings-service**     | 3002 | `/listings/*`, `/admin/*` |
 | **reservations-service** | 3003 | `/reservations/*`, `/feedback/*`      |
 | **credits-service**      | 3004 | `/credits/*`                          |
 | **ai-service**           | 3005 | `/ai/*`                               |
@@ -1068,7 +1068,6 @@ GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000
       "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial"
       "mine": true,
       "zone": "tana-analakely",
-      "zoneDisplay": "Antananarivo - Analakely",
       "surface": 120,
       "photos": [
         "https://mock-cdn.com/photo1.jpg"
@@ -1120,7 +1119,6 @@ GET /listings/:id
   "mine": true,
   "surface": 120,
   "zone": "tana-analakely",
-  "zoneDisplay": "Antananarivo - Analakely",
   "photos": [
     "https://mock-cdn.com/photo1.jpg",
     "https://mock-cdn.com/photo2.jpg"
@@ -1167,7 +1165,6 @@ GET /listings/:id
   "mine": false,
   "surface": 120,
   "zone": "tana-analakely",
-  "zoneDisplay": "Antananarivo - Analakely",
   "photos": [...],
   "features": {...},
   "status": "active", // Enum: "active", "reserved", "sold", "rented", "blocked", "archived"
@@ -1243,6 +1240,8 @@ POST /listings/publish
 }
 ```
 
+
+
 **Response 201 :**
 ```json
 {
@@ -1317,7 +1316,7 @@ POST /listings/publish
 | `description`        | 50-2000 caractères                                 |
 | `price`              | Nombre positif, max 999 999 999 999                |
 | `surface`            | Nombre positif, max 10 000 m²                      |
-| `zone`               | Doit exister dans la liste `/zones`                |
+| `zone`               | Doit être une zone valide (voir `shared/zones.json`) |
 | `photos`             | 3-10 images, max 5MB chacune, formats JPG/PNG/WebP |
 | `features.bedrooms`  | 0-20                                               |
 | `features.bathrooms` | 0-10                                               |
@@ -1345,9 +1344,13 @@ PUT /listings/:id
 **Request :**
 ```json
 {
+  "type": "sale", // Enum: "sale", "rent"
+  "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial"
   "title": "Villa T4 avec piscine (Updated)",
   "description": "Belle villa moderne... (Nouvelle description)",
   "price": 115000000,
+  "surface": 120,
+  "zone": "tana-analakely",
   "photos": [
     "data:image/jpeg;base64,...",
     "https://existing-image.com/..."
@@ -2295,63 +2298,13 @@ GET /credits/history
 
 ---
 
-## 6. Zones
-
-### 6.1 Lister zones disponibles
-
-```http
-GET /zones
-```
-
-**Query params :**
-- `level` : `city` | `district` | `neighborhood` (optionnel)
-- `parentId` : string (optionnel, pour hiérarchie)
-
-**Response 200 :**
-```json
-{
-  "data": [
-    {
-      "id": "tana-analakely",
-      "displayName": "Antananarivo - Analakely",
-      "level": "neighborhood", // Enum: "city", "district", "neighborhood"
-      "parentId": "tana-renivohitra"
-    },
-    {
-      "id": "tana-ankorondrano",
-      "displayName": "Antananarivo - Ankorondrano",
-      "level": "neighborhood",
-      "parentId": "tana-renivohitra"
-    },
-    {
-      "id": "tana-ivandry",
-      "displayName": "Antananarivo - Ivandry",
-      "level": "neighborhood",
-      "parentId": "tana"
-    }
-  ]
-}
-```
 
 
-```json
-[
-  {"id": "tana-analakely", "displayName": "Antananarivo - Analakely"},
-  {"id": "tana-ankorondrano", "displayName": "Antananarivo - Ankorondrano"},
-  {"id": "tana-ivandry", "displayName": "Antananarivo - Ivandry"},
-  {"id": "tana-ambohimanarina", "displayName": "Antananarivo - Ambohimanarina"},
-  {"id": "tana-67ha", "displayName": "Antananarivo - 67 Ha"},
-  {"id": "tana-autre", "displayName": "Antananarivo - Autre"}
-]
-```
-
----
-
-## 7. Modération (Admin)
+## 6. Modération (Admin)
 
 **⚠️ Tous les endpoints ci-dessous nécessitent `role = 'moderator'`**
 
-### 7.1 Liste annonces signalées
+### 6.1 Liste annonces signalées
 
 ```http
 GET /admin/listings/flagged
@@ -2393,7 +2346,7 @@ GET /admin/listings/flagged
 
 ---
 
-### 7.2 Appliquer une action (Modération)
+### 6.2 Appliquer une action (Modération)
 
 ```http
 POST /admin/listings/:id/action
@@ -2462,7 +2415,7 @@ POST /admin/listings/:id/action
 
 ---
 
-### 7.3 Historique Modération (Admin)
+### 6.3 Historique Modération (Admin)
 
 ```http
 GET /admin/actions
@@ -2500,7 +2453,7 @@ GET /admin/actions
 
 ---
 
-### 7.4 Archivage Permanent (Sécurité)
+### 6.4 Archivage Permanent (Sécurité)
 
 ```http
 POST /admin/listings/:id/archive-permanent
@@ -2531,7 +2484,7 @@ POST /admin/listings/:id/archive-permanent
 
 ---
 
-## 8. Intelligence Artificielle (ai-service)
+## 7. Intelligence Artificielle (ai-service)
 
 > **🔧 Stack Technique :**
 > - **Service :** Python FastAPI (port 3005)
@@ -2549,7 +2502,7 @@ POST /admin/listings/:id/archive-permanent
 
 ---
 
-### 8.1 Assistant Chat (RAG)
+### 7.1 Assistant Chat (RAG)
 
 **Description :** Chatbot intelligent permettant aux utilisateurs de poser des questions sur le marché immobilier malgache ou sur une annonce spécifique. Utilise la technologie RAG pour fournir des réponses précises basées sur les vraies données.
 
@@ -2636,7 +2589,7 @@ POST /ai/chat
 
 ---
 
-### 8.2 Génération Description Annonce
+### 7.2 Génération Description Annonce
 
 **Description :** Génère automatiquement une description professionnelle pour une annonce immobilière à partir des caractéristiques saisies par le vendeur. Utilisé lors de la **création** ou **modification** d'une annonce.
 
@@ -2691,18 +2644,18 @@ POST /ai/generate
 ```
 
 **Règles de validation :**
-| Champ | Règle |
-|-------|-------|
-| `listingData.propertyType` | Requis, enum: villa, apartment, house, land, commercial |
-| `listingData.transactionType` | Requis, enum: sale, rent |
-| `listingData.bedrooms` | Optionnel, 0-20 |
-| `listingData.bathrooms` | Optionnel, 0-10 |
-| `listingData.area` | Requis, 1-100000 m² |
-| `listingData.price` | Requis, > 0 |
-| `listingData.zone` | Requis, zone valide |
-| `listingData.features` | Optionnel, tableau de strings |
-| `options.style` | Optionnel, défaut: "professional" |
-| `options.length` | Optionnel, défaut: "medium" |
+| Champ                         | Règle                                                   |
+|-------------------------------|---------------------------------------------------------|
+| `listingData.propertyType`    | Requis, enum: villa, apartment, house, land, commercial |
+| `listingData.transactionType` | Requis, enum: sale, rent                                |
+| `listingData.bedrooms`        | Optionnel, 0-20                                         |
+| `listingData.bathrooms`       | Optionnel, 0-10                                         |
+| `listingData.area`            | Requis, 1-100000 m²                                     |
+| `listingData.price`           | Requis, > 0                                             |
+| `listingData.zone`            | Requis, zone valide                                     |
+| `listingData.features`        | Optionnel, tableau de strings                           |
+| `options.style`               | Optionnel, défaut: "professional"                       |
+| `options.length`              | Optionnel, défaut: "medium"                             |
 
 **Response 200 :**
 ```json
@@ -2767,7 +2720,7 @@ POST /ai/generate
 
 ---
 
-### 8.3 Données Marché
+### 7.3 Données Marché
 
 **Description :** Fournit les statistiques du marché immobilier pour une zone donnée. Utilisé comme source de données pour le système RAG et peut être affiché directement dans l'interface utilisateur.
 
@@ -2849,16 +2802,12 @@ GET /ai/market-data?zone=tana-ivandry&type=sale&propertyType=villa&period=6m
 
 ---
 
-### 8.4 Indexation & Synchronisation
+### 7.4 Indexer une annonce
 
 > [!IMPORTANT]
-> Ces endpoints sont **internes** et appelés automatiquement par le `listings-service`. Ils ne doivent pas être exposés publiquement via l'API Gateway.
+> Les endpoints 7.4, 7.5 et 7.6 sont **internes** et appelés automatiquement par le `listings-service`. Ils ne doivent pas être exposés publiquement via l'API Gateway.
 
 Ces endpoints synchronisent la base SQL principale avec le moteur de recherche vectoriel (ChromaDB) pour permettre la recherche sémantique et le RAG.
-
----
-
-#### 8.4.1 Indexer une annonce
 
 **Description :** Crée ou met à jour les embeddings vectoriels d'une annonce dans ChromaDB.
 
@@ -2934,7 +2883,7 @@ POST /ai/index
 
 ---
 
-#### 8.4.2 Vérifier le statut d'indexation
+### 7.5 Vérifier le statut d'indexation
 
 **Description :** Vérifie si une annonce est correctement indexée dans ChromaDB.
 
@@ -2995,7 +2944,7 @@ GET /ai/index-status/:listingId
 
 ---
 
-#### 8.4.3 Supprimer de l'index
+### 7.6 Supprimer de l'index
 
 **Description :** Supprime les embeddings vectoriels d'une annonce de ChromaDB.
 
@@ -3030,7 +2979,7 @@ DELETE /ai/index/:listingId
 
 ---
 
-### 8.5 Health Check
+### 7.7 Health Check
 
 **Description :** Vérifie l'état de santé du service AI et de ses dépendances.
 
@@ -3104,7 +3053,7 @@ GET /ai/health
 
 ---
 
-### 8.6 Récapitulatif Endpoints AI
+### 7.8 Récapitulatif Endpoints AI
 
 | Endpoint | Méthode | Auth | Description |
 |----------|---------|------|-------------|
@@ -3116,7 +3065,7 @@ GET /ai/health
 | `/ai/index/:id` | DELETE | Interne | Supprimer de l'index |
 | `/ai/health` | GET | Public | Health check du service |
 
-### 8.7 Rate Limiting AI
+### 7.9 Rate Limiting AI
 
 | Endpoint | Limite | Fenêtre | Scope |
 |----------|--------|---------|-------|
@@ -3169,7 +3118,6 @@ GET /ai/health
 | **Crédits**          | `GET`    | `/credits/balance`                          |
 |                      | `POST`   | `/credits/recharge`                         |
 |                      | `GET`    | `/credits/history`                          |
-| **Zones**            | `GET`    | `/zones`                                    |
 | **Modération**       | `GET`    | `/admin/listings/flagged`                   |
 |                      | `GET`    | `/admin/listings/:id`                       |
 |                      | `POST`   | `/admin/listings/:id/action`                |
@@ -3181,7 +3129,7 @@ GET /ai/health
 |                      | `GET`    | `/ai/index-status/:listingId`               |
 |                      | `DELETE` | `/ai/index/:listingId` (INTERNE)            |
 |                      | `GET`    | `/ai/health`                                |
-| **TOTAL**            |          | **47 Endpoints**                            |
+| **TOTAL**            |          | **46 Endpoints**                            |
 
 
 ---
