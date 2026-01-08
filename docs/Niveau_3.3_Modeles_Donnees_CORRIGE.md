@@ -65,7 +65,7 @@ Refléter la base de données réelle nécessaire pour les nouvelles features.
 ```typescript
 // shared/constants/enums.ts
 export const LISTING_TYPE = ['sale', 'rent'] as const;
-export const LISTING_STATUS = ['active', 'reserved', 'sold', 'rented', 'blocked', 'archived'] as const;
+export const LISTING_STATUS = ['active', 'blocked', 'archived'] as const;
 export const PARKING_TYPE = ['none', 'garage', 'box', 'parking'] as const;
 export const RESERVATION_STATUS = ['pending', 'confirmed', 'rejected', 'cancelled', 'done'] as const;
 export const REPORT_REASON = ['fraud', 'spam', 'incorrect_info', 'inappropriate'] as const;
@@ -198,7 +198,10 @@ interface Listing {
   tags: ('urgent' | 'exclusive' | 'discount')[];
   
   // État et visibilité
-  status: ListingStatus;
+  status: ListingStatus;         // Cycle de vie (active/blocked/archived)
+  isAvailable: boolean;          // Visibilité marché (True=Visible, False=Paused/Sold)
+  soldAt?: string;               // Date de vente/location (si applicable)
+
   sellerId: string;              // ⚠️ API: Exposé via objet `seller` après réservation confirmée (privacy)
   sellerVisible: boolean;        // True après réservation confirmée
   
@@ -250,21 +253,27 @@ interface ListingAvailability {
   endTime: string;     // "18:00"
 }
 
-type ListingStatus = 'active' | 'reserved' | 'sold' | 'rented' | 'blocked' | 'archived';
+type ListingStatus = 'active' | 'blocked' | 'archived';
 ```
 
 **Règles :**
-- `sellerVisible` passe à `true` uniquement après réservation confirmée
-- Une annonce `archived` n'est jamais supprimée (conservée pour historique)
-- `status = 'blocked'` uniquement par action modérateur humain
-- Classement influencé par : complétude, photos, feedbacks, historique vendeur
+- `status` gère le cycle de vie technique (Validité, Modération).
+- `isAvailable` gère la disponibilité commerciale.
+- `soldAt` est renseigné quand le bien est vendu/loué.
+- `sellerVisible` passe à `true` uniquement après réservation confirmée.
+- Une annonce `archived` n'est jamais supprimée (conservée pour historique).
+- `status = 'blocked'` uniquement par action modérateur humain.
 
 **États du cycle de vie :**
 
 ```
-création → active → reserved → sold/rented → archived
-                   ↓
-                 blocked (modération humaine uniquement)
+[LifeCycle] création → active ↔ archived
+                          ↓
+                        blocked
+
+[Market] isAvailable: true ↔ false (Pause)
+                               ↓
+                             soldAt != null (Vendu/Loué)
 ```
 
 
@@ -295,6 +304,7 @@ création → active → reserved → sold/rented → archived
     "https://mock-cdn.com/l1-photo2.jpg"
   ],
   "status": "active",
+  "isAvailable": true,
   "sellerId": "u5",
   "sellerVisible": false,
   "stats": {

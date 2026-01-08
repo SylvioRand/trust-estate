@@ -1072,7 +1072,8 @@ GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000
       "photos": [
         "https://mock-cdn.com/photo1.jpg"
       ],
-      "status": "active", // Enum: "active", "reserved", "sold", "rented", "blocked", "archived"
+      "status": "active", // Enum: "active", "blocked", "archived"
+      "isAvailable": true, // Visibilité marché
       "tags": ["urgent"], // Enum: "urgent", "exclusive", "discount"
       "createdAt": "2025-01-10T08:00:00Z"
     }
@@ -1132,7 +1133,8 @@ GET /listings/:id
     "water_access": true,
     "electricity_access": true
   },
-  "status": "active", // Enum: "active", "reserved", "sold", "rented", "blocked", "archived"
+  "status": "active", // Enum: "active", "blocked", "archived"
+  "isAvailable": true,
   "sellerVisible": false,
   "sellerStats": {
     "totalListings": 5,
@@ -1167,7 +1169,8 @@ GET /listings/:id
   "zone": "tana-analakely",
   "photos": [...],
   "features": {...},
-  "status": "active", // Enum: "active", "reserved", "sold", "rented", "blocked", "archived"
+  "status": "active", // Enum: "active", "blocked", "archived"
+  "isAvailable": true,
   "sellerVisible": true,
   "seller": {
     "id": "u5",
@@ -1247,6 +1250,7 @@ POST /listings/publish
 {
   "listingId": "l2",
   "status": "active", // Enum: "active", "blocked", "archived"
+  "isAvailable": true,
   "creditConsumed": 1,
   "remainingCredits": 4,
   "message": "listing.publish_success"
@@ -1310,16 +1314,16 @@ POST /listings/publish
 
 **Frontend :**
 
-| Champ                | Règles                                             |
-|----------------------|----------------------------------------------------|
-| `title`              | 10-100 caractères                                  |
-| `description`        | 50-2000 caractères                                 |
-| `price`              | Nombre positif, max 999 999 999 999                |
-| `surface`            | Nombre positif, max 10 000 m²                      |
+| Champ                | Règles                                               |
+|----------------------|------------------------------------------------------|
+| `title`              | 10-100 caractères                                    |
+| `description`        | 50-2000 caractères                                   |
+| `price`              | Nombre positif, max 999 999 999 999                  |
+| `surface`            | Nombre positif, max 10 000 m²                        |
 | `zone`               | Doit être une zone valide (voir `shared/zones.json`) |
-| `photos`             | 3-10 images, max 5MB chacune, formats JPG/PNG/WebP |
-| `features.bedrooms`  | 0-20                                               |
-| `features.bathrooms` | 0-10                                               |
+| `photos`             | 3-10 images, max 5MB chacune, formats JPG/PNG/WebP   |
+| `features.bedrooms`  | 0-20                                                 |
+| `features.bathrooms` | 0-10                                                 |
 
 **Backend (CRITIQUE) :**
 - ✅ Toutes les règles frontend PLUS :
@@ -1505,38 +1509,38 @@ GET /listings/:id/slots
 
 ---
 
-### 2.7 Archiver Annonce (Vendu/Loué)
-
-```http
-POST /listings/:id/archive
-```
-
-**Request :**
-```json
-{
-  "finalStatus": "sold", // Enum: "sold", "rented"
-  "soldTo": "u7" // optionnel
-}
-```
-
-**Response 200 :**
-```json
-{
-  "archived": true,
-  "finalStatus": "sold",
-  "archivedAt": "2025-01-15T16:00:00Z"
-}
-```
-
-**Response 400 (validation) :**
-```json
-{
-  "error": "validation_failed",
-  "message": "common.validation_failed",
-  "details": {
-    "finalStatus": ["validation.listing.status.invalid"]
-  }
-}
+### 2.7 Clôturer/Archiver Annonce
+ 
+ ```http
+ POST /listings/:id/archive
+ ```
+ 
+ **Request :**
+ ```json
+ {
+   "sold": true       // Si vendu/loué
+ }
+ ```
+ 
+ **Response 200 :**
+ ```json
+ {
+   "archived": true,
+   "status": "archived", // Enum: "active", "blocked", "archived"
+   "isAvailable": false,
+   "soldAt": "2025-01-15T16:00:00Z"
+ }
+ ```
+ 
+ **Response 400 (validation) :**
+ ```json
+ {
+   "error": "validation_failed",
+   "message": "common.validation_failed",
+   "details": {
+     "sold": ["validation.type_invalid"]
+   }
+ }
 ```
 
 **Response 401 :**
@@ -1594,7 +1598,8 @@ GET /listings/mine?status=active&page=1
       "title": "Maison T3 Analakely",
       "price": 50000000,
       "type": "sale", // Enum: "sale", "rent"
-      "status": "active", // Enum: "active", "reserved", "sold", "rented", "blocked", "archived"
+      "status": "active", // Enum: "active", "blocked", "archived"
+      "isAvailable": true,
       "tags": ["discount"], // Enum: "urgent", "exclusive", "discount"
       "views": 150,
       "reservations": 3,
