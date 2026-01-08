@@ -29,7 +29,21 @@
 
 		"quickButtons": {
 			"favorites": "Favoris",
-			"visit": "Planifier une visite"
+			"report": "Signaler",
+			"visit": "Planifier une visite",
+			"seeVisit": "Voir créneaux pris",
+			"editPost": "Editer la publication"
+		},
+
+		"tags": {
+			"urgent": "Urgent",
+			"exclusive": "Exclusif",
+			"discount": "Promotion"
+		},
+
+		"contact": {
+			"title": "Contact",
+			"memberSince": "Membre depuis"
 		},
 
 		"pictures": {
