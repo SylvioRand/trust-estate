@@ -1068,7 +1068,6 @@ GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000
       "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial"
       "mine": true,
       "zone": "tana-analakely",
-      "zoneDisplay": "Antananarivo - Analakely",
       "surface": 120,
       "photos": [
         "https://mock-cdn.com/photo1.jpg"
@@ -1120,7 +1119,6 @@ GET /listings/:id
   "mine": true,
   "surface": 120,
   "zone": "tana-analakely",
-  "zoneDisplay": "Antananarivo - Analakely",
   "photos": [
     "https://mock-cdn.com/photo1.jpg",
     "https://mock-cdn.com/photo2.jpg"
@@ -1167,7 +1165,6 @@ GET /listings/:id
   "mine": false,
   "surface": 120,
   "zone": "tana-analakely",
-  "zoneDisplay": "Antananarivo - Analakely",
   "photos": [...],
   "features": {...},
   "status": "active", // Enum: "active", "reserved", "sold", "rented", "blocked", "archived"
@@ -1242,6 +1239,8 @@ POST /listings/publish
   "tags": ["urgent"] // Enum: "urgent", "exclusive", "discount"
 }
 ```
+
+
 
 **Response 201 :**
 ```json
@@ -1345,9 +1344,13 @@ PUT /listings/:id
 **Request :**
 ```json
 {
+  "type": "sale", // Enum: "sale", "rent"
+  "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial"
   "title": "Villa T4 avec piscine (Updated)",
   "description": "Belle villa moderne... (Nouvelle description)",
   "price": 115000000,
+  "surface": 120,
+  "zone": "tana-analakely",
   "photos": [
     "data:image/jpeg;base64,...",
     "https://existing-image.com/..."
