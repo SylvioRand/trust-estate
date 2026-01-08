@@ -98,7 +98,7 @@ llm_service = LLMService()
 async def chatbot(text: RequestChat):
     user_mssg = text.message
     context = text.context
-    sys_prompt = chromadb_service.get_parse_prompt()
+    sys_prompt = chromadb_service.get_parse_prompt(text.language)
 
     chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt)
     chroma_reply = await chromadb_service.add_context_to_query("posts", chroma_reply, context)

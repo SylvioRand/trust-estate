@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 class RequestChat(BaseModel):
     message: str = "Hello world"
     context: Optional[str] = None
+    language: Optional[str] = "french"
 
 class ResponseChat(BaseModel):
     reply: str = "Yep"
