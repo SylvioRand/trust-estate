@@ -9,6 +9,7 @@ services:
     container_name: trust-estate-nginx
     ports:
       - "8443:443"
+      - "8080:80"
     depends_on:
       - auth-service
     volumes:
