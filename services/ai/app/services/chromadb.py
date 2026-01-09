@@ -162,7 +162,7 @@ class ChromadbService:
 
         return result
 
-    def get_parse_prompt(self, language):
+    def get_parse_prompt(self):
         parse_prompt = """
         You are a search assistant for a real estate app. 
         Analyze the user's request and output a JSON object with:
@@ -181,8 +181,7 @@ class ChromadbService:
             "price": {"$lt": 2000000}
         }
         }
-        Each text value inside the JSON object should follow the language: 
-        """.join(language)
+        """
         return parse_prompt
 
     def get_generate_text(self):

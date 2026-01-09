@@ -37,20 +37,48 @@ class LLMService:
 
         formatted_context = ""
         for i in range(len(ids)):
+            tmp_id = ids[i]
             doc = docs[i]
             meta = metas[i]
-            formatted_context += f"---\nPOST {i+1}:\n{doc}\nMetadata: {meta}\n"
+            formatted_context += f"---\nPOST {i+1}:\n{doc}\nMetadata: {meta}\nID: {tmp_id}\n"
         
         return formatted_context
+    def get_sources(self):
+        prompt = """
+        You are a precise data extractor.
 
+        1. Extract sources from the provided CONTEXT.
+        2. Return ONLY a JSON object.
+        3. STRICT SCHEMA: Each object in the "sources" list MUST contain exactly these three keys and NO others:
+        - "type" (string)
+        - "id" (string)
+        - "title" (string)
+
+        ### CONSTRAINT
+        - DO NOT include "metadata", "price", "description", "zone", or any other fields found in the data.
+        - If a field is missing in the data, use "null".
+
+        ### OUTPUT FORMAT
+        {
+        "sources": [
+            {
+            "type": "type_here",
+            "id": "id_here",
+            "title": "title_here"
+            }
+        ]
+        }
+        """
+        return prompt
     def generate_rules(self):
         rules = """
         You are a real estate assistant.
         RULES:
         1. Use only the provided context.
-        2. Use the language the user used to answer
-        3. Always include the price in the summary.
-        4. If there is a lot of POST inside the context, always give a comparaison.
+        2. Always include the price in the summary.
+        3. The unit of the price is "Ariary".
+        3. If there is a lot of POST inside the context, always give a detailed comparaison.
+        4. Make space in the answer, make the answer easy to read.
         """
         return rules
 

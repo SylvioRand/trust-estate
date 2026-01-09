@@ -96,7 +96,7 @@ llm_service = LLMService()
 @app.post("/api/chat")
 async def chatbot(text: RequestChat):
     user_mssg = text.message
-    sys_prompt = chromadb_service.get_parse_prompt(text.language)
+    sys_prompt = chromadb_service.get_parse_prompt()
     context = None
     chroma_reply = None
 
@@ -108,17 +108,20 @@ async def chatbot(text: RequestChat):
     else:
         chroma_reply = await chromadb_service.get_post_in_collection("posts", context)
     formated = format_chroma_response(user_mssg, chroma_reply)
+
+    srcs = chromadb_service.parse_json(llm_service.generate_response(formated, llm_service.get_sources()))
     llm_response = llm_service.generate_response(formated, llm_service.generate_rules())
+
     return ResponseChat(
         reply = llm_response,
-        sources = None
+        sources = srcs
     )
 
 @app.delete("/api/index/{listingId}")
 async def deletePost(listingId: str):
     result = await chromadb_service.remove_data_from_collection("posts", listingId)
     return {
-            "success": result,
+            "success": result
     }
 
 @app.post("/api/index")
@@ -131,11 +134,6 @@ async def update_datas(to_update: PostModel):
     else:
         result = await chromadb_service.update_in_collection("posts", to_update)
 
-    if result:
-        return {
-                "success": result
-        }
     return {
-            "error": "failed to update database",
-            "message": "failed to update database"
+            "success": result
     }

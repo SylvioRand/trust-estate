@@ -17,11 +17,15 @@ from pydantic import BaseModel, Field
 class RequestChat(BaseModel):
     message: str = "Hello world"
     context: Optional[str] = None
-    language: Optional[str] = "french"
+
+class ResponseSource(BaseModel):
+    type: str = "sale"
+    id: str = "default"
+    title: str = "Title list"
 
 class ResponseChat(BaseModel):
-    reply: str = "Yep"
-    sources: Optional[str] = None
+    reply: str = "Sorry something went wrong"
+    sources: Optional[ResponseSource] = None
 
 #============= Embedding data =================
 class EmbeddingText(BaseModel):
