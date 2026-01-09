@@ -20,8 +20,17 @@
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-	location /api/users/ {
+	  location /api/users/ {
         proxy_pass http://auth_service/users/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /api/listings/ {
+        proxy_pass http://listings_service/listings/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

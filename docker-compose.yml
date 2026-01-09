@@ -66,6 +66,25 @@ services:
       retries: 3
 
   # ==============================================
+  # LISTINGS SERVICE - Fastify
+  # ==============================================
+  listings-service:
+    build:
+      context: ./services/listings
+      dockerfile: Dockerfile
+    container_name: trust-estate-listings
+    expose:
+      - "3002"
+    environment:
+      PORT: 3002
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:3002/listings/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==============================================
   # POSTGRESQL - Database
   # ==============================================
   db:
