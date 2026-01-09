@@ -14,7 +14,7 @@ DOCKER_COMPOSE := $(shell \
 export DOCKER_BUILDKIT=0
 
 # Default target: build and run everything
-all: build up
+all: certs build up
 	@echo ""
 	@echo "✅ Trust Estate is running!"
 	@echo "🌐 Frontend: https://localhost:8443"
@@ -32,7 +32,7 @@ rebuild:
 	$(DOCKER_COMPOSE) build --no-cache
 
 # Start all services
-up:
+up: certs
 	@echo "🚀 Starting services..."
 	$(DOCKER_COMPOSE) up -d
 
@@ -67,3 +67,18 @@ dev: build
 check:
 	@echo "🐳 Docker Compose command: $(DOCKER_COMPOSE)"
 	@$(DOCKER_COMPOSE) version
+
+# Generate SSL certificates locally
+certs:
+	@echo "🔐 Checking SSL certificates..."
+	@mkdir -p nginx/certs
+	@if [ ! -f nginx/certs/server.key ] || [ ! -f nginx/certs/server.crt ]; then \
+		echo "⚙️  Generating self-signed certificates..."; \
+		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+		-keyout nginx/certs/server.key \
+		-out nginx/certs/server.crt \
+		-subj "/C=MG/ST=Antananarivo/L=Antananarivo/O=TrustEstate/OU=Dev/CN=localhost"; \
+		echo "✅ Certificates generated in nginx/certs/"; \
+	else \
+		echo "✅ Certificates already exist."; \
+	fi
