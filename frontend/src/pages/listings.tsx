@@ -647,7 +647,7 @@ const	ListingsPage: React.FC = () => {
 									/>
 
 									<ActionButton
-										title={ t("section.quickButtons.seeVisit") } // NOTE: Should redirect to the Reservation Page
+										title={ t("section.quickButtons.visitSlot") } // NOTE: Should redirect to the Reservation Page
 										icon="󰃭"
 									/>
 								</>
