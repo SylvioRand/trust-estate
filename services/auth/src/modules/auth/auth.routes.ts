@@ -51,3 +51,7 @@ export async function oathAuthRoutes(app: FastifyInstance, options: FastifyPlugi
 	app.get("/google", authControllers.loginOauth)
 	app.get("/google/callback", authControllers.googleCallback);
 }
+
+export async function authenticationInterne(app: FastifyInstance, options: FastifyPluginOptions) {
+	app.post("/verify-token", {preHandler: app.authValidations}, authControllers.authValidate)
+}
