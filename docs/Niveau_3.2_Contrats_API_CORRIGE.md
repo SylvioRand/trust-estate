@@ -2833,7 +2833,7 @@ POST /ai/index
 ```json
 {
   "listingId": "l123",
-  "action": "upsert"         // Enum: "upsert", "update", "delete"
+  "action": "upsert"         // Enum: "upsert", "delete"
 }
 ```
 
