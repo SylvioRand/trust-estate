@@ -39,7 +39,17 @@
     }
     
     # ==============================================
-    # STATIC FILES
+    # STATIC FILES (UPLOADS)
+    # ==============================================
+    location /uploads/ {
+        alias /var/www/uploads/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    # ==============================================
+    # STATIC FILES (FRONTEND ASSETS)
     # ==============================================
     
     # Cache static assets
