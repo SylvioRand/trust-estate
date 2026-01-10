@@ -72,7 +72,7 @@ export const REPORT_REASON = ['fraud', 'spam', 'incorrect_info', 'inappropriate'
 export const MOD_ACTION = ['block_temporary', 'archive_permanent', 'request_clarification'] as const;
 export const CREDIT_PROVIDER = ['orange-money', 'mvola'] as const;
 export const FEEDBACK_RATING = [1, 2, 3, 4, 5] as const;
-export const AI_INDEX_ACTION = ['upsert', 'update', 'delete'] as const;  // Interne: POST /ai/index
+export const AI_INDEX_ACTION = ['upsert', 'delete'] as const;  // Interne: POST /ai/index
 ```
 
 > ⚠️ **Cohérence obligatoire :** Ces valeurs doivent être **strictement identiques** entre les schémas Zod (frontend) et JSON Schema (backend).

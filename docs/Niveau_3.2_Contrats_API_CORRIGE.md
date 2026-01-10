@@ -2843,7 +2843,7 @@ POST /ai/index
   "success": true,
   "listingId": "l123",
   "vectorId": "vec_abc123",
-  "action": "upsert",         // Enum: "upsert", "update", "delete"
+  "action": "upsert",         // Enum: "upsert", "delete"
   "indexedAt": "2025-01-07T08:53:00Z",
   "message": "ai.indexing_completed"
 }
