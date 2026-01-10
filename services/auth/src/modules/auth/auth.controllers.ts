@@ -97,7 +97,7 @@ export async function verifiedEmail(request: FastifyRequest<{ Body: { token: str
 
 export async function resendEmailVerification(request: FastifyRequest, reply: FastifyReply) {
 	const user = request.user as UserInterface;
-	console.log(user);
+
 	if (!user) {
 		return reply.status(401).send({
 			"error": "invalid_credentials",
@@ -124,10 +124,11 @@ export async function resendEmailVerification(request: FastifyRequest, reply: Fa
 				"error": "invalid_credentials",
 				"message": "auth.invalid_credentials"
 			});
-		return reply.status(500).send({
-			"error": "internal_server_error",
-			"message": "common.internal_server_error"
-		});
+		else
+			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
 	}
 }
 
@@ -223,4 +224,8 @@ export async function resetPassword(request: FastifyRequest <{
 				"message": "common.internal_server_error"
 			});
 	}
+}
+
+export async function authValidate(request: FastifyRequest, reply: FastifyReply) {
+	return (request.user);
 }

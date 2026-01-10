@@ -27,10 +27,12 @@ export function generateTokens(app: FastifyInstance, user: UserInterface) {
 	};
 };
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 export const cookieOptions = {
 	httpOnly: true,
-	secure: true,
-	sameSite: 'none' as const,
+	secure: isProduction,
+	sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
 	path: '/'
 };
 
@@ -51,7 +53,10 @@ export async function generateAccessToken(request: FastifyRequest, reply: Fastif
 	setAuthCookies(reply, realestate_access_token, realestate_refresh_token);
 
 	await saveRefreshToken(request.server, user.id, realestate_refresh_token);
-	return (realestate_refresh_token);
+	return {
+		access_token: realestate_access_token,
+		refresh_token: realestate_refresh_token
+	};
 }
 
 export function responseUser(user: any) {
@@ -79,7 +84,6 @@ export function responseUser(user: any) {
 }
 
 export async function responseUserAddToken(request: FastifyRequest,reply: FastifyReply, user: any) {
-	console.log(user);
 	await generateAccessToken(request, reply, user);
 	return (responseUser(user));
 }
