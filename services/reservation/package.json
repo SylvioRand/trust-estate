@@ -1,0 +1,33 @@
+{
+  "name": "reservation",
+  "version": "1.0.0",
+  "description": "Service dedier a la reservation",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup src/app.ts --format esm --clean",
+    "start": "node ./dist/app.js",
+    "dev": "nodemon --exec ts-node src/app.ts",
+    "devs": "tsx watch src/app.ts"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.2.0",
+    "@fastify/env": "^5.0.3",
+    "@prisma/client": "^6.19.1",
+    "ajv-errors": "^3.0.0",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.6.2",
+    "jsonwebtoken": "^9.0.3",
+    "prisma": "^6.19.1",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0"
+  }
+}

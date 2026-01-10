@@ -27,7 +27,7 @@ export async function refreshTokenExists(app: FastifyInstance, userId: string, t
 	});
 
 	if (!storedToken || storedToken.tokenHash !== tokenHash
-			|| storedToken.expiresAt <= new Date()) {
+		|| storedToken.expiresAt <= new Date()) {
 			return (null);
 		}
 	return (tokenHash);
