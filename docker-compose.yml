@@ -9,11 +9,14 @@ services:
     container_name: trust-estate-nginx
     ports:
       - "8443:443"
+      - "8080:80"
     depends_on:
       - auth-service
+    volumes:
+      - ./nginx/certs:/etc/nginx/ssl:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "--no-check-certificate", "https://localhost/health"]
+      test: [ "CMD", "wget", "-q", "--spider", "--no-check-certificate", "https://localhost/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -57,7 +60,26 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/api/auth"]
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:3001/api/auth" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==============================================
+  # LISTINGS SERVICE - Fastify
+  # ==============================================
+  listings-service:
+    build:
+      context: ./services/listings
+      dockerfile: Dockerfile
+    container_name: trust-estate-listings
+    expose:
+      - "3002"
+    environment:
+      PORT: 3002
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:3002/listings/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -77,7 +99,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trustestate}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trustestate}" ]
       interval: 10s
       timeout: 5s
       retries: 5
