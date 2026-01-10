@@ -15,7 +15,7 @@ export async function addHooks(server: FastifyInstance) {
 		delete req.headers.host;
 		delete req.headers['x-forwarded-host'];
 		delete req.headers['x-real-ip'];
-		console.log("===>", req.url);
+
 		if (req.headers['x-forwarded-for']) {
 			req.headers['x-forwarded-for'] = (req.headers['x-forwarded-for'] as any).split(',')[0].trim()
 		}
