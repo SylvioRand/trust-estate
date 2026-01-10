@@ -1207,7 +1207,63 @@ GET /listings/:id
 
 ---
 
-### 2.3 Créer annonce
+### 2.3 Upload Photos
+
+```http
+POST /listings/upload
+```
+
+**Description :** Upload de photos avant la publication de l'annonce.
+Supporte l'upload multiple (multipart/form-data).
+
+**Auth :** Cookie HttpOnly (`realestate_access_token`)
+
+**Request :**
+- `Content-Type`: `multipart/form-data`
+- `files`: Tableau de fichiers binaires (images uniquement)
+
+**Contraintes :**
+- Max 10 fichiers par requête
+- Taille max par fichier : 5 Mo
+- Formats acceptés : `.jpg`, `.jpeg`, `.png`, `.webp`
+
+**Response 200 :**
+```json
+{
+  "urls": [
+    "https://api.trust-estate.mg/uploads/uuid-salon.jpg",
+    "https://api.trust-estate.mg/uploads/uuid-cuisine.jpg"
+  ]
+}
+```
+
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "validation.file.invalid_count_or_size"
+}
+```
+
+**Response 413 :**
+```json
+{
+  "error": "file_too_large",
+  "message": "validation.file.too_large"
+}
+```
+
+**Response 422 (format invalide) :**
+```json
+{
+  "error": "invalid_mime_type",
+  "message": "validation.file.invalid_format"
+}
+```
+
+---
+
+### 2.4 Créer annonce
 
 ```http
 POST /listings/publish
@@ -1226,8 +1282,8 @@ POST /listings/publish
   "surface": 200,
   "zone": "tana-ivandry",
   "photos": [
-    "data:image/jpeg;base64,...",
-    "data:image/jpeg;base64,..."
+    "https://api.trust-estate.mg/uploads/uuid-salon.jpg",
+    "https://api.trust-estate.mg/uploads/uuid-cuisine.jpg"
   ],
   "features": {
     "bedrooms": 4,
@@ -1285,22 +1341,7 @@ POST /listings/publish
 }
 ```
 
-**Response 413 :**
-```json
-{
-  "error": "file_too_large",
-  "message": "validation.file.too_large"
-}
-```
 
-**Response 422 (format invalide) :**
-```json
-{
-  "error": "invalid_mime_type",
-  "message": "validation.file.invalid_format",
-  "invalidFiles": ["photo_3.gif"]
-}
-```
 
 **Response 429 (limite atteinte) :**
 ```json
