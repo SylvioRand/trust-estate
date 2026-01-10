@@ -2833,27 +2833,17 @@ POST /ai/index
 ```json
 {
   "listingId": "l123",
-  "action": "upsert",        // Enum: "upsert", "update", "delete"
-  "priority": "normal"       // Enum: "high", "normal", "low"
+  "action": "upsert"         // Enum: "upsert", "update", "delete"
 }
 ```
 
-**Response 200 (mode asynchrone) :**
+**Response 200 :**
 ```json
 {
-  "status": "queued", // Enum: "queued", "completed", "failed"
-  "jobId": "job_999",
-  "estimatedTime": "5s",
-  "message": "ai.indexing_queued"
-}
-```
-
-**Response 200 (mode synchrone - priority: high) :**
-```json
-{
-  "status": "completed", // Enum: "queued", "completed", "failed"
+  "success": true,
   "listingId": "l123",
   "vectorId": "vec_abc123",
+  "action": "upsert",         // Enum: "upsert", "update", "delete"
   "indexedAt": "2025-01-07T08:53:00Z",
   "message": "ai.indexing_completed"
 }
@@ -2949,42 +2939,7 @@ GET /ai/index-status/:listingId
 
 ---
 
-### 7.6 Supprimer de l'index
-
-**Description :** Supprime les embeddings vectoriels d'une annonce de ChromaDB.
-
-**Workflow automatique :**
-1. `listings-service` archive ou supprime une annonce
-2. Appel automatique à `DELETE /ai/index/:listingId`
-3. Nettoyage des vecteurs dans ChromaDB
-
-**Auth :** Service-to-service (API Key interne)
-
-```http
-DELETE /ai/index/:listingId
-```
-
-**Response 200 :**
-```json
-{
-  "success": true,
-  "listingId": "l123",
-  "deletedAt": "2025-01-07T09:00:00Z",
-  "message": "ai.index_deleted"
-}
-```
-
-**Response 404 :**
-```json
-{
-  "error": "index_not_found",
-  "message": "ai.listing_not_indexed"
-}
-```
-
----
-
-### 7.7 Health Check
+### 7.6 Health Check
 
 **Description :** Vérifie l'état de santé du service AI et de ses dépendances.
 
@@ -3058,19 +3013,18 @@ GET /ai/health
 
 ---
 
-### 7.8 Récapitulatif Endpoints AI
+### 7.7 Récapitulatif Endpoints AI
 
 | Endpoint | Méthode | Auth | Description |
 |----------|---------|------|-------------|
 | `/ai/chat` | POST | Optionnel | Chat RAG avec contexte annonces et marché |
 | `/ai/generate` | POST | Requise | Génération de description d'annonce |
 | `/ai/market-data` | GET | Public | Statistiques du marché par zone |
-| `/ai/index` | POST | Interne | Indexer une annonce dans ChromaDB |
+| `/ai/index` | POST | Interne | Indexer/Mettre à jour/Supprimer une annonce de ChromaDB |
 | `/ai/index-status/:id` | GET | Public | Vérifier statut d'indexation |
-| `/ai/index/:id` | DELETE | Interne | Supprimer de l'index |
 | `/ai/health` | GET | Public | Health check du service |
 
-### 7.9 Rate Limiting AI
+### 7.8 Rate Limiting AI
 
 | Endpoint | Limite | Fenêtre | Scope |
 |----------|--------|---------|-------|
@@ -3132,9 +3086,8 @@ GET /ai/health
 |                      | `GET`    | `/ai/market-data`                           |
 |                      | `POST`   | `/ai/index` (INTERNE)                       |
 |                      | `GET`    | `/ai/index-status/:listingId`               |
-|                      | `DELETE` | `/ai/index/:listingId` (INTERNE)            |
 |                      | `GET`    | `/ai/health`                                |
-| **TOTAL**            |          | **46 Endpoints**                            |
+| **TOTAL**            |          | **45 Endpoints**                            |
 
 
 ---
