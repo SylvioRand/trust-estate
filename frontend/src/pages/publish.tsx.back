@@ -1,0 +1,299 @@
+import React, { useRef, useState } from "react";
+import SimpleInput, { PasswordInput } from "../components/Input";
+import ActionButton from "../components/ActionButton";
+import ContentDivider from "../components/ContentDivider";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import BoxSection from "../components/BoxSection";
+import TextArea from "../components/TextArea";
+import ImageUploader, { type ImageUploaderHandle } from "../components/ImageUploader";
+
+interface	PicturePreviewerProps {
+	src: string;
+	refToUploader: React.RefObject<ImageUploaderHandle | null>;
+	index: number;
+}
+
+const	PicturePreviewer: React.FC<PicturePreviewerProps> = ({
+	refToUploader,
+	src,
+	index = -1
+}) => {
+	const	[hovered, setHovered] = useState<boolean>(false);
+
+	return (
+		<div className="w-40 h-40
+			flex items-center justify-center
+			relative"
+		>
+			<img
+				className="absolute w-full h-full objet-cover
+				rounded-2xl"
+				alt="Pictures"
+				{ ...src ? { src } : {}}
+			/>
+			<button className="absolute top-1 right-[0.4rem]
+				shadow-standard
+				bg-foreground
+				w-8 h-8
+				rounded-full
+				transition-colors duration-200"
+				onPointerEnter={ () => setHovered(true) }
+				onPointerLeave={ () => setHovered(false) }
+				style={{
+					color: hovered ? "var(--color-red-500)" : "var(--color-background)"
+				}}
+				onClick={ () => {
+					refToUploader.current?.removeFile(index);
+				}}
+			>
+				<div className="font-icon text-2xl"
+				>
+					
+				</div>
+			</button>
+		</div>
+	)
+}
+
+interface	InputNumberProps {
+	icon?: string;
+	icon_size?: number;
+	name: string;
+	minLength?: number;
+	maxLength?: number;
+	placeholder: string;
+	postfix: string;
+}
+
+const	InputNumber: React.FC<InputNumberProps> = ({
+	icon = "",
+	icon_size = 32,
+	name = "",
+	minLength = 7,
+	maxLength = 15,
+	placeholder = "Placeholder",
+	postfix = ""
+}) => {
+	const	formatter = new Intl.NumberFormat("de-DE");
+	const	[inputValue, setInputValue] = useState<string>("");
+	const	[focused, setFocused] = useState<boolean>(false);
+
+	return (
+		<div className="grid grid-cols-[auto_1fr] grid-rows-1 gap-3
+			place-items-center
+			w-full"
+		>
+			{
+				icon && <div className="flex items-center justify-center
+					w-8 h-8"
+				>
+					<div className="font-icon"
+						style={{
+							fontSize: icon_size
+						}}
+					>
+						{ icon }
+					</div>
+				</div>
+			}
+			<TextArea
+				name={ name }
+				rows={1}
+				inputMode="decimal"
+				minLength={ minLength }
+				maxLength={ maxLength }
+				placeholder={ placeholder }
+				onKeyDown={(e) => {
+					if (e.key === "Enter")
+						e.preventDefault();
+				}}
+				value={ inputValue }
+				onChange={(e) => {
+					const	digitsOnly = e.target.value.replace(/\D/g, "");
+					setInputValue(digitsOnly);
+				}}
+				onFocus={ (e) => {
+					setFocused(true);
+					setInputValue(inputValue.replace(/\D/g, ""));
+				}}
+				onBlur={ (e) => {
+					setFocused(false);
+					if (!inputValue)
+					{
+						e.target.value = "";
+						setInputValue("");
+						return ;
+					}
+
+					const	numberValue = Number(inputValue.replace(/\D/g, ""));
+
+					if (Number.isNaN(numberValue))
+					{
+						e.target.value = "";
+						setInputValue("");
+						return ;
+					}
+					setInputValue(`${formatter.format(numberValue)} ${postfix}`);
+				}}
+				customStyle={{
+					fontSize: "20px",
+					fontWeight: "normal"
+				}}
+			/>
+		</div>
+	);
+}
+
+const	PublishPage: React.FC = () => {
+	const	{ t } = useTranslation("publish");
+	const	[dataToPreview, setDataToPreview] = useState<string[]>([]);
+	const	uploaderRef = useRef<ImageUploaderHandle>(null);
+
+	return (
+		<div className="flex flex-col items-center justify-start gap-7
+			overflow-y-scroll
+			px-4 md:px-7 xl:px-64
+			w-full h-screen"
+		>
+			<div className="w-full h-20
+				flex-none"
+			>
+			</div>
+
+			<div className="flex items-center justify-start
+				w-full"
+			>
+				<div className="text-xl">
+					{ t("title") }
+				</div>
+			</div>
+
+
+			<div className="flex flex-col items-center justify-center
+				xl:grid xl:grid-cols-2 xl:grid-rows-1 gap-7
+				w-full"
+			>
+				<div className="flex flex-col items-start justify-center
+					order-2
+					gap-2
+					w-full"
+				>
+					<TextArea
+						name="listingTitle"
+						rows={1}
+						minLength={10}
+						maxLength={100}
+						placeholder={ t("section.listingTitle.placeholder") }
+						customStyle={{
+							fontWeight: "bold",
+							fontSize: "24px"
+						}}
+					/>
+
+					<InputNumber
+						name="price"
+						placeholder={ t("section.price.placeholder") }
+						postfix="AR"
+					/>
+
+					<TextArea
+						name="description"
+						rows={4}
+						minLength={50}
+						maxLength={2000}
+						placeholder={ t("section.description.placeholder") }
+					/>
+				</div>
+
+				<div className="order-1">
+					<BoxSection
+						title={ t("section.about.title") }
+					>
+						<div className="grid grid-cols-2 grid-rows-3 gap-7">
+							<InputNumber
+								icon="󰆢"
+								name="surface"
+								placeholder={ t("section.about.features.surface") }
+								postfix="M2"
+							/>
+							<InputNumber
+								icon="󰋣"
+								name="bedrooms"
+								placeholder={ t("section.about.features.bedrooms") }
+								postfix={ t("section.about.features.rooms") }
+							/>
+							<InputNumber
+								icon="󱠘"
+								name="bathrooms"
+								placeholder={ t("section.about.features.bathrooms") }
+								postfix={ t("section.about.features.rooms") }
+							/>
+
+							<InputNumber
+								icon="󰆢"
+								name="surface"
+								placeholder={ t("section.about.features.surface") }
+								postfix="M2"
+							/>
+							<InputNumber
+								icon="󰋣"
+								name="bedrooms"
+								placeholder={ t("section.about.features.bedrooms") }
+								postfix={ t("section.about.features.rooms") }
+							/>
+							<InputNumber
+								icon="󱠘"
+								name="bathrooms"
+								placeholder={ t("section.about.features.bathrooms") }
+								postfix={ t("section.about.features.rooms") }
+							/>
+						</div>
+
+					</BoxSection>
+				</div>
+			</div>
+
+			<div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] grid-rows-1
+				place-items-center gap-x-3 gap-y-6
+				w-full"
+			>
+				{
+					dataToPreview && dataToPreview.map((value: string, index: number) => {
+						return (
+							<PicturePreviewer
+								key={ index }
+								index={ index }
+								src={ value }
+								refToUploader={ uploaderRef }
+							/>
+						)
+					})
+				}
+				<ImageUploader
+					ref={ uploaderRef }
+					dataToPreview={ dataToPreview }
+					setDataToPreview={ setDataToPreview }
+				/>
+				{
+					dataToPreview.length > 0 && <button className="flex flex-col items-center justify-center
+						border border-background/25
+						shadow-standard
+						rounded-2xl
+						w-40 h-40"
+						onClick={ () => uploaderRef.current?.resetFiles() }
+					>
+							<div className="font-icon text-4xl">
+								
+							</div>
+							<div className="font-light text-sm">
+								{ t("section.uploadPicture.buttons.clear.title") }
+							</div>
+						</button>
+				}
+			</div>
+		</div>
+	);
+}
+
+export default PublishPage;
