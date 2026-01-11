@@ -23,7 +23,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY package*.json ./
 
-# Copy source code
+# Copy source code (includes src/shared/zones.json)
 COPY tsconfig.json tsup.config.ts ./
 COPY src ./src/
 

@@ -1,18 +1,28 @@
 import { z } from 'zod';
+import zonesData from '../../shared/zones.json';
+
+// Extraire les IDs valides depuis zones.json
+const validZoneIds = zonesData.zones.map(z => z.displayName) as [string, ...string[]];
+const ZoneIdSchema = z.enum(validZoneIds);
+console.log("Valid Zone IDs:", validZoneIds);
 
 export const PublishListingSchema = z.object({
+  // Énumérations principales
   type: z.enum(["sale", "rent"]),
   propertyType: z.enum(["apartment", "house", "loft", "land", "commercial"]),
-  title: z.string().min(10, "Le titre est trop court").max(100),
-  description: z.string().min(20, "La description doit être plus détaillée"),
-  price: z.number().positive("Le prix doit être supérieur à 0"),
+
+  // Informations textuelles
+  title: z.string().min(5).max(100),
+  description: z.string().min(10),
+
+  // Données chiffrées (on s'assure que c'est positif)
+  price: z.number().positive(),
   surface: z.number().positive(),
-  zone: z.string().min(2, "Zone invalide"),
 
-  // Validation des photos (on vérifie que c'est bien du texte base64)
-  photos: z.array(z.string().regex(/^data:image\/\w+;base64,/, "Format d'image invalide"))
-    .min(1, "Au moins une photo est requise"),
+  // Localisation (validé contre zones.json)
+  zone: ZoneIdSchema,
 
+  // Objet imbriqué pour les caractéristiques
   features: z.object({
     bedrooms: z.number().int().nonnegative(),
     bathrooms: z.number().int().nonnegative(),
@@ -24,8 +34,11 @@ export const PublishListingSchema = z.object({
     electricity_access: z.boolean(),
   }),
 
-  // Gestion des tags : on transforme les doublons en valeurs uniques
-  tags: z.array(z.enum(["urgent", "exclusive", "discount"]))
-    .default([])
-    .transform(val => [...new Set(val)]), // Supprime les doublons automatiquement
+  // Tableau d'énums avec gestion du vide
+  tags: z
+    .array(z.enum(["urgent", "exclusive", "discount"]))
+    .default([]) // Si le champ est absent, il devient []
 });
+
+// Extraction du type pour TypeScript
+export type PropertyListing = z.infer<typeof PublishListingSchema>;
