@@ -30,6 +30,7 @@
     }
 
     location /api/listings/ {
+        client_max_body_size 55M;  # 10 photos × 5MB + JSON metadata
         proxy_pass http://listings_service/listings/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;

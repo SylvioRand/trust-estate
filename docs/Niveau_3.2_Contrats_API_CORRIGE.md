@@ -1207,96 +1207,73 @@ GET /listings/:id
 
 ---
 
-### 2.3 Upload Photos
-
-```http
-POST /listings/upload
-```
-
-**Description :** Upload de photos avant la publication de l'annonce.
-Supporte l'upload multiple (multipart/form-data).
-
-**Auth :** Cookie HttpOnly (`realestate_access_token`)
-
-**Request :**
-- `Content-Type`: `multipart/form-data`
-- `files`: Tableau de fichiers binaires (images uniquement)
-
-**Contraintes :**
-- Max 10 fichiers par requête
-- Taille max par fichier : 5 Mo
-- Formats acceptés : `.jpg`, `.jpeg`, `.png`, `.webp`
-
-**Response 200 :**
-```json
-{
-  "urls": [
-    "https://api.trust-estate.mg/uploads/uuid-salon.jpg",
-    "https://api.trust-estate.mg/uploads/uuid-cuisine.jpg"
-  ]
-}
-```
-
-**Response 400 (validation) :**
-```json
-{
-  "error": "validation_failed",
-  "message": "validation.file.invalid_count_or_size"
-}
-```
-
-**Response 413 :**
-```json
-{
-  "error": "file_too_large",
-  "message": "validation.file.too_large"
-}
-```
-
-**Response 422 (format invalide) :**
-```json
-{
-  "error": "invalid_mime_type",
-  "message": "validation.file.invalid_format"
-}
-```
-
----
-
-### 2.4 Créer annonce
+### 2.3 Créer annonce (avec Upload Photos)
 
 ```http
 POST /listings/publish
 ```
 
+**Description :** Création d'une annonce avec upload intégré des photos.
+Les photos sont envoyées **avec** les métadonnées dans une seule requête multipart.
+Le backend utilise le **streaming** pour écrire les fichiers directement sur disque (mémoire optimisée).
+
 **Auth :** Cookie HttpOnly (`realestate_access_token`)
 
 **Request :**
+- `Content-Type`: `multipart/form-data`
+
+| Part    | Type               | Description                                          |
+|---------|--------------------|------------------------------------------------------|
+| `data`  | `application/json` | Métadonnées de l'annonce (voir structure ci-dessous) |
+| `files` | Fichiers binaires  | Photos de l'annonce (3-10 fichiers)                  |
+
+**Structure du champ `data` (JSON) :**
 ```json
 {
-  "type": "sale", // Enum: "sale", "rent" (Requis)
-  "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial" (Requis)
+  "type": "sale",           // Enum: "sale", "rent" (Requis)
+  "propertyType": "house",  // Enum: "apartment", "house", "loft", "land", "commercial" (Requis)
   "title": "Villa T4 avec piscine",
   "description": "Belle villa moderne...",
   "price": 120000000,
   "surface": 200,
   "zone": "tana-ivandry",
-  "photos": [
-    "https://api.trust-estate.mg/uploads/uuid-salon.jpg",
-    "https://api.trust-estate.mg/uploads/uuid-cuisine.jpg"
-  ],
   "features": {
     "bedrooms": 4,
     "bathrooms": 3,
     "wc_separate": true,
-    "parking_type": "garage", // Enum: "garage", "box", "parking", "none"
+    "parking_type": "garage",  // Enum: "garage", "box", "parking", "none"
     "garden_private": true,
     "pool": true,
     "water_access": true,
     "electricity_access": true
   },
-  "tags": ["urgent"] // Enum: "urgent", "exclusive", "discount"
+  "tags": ["urgent"]        // Enum: "urgent", "exclusive", "discount"
 }
+```
+
+**Contraintes fichiers :**
+- Min 3, max 10 fichiers par requête
+- Taille max par fichier : 5 Mo
+- Taille max totale : 55 Mo (10 × 5MB + JSON)
+- Formats acceptés : `.jpg`, `.jpeg`, `.png`, `.webp`
+
+**Exemple requête HTTP brute :**
+```http
+POST /listings/publish HTTP/1.1
+Content-Type: multipart/form-data; boundary=---Boundary123
+Cookie: realestate_access_token=...
+
+-----Boundary123
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{"type":"sale","title":"Belle maison T4","price":500000000,"zone":"tana-ivandry","features":{"bedrooms":4}}
+-----Boundary123
+Content-Disposition: form-data; name="files"; filename="salon.jpg"
+Content-Type: image/jpeg
+
+[...données binaires...]
+-----Boundary123--
 ```
 
 
@@ -1341,7 +1318,21 @@ POST /listings/publish
 }
 ```
 
+**Response 413 (fichier trop volumineux) :**
+```json
+{
+  "error": "file_too_large",
+  "message": "validation.file.too_large"
+}
+```
 
+**Response 422 (format fichier invalide) :**
+```json
+{
+  "error": "invalid_mime_type",
+  "message": "validation.file.invalid_format"
+}
+```
 
 **Response 429 (limite atteinte) :**
 ```json
@@ -1386,31 +1377,32 @@ PUT /listings/:id
 
 **Auth :** Cookie HttpOnly (`realestate_access_token`)
 
+**Description :** Modifie les métadonnées d'une annonce existante.
+
+> [!NOTE]
+> **Les photos ne peuvent pas être modifiées après publication.** Pour changer les photos, l'utilisateur doit archiver l'annonce et en créer une nouvelle. Cette simplification évite la complexité de gestion des fichiers orphelins.
+
 **Request :**
 ```json
 {
-  "type": "sale", // Enum: "sale", "rent"
-  "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial"
+  "type": "sale",                    // Enum: "sale", "rent"
+  "propertyType": "house",           // Enum: "apartment", "house", "loft", "land", "commercial"
   "title": "Villa T4 avec piscine (Updated)",
   "description": "Belle villa moderne... (Nouvelle description)",
   "price": 115000000,
   "surface": 120,
   "zone": "tana-analakely",
-  "photos": [
-    "data:image/jpeg;base64,...",
-    "https://existing-image.com/..."
-  ],
   "features": {
     "bedrooms": 4,
     "bathrooms": 3,
     "wc_separate": true,
-    "parking_type": "garage", // Enum: "garage", "box", "parking", "none"
+    "parking_type": "garage",        // Enum: "garage", "box", "parking", "none"
     "garden_private": true,
     "pool": true,
     "water_access": true,
     "electricity_access": true
   },
-  "tags": ["exclusive"] // Enum: "urgent", "exclusive", "discount"
+  "tags": ["exclusive"]              // Enum: "urgent", "exclusive", "discount"
 }
 ```
 *Note : Tous les champs sont optionnels. Envoyez uniquement ceux à modifier.*
