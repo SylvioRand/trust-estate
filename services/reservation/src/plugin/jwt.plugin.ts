@@ -33,6 +33,11 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 				credentials: 'include'
 			});
 
+			if (!response.ok)
+			{
+				const data = await response.json();
+				return reply.status(response.status).send(data)
+			}
 			const setCookies = (response.headers as any).getSetCookie?.() || (response.headers as any).raw?.()['set-cookie'] || response.headers.get('set-cookie');
 			if (setCookies) {
 				reply.header('set-cookie', setCookies as any);
