@@ -3,3 +3,7 @@ export interface ReservationInterface {
 	slot: Date
 	sellerId: string
 }
+
+export interface ReservationIdInterface {
+	id: string
+}
