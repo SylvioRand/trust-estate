@@ -4,6 +4,7 @@ import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import PhoneInput from "../components/PhoneInput";
 
 const	AddPhonePage: React.FC = () => {
 	const { t } = useTranslation("addPhone");
@@ -59,12 +60,11 @@ const	AddPhonePage: React.FC = () => {
 						max-w-100"
 					onSubmit={handleOnSubmit}
 				>
-					<SimpleInput
-						icon="󰏲"
+					<PhoneInput
 						title={t("form.phone.label")}
 						name="phone"
-						type="tel"
-						placeholder={t("form.phone.placeholder")}
+						nameCountryCode="phoneCountryCode"
+						placeholder="XX XX XXX XX"
 						error={ [] }
 					/>
 

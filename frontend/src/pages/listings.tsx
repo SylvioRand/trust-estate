@@ -656,7 +656,7 @@ const	ListingsPage: React.FC = () => {
 
 					</div>
 
-					<div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4
+					<div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-4
 						w-full
 						place-items-center"
 					>

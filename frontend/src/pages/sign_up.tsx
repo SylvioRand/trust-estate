@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
+import PhoneInput from "../components/PhoneInput";
 
 export type APIResponse = {
 	error: string;
@@ -32,7 +33,7 @@ const SignUpPage: React.FC = () => {
 
 		setProcessSignUp(true);
 		const formData = new FormData(e.currentTarget);
-		const data = Object.fromEntries(formData.entries());
+		const data = Object.fromEntries(formData.entries()) as Record<string, string>;
 
 		// Reset all error first
 		setErrorEmail([]);
@@ -42,6 +43,9 @@ const SignUpPage: React.FC = () => {
 		setErrorPassword([]);
 
 		try {
+			data.phone = data.phoneCountryCode + data.phone;
+			delete data.phoneCountryCode;
+
 			const response = await fetch("/api/auth/register", {
 				method: "POST",
 				headers: {
@@ -49,9 +53,9 @@ const SignUpPage: React.FC = () => {
 				},
 				body: JSON.stringify(data)
 			})
+			console.log("DEBUG: ", JSON.stringify(data));
 
 			const responseData = await response.json();
-			console.log("Response Body:", responseData);
 
 			if (!response.ok) {
 				const errorData = responseData as APIResponse;
@@ -181,12 +185,11 @@ const SignUpPage: React.FC = () => {
 						/>
 					</div>
 
-					<SimpleInput
-						icon="󰏲"
+					<PhoneInput
 						title={t("form.phone.label")}
 						name="phone"
-						type="tel"
-						placeholder={t("form.phone.placeholder")}
+						nameCountryCode="phoneCountryCode"
+						placeholder="XX XX XXX XX"
 						error={errorPhone}
 					/>
 

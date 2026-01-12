@@ -5,7 +5,7 @@ interface ErrorInputProps {
 	value: string;
 }
 
-const	ErrorInput: React.FC<ErrorInputProps> = ({
+export const	ErrorInput: React.FC<ErrorInputProps> = ({
 	value = "Error"
 }) => {
 	const	{ t } = useTranslation("error");
