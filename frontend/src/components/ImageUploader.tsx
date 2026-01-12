@@ -35,8 +35,17 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 			console.log("handleRemoveFiles called");
 			URL.revokeObjectURL(dataToPreview[index]);
 			const newFiles = files.filter((_, i) => i !== index);
+
+
 			// need to set the value of the inputRef Filelist here to sync it with the state
+			let	newFileList = new DataTransfer();
+			newFiles.forEach((file) => {
+				newFileList.items.add(file);
+			})
+
 			setFiles(newFiles);
+			if (inputRef.current)
+				inputRef.current.files = newFileList.files;
 
 			const newPreview = dataToPreview.filter((_, i) => i !== index);
 			setDataToPreview(newPreview);
