@@ -2647,71 +2647,13 @@ POST /ai/generate
 **Request :**
 ```json
 {
-  "listingData": {
-    "propertyType": "villa",           // Enum: "apartment", "house", "loft", "land", "commercial"
-    "transactionType": "sale",         // Enum: "sale", "rent"
-    "title": "Villa T4 avec piscine",  // Optionnel - titre saisi par l'utilisateur
-    "bedrooms": 4,
-    "bathrooms": 2,
-    "area": 250,                       // en m²
-    "landArea": 500,                   // en m² (optionnel, pour terrain/villa)
-    "price": 850000000,                // en Ariary
-    "zone": "tana-ivandry",
-    "address": "Lot II B 45 Ivandry",  // Optionnel
-    "features": [                      // Liste des équipements
-      "piscine",
-      "jardin",
-      "garage",
-      "gardien",
-      "cuisine_equipee",
-      "climatisation"
-    ],
-    "condition": "excellent",          // Enum: "new", "excellent", "good", "to_renovate"
-    "yearBuilt": 2020,                 // Optionnel
-    "floors": 2,                       // Optionnel
-    "furnished": true,                 // Optionnel
-    "parking": 2                       // Optionnel - nombre de places
-  },
-  "options": {
-    "style": "professional",           // Enum: "professional", "casual", "luxury", "concise"
-    "length": "medium",                // Enum: "short", "medium", "long"
-    "highlights": ["piscine", "vue"],  // Optionnel - points à mettre en avant
-    "language": "fr"                   // Enum: "fr", "mg"
-  }
+  description: The current description of the USER
 }
 ```
-
-**Règles de validation :**
-| Champ                         | Règle                                                   |
-|-------------------------------|---------------------------------------------------------|
-| `listingData.propertyType`    | Requis, enum: villa, apartment, house, land, commercial |
-| `listingData.transactionType` | Requis, enum: sale, rent                                |
-| `listingData.bedrooms`        | Optionnel, 0-20                                         |
-| `listingData.bathrooms`       | Optionnel, 0-10                                         |
-| `listingData.area`            | Requis, 1-100000 m²                                     |
-| `listingData.price`           | Requis, > 0                                             |
-| `listingData.zone`            | Requis, zone valide                                     |
-| `listingData.features`        | Optionnel, tableau de strings                           |
-| `options.style`               | Optionnel, défaut: "professional"                       |
-| `options.length`              | Optionnel, défaut: "medium"                             |
-
 **Response 200 :**
 ```json
 {
-  "description": "Magnifique villa T4 de 250m² nichée dans le quartier prisé d'Ivandry. Ce bien d'exception, construit en 2020, vous séduira par ses prestations haut de gamme : 4 chambres spacieuses, 2 salles de bain modernes, une cuisine entièrement équipée et climatisée. Profitez d'une piscine privée au cœur d'un jardin arboré de 500m². Garage double et gardiennage 24h/24 pour votre sérénité. Une opportunité rare pour les familles recherchant confort et sécurité.",
-  "wordCount": 78,
-  "alternatives": [
-    {
-      "style": "concise",
-      "text": "Villa T4 250m² Ivandry - 4 ch, 2 sdb, piscine, jardin 500m², garage, gardien. État impeccable, construction 2020."
-    },
-    {
-      "style": "luxury",
-      "text": "Résidence d'exception au cœur d'Ivandry. Cette villa contemporaine de 250m² redéfinit l'art de vivre à Madagascar..."
-    }
-  ],
-  "suggestedTitle": "Villa T4 de standing avec piscine - Ivandry",
-  "keywords": ["villa", "piscine", "ivandry", "T4", "jardin", "sécurisé"]
+  reply: The better description (gramatical error review)
 }
 ```
 
