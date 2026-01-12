@@ -93,6 +93,9 @@ export async function deleteReservation(app: FastifyInstance, userId: string, re
 		if (!reservation)
 			throw new Error("reservation_not_found");
 
+		if (reservation.status === "confirmed")
+			throw new Error("cancellation_too_late");
+
 		const time = new Date();
 		const total = reservation.slot.getTime() - time.getTime();
 
