@@ -35,6 +35,7 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 			console.log("handleRemoveFiles called");
 			URL.revokeObjectURL(dataToPreview[index]);
 			const newFiles = files.filter((_, i) => i !== index);
+			// need to set the value of the inputRef Filelist here to sync it with the state
 			setFiles(newFiles);
 
 			const newPreview = dataToPreview.filter((_, i) => i !== index);
@@ -56,19 +57,19 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 			<div
 				className="flex items-center justify-center
 					overflow-hidden
-					rounded-2xl
+					rounded-md
 					relative
 					border border-background/25
 					shadow-standard
-					flex-none
-					w-30 h-30"
+					w-full h-full
+					flex-none"
 			>
 				<div
-					className="flex flex-col items-center justify-center
+					className="flex items-center justify-center gap-3
 						absolute
 						w-full h-full"
 				>
-					<div className="font-icon text-4xl">󰐕</div>
+					<div className="font-icon text-2xl">󰐕</div>
 					<div className="font-light text-sm">
 						{t("section.main.buttons.pictures.upload")}
 					</div>
@@ -78,6 +79,7 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 					className="p-2
 						absolute top-0 left-0
 						text-transparent
+						cursor-pointer
 						w-full h-full"
 					type="file"
 					accept="image/*"

@@ -166,6 +166,25 @@ const	PublishPage: React.FC = () => {
 					/>
 
 					<InputEnum
+						title={ t("section.main.form.zone.title") }
+						name="zone"
+						dataEnum={ [
+							// should fetch those Data or use the shared/zone.json
+							{ value: "Analakely", title: "Analakely" },
+							{ value: "Ambondrona", title: "Ambondrona" }
+						] }
+					/>
+
+					<InputEnum
+						title={ t("section.main.form.type.title") }
+						name="type"
+						dataEnum={ [
+							{ value: "sale", title: t("section.main.form.type.sale") },
+							{ value: "rent", title: t("section.main.form.type.rent") }
+						] }
+					/>
+
+					<InputEnum
 						title={ t("section.main.form.wc_separate.title") }
 						name="wc_separate"
 						dataEnum={ InputEnumDataBoolean }
@@ -207,7 +226,36 @@ const	PublishPage: React.FC = () => {
 					/>
 				</div>
 
+				<div className="w-full my-4">
+					<ContentDivider
+						line_color="var(--color-background)"
+					/>
+				</div>
+
+				<div className="grid grid-cols-2 grid-rows-1 gap-3
+					place-items-center
+					w-full"
+				>
+					<ImageUploader
+						ref={ uploaderRef }
+						dataToPreview={ dataToPreview }
+						setDataToPreview={ setDataToPreview }
+					/>
+
+					<div className="w-full">
+						<ActionButton
+							icon=""
+							icon_place="right"
+							title={ titleUploadButton }
+							processing_action={ uploadButtonProcessing }
+							disabled={ uploadButtonDisabled }
+							type="submit"
+						/>
+					</div>
+				</div>
+
 				<div className="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] grid-rows-1
+					mt-4
 					place-items-center gap-x-3 gap-y-6
 					w-full"
 				>
@@ -223,11 +271,7 @@ const	PublishPage: React.FC = () => {
 							)
 						})
 					}
-					<ImageUploader
-						ref={ uploaderRef }
-						dataToPreview={ dataToPreview }
-						setDataToPreview={ setDataToPreview }
-					/>
+
 					{
 						dataToPreview.length > 0 && <button className="flex flex-col items-center justify-center
 							border border-background/25
@@ -245,15 +289,6 @@ const	PublishPage: React.FC = () => {
 							</button>
 					}
 				</div>
-
-				<ActionButton
-					icon=""
-					icon_place="right"
-					title={ titleUploadButton }
-					processing_action={ uploadButtonProcessing }
-					disabled={ uploadButtonDisabled }
-					type="submit"
-				/>
 
 				<div className="w-full h-10 flex-none"></div>
 			</form>
