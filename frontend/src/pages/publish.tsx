@@ -169,8 +169,12 @@ const	PublishPage: React.FC = () => {
 						select-none
 						flex items-center justify-center gap-2"
 					>
-						<div className="font-icon text-lg">
-							{ processingDescriptionEnhancement  :  }
+						<div className="font-icon text-lg origin-center"
+							style={{
+								animation: processingDescriptionEnhancement ? "var(--animate-spin)" : "none"
+							}}
+						>
+							{ processingDescriptionEnhancement ? "󱥸" : ""  }
 						</div>
 						<div className="font-light text-sm
 							transition-colors duration-200
@@ -337,7 +341,7 @@ const	PublishPage: React.FC = () => {
 							{ t("section.main.tags.title") }
 						</div>
 					</div>
-					<div className="grid grid-cols-[repeat(auto-fit,minmax(105px,1fr))] grid-rows-1
+					<div className="grid grid-cols-[repeat(auto-fill,minmax(105px,1fr))] grid-rows-1
 					place-items-center gap-x-3 gap-y-6
 					w-full">
 						{
@@ -421,7 +425,7 @@ const	PublishPage: React.FC = () => {
 					</div>
 				</div>
 
-				<div className="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] grid-rows-1
+				<div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] grid-rows-1
 					mt-4
 					place-items-center gap-x-3 gap-y-6
 					w-full"
