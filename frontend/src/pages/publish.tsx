@@ -47,6 +47,7 @@ const	PicturePreviewer: React.FC<PicturePreviewerProps> = ({
 				onClick={ () => {
 					refToUploader.current?.removeFile(index);
 				}}
+				type="button"
 			>
 				<div className="font-icon text-2xl"
 				>
