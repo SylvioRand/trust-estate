@@ -19,6 +19,14 @@
 					"title": "Area",
 					"placeholder": "Area in foot square(M2)"
 				},
+				"propertyType": {
+					"title": "Type of property",
+					"apartment": "Apartment",
+					"house": "House",
+					"loft": "Loft",
+					"land": "Land",
+					"commercial": "Commercial"
+				},
 				"zone": {
 					"title": "Location"
 				},
