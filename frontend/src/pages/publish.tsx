@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, type RefObject } from "react";
 import SimpleInput from "../components/Input";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
@@ -124,7 +124,9 @@ const	PublishPage: React.FC = () => {
 			</button>
 		);
 	}
-	const	refToDescription = useRef<HTMLTextAreaElement | null>(null);
+
+	const	refToDescription: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement | null>(null);
+	const	[processingDescriptionEnhancement, setProcessingDescriptionEnhancement] = useState<boolean>(false);
 
 	return (
 		<div className="flex flex-col items-center justify-start
@@ -168,10 +170,11 @@ const	PublishPage: React.FC = () => {
 						flex items-center justify-center gap-2"
 					>
 						<div className="font-icon text-lg">
-							
+							{ processingDescriptionEnhancement  :  }
 						</div>
 						<div className="font-light text-sm
 							transition-colors duration-200
+							cursor-pointer
 							hover:underline hover:text-accent"
 						>
 							{ t("section.main.form.description.buttons.enhance") }
