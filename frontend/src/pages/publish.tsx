@@ -1,10 +1,8 @@
 import React, { useRef, useState } from "react";
-import SimpleInput, { PasswordInput } from "../components/Input";
+import SimpleInput from "../components/Input";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import BoxSection from "../components/BoxSection";
 import TextArea from "../components/TextArea";
 import ImageUploader, { type ImageUploaderHandle } from "../components/ImageUploader";
 import InputEnum, { type InputEnumData } from "../components/InputEnum";
@@ -126,6 +124,7 @@ const	PublishPage: React.FC = () => {
 			</button>
 		);
 	}
+	const	refToDescription = useRef<HTMLTextAreaElement | null>(null);
 
 	return (
 		<div className="flex flex-col items-center justify-start
@@ -150,14 +149,35 @@ const	PublishPage: React.FC = () => {
 					error={ errorTitle }
 				/>
 
-				<TextArea
-					title={ t("section.main.form.description.title")}
-					name="description"
-					placeholder={ t("section.main.form.description.placeholder")}
-					minLength={50}
-					maxLength={2000}
-					rows={5}
-				/>
+				<div className="relative
+					w-full"
+				>
+					<TextArea
+						ref={ refToDescription }
+						title={ t("section.main.form.description.title")}
+						name="description"
+						placeholder={ t("section.main.form.description.placeholder")}
+						minLength={50}
+						maxLength={2000}
+						rows={5}
+					/>
+					<div className="absolute -top-1 right-0
+						px-2
+						rounded-full
+						select-none
+						flex items-center justify-center gap-2"
+					>
+						<div className="font-icon text-lg">
+							
+						</div>
+						<div className="font-light text-sm
+							transition-colors duration-200
+							hover:underline hover:text-accent"
+						>
+							{ t("section.main.form.description.buttons.enhance") }
+						</div>
+					</div>
+				</div>
 
 				<SimpleInput
 					icon=""

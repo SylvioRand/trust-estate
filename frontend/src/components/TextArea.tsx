@@ -1,4 +1,4 @@
-import React, { type CSSProperties } from "react";
+import React, { type CSSProperties, type RefObject } from "react";
 
 interface	TextAreaProps {
 	title: string;
@@ -14,6 +14,7 @@ interface	TextAreaProps {
 	onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 	onFocus?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 	onBlur?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+	ref: RefObject<HTMLTextAreaElement | null>;
 }
 
 const	TextArea: React.FC<TextAreaProps> = ({
@@ -29,7 +30,8 @@ const	TextArea: React.FC<TextAreaProps> = ({
 	onKeyDown,
 	onChange,
 	onFocus,
-	onBlur
+	onBlur,
+	ref = null
 }) => {
 	return (
 		<div className="flex flex-col items-center justify-center gap-1
@@ -43,6 +45,7 @@ const	TextArea: React.FC<TextAreaProps> = ({
 				</div>
 			</div>
 			<textarea
+				ref={ ref }
 				className="w-full
 				border border-background/25
 				focus:border-3

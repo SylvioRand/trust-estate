@@ -23,7 +23,10 @@
 				},
 				"description": {
 					"title": "Description",
-					"placeholder": "Leave a description about the house"
+					"placeholder": "Leave a description about the house",
+					"buttons": {
+						"enhance": "Enhance with IA"
+					}
 				},
 				"price": {
 					"title": "Price",
