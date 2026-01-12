@@ -141,6 +141,15 @@ const	PublishPage: React.FC = () => {
 					error={ errorArea }
 				/>
 
+				<InputEnum
+					title={ t("section.main.form.zone.title") }
+					name="zone"
+					dataEnum={ [
+						// should fetch those Data or use the shared/zone.json
+						{ value: "Analakely", title: "Analakely" },
+						{ value: "Ambondrona", title: "Ambondrona" }
+					] }
+				/>
 				<div className="grid grid-cols-2 grid-rows-2
 					gap-x-7 gap-y-3
 					w-full"
@@ -167,12 +176,14 @@ const	PublishPage: React.FC = () => {
 					/>
 
 					<InputEnum
-						title={ t("section.main.form.zone.title") }
-						name="zone"
+						title={ t("section.main.form.propertyType.title") }
+						name="propertyType"
 						dataEnum={ [
-							// should fetch those Data or use the shared/zone.json
-							{ value: "Analakely", title: "Analakely" },
-							{ value: "Ambondrona", title: "Ambondrona" }
+							{ value: "apartment", title: t("section.main.form.propertyType.apartment") },
+							{ value: "house", title: t("section.main.form.propertyType.house") },
+							{ value: "loft", title: t("section.main.form.propertyType.loft") },
+							{ value: "land", title: t("section.main.form.propertyType.land") },
+							{ value: "commercial", title: t("section.main.form.propertyType.commercial") }
 						] }
 					/>
 
