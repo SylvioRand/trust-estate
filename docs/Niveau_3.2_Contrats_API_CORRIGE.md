@@ -1207,40 +1207,73 @@ GET /listings/:id
 
 ---
 
-### 2.3 Créer annonce
+### 2.3 Créer annonce (avec Upload Photos)
 
 ```http
 POST /listings/publish
 ```
 
+**Description :** Création d'une annonce avec upload intégré des photos.
+Les photos sont envoyées **avec** les métadonnées dans une seule requête multipart.
+Le backend utilise le **streaming** pour écrire les fichiers directement sur disque (mémoire optimisée).
+
 **Auth :** Cookie HttpOnly (`realestate_access_token`)
 
 **Request :**
+- `Content-Type`: `multipart/form-data`
+
+| Part    | Type               | Description                                          |
+|---------|--------------------|------------------------------------------------------|
+| `data`  | `application/json` | Métadonnées de l'annonce (voir structure ci-dessous) |
+| `files` | Fichiers binaires  | Photos de l'annonce (3-10 fichiers)                  |
+
+**Structure du champ `data` (JSON) :**
 ```json
 {
-  "type": "sale", // Enum: "sale", "rent" (Requis)
-  "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial" (Requis)
+  "type": "sale",           // Enum: "sale", "rent" (Requis)
+  "propertyType": "house",  // Enum: "apartment", "house", "loft", "land", "commercial" (Requis)
   "title": "Villa T4 avec piscine",
   "description": "Belle villa moderne...",
   "price": 120000000,
   "surface": 200,
   "zone": "tana-ivandry",
-  "photos": [
-    "data:image/jpeg;base64,...",
-    "data:image/jpeg;base64,..."
-  ],
   "features": {
     "bedrooms": 4,
     "bathrooms": 3,
     "wc_separate": true,
-    "parking_type": "garage", // Enum: "garage", "box", "parking", "none"
+    "parking_type": "garage",  // Enum: "garage", "box", "parking", "none"
     "garden_private": true,
     "pool": true,
     "water_access": true,
     "electricity_access": true
   },
-  "tags": ["urgent"] // Enum: "urgent", "exclusive", "discount"
+  "tags": ["urgent"]        // Enum: "urgent", "exclusive", "discount"
 }
+```
+
+**Contraintes fichiers :**
+- Min 3, max 10 fichiers par requête
+- Taille max par fichier : 5 Mo
+- Taille max totale : 55 Mo (10 × 5MB + JSON)
+- Formats acceptés : `.jpg`, `.jpeg`, `.png`, `.webp`
+
+**Exemple requête HTTP brute :**
+```http
+POST /listings/publish HTTP/1.1
+Content-Type: multipart/form-data; boundary=---Boundary123
+Cookie: realestate_access_token=...
+
+-----Boundary123
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{"type":"sale","title":"Belle maison T4","price":500000000,"zone":"tana-ivandry","features":{"bedrooms":4}}
+-----Boundary123
+Content-Disposition: form-data; name="files"; filename="salon.jpg"
+Content-Type: image/jpeg
+
+[...données binaires...]
+-----Boundary123--
 ```
 
 
@@ -1285,7 +1318,7 @@ POST /listings/publish
 }
 ```
 
-**Response 413 :**
+**Response 413 (fichier trop volumineux) :**
 ```json
 {
   "error": "file_too_large",
@@ -1293,12 +1326,11 @@ POST /listings/publish
 }
 ```
 
-**Response 422 (format invalide) :**
+**Response 422 (format fichier invalide) :**
 ```json
 {
   "error": "invalid_mime_type",
-  "message": "validation.file.invalid_format",
-  "invalidFiles": ["photo_3.gif"]
+  "message": "validation.file.invalid_format"
 }
 ```
 
@@ -1345,31 +1377,32 @@ PUT /listings/:id
 
 **Auth :** Cookie HttpOnly (`realestate_access_token`)
 
+**Description :** Modifie les métadonnées d'une annonce existante.
+
+> [!NOTE]
+> **Les photos ne peuvent pas être modifiées après publication.** Pour changer les photos, l'utilisateur doit archiver l'annonce et en créer une nouvelle. Cette simplification évite la complexité de gestion des fichiers orphelins.
+
 **Request :**
 ```json
 {
-  "type": "sale", // Enum: "sale", "rent"
-  "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial"
+  "type": "sale",                    // Enum: "sale", "rent"
+  "propertyType": "house",           // Enum: "apartment", "house", "loft", "land", "commercial"
   "title": "Villa T4 avec piscine (Updated)",
   "description": "Belle villa moderne... (Nouvelle description)",
   "price": 115000000,
   "surface": 120,
   "zone": "tana-analakely",
-  "photos": [
-    "data:image/jpeg;base64,...",
-    "https://existing-image.com/..."
-  ],
   "features": {
     "bedrooms": 4,
     "bathrooms": 3,
     "wc_separate": true,
-    "parking_type": "garage", // Enum: "garage", "box", "parking", "none"
+    "parking_type": "garage",        // Enum: "garage", "box", "parking", "none"
     "garden_private": true,
     "pool": true,
     "water_access": true,
     "electricity_access": true
   },
-  "tags": ["exclusive"] // Enum: "urgent", "exclusive", "discount"
+  "tags": ["exclusive"]              // Enum: "urgent", "exclusive", "discount"
 }
 ```
 *Note : Tous les champs sont optionnels. Envoyez uniquement ceux à modifier.*
@@ -2614,71 +2647,13 @@ POST /ai/generate
 **Request :**
 ```json
 {
-  "listingData": {
-    "propertyType": "villa",           // Enum: "apartment", "house", "loft", "land", "commercial"
-    "transactionType": "sale",         // Enum: "sale", "rent"
-    "title": "Villa T4 avec piscine",  // Optionnel - titre saisi par l'utilisateur
-    "bedrooms": 4,
-    "bathrooms": 2,
-    "area": 250,                       // en m²
-    "landArea": 500,                   // en m² (optionnel, pour terrain/villa)
-    "price": 850000000,                // en Ariary
-    "zone": "tana-ivandry",
-    "address": "Lot II B 45 Ivandry",  // Optionnel
-    "features": [                      // Liste des équipements
-      "piscine",
-      "jardin",
-      "garage",
-      "gardien",
-      "cuisine_equipee",
-      "climatisation"
-    ],
-    "condition": "excellent",          // Enum: "new", "excellent", "good", "to_renovate"
-    "yearBuilt": 2020,                 // Optionnel
-    "floors": 2,                       // Optionnel
-    "furnished": true,                 // Optionnel
-    "parking": 2                       // Optionnel - nombre de places
-  },
-  "options": {
-    "style": "professional",           // Enum: "professional", "casual", "luxury", "concise"
-    "length": "medium",                // Enum: "short", "medium", "long"
-    "highlights": ["piscine", "vue"],  // Optionnel - points à mettre en avant
-    "language": "fr"                   // Enum: "fr", "mg"
-  }
+  description: The current description of the USER
 }
 ```
-
-**Règles de validation :**
-| Champ                         | Règle                                                   |
-|-------------------------------|---------------------------------------------------------|
-| `listingData.propertyType`    | Requis, enum: villa, apartment, house, land, commercial |
-| `listingData.transactionType` | Requis, enum: sale, rent                                |
-| `listingData.bedrooms`        | Optionnel, 0-20                                         |
-| `listingData.bathrooms`       | Optionnel, 0-10                                         |
-| `listingData.area`            | Requis, 1-100000 m²                                     |
-| `listingData.price`           | Requis, > 0                                             |
-| `listingData.zone`            | Requis, zone valide                                     |
-| `listingData.features`        | Optionnel, tableau de strings                           |
-| `options.style`               | Optionnel, défaut: "professional"                       |
-| `options.length`              | Optionnel, défaut: "medium"                             |
-
 **Response 200 :**
 ```json
 {
-  "description": "Magnifique villa T4 de 250m² nichée dans le quartier prisé d'Ivandry. Ce bien d'exception, construit en 2020, vous séduira par ses prestations haut de gamme : 4 chambres spacieuses, 2 salles de bain modernes, une cuisine entièrement équipée et climatisée. Profitez d'une piscine privée au cœur d'un jardin arboré de 500m². Garage double et gardiennage 24h/24 pour votre sérénité. Une opportunité rare pour les familles recherchant confort et sécurité.",
-  "wordCount": 78,
-  "alternatives": [
-    {
-      "style": "concise",
-      "text": "Villa T4 250m² Ivandry - 4 ch, 2 sdb, piscine, jardin 500m², garage, gardien. État impeccable, construction 2020."
-    },
-    {
-      "style": "luxury",
-      "text": "Résidence d'exception au cœur d'Ivandry. Cette villa contemporaine de 250m² redéfinit l'art de vivre à Madagascar..."
-    }
-  ],
-  "suggestedTitle": "Villa T4 de standing avec piscine - Ivandry",
-  "keywords": ["villa", "piscine", "ivandry", "T4", "jardin", "sécurisé"]
+  reply: The better description (gramatical error review)
 }
 ```
 
@@ -2833,27 +2808,17 @@ POST /ai/index
 ```json
 {
   "listingId": "l123",
-  "action": "upsert",        // Enum: "upsert", "update", "delete"
-  "priority": "normal"       // Enum: "high", "normal", "low"
+  "action": "upsert"         // Enum: "upsert", "delete"
 }
 ```
 
-**Response 200 (mode asynchrone) :**
+**Response 200 :**
 ```json
 {
-  "status": "queued", // Enum: "queued", "completed", "failed"
-  "jobId": "job_999",
-  "estimatedTime": "5s",
-  "message": "ai.indexing_queued"
-}
-```
-
-**Response 200 (mode synchrone - priority: high) :**
-```json
-{
-  "status": "completed", // Enum: "queued", "completed", "failed"
+  "success": true,
   "listingId": "l123",
   "vectorId": "vec_abc123",
+  "action": "upsert",         // Enum: "upsert", "delete"
   "indexedAt": "2025-01-07T08:53:00Z",
   "message": "ai.indexing_completed"
 }
@@ -2949,42 +2914,7 @@ GET /ai/index-status/:listingId
 
 ---
 
-### 7.6 Supprimer de l'index
-
-**Description :** Supprime les embeddings vectoriels d'une annonce de ChromaDB.
-
-**Workflow automatique :**
-1. `listings-service` archive ou supprime une annonce
-2. Appel automatique à `DELETE /ai/index/:listingId`
-3. Nettoyage des vecteurs dans ChromaDB
-
-**Auth :** Service-to-service (API Key interne)
-
-```http
-DELETE /ai/index/:listingId
-```
-
-**Response 200 :**
-```json
-{
-  "success": true,
-  "listingId": "l123",
-  "deletedAt": "2025-01-07T09:00:00Z",
-  "message": "ai.index_deleted"
-}
-```
-
-**Response 404 :**
-```json
-{
-  "error": "index_not_found",
-  "message": "ai.listing_not_indexed"
-}
-```
-
----
-
-### 7.7 Health Check
+### 7.6 Health Check
 
 **Description :** Vérifie l'état de santé du service AI et de ses dépendances.
 
@@ -3058,19 +2988,18 @@ GET /ai/health
 
 ---
 
-### 7.8 Récapitulatif Endpoints AI
+### 7.7 Récapitulatif Endpoints AI
 
 | Endpoint | Méthode | Auth | Description |
 |----------|---------|------|-------------|
 | `/ai/chat` | POST | Optionnel | Chat RAG avec contexte annonces et marché |
 | `/ai/generate` | POST | Requise | Génération de description d'annonce |
 | `/ai/market-data` | GET | Public | Statistiques du marché par zone |
-| `/ai/index` | POST | Interne | Indexer une annonce dans ChromaDB |
+| `/ai/index` | POST | Interne | Indexer/Mettre à jour/Supprimer une annonce de ChromaDB |
 | `/ai/index-status/:id` | GET | Public | Vérifier statut d'indexation |
-| `/ai/index/:id` | DELETE | Interne | Supprimer de l'index |
 | `/ai/health` | GET | Public | Health check du service |
 
-### 7.9 Rate Limiting AI
+### 7.8 Rate Limiting AI
 
 | Endpoint | Limite | Fenêtre | Scope |
 |----------|--------|---------|-------|
@@ -3132,9 +3061,8 @@ GET /ai/health
 |                      | `GET`    | `/ai/market-data`                           |
 |                      | `POST`   | `/ai/index` (INTERNE)                       |
 |                      | `GET`    | `/ai/index-status/:listingId`               |
-|                      | `DELETE` | `/ai/index/:listingId` (INTERNE)            |
 |                      | `GET`    | `/ai/health`                                |
-| **TOTAL**            |          | **46 Endpoints**                            |
+| **TOTAL**            |          | **45 Endpoints**                            |
 
 
 ---

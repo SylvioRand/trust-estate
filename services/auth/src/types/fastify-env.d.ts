@@ -12,5 +12,6 @@ declare module 'fastify' {
     partialAuthentication: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
     emailVerifiedAuthentication: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
 	phoneVerifiedAuthentication: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
+	authValidations: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
   }
 }
