@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Reservation {
+	reservationId	String			 @id @default(uuid())
+	listingId		String			 @map("listing_id")
+	buyerId			String			 @map("buyer_id")
+	sellerId		String			 @map("seller_id")
+	status			ReservationStatus @default(pending)
+	slot			DateTime
+	confirmedAt		DateTime?		@map("confirmed_at")
+	rejectedAt		DateTime?		@map("rejected_at")
+	cancelledAt		DateTime?		@map("cancelled_at")
+	cancelledBy		CancelledBy?	@map("cancelled_by")
+	doneAt			DateTime?		@map("done_at")
+	sellerContactVisible	Boolean		@default(false)
+	feedbackEligible	Boolean			@default(false) @map("feedback_eligible")
+	feedbackGiven	Boolean			@default(false) @map("feedback_given")
+	createdAt		DateTime			@default(now()) @map("created_at")
+	updatedAt		DateTime			@updatedAt @map("updated_at")
+
+	@@index([listingId])
+	@@index([buyerId])
+	@@index([sellerId])
+	@@index([status])
+	@@index([slot])
+	@@unique([reservationId, buyerId])
+	@@map("reservations")
+}
+
+enum ReservationStatus {
+	pending
+	confirmed
+	rejected
+	cancelled
+	done
+}
+
+enum CancelledBy {
+	buyer
+	seller
+	system
+}

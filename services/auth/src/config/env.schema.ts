@@ -1,7 +1,7 @@
 export const envSchema = {
 	type: 'object',
 	required: [
-		'PORT_AUTH_SERVICE', 'REFRESH_TOKEN_URL',
+		'PORT_AUTH_SERVICE',
 		'JWT_REFRESH_SECRET',
 		'JWT_SECRET_PRIVATE_KEY', 'JWT_SECRET_PUBLIC_KEY',
 		'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GMAIL_USER', 'GMAIL_APP_PASSWORD', 
@@ -13,7 +13,6 @@ export const envSchema = {
 			type: 'number',
 			default: 3001
 		},
-		REFRESH_TOKEN_URL: {type: 'string', default: '/auth/refresh'},
 		JWT_REFRESH_SECRET: { type: 'string' },
 		JWT_SECRET_PRIVATE_KEY:{ type: 'string' },
 		JWT_SECRET_PUBLIC_KEY:{ type: 'string' },

@@ -72,6 +72,7 @@ export const REPORT_REASON = ['fraud', 'spam', 'incorrect_info', 'inappropriate'
 export const MOD_ACTION = ['block_temporary', 'archive_permanent', 'request_clarification'] as const;
 export const CREDIT_PROVIDER = ['orange-money', 'mvola'] as const;
 export const FEEDBACK_RATING = [1, 2, 3, 4, 5] as const;
+export const AI_INDEX_ACTION = ['upsert', 'delete'] as const;  // Interne: POST /ai/index
 ```
 
 > ⚠️ **Cohérence obligatoire :** Ces valeurs doivent être **strictement identiques** entre les schémas Zod (frontend) et JSON Schema (backend).
@@ -727,8 +728,8 @@ interface AIListingLink {
 
 **Règles :**
 - `listingId` est la clé primaire unique dans la table de mapping AI.
-- Une entrée est créée lors de l'appel à `POST /ai/index`.
-- L'entrée est supprimée lors de l'appel à `DELETE /ai/index/:id`.
+- Une entrée est créée lors de l'appel à `POST /ai/index` avec `action: "upsert"`.
+- L'entrée est supprimée lors de l'appel à `POST /ai/index` avec `action: "delete"`.
 
 ---
 

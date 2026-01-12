@@ -1,0 +1,206 @@
+# Architecture Technique : Flux de Publication avec Upload Intégré
+
+Ce document détaille le flux technique complet pour la **publication d'une annonce**, incluant l'upload des images en une seule requête avec streaming optimisé.
+
+## 🏗️ Principes d'Architecture
+
+### Approche : Upload à la Publication (No Orphan Files)
+
+Contrairement à une approche en deux étapes (upload séparé puis publication), nous utilisons un **flux unifié** :
+
+1. **Les photos restent sur le client** jusqu'à la publication
+2. **Une seule requête** envoie photos + métadonnées ensemble
+3. **Streaming direct au disque** — aucune photo chargée en mémoire Node.js
+4. **Aucun fichier orphelin** — pas de cleanup à gérer
+
+### Avantages
+
+| Aspect      | Bénéfice                                                                   |
+|-------------|----------------------------------------------------------------------------|
+| Simplicité  | Pas d'endpoint upload séparé, pas de gestion de sessions                   |
+| Sécurité    | Pas de fichiers temporaires, pas de suppression à autoriser                |
+| Performance | Streaming = RAM constante (~0) même avec 50MB de photos                    |
+| UX          | L'utilisateur peut ajouter/retirer des photos instantanément (côté client) |
+
+---
+
+## 🔧 Infrastructure Requise
+
+1. **Volume Docker Partagé (`uploads_data`)** :
+   - Monté sur le service Backend (`/app/uploads`) pour l'écriture
+   - Monté sur le service Nginx (`/var/www/uploads`) pour la lecture
+2. **Endpoint unique** : `POST /listings/publish` (multipart/form-data)
+3. **Route Nginx** : Sert `/uploads/` directement depuis le disque
+
+---
+
+## 🔄 Workflow Détaillé : Exemple "Jean publie une annonce"
+
+### Étape 1 : Sélection des Photos (Côté Client Uniquement)
+
+Jean sélectionne `salon.jpg` et `cuisine.jpg` sur son téléphone.
+
+**Aucune requête serveur** — les fichiers sont stockés en mémoire JavaScript.
+
+```javascript
+// État React/Vue simplifié
+const [photos, setPhotos] = useState([]);
+
+// Ajouter une photo (instantané, pas de serveur)
+const addPhoto = (file) => setPhotos([...photos, file]);
+
+// Retirer une photo (instantané, pas de serveur)
+const removePhoto = (index) => setPhotos(photos.filter((_, i) => i !== index));
+```
+
+### Étape 2 : Publication (Multipart/Form-Data avec Streaming)
+
+Jean clique "Publier". Le frontend envoie **tout en une seule requête**.
+
+**Requête Frontend :**
+```http
+POST /listings/publish HTTP/1.1
+Content-Type: multipart/form-data; boundary=---Boundary123
+Cookie: realestate_access_token=...
+
+-----Boundary123
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{"type":"sale","title":"Belle maison T4","price":500000000,"zone":"tana-ivandry","features":{"bedrooms":4}}
+-----Boundary123
+Content-Disposition: form-data; name="files"; filename="salon.jpg"
+Content-Type: image/jpeg
+
+[...données binaires salon.jpg...]
+-----Boundary123
+Content-Disposition: form-data; name="files"; filename="cuisine.jpg"
+Content-Type: image/jpeg
+
+[...données binaires cuisine.jpg...]
+-----Boundary123--
+```
+
+**Traitement Backend (listings-service) avec Streaming :**
+
+```javascript
+// Le fichier est écrit DIRECTEMENT sur disque via stream
+// RAM utilisée : ~quelques KB (buffer), PAS 50MB
+
+import { pipeline } from 'stream/promises';
+import fs from 'fs';
+import { randomUUID } from 'crypto';
+
+fastify.post('/listings/publish', async (req, reply) => {
+  const parts = req.parts();  // Iterator async sur les parts multipart
+  let listingData = {};
+  const photoUrls = [];
+
+  for await (const part of parts) {
+    if (part.file) {
+      // C'est un fichier — stream direct au disque
+      const ext = path.extname(part.filename).toLowerCase();
+      const uuid = `${randomUUID()}${ext}`;
+      const filePath = `/app/uploads/${uuid}`;
+      
+      await pipeline(part.file, fs.createWriteStream(filePath));
+      photoUrls.push(`https://api.trust-estate.mg/uploads/${uuid}`);
+    } else if (part.fieldname === 'data') {
+      // C'est le JSON des métadonnées
+      listingData = JSON.parse(part.value);
+    }
+  }
+
+  listingData.photos = photoUrls;
+  // ... validation, vérif crédits, sauvegarde en DB
+  
+  return { listingId: 'l123', status: 'active', photos: photoUrls };
+});
+```
+
+**Réponse Backend :**
+```json
+{
+  "listingId": "l2",
+  "status": "active",
+  "isAvailable": true,
+  "creditConsumed": 1,
+  "remainingCredits": 4,
+  "photos": [
+    "https://api.trust-estate.mg/uploads/uuid-salon.jpg",
+    "https://api.trust-estate.mg/uploads/uuid-cuisine.jpg"
+  ],
+  "message": "listing.publish_success"
+}
+```
+
+### Étape 3 : Lecture des Images (Nginx Direct)
+
+Un acheteur visualise l'annonce.
+
+1. Le navigateur demande : `GET https://api.trust-estate.mg/uploads/uuid-salon.jpg`
+2. **Nginx** intercepte la route `/uploads/`
+3. Il lit le fichier directement depuis le volume partagé (`/var/www/uploads/uuid-salon.jpg`)
+4. Il renvoie l'image
+5. **Performance :** Le service API (Node.js) n'est **jamais** sollicité pour servir l'image
+
+---
+
+## 📊 Diagramme de Séquence
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend (Listings)
+    participant Nginx
+    participant Disk (Volume)
+
+    Note over User, Disk: ÉTAPE 1 : SÉLECTION (Client Only)
+    User->>Frontend: Sélectionne photos
+    Frontend->>Frontend: Stocke en mémoire JS
+
+    Note over User, Disk: ÉTAPE 2 : PUBLICATION (Streaming)
+    User->>Frontend: Clique "Publier"
+    Frontend->>Backend (Listings): POST /listings/publish (multipart)
+    Backend (Listings)->>Disk: Stream direct → uuid-salon.jpg
+    Backend (Listings)->>Disk: Stream direct → uuid-cuisine.jpg
+    Backend (Listings)->>DB: INSERT listing avec photos[]
+    Backend (Listings)-->>Frontend: 201 { listingId, photos[] }
+
+    Note over User, Disk: ÉTAPE 3 : LECTURE (Nginx Direct)
+    User->>Frontend: Affiche Annonce
+    Frontend->>Nginx: GET /uploads/uuid-salon.jpg
+    Nginx->>Disk: Lit fichier
+    Nginx-->>Frontend: Renvoie Image (Bytes)
+```
+
+---
+
+## ✅ Avantages de cette Architecture
+
+1. **Pas de fichiers orphelins** : Les photos n'existent sur le serveur qu'après publication réussie
+2. **Suppression côté client triviale** : Juste `array.splice()` en JavaScript
+3. **RAM optimisée** : Streaming = mémoire constante, même avec 10 photos de 5MB
+4. **Scalabilité** : Remplacez `/uploads/` par S3 plus tard sans changer le flux frontend
+5. **Performance Nginx** : Nginx sert les fichiers statiques sans toucher Node.js
+
+---
+
+## ⚠️ Contraintes à Respecter
+
+| Contrainte | Valeur | Raison |
+|------------|--------|--------|
+| Taille max par fichier | 5 MB | Connexion mobile Madagascar |
+| Nombre max de photos | 10 | UX et limite DB |
+| Formats acceptés | JPG, PNG, WebP | Standards web |
+| Taille max requête totale | 55 MB | 10 × 5MB + JSON métadonnées |
+
+---
+
+## 🔒 Sécurité
+
+- **Validation MIME réelle** : Vérifier les magic bytes, pas juste l'extension
+- **Noms UUID** : Aucun nom prévisible → pas d'énumération
+- **Auth via Cookie HttpOnly** : Token JWT vérifié avant tout traitement
+- **Rate limiting** : Max 5 publications/heure par utilisateur

@@ -14,7 +14,7 @@ export async function getUser(request: FastifyRequest, reply: FastifyReply) {
 			});
 	try {
 		const result = await userServices.showProfile(request.server, user);
-		console.log(responseUser(result));
+	
 		return reply.status(200).send(responseUser(result));
 	} catch (error: any) {
 		return reply.status(500).send({
