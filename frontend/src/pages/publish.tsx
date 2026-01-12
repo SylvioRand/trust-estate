@@ -8,6 +8,9 @@ import BoxSection from "../components/BoxSection";
 import TextArea from "../components/TextArea";
 import ImageUploader, { type ImageUploaderHandle } from "../components/ImageUploader";
 import InputEnum, { type InputEnumData } from "../components/InputEnum";
+import type { ListingsTags } from "../dataModel/modelListings";
+import { TagsComponents } from "./listings";
+import PopUp, { type PopUpAPI } from "../components/PopUp";
 
 interface	PicturePreviewerProps {
 	src: string;
@@ -73,6 +76,10 @@ const	PublishPage: React.FC = () => {
 	const	titleUploadButton: string = uploadButtonState === "idle" ? t("section.main.buttons.upload.idleState")
 		: (uploadButtonState === "uploadingImages" ? t("section.main.buttons.upload.uploadingImages") : t("section.main.buttons.upload.uploadingListing"));
 
+	const	[activeTags, setActiveTags] = useState<ListingsTags[]>(["urgent", "exclusive", "discount"]);
+	const	[openPopupAddTags, setOpenPopupAddTags] = useState<boolean>(false);
+	const	addTagsPopupRef = useRef<PopUpAPI>(null);
+
 	const	InputEnumDataBoolean: InputEnumData[] = [
 		{ value: "true", title: t("common:true") },
 		{ value: "false", title: t("common:false") }
@@ -86,6 +93,39 @@ const	PublishPage: React.FC = () => {
 
 		console.log(data);
 	};
+
+	function	AddTagsButton({ tags = "urgent", title = "Title" } : { tags: ListingsTags, title: string }){
+		const	[hovered, setHovered] = useState<boolean>(false);
+
+		return (
+			<button
+				className="transition-colors duration-300
+				flex items-center justify-start
+				rounded-md
+				w-full
+				cursor-pointer
+				p-2"
+				type="button"
+				onPointerEnter={ () => setHovered(true) }
+				onPointerLeave={ () => setHovered(false) }
+				style={{
+					backgroundColor: hovered ? "var(--color-midtone)" : "transparent"
+				}}
+				onClick={ () => {
+					if (!activeTags.find((value: ListingsTags) => value === tags, tags))
+					{
+						const	newValue: ListingsTags[] = activeTags;
+
+						newValue.push(tags);
+						setActiveTags(newValue);
+					}
+					addTagsPopupRef.current?.close() // request a close call
+				}}
+			>
+				{ title }
+			</button>
+		);
+	}
 
 	return (
 		<div className="flex flex-col items-center justify-start
@@ -164,6 +204,7 @@ const	PublishPage: React.FC = () => {
 						placeholder={ t("section.main.form.bedrooms.placeholder") }
 						error={ errorBedrooms }
 					/>
+
 					<SimpleInput
 						icon="󱠘"
 						title={ t("section.main.form.bathrooms.title") }
@@ -236,6 +277,97 @@ const	PublishPage: React.FC = () => {
 						name="electricity_access"
 						dataEnum={ InputEnumDataBoolean }
 					/>
+				</div>
+
+				{
+					openPopupAddTags && <PopUp
+						ref={ addTagsPopupRef }
+						title={ t("section.main.tags.add.popup.title") }
+						onClose={ () => setOpenPopupAddTags(false) }
+					>
+						<div className="flex flex-col items-start justify-center gap-1
+							w-full"
+						>
+							<AddTagsButton
+								tags="urgent"
+								title={ t("section.main.tags.add.popup.value.urgent")}
+							/>
+							<AddTagsButton
+								tags="exclusive"
+								title={ t("section.main.tags.add.popup.value.exclusive")}
+							/>
+							<AddTagsButton
+								tags="discount"
+								title={ t("section.main.tags.add.popup.value.discount")}
+							/>
+						</div>
+					</PopUp>
+				}
+
+				<div className="flex flex-col items-start justify-center
+					w-full"
+				>
+					<div className="flex items-center justify-start
+						w-full"
+					>
+						<div className="font-inter font-bold text-[14px]">
+							{ t("section.main.tags.title") }
+						</div>
+					</div>
+					<div className="grid grid-cols-[repeat(auto-fit,minmax(105px,1fr))] grid-rows-1
+					place-items-center gap-x-3 gap-y-6
+					w-full">
+						{
+							activeTags.length > 0 && activeTags.map((value: ListingsTags, index: number) => {
+								return (
+									<div
+										key={ index }
+										className="relative"
+									>
+										<TagsComponents
+											tags={ value }
+										/>
+										<button className="absolute -top-3 -right-3
+											shadow-standard
+											bg-foreground
+											w-8 h-8
+											rounded-full
+											cursor-pointer
+											hover:text-red-500
+											transition-colors duration-200"
+											onClick={ () => {
+												setActiveTags(activeTags.filter((tags: ListingsTags) => tags !== value));
+											}}
+											type="button"
+										>
+											<div className="font-icon text-2xl"
+											>
+												
+											</div>
+										</button>
+									</div>
+								);
+							})
+						}
+						<button className="flex items-center justify-center
+							gap-3
+							border border-background/25
+							rounded-md
+							shadow-standard
+							select-none
+							cursor-pointer
+							px-4 py-1"
+							onClick={() => setOpenPopupAddTags(true) }
+							type="button"
+						>
+							<div className="font-light text-sm">
+								{ t("section.main.tags.add.title") }
+							</div>
+							<div className="font-icon text-2xl">
+								󰐕
+							</div>
+						</button>
+					</div>
 				</div>
 
 				<div className="w-full my-4">

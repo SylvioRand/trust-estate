@@ -18,7 +18,7 @@ interface	TagsComponentsProps {
 	tags: ListingsTags;
 }
 
-const	TagsComponents: React.FC<TagsComponentsProps> = ({
+export const	TagsComponents: React.FC<TagsComponentsProps> = ({
 	tags = "urgent"
 }) => {
 	const	icon: Record<ListingsTags, string> = {
