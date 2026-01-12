@@ -2,6 +2,20 @@
 	"section": {
 		"main": {
 			"title": "Publish a listings",
+			"tags": {
+				"title": "Tags",
+				"add": {
+					"title": "Add Tag",
+					"popup": {
+						"title": "Add a tag",
+						"value": {
+							"urgent": "Urgent",
+							"exclusive": "Exclusive",
+							"discount": "Discount"
+						}
+					}
+				}
+			},
 			"form": {
 				"title": {
 					"title": "Title",
