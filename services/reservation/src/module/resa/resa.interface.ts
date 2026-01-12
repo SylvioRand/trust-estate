@@ -4,6 +4,6 @@ export interface ReservationInterface {
 	sellerId: string
 }
 
-export interface DeleteReservationInterface {
+export interface ReservationIdInterface {
 	id: string
 }
