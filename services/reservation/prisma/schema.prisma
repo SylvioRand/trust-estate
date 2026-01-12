@@ -30,6 +30,7 @@ model Reservation {
 	@@index([sellerId])
 	@@index([status])
 	@@index([slot])
+	@@unique([reservationId, buyerId])
 	@@map("reservations")
 }
 

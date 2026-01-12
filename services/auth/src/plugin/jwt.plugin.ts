@@ -219,7 +219,6 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 			return;
 
 		const user = await verifyAccessToken(request, reply, publicKey, JWT_REFRESH_SECRET, privateKey, cookieOptions);
-
 		if (!user) return;
 		request.user = user;
 
