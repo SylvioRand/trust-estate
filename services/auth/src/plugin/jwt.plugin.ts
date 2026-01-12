@@ -29,6 +29,8 @@ async function autoRefreshToken(
 		const decoded: any = jwt.verify(refreshToken, refreshSecret,{ algorithms: ["HS256"] });
 
 		if (decoded.type !== 'refresh' || !decoded.userId) {
+			reply.clearCookie("realestate_access_token", { ...cookieOptions });
+			reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
 			return null;
 		}
 		const tokenHash = await refreshTokenExists(request.server, decoded.userId, refreshToken);
@@ -43,9 +45,21 @@ async function autoRefreshToken(
 			where: { id: decoded.userId }
 		});
 
-		if (!user) return null;
-		await deleteRefreshToken(request.server, refreshToken);
-		await generateAccessToken(request, reply, user);
+		if (!user) {
+			reply.clearCookie("realestate_access_token", { ...cookieOptions });
+			reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
+			return null;
+		}
+
+		try {
+			await generateAccessToken(request, reply, user);
+			await deleteRefreshToken(request.server, refreshToken);
+		} catch (error) {
+			request.server.log.error({ error }, 'Failed to generate new access token');
+			reply.clearCookie("realestate_access_token", { ...cookieOptions });
+			reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
+			return null;
+		}
 		
 		return {
 			id: user.id,
@@ -54,6 +68,8 @@ async function autoRefreshToken(
 			emailVerified: user.emailVerified
 		} as UserInterface;
 	} catch (error) {
+		reply.clearCookie("realestate_access_token", { ...cookieOptions });
+		reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
 		return null;
 	}
 }
@@ -113,6 +129,8 @@ export async function verifyAccessToken(
 			}
 		}
 
+		reply.clearCookie("realestate_access_token", { ...cookieOptions });
+		reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
 		reply.code(401).send({
 			error: "invalid_or_expired_token",
 			message: "auth.verification_token_invalid"

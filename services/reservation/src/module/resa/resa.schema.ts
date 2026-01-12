@@ -20,7 +20,7 @@ export const ReservationSchema = {
 	}
 };
 
-export const DeleteReservationSchema = {
+export const ReservationIdSchema = {
 	params : {
 		type: 'object',
 		required: ['id'],
