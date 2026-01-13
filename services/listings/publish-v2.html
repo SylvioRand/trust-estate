@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Listings V2 - Multipart</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .response {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 8px;
+            background: #000;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            display: none;
+        }
+
+        .response.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .response.error {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        .file-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>🚀 Publier une annonce (V2)</h2>
+        <p style="color: var(--text-muted); margin-bottom: 24px;">Cette page utilise la structure FormData spécifique
+            avec JSON stringifié dans le champ "data".</p>
+
+        <form id="listingForm">
+            <div class="grid">
+                <div class="form-group">
+                    <label>Type</label>
+                    <select name="type">
+                        <option value="sale" selected>Vente</option>
+                        <option value="rent">Location</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Type de bien</label>
+                    <select name="propertyType">
+                        <option value="house" selected>Maison</option>
+                        <option value="apartment">Appartement</option>
+                        <option value="loft">Loft</option>
+                        <option value="land">Terrain</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Titre</label>
+                <input type="text" name="title" value="Villa T4 avec piscine">
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="3">Belle villa moderne avec vue panoramique</textarea>
+            </div>
+
+            <div class="grid">
+                <div class="form-group">
+                    <label>Prix (MGA)</label>
+                    <input type="number" name="price" value="120000000">
+                </div>
+                <div class="form-group">
+                    <label>Surface (m²)</label>
+                    <input type="number" name="surface" value="200">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Zone</label>
+                <input type="text" name="zone" value="Ivandry">
+            </div>
+
+            <div class="form-group">
+                <label>Photos (Sélectionnez 3 photos minimum)</label>
+                <input type="file" id="fileInput" multiple accept="image/*">
+                <div class="file-hint">Note: Les fichiers sélectionnés seront ajoutés au FormData comme demandé.</div>
+            </div>
+
+            <button type="submit">Envoyer la requête</button>
+        </form>
+
+        <div id="response" class="response"></div>
+    </div>
+
+    <script>
+        document.getElementById('listingForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const form = e.target;
+            const responseDiv = document.getElementById('response');
+            const fileInput = document.getElementById('fileInput');
+
+            // Données statiques basées sur l'exemple utilisateur, fusionnées avec le formulaire
+            const dataObj = {
+                "type": form.type.value,
+                "propertyType": form.propertyType.value,
+                "title": form.title.value,
+                "description": form.description.value,
+                "price": parseInt(form.price.value),
+                "surface": parseInt(form.surface.value),
+                "zone": form.zone.value,
+                "features": {
+                    "bedrooms": 4,
+                    "bathrooms": 3,
+                    "wc_separate": true,
+                    "parking_type": "garage",
+                    "garden_private": true,
+                    "pool": true,
+                    "water_access": true,
+                    "electricity_access": true
+                },
+                "tags": ["urgent"]
+            };
+
+            var formdata = new FormData();
+
+            // On utilise la structure EXACTE demandée : le JSON est une string dans "data"
+            formdata.append("data", JSON.stringify(dataObj));
+
+            // Ajout des fichiers sélectionnés
+            if (fileInput.files.length > 0) {
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    formdata.append("files", fileInput.files[i]);
+                }
+            } else {
+                // Si pas de fichiers, on simule l'intention utilisateur avec des noms (mais ça ne marchera pas en vrai browser sans File object)
+                console.warn("Aucun fichier sélectionné. La requête risque d'être rejetée par le backend si les fichiers sont requis.");
+            }
+
+            var requestOptions = {
+                method: 'POST',
+                body: formdata,
+                redirect: 'follow'
+            };
+
+            responseDiv.style.display = 'block';
+            responseDiv.textContent = 'Envoi en cours...';
+            responseDiv.className = 'response';
+
+            fetch("https://localhost:8443/api/listings/publish", requestOptions)
+                .then(response => {
+                    responseDiv.className = 'response ' + (response.ok ? 'success' : 'error');
+                    return response.text();
+                })
+                .then(result => {
+                    console.log(result);
+                    responseDiv.textContent = result;
+                })
+                .catch(error => {
+                    console.log('error', error);
+                    responseDiv.className = 'response error';
+                    responseDiv.textContent = 'Erreur: ' + error.message;
+                });
+        });
+    </script>
+</body>
+
+</html>
