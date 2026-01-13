@@ -17,7 +17,7 @@ services:
       - uploads_data:/var/www/uploads:ro # Dossier partagé (Read-Only pour Nginx)
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "--no-check-certificate", "https://localhost/health" ]
+      test: [ "CMD", "wget", "-q", "--spider", "--no-check-certificate", "https://127.0.0.1/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -61,7 +61,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:3001/api/auth" ]
+      test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3001/api/auth" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -76,13 +76,16 @@ services:
     container_name: trust-estate-listings
     expose:
       - "3002"
+    ports:
+      - "3002:3002" # Expose port for direct access for testing (optional
     environment:
       PORT: 3002
     restart: unless-stopped
     volumes:
-      - uploads_data:/app/uploads # Dossier partagé (Read-Write pour API)
+      - ./uploads:/app/uploads # Dossier partagé (Read-Write pour API)
+      #- uploads_data:/app/uploads # Dossier partagé (Read-Write pour API)
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:3002/listings/health" ]
+      test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3002/listings/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
