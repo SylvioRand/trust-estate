@@ -41,8 +41,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-# Copy built application
+# Copy built application and prisma schema
 COPY --from=builder /app/dist ./dist/
+COPY prisma ./prisma/
+
+# Generate Prisma Client
+RUN npx prisma generate
 
 EXPOSE 3002
 

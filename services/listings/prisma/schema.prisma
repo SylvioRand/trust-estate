@@ -1,0 +1,151 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  MODERATOR
+}
+
+// least privilege (uniquement ce dont on a besoin pour afficher l'annonce et gérer les crédits)
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  firstName     String
+  lastName      String?
+  phone         String?     @unique
+  role          Role        @default(USER)
+  creditBalance Int         @default(10)
+  createdAt     DateTime    @default(now()) @map("createAt")
+  updatedAt     DateTime    @updatedAt @map("updateAt")
+  sellerStats   SellerStats?
+  listings      Listing[]
+
+  @@map("User")
+}
+
+model SellerStats {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  totalListings   Int      @default(0)
+  activeListings  Int      @default(0)
+  successfulSales Int      @default(0)
+  successfulRents Int      @default(0)
+  averageRating   Float    @default(0)
+  responseRate    Float    @default(0)
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([averageRating])
+  @@index([successfulSales])
+  @@index([responseRate])
+  @@map("SellerStats")
+}
+
+enum ListingType {
+  sale
+  rent
+}
+
+enum PropertyType {
+  apartment
+  house
+  loft
+  land
+  commercial
+}
+
+enum ListingStatus {
+  active
+  blocked
+  archived
+}
+
+enum ParkingType {
+  none
+  garage
+  box
+  parking
+}
+
+enum MarketingTag {
+  urgent
+  exclusive
+  discount
+}
+
+model Listing {
+  id             String         @id @default(uuid())
+  type           ListingType
+  propertyType   PropertyType
+  title          String
+  description    String
+  price          Float
+  surface        Float
+  zone           String
+  photos         String[]       @default([])
+  tags           MarketingTag[] @default([])
+  status         ListingStatus  @default(active)
+  isAvailable    Boolean        @default(true)
+  soldAt         DateTime?
+  sellerId       String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  seller         User           @relation(fields: [sellerId], references: [id])
+  features       ListingFeatures?
+  availability   ListingAvailability[]
+  stats          ListingStats?
+
+  @@map("Listing")
+}
+
+model ListingFeatures {
+  id                 String      @id @default(uuid())
+  listingId          String      @unique
+  listing            Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  
+  bedrooms           Int?
+  bathrooms          Int?
+  wc_separate        Boolean?
+  water_access       Boolean?
+  electricity_access Boolean?
+  garden_private     Boolean?
+  parking_type       ParkingType? @default(none)
+  pool               Boolean?
+
+  @@map("ListingFeatures")
+}
+
+model ListingAvailability {
+  id        String   @id @default(uuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  dayOfWeek Int      // 0=Dimanche, 1=Lundi... 6=Samedi
+  startTime String   // "09:00"
+  endTime   String   // "18:00"
+
+  @@map("ListingAvailability")
+}
+
+model ListingStats {
+  id           String  @id @default(uuid())
+  listingId    String  @unique
+  listing      Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  views        Int     @default(0)
+  reservations Int     @default(0)
+  feedbacks    Int     @default(0)
+
+  @@map("ListingStats")
+}

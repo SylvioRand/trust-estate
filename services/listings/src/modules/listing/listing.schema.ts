@@ -1,44 +1,40 @@
 import { z } from 'zod';
 import zonesData from '../../shared/zones.json';
 
-// Extraire les IDs valides depuis zones.json
+// Utiliser les IDs des zones (ex: "tana-analakely"), pas displayName
 const validZoneIds = zonesData.zones.map(z => z.displayName) as [string, ...string[]];
 const ZoneIdSchema = z.enum(validZoneIds);
-console.log("Valid Zone IDs:", validZoneIds);
 
 export const PublishListingSchema = z.object({
-  // Énumérations principales
-  type: z.enum(["sale", "rent"]),
-  propertyType: z.enum(["apartment", "house", "loft", "land", "commercial"]),
+  type: z.enum(['sale', 'rent']),
+  propertyType: z.enum(['apartment', 'house', 'loft', 'land', 'commercial']),
 
-  // Informations textuelles
-  title: z.string().min(5).max(100),
-  description: z.string().min(10),
+  // Règles docs: title 10-100, description 50-2000
+  title: z.string().min(10).max(100),
+  description: z.string().min(50).max(2000),
 
-  // Données chiffrées (on s'assure que c'est positif)
-  price: z.number().positive(),
-  surface: z.number().positive(),
+  // Limites docs
+  price: z.number().int().positive().max(999_999_999_999),
+  surface: z.number().int().positive().max(10_000),
 
-  // Localisation (validé contre zones.json)
+  // Localisation
   zone: ZoneIdSchema,
 
-  // Objet imbriqué pour les caractéristiques
+  // Caractéristiques
   features: z.object({
-    bedrooms: z.number().int().nonnegative(),
-    bathrooms: z.number().int().nonnegative(),
+    bedrooms: z.number().int().min(0),
+    bathrooms: z.number().int().min(0),
     wc_separate: z.boolean(),
-    parking_type: z.enum(["garage", "box", "parking", "none"]),
+    parking_type: z.enum(['none', 'garage', 'box', 'parking']),
     garden_private: z.boolean(),
     pool: z.boolean(),
     water_access: z.boolean(),
     electricity_access: z.boolean(),
   }),
 
-  // Tableau d'énums avec gestion du vide
-  tags: z
-    .array(z.enum(["urgent", "exclusive", "discount"]))
-    .default([]) // Si le champ est absent, il devient []
-});
+  // Tags marketing (enum partagé)
+  tags: z.array(z.enum(['urgent', 'exclusive', 'discount'])).default([])
+}).strict(); // additionalProperties: false
 
 // Extraction du type pour TypeScript
 export type PropertyListing = z.infer<typeof PublishListingSchema>;

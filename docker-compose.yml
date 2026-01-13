@@ -79,7 +79,11 @@ services:
     ports:
       - "3002:3002" # Expose port for direct access for testing (optional
     environment:
+      DATABASE_URL: ${DATABASE_URL}
       PORT: 3002
+    depends_on:
+      db:
+        condition: service_healthy
     restart: unless-stopped
     volumes:
       - ./uploads:/app/uploads # Dossier partagé (Read-Write pour API)
@@ -101,7 +105,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trustestate_secret}
       POSTGRES_DB: ${POSTGRES_DB:-trustestate}
     ports:
-      - "5433:5433"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
