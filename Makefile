@@ -14,12 +14,31 @@ DOCKER_COMPOSE := $(shell \
 export DOCKER_BUILDKIT=0
 
 # Default target: build and run everything
-all: certs build up
+all: certs build up db-sync
 	@echo ""
 	@echo "✅ Trust Estate is running!"
 	@echo "🌐 Frontend: https://localhost:8443"
 	@echo "🐳 Using: $(DOCKER_COMPOSE)"
 	@echo ""
+
+# Synchronize Prisma schemas with database
+db-sync:
+	@echo "⏳ Waiting for auth service to be ready (migrations complete)..."
+	@# Attendre que trust-estate-auth soit healthy
+	@until docker inspect --format='{{.State.Health.Status}}' trust-estate-auth 2>/dev/null | grep -q "healthy"; do \
+		echo "   ... waiting for auth service ..."; \
+		sleep 2; \
+	done
+	@echo "✅ Auth service is ready! Proceeding with listings sync..."
+	@echo "🔄 Synchronizing Prisma schemas with database..."
+	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate" npx prisma db push --accept-data-loss
+	@echo "✅ Database schemas synchronized!"
+
+# Seed the database with test data
+seed:
+	@echo "🌱 Seeding database..."
+	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate" npm run seed
+	@echo "✅ Seeding complete!"
 
 # Build all containers
 build:
