@@ -1,4 +1,3 @@
-
 import { useState, useRef, useImperativeHandle, forwardRef, type Dispatch, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -7,10 +6,9 @@ interface ImageUploaderProps {
 	setDataToPreview: Dispatch<SetStateAction<string[]>>;
 }
 
-// Define the methods you want to expose
 export interface ImageUploaderHandle {
 	removeFile: (index: number) => void;
-	resetFiles: () => void; // optional, example
+	resetFiles: () => void;
 }
 
 const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
@@ -51,7 +49,6 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 			setDataToPreview(newPreview);
 		};
 
-		// Expose methods to parent
 		useImperativeHandle(ref, () => ({
 			removeFile: handleRemoveFiles,
 			resetFiles: () => {
