@@ -1,26 +1,21 @@
 import { z } from 'zod';
 import zonesData from '../../shared/zones.json';
 
-// Utiliser les IDs des zones (ex: "tana-analakely"), pas displayName
-const validZoneIds = zonesData.zones.map(z => z.displayName) as [string, ...string[]];
-const ZoneIdSchema = z.enum(validZoneIds);
+const validZone = zonesData.zones.map(z => z.displayName) as [string, ...string[]];
+const ZoneSchema = z.enum(validZone);
 
 export const PublishListingSchema = z.object({
   type: z.enum(['sale', 'rent']),
   propertyType: z.enum(['apartment', 'house', 'loft', 'land', 'commercial']),
 
-  // Règles docs: title 10-100, description 50-2000
   title: z.string().min(10).max(100),
   description: z.string().min(50).max(2000),
 
-  // Limites docs
   price: z.number().int().positive().max(999_999_999_999),
   surface: z.number().int().positive().max(10_000),
 
-  // Localisation
-  zone: ZoneIdSchema,
+  zone: ZoneSchema,
 
-  // Caractéristiques
   features: z.object({
     bedrooms: z.number().int().min(0),
     bathrooms: z.number().int().min(0),
@@ -32,9 +27,50 @@ export const PublishListingSchema = z.object({
     electricity_access: z.boolean(),
   }),
 
-  // Tags marketing (enum partagé)
   tags: z.array(z.enum(['urgent', 'exclusive', 'discount'])).default([])
-}).strict(); // additionalProperties: false
-
-// Extraction du type pour TypeScript
+}).strict();
 export type PropertyListing = z.infer<typeof PublishListingSchema>;
+
+
+
+export const GetMineListingsSchema = z.object({
+  status: z.enum(['active', 'archived', 'blocked', 'all']).default('all'),
+
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+export type GetMineListingsQuery = z.infer<typeof GetMineListingsSchema>;
+
+
+
+export const SearchListingsSchema = z.object({
+  type: z.enum(['sale', 'rent']).optional(),
+  propertyType: z.enum(['apartment', 'house', 'loft', 'land', 'commercial']).optional(), // Add to contract if needed
+
+  minPrice: z.coerce.number().optional(),
+  maxPrice: z.coerce.number().optional(),
+  minSurface: z.coerce.number().optional(), // Add to contract if needed
+  maxSurface: z.coerce.number().optional(), // Add to contract if needed
+
+  zone: z.string().optional(),
+
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+export type SearchListingsQuery = z.infer<typeof SearchListingsSchema>;
+
+
+
+export const UpdateListingSchema = PublishListingSchema.pick({
+  type: true,
+  propertyType: true,
+  title: true,
+  description: true,
+  price: true,
+  surface: true,
+  zone: true,
+  features: true,
+  tags: true
+}).partial().strict();
+
+export type UpdateListingData = z.infer<typeof UpdateListingSchema>;

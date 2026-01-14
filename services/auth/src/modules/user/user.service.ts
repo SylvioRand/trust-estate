@@ -4,11 +4,9 @@ import bcrypt from 'bcrypt'
 
 export async function showProfile(app: FastifyInstance, userPayload: UserInterface) {
 	const user = await app.prisma.user.findUnique({
-		where: {id: userPayload.id},
-		include: {
-			sellerStats: true
-		}
+		where: { id: userPayload.id },
 	});
+
 	if (!user)
 		throw new Error("User not found");
 
@@ -18,9 +16,9 @@ export async function showProfile(app: FastifyInstance, userPayload: UserInterfa
 
 export async function updatePhoneNumberUser(app: FastifyInstance, userId: string, phone: string) {
 	const phoneExist = await app.prisma.user.findFirst({
-		where: {phone: phone}
+		where: { phone: phone }
 	})
-	
+
 	if (phoneExist) {
 		app.log.warn({
 			userId,
@@ -31,9 +29,9 @@ export async function updatePhoneNumberUser(app: FastifyInstance, userId: string
 		});
 		throw new Error("phone_exists");
 	}
-	
+
 	const updatedUser = await app.prisma.user.update({
-		where: {id: userId},
+		where: { id: userId },
 		data: {
 			phone,
 			phoneVerified: true
@@ -46,17 +44,15 @@ export async function updatePhoneNumberUser(app: FastifyInstance, userId: string
 		action: 'phone_updated',
 		timestamp: new Date().toISOString()
 	});
-	
+
 	return updatedUser;
 };
 
 export async function updatePassword(app: FastifyInstance, password: string, newPassword: string, userId: string) {
 	const user = await app.prisma.user.findUnique({
 		where: { id: userId },
-		include: {
-			sellerStats: true
-		}
 	});
+
 
 	if (!user)
 		throw new Error("User not found");
@@ -72,7 +68,7 @@ export async function updatePassword(app: FastifyInstance, password: string, new
 	const salt = await bcrypt.genSalt(12);
 	const passwordHash = await bcrypt.hash(newPassword, salt);
 	await app.prisma.user.update({
-		where: {id: userId},
+		where: { id: userId },
 		data: {
 			password: passwordHash
 		}
@@ -82,10 +78,8 @@ export async function updatePassword(app: FastifyInstance, password: string, new
 export async function addPassword(app: FastifyInstance, password: string, userId: string) {
 	const user = await app.prisma.user.findUnique({
 		where: { id: userId },
-		include: {
-			sellerStats: true
-		}
 	});
+
 
 	if (!user)
 		throw new Error("User not found");
@@ -96,7 +90,7 @@ export async function addPassword(app: FastifyInstance, password: string, userId
 
 	const passwordHash = await bcrypt.hash(password, salt);
 	await app.prisma.user.update({
-		where: {id: userId},
+		where: { id: userId },
 		data: {
 			password: passwordHash
 		}
@@ -105,7 +99,7 @@ export async function addPassword(app: FastifyInstance, password: string, userId
 
 export async function updateUser(app: FastifyInstance, phone: string, firstName: string, userId: string, lastName?: string) {
 	const user = await app.prisma.user.findUnique({
-		where: { id: userId}
+		where: { id: userId }
 	});
 
 	if (!user) {
@@ -116,7 +110,7 @@ export async function updateUser(app: FastifyInstance, phone: string, firstName:
 		const phoneExist = await app.prisma.user.findFirst({
 			where: {
 				phone,
-				id: { not: userId } 
+				id: { not: userId }
 			}
 		});
 
@@ -133,16 +127,14 @@ export async function updateUser(app: FastifyInstance, phone: string, firstName:
 	}
 
 	const updatedUser = await app.prisma.user.update({
-		where: {id: userId},
+		where: { id: userId },
 		data: {
 			phone,
 			lastName,
 			firstName
 		},
-		include: {
-			sellerStats: true
-		}
 	});
+
 
 	app.log.info({
 		userId,

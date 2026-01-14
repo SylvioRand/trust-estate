@@ -34,7 +34,7 @@ services:
       - "3001"
     environment:
       # Database
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${DATABASE_URL}?schema=auth
       # Server
       PORT_AUTH_SERVICE: 3001
       # JWT (paths inside container)
@@ -54,6 +54,8 @@ services:
       # App
       COOKIE_SECRET: ${COOKIE_SECRET}
       FRONTEND_URL: ${FRONTEND_URL:-https://localhost:8443}
+      # Internal key
+      INTERNAL_KEY_SECRET: ${INTERNAL_KEY_SECRET}
     volumes:
       - ./secret/jwtTokenService:/app/secret:ro
     depends_on:
@@ -79,8 +81,10 @@ services:
     ports:
       - "3002:3002" # Expose port for direct access for testing (optional
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${DATABASE_URL}?schema=listings
       PORT: 3002
+      # Internal key
+      INTERNAL_KEY_SECRET: ${INTERNAL_KEY_SECRET}
     depends_on:
       db:
         condition: service_healthy
