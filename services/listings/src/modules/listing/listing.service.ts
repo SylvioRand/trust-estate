@@ -1,11 +1,10 @@
 import { prisma } from '../../config/prisma';
-import { PropertyListing } from "./listing.schema";
+import { PropertyListing, GetMineListingsQuery } from "./listing.schema";
 import path from 'path';
 
 export class ListingService {
     static async createListing(validatedData: PropertyListing, photos: string[], sellerId: string) {
         return await prisma.$transaction(async (tx) => {
-            // 1. Créer l'annonce de base
             const listing = await tx.listing.create({
                 data: {
                     type: validatedData.type,
@@ -15,13 +14,12 @@ export class ListingService {
                     price: validatedData.price,
                     surface: validatedData.surface,
                     zone: validatedData.zone,
-                    photos: photos.map(p => path.basename(p)), // On ne garde que le nom du fichier
+                    photos: photos.map(p => path.basename(p)),
                     tags: validatedData.tags,
                     sellerId: sellerId,
                 }
             });
 
-            // 2. Créer les caractéristiques
             await tx.listingFeatures.create({
                 data: {
                     listingId: listing.id,
@@ -36,7 +34,6 @@ export class ListingService {
                 }
             });
 
-            // 3. Initialiser les stats de l'annonce
             await tx.listingStats.create({
                 data: {
                     listingId: listing.id,
@@ -46,7 +43,6 @@ export class ListingService {
                 }
             });
 
-            // 4. Mettre à jour les stats du vendeur (Incrémentation)
             await tx.sellerStats.upsert({
                 where: { userId: sellerId },
                 update: {
@@ -62,5 +58,37 @@ export class ListingService {
 
             return listing;
         });
+    }
+
+    static async getMineListings(sellerId: string, query: GetMineListingsQuery) {
+        const where: any = { sellerId };
+
+        if (query.status !== 'all') {
+            where.status = query.status;
+        }
+
+        const [listings, countMatching, sellerStats] = await Promise.all([
+            prisma.listing.findMany({
+                where,
+                skip: (query.page - 1) * query.limit,
+                take: query.limit,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    stats: true
+                }
+            }),
+            prisma.listing.count({ where }),
+            prisma.sellerStats.findUnique({ where: { userId: sellerId } })
+        ]);
+
+        return {
+            listings,
+            countMatching,
+            stats: {
+                total: sellerStats?.totalListings || 0,
+                active: sellerStats?.activeListings || 0,
+                archived: (sellerStats?.totalListings || 0) - (sellerStats?.activeListings || 0)
+            }
+        };
     }
 }
