@@ -1,5 +1,5 @@
 import fastifyPlugin from "fastify-plugin";
-import type { FastifyBaseLogger, FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest,  } from "fastify";
+import type { FastifyBaseLogger, FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest, } from "fastify";
 import fastifyJwt from "@fastify/jwt";
 import jwt from "jsonwebtoken";
 import fs from "fs";
@@ -8,11 +8,11 @@ import type { UserInterface } from "../modules/auth/auth.interface";
 import { deleteRefreshToken, refreshTokenExists } from "../utils/token.utils";
 import { generateAccessToken } from "../utils/auth.utils";
 
-function loadKey(path:string, log: FastifyBaseLogger) {
+function loadKey(path: string, log: FastifyBaseLogger) {
 	try {
 		return (fs.readFileSync(path, 'utf8'));
 	} catch (error: any) {
-		log.fatal({error, path});
+		log.fatal({ error, path });
 		process.exit(1);
 	}
 }
@@ -26,7 +26,7 @@ async function autoRefreshToken(
 	cookieOptions: any
 ): Promise<UserInterface | null> {
 	try {
-		const decoded: any = jwt.verify(refreshToken, refreshSecret,{ algorithms: ["HS256"] });
+		const decoded: any = jwt.verify(refreshToken, refreshSecret, { algorithms: ["HS256"] });
 
 		if (decoded.type !== 'refresh' || !decoded.userId) {
 			reply.clearCookie("realestate_access_token", { ...cookieOptions });
@@ -35,8 +35,7 @@ async function autoRefreshToken(
 		}
 		const tokenHash = await refreshTokenExists(request.server, decoded.userId, refreshToken);
 
-		if (!tokenHash)
-		{
+		if (!tokenHash) {
 			reply.clearCookie("realestate_access_token", { ...cookieOptions });
 			reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
 			return (null);
@@ -60,7 +59,7 @@ async function autoRefreshToken(
 			reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
 			return null;
 		}
-		
+
 		return {
 			id: user.id,
 			role: user.role,
@@ -94,12 +93,12 @@ export async function verifyAccessToken(
 				cookieOptions
 			);
 			console.log(user);
-			
+
 			if (user) {
 				return user;
 			}
 		}
-		
+
 		reply.code(401).send({
 			error: "invalid_or_expired_token",
 			message: "auth.verification_token_invalid"
@@ -138,12 +137,11 @@ export async function verifyAccessToken(
 	}
 }
 
-async function validateToken(request: FastifyRequest, reply: FastifyReply)
-	{
+async function validateToken(request: FastifyRequest, reply: FastifyReply) {
 	const internalToken = (request as any).headers['x-internal-key'];
 
 	try {
-		const payload = jwt.verify(internalToken, "INTERNAL_KEY", { algorithms: ["HS256"] });
+		const payload = jwt.verify(internalToken, request.server.config.INTERNAL_KEY_SECRET, { algorithms: ["HS256"] }); // modified by srandria
 		return (payload);
 	} catch (err) {
 		reply.code(401).send({ error: 'Invalide' });
@@ -209,7 +207,7 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 				"message": "auth.phone_number_verification_required",
 			});
 	});
-	
+
 	app.decorate("authentication", async function (request: FastifyRequest, reply: FastifyReply) {
 		const user = await verifyAccessToken(request, reply, publicKey, JWT_REFRESH_SECRET, privateKey, cookieOptions);
 

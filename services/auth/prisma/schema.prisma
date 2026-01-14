@@ -51,26 +51,7 @@ model User {
 	creditBalance	Int			@default(10)
 	createAt		DateTime	@default(now())
 	updateAt		DateTime	@updatedAt
-	sellerStats		SellerStats?
 	refreshToken	refresh_token?
 	emailVerificationToken	email_Verification_token?
 	forgotPasswordToken		forgot_password_token?
-}
-
-model SellerStats {
-	id					String	@id @default(uuid())
-	userId				String	@unique
-
-	totalListings		Int		@default(0)
-	activeListings		Int		@default(0)
-	successfulSales		Int		@default(0)
-	successfulRents		Int		@default(0)
-	averageRating		Float	@default(0)
-	responseRate		Float	@default(0)
-
-	user				User	@relation(fields: [userId], references: [id], onDelete: Cascade)
-
-	@@index([averageRating])
-	@@index([successfulSales])
-	@@index([responseRate])
 }
