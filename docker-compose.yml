@@ -34,7 +34,7 @@ services:
       - "3001"
     environment:
       # Database
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${DATABASE_URL}?schema=auth
       # Server
       PORT_AUTH_SERVICE: 3001
       # JWT (paths inside container)
@@ -81,7 +81,7 @@ services:
     ports:
       - "3002:3002" # Expose port for direct access for testing (optional
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${DATABASE_URL}?schema=listings
       PORT: 3002
       # Internal key
       INTERNAL_KEY_SECRET: ${INTERNAL_KEY_SECRET}
