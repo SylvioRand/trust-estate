@@ -1,5 +1,14 @@
 export type ListingsTags = "urgent" | "exclusive" | "discount";
 
+export type SellerStatsDataType = {
+	totalListings: number,
+	activeListings: number,
+	successfulSales: number,
+	successfulRents: number,
+	averageRating: number,
+	responseRate: number
+}
+
 export type ListingsData = {
 	id: string,
 	title: string,
@@ -30,14 +39,7 @@ export type ListingsData = {
 		email: string,
 		memberSince: string
 	},
-	sellerStats: {
-		totalListings: number,
-		activeListings: number,
-		successfulSales: number,
-		successfulRents: number,
-		averageRating: number,
-		responseRate: number
-	},
+	sellerStats: SellerStatsDataType,
 	stats: {										// Visible uniquement si mine=true
 		views: number,
 		reservations: number,

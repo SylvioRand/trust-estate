@@ -21,10 +21,11 @@ import EmailSentPage from './pages/email_sent.tsx';
 import VerifyEmailPage from './pages/verify_email.tsx';
 import ListingsPage from './pages/listings.tsx';
 import DataProvider from './provider/DataProvider.tsx';
-import Profile from './pages/profile.tsx';
 import Ai from './pages/ai.tsx';
 import PublishPage from './pages/publish.tsx';
 import SlotsPage from './pages/slots.tsx';
+import SettingsPage from './pages/settings.tsx';
+import ProfilePage from './pages/profile.tsx';
 
 const router = createBrowserRouter([
 	{
@@ -51,7 +52,7 @@ const router = createBrowserRouter([
 				element: <WelcomePage />
 			},
 			{
-				path: "/listings",
+				path: "/property/listings",
 				element: <ListingsPage />
 			},
 			{
@@ -59,7 +60,7 @@ const router = createBrowserRouter([
 				element: <PublishPage/>
 			},
 			{
-				path: "email-sent",
+				path: "/email-sent",
 				element: <EmailSentPage />
 			},
 			{
@@ -85,7 +86,11 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/profile",
-				element: <Profile />
+				element: <ProfilePage />
+			},
+			{
+				path: "/profile/settings",
+				element: <SettingsPage />
 			},
 			{
 				path: "/slots",

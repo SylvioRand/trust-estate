@@ -1,43 +1,13 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-
-import house0 from "../../src/images/house0.webp";
-import house1 from "../../src/images/house1.webp";
-import house2 from "../../src/images/house2.webp";
-import house3 from "../../src/images/house3.webp";
 import { useNavigate } from "react-router-dom";
-
-type ListingType = "sale" | "rent"
-
-interface ListingsProps {
-	data: [
-		{
-			id: number,
-			title: string,
-			price: number,
-			type: ListingType,
-			zone: string,
-			zoneDisplay: string,
-			surface: number,
-			photos: string[],
-			status: boolean,
-			createdAt: string,
-			expiresAt: string
-		}
-	],
-	pagination: {
-		page: number,
-		limit: number,
-		total: number,
-		totalPages: number
-	}
-}
+import { listData, type ListingsProps } from "../dataModel/modelPropertyList";
 
 interface PublicationCardProps {
 	propertyData: ListingsProps;
 }
 
-const	PublicationCard: React.FC<PublicationCardProps> = ({
+export const	PublicationCard: React.FC<PublicationCardProps> = ({
 	propertyData
 }) => {
 	const	[hovered, setHovered] = useState<boolean>(false);
@@ -58,7 +28,7 @@ const	PublicationCard: React.FC<PublicationCardProps> = ({
 			overflow-hidden"
 			onPointerOver={ () => setHovered(true) }
 			onPointerLeave={ () => setHovered(false) }
-			onClick={ () => navigate(`/listings?id=${ propertyData.data[0].id }`) }
+			onClick={ () => navigate(`/property/listings?id=${ propertyData.data[0].id }`) }
 		>
 			<div className="absolute top-4 left-4
 				shadow-standard
@@ -328,110 +298,6 @@ const	PropertyPage: React.FC = () => {
 	const	[filterActive, setFilterActive] = useState<boolean>(false);
 	const	[filterOpened, setFilterOpened] = useState<boolean>(false);
 
-	const	listData: ListingsProps[] = [
-		{
-			data: [
-				{
-					id: 0,
-					title: "Maison T3",
-					price: 50000000,
-					type: "rent",
-					zone: "tana-analakely",
-					zoneDisplay: "Antananarivo - Analakely",
-					surface: 120,
-					photos: [
-						house0
-					],
-					status: true,
-					createdAt: "2025-01-10T08:00:00Z",
-					expiresAt: "2025-02-09T08:00:00Z"
-				}
-			],
-			pagination: {
-				page: 1,
-				limit: 20,
-				total: 45,
-				totalPages: 3
-			}
-		},
-		{
-			data: [
-				{
-					id: 0,
-					title: "Villa T4",
-					price: 150000000,
-					type: "sale",
-					zone: "tana-analakely",
-					zoneDisplay: "Antananarivo - Analakely",
-					surface: 120,
-					photos: [
-						house1
-					],
-					status: true,
-					createdAt: "2025-01-10T08:00:00Z",
-					expiresAt: "2025-02-09T08:00:00Z"
-				}
-			],
-			pagination: {
-				page: 1,
-				limit: 20,
-				total: 45,
-				totalPages: 3
-			}
-		},
-		{
-			data: [
-				{
-					id: 0,
-					title: "Appartment T4",
-					price: 150000000,
-					type: "rent",
-					zone: "tana-analakely",
-					zoneDisplay: "Antananarivo - Ambatobe",
-					surface: 120,
-					photos: [
-						house2
-					],
-					status: true,
-					createdAt: "2025-01-10T08:00:00Z",
-					expiresAt: "2025-02-09T08:00:00Z"
-				}
-			],
-			pagination: {
-				page: 1,
-				limit: 20,
-				total: 45,
-				totalPages: 3
-			}
-		},
-		{
-			data: [
-				{
-					id: 0,
-					title: "Villa T4",
-					price: 100000000,
-					type: "sale",
-					zone: "tana-ivato",
-					zoneDisplay: "Antananarivo - Ivato",
-					surface: 120,
-					photos: [
-						house3
-					],
-					status: true,
-					createdAt: "2025-01-10T08:00:00Z",
-					expiresAt: "2025-02-09T08:00:00Z"
-				}
-			],
-			pagination: {
-				page: 1,
-				limit: 20,
-				total: 45,
-				totalPages: 3
-			}
-		},
-
-	]
-
 	return (
 		<div className="flex flex-col items-center justify-start gap-4
 			overflow-y-scroll
@@ -450,28 +316,6 @@ const	PropertyPage: React.FC = () => {
 				place-items-center
 				w-full"
 			>
-				{
-					listData.map((value: ListingsProps, index: number) => {
-						return (
-							<PublicationCard
-								key={ index }
-								propertyData={ value }
-							/>
-						);
-					})
-				}
-
-				{
-					listData.map((value: ListingsProps, index: number) => {
-						return (
-							<PublicationCard
-								key={ index }
-								propertyData={ value }
-							/>
-						);
-					})
-				}
-
 				{
 					listData.map((value: ListingsProps, index: number) => {
 						return (
