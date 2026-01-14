@@ -1,5 +1,5 @@
 import type { TFunction } from "i18next";
-import React, { useRef, useState, type Dispatch, type RefObject, type SetStateAction } from "react";
+import React, { useEffect, useMemo, useRef, useState, type Dispatch, type RefObject, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 import PopUp, { type PopUpAPI } from "../components/PopUp";
 import TimeInput from "../components/TimeInput";
@@ -280,6 +280,38 @@ const	SlotsPage: React.FC = () => {
 	const	refOpenPopUpAddSlots = useRef<PopUpAPI | null>(null);
 	const	[fetchedSlots, setFetchedSlots] = useState<SlotsData[]>([]);
 
+	// NOTE: store the fetched data here and do a deep copy every render to see
+	// if the value changed or not
+	// SlotKey can only compare string, so we create a string from the SlotsData.
+	const	slotKey = (s: SlotsData): string => `${s.dayOfWeek}|${s.startTime}|${s.endTime}|${s.taken}`;
+
+	function	areSlotsEqual(a: SlotsData[], b: SlotsData[]): boolean {
+		if (a.length !== b.length)
+			return (false);
+		const	set = new Set(a.map(slotKey));
+
+		for (const s of b)
+		{
+			if (!set.has(slotKey(s)))
+				return (false);
+		}
+		return (true);
+	}
+
+	const	[initialData, setInitialData] = useState<SlotsData[]>(fetchedSlots.map(s => ({ ...s })));
+	const	dataChanged: boolean = areSlotsEqual(fetchedSlots, initialData);
+	const	[areSaving, setAreSaving] = useState<boolean>(false);
+	const	[areProcessingSave, setAreProcessingSave] = useState<boolean>(false);
+
+	const	handleSaving = async () => {
+		console.log("Saving!");
+
+		// change the version
+		setInitialData(fetchedSlots.map(s => ({ ...s })));
+		// console.log("current Version: ", initialData);
+		// console.log("fetchedSlots: ", fetchedSlots);
+	}
+
 	return (
 		<div className="flex flex-col items-center justify-start
 			overflow-y-scroll
@@ -287,7 +319,26 @@ const	SlotsPage: React.FC = () => {
 			px-4 md:px-7 xl:px-64
 			w-full h-screen"
 		>
-			<div className="w-full h-18 flex-none"></div>
+			<div className="w-full h-20 flex-none"></div>
+
+			<div className="grid grid-cols-[1fr_auto] grid-rows-1
+				place-items-center
+				mb-4
+				w-full"
+			>
+				<div className="justify-self-start w-full">
+					{ t("title") }
+				</div>
+				<div className="justify-self-end">
+					<ActionButton
+						title={ t("buttons.save.title") }
+						icon="󰆓"
+						disabled={ dataChanged }
+						processing_action={ areProcessingSave }
+						onClick={ handleSaving }
+					/>
+				</div>
+			</div>
 
 			<div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] grid-rows-1
 				gap-x-4 gap-y-4

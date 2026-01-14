@@ -1,4 +1,6 @@
 {
+	"title": "Gérer créneau",
+
 	"errors": {
 		"overlapping": "Cette configuration se chevauche avec un autre créneau.",
 		"time_invalid": "L'heure de début doit être plus tôt que l'heure de fin."
@@ -7,6 +9,9 @@
 	"buttons": {
 		"create": {
 			"title": "Créer un créneau"
+		},
+		"save": {
+			"title": "Enregistrer"
 		}
 	},
 
