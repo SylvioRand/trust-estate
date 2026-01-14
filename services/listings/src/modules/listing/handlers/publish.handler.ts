@@ -4,23 +4,28 @@ import { ZodError } from "zod";
 import path from 'path';
 import fs from 'fs';
 import { pipeline } from 'stream/promises';
+import { ListingService } from "../listing.service";
 
 const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp"];
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
+const TEST_SELLER_ID = 'sylvio-rand-id'; // Temporaire pour l'étape 1
 
 export async function handlePublish(request: FastifyRequest, reply: FastifyReply) {
     const uploadedFiles: string[] = [];
 
     try {
-        const { listingData, files } = await processMultipart(request, uploadedFiles);
+        const { listingData, files: photos } = await processMultipart(request, uploadedFiles);
 
         const validatedData = PublishListingSchema.parse(listingData);
+        console.log("validatedData", validatedData);
+
+        const result = await ListingService.createListing(validatedData, photos, TEST_SELLER_ID);
 
         return reply.status(201).send({
-            listingId: `l-${Date.now()}`,
-            status: 'active',
+            listingId: result.id,
+            status: result.status,
             message: 'listing.publish_success',
-            data: validatedData
+            data: result
         });
 
     } catch (error) {
