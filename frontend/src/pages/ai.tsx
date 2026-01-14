@@ -1,62 +1,136 @@
-import TextInput from "../components/texte_input";
-import { useState, useEffect, useRef } from "react";
+import React, { useRef, useState, type RefObject } from "react";
+import { ChatTextarea } from "../components/ChatTextArea";
 
-const	Ai: React.FC = () => {
-    const [text, setText] = useState("");
-    const [submitted, setSubmitted] = useState<string[]>([]);
-    const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-    const handleKeyDown = (e : React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter" && !e.shiftKey) 
-        {
-            e.preventDefault();
-            if (text.trim() !== ""){
-            setSubmitted([text, ...submitted]);
-            setText("");}
-        }
-    };
-
-    const handleSubmit = () => {
-        const cleaned = text.trim();
-        if (cleaned.length > 0) 
-        { setSubmitted([cleaned, ...submitted]); }
-        else if (text.trim() !== "") { 
-            setSubmitted([text, ...submitted]);
-        }
-        setText("");
-    };
-    
-    useEffect(() => {
-         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); 
-}, [submitted]);
-
-    return (
-       
-        <div className="flex flex-col h-screen">
-            <div className="flex-1 flex flex-col-reverse min-h-0 pb-2 mr-2 ml-2 overflow-y-auto ">
-                <div ref={messagesEndRef}/>
-                {submitted.length > 0 ? (
-                    submitted.map((msg, index) => (
-                        <div className="flex flex-col">
-                            <div
-                                key={index}
-                                className="self-end inline-block px-4 py-2 bg-gray-200 rounded-lg text-gray-800 break-words max-w-xs mb-2">
-                                    {msg}
-                            </div>
-                            <div  className="self-start inline-block px-4 py-2 bg-gray-200 rounded-lg text-gray-800 break-words max-w-xs mb-2">
-                                🤖 bot answer!
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div></div>
-                )}
-            </div>
-         
-            <TextInput value={text} onChange={(e) => setText(e.target.value)}
-              onSubmit={handleSubmit} onKeyDown={handleKeyDown}/>
-        </div>
-    );
+interface	MessageProps {
+	value: string;
+	side: "left" | "right";
 }
 
-export default Ai;
+const	Message: React.FC<MessageProps> = ({
+	value = "This is the content of your message",
+	side = "right"
+}) => {
+	return (
+		<div className="grid grid-cols-2 grid-rows-1
+			w-full"
+			style={{
+				justifyContent: side === "right" ? "flex-end" : "flex-start"
+			}}
+		>
+			<div
+				className="w-full"
+				style={{
+					order: side === "right" ? "1" : "2"
+				}}
+			>
+			</div>
+
+			<div className="rounded-xl
+				p-3
+				border border-background/25
+				shadow-standard
+				max-w-120"
+				style={{
+					order: side === "right" ? "2" : "1",
+					justifySelf: side === "right" ? "flex-end" : "flex-start"
+				}}
+			>
+				{ value }
+			</div>
+		</div>
+	);
+}
+
+type	MessageType = {
+	value: string;
+	side: "left" | "right";
+}
+
+const	AIPage: React.FC = () => {
+	const	[chatValue, setChatValue] = useState<string>("");
+	const	messageRef: RefObject<MessageType[]> = useRef<MessageType[]>([]);
+
+	const	handleSendButton = async () => {
+
+		messageRef.current.unshift({ value: chatValue, side: "right" });
+
+		// NOTE: Clear the value
+		setChatValue("");
+
+		console.log("SEND");
+	}
+
+	return (
+		<div className="flex flex-col-reverse items-center justify-start
+			gap-3
+			px-4 md:px-7 xl:px-64
+			relative
+			w-full h-screen"
+		>
+
+			<div className="w-full h-28">
+			</div>
+
+			{
+				messageRef.current.map((value: MessageType, index: number) => {
+					return (
+						<Message
+							key={ index }
+							value={ value.value }
+							side={ value.side }
+						/>
+					);
+				})
+			}
+
+			<div className="fixed bottom-8
+				px-4 md:px-7 xl:px-64
+				w-full"
+			>
+				<div className="grid grid-cols-[1fr_auto] grid-rows-1
+					shadow-standard
+					place-items-center
+					border border-background/25
+					backdrop-blur-2xl
+					rounded-xl
+					w-full"
+				>
+					<ChatTextarea
+						value={ chatValue }
+						onChange={ setChatValue }
+						maxRows={7}
+						placeholder="What are you looking for?"
+						onKeyDown={(e) => {
+							e.currentTarget.value.trim();
+							if (e.key === "Enter")
+								handleSendButton();
+						}}
+					/>
+
+					<div className="flex items-end justify-center
+						h-full"
+					>
+						<button className="flex items-center justify-center
+							bg-accent
+							m-2
+							rounded-lg
+							shadow-[0px_0px_3px_var(--color-accent)]
+							cursor-pointer
+							select-none
+							w-8 h-8"
+							onClick={ handleSendButton }
+						>
+							<div className="font-icon text-3xl
+								-translate-x-[0.085rem]"
+							>
+								
+							</div>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+export default AIPage;
