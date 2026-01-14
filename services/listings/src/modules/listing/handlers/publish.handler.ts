@@ -13,7 +13,6 @@ export async function handlePublish(request: FastifyRequest, reply: FastifyReply
   const uploadedFiles: string[] = [];
 
   try {
-    // On utilise le user injecté par le preHandler 'authenticate'
     const user = (request as any).user;
     console.log(" User from hook:", user.id);
 
@@ -86,7 +85,6 @@ function handleError(error: any, reply: FastifyReply) {
   if (error instanceof ZodError) {
     const details: Record<string, string[]> = {};
 
-    // Supporte anciennes et nouvelles versions de Zod
     const zodIssues = (error as any).errors || (error as any).issues;
 
     if (Array.isArray(zodIssues)) {
