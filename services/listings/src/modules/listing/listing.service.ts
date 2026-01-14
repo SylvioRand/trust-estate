@@ -1,5 +1,5 @@
 import { prisma } from '../../config/prisma';
-import { PropertyListing, GetMineListingsQuery, SearchListingsQuery } from "./listing.schema";
+import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData } from "./listing.schema";
 import path from 'path';
 
 export class ListingService {
@@ -126,5 +126,39 @@ export class ListingService {
         ]);
 
         return { listings, countMatching };
+    }
+
+    static async updateListing(id: string, sellerId: string, data: UpdateListingData) {
+        const listing = await prisma.listing.findUnique({
+            where: { id }
+        });
+
+        if (!listing) throw new Error('listing.not_found');
+        if (listing.sellerId !== sellerId) throw new Error('forbidden');
+
+        return await prisma.$transaction(async (tx) => {
+            const updated = await tx.listing.update({
+                where: { id },
+                data: {
+                    type: data.type,
+                    propertyType: data.propertyType,
+                    title: data.title,
+                    description: data.description,
+                    price: data.price,
+                    surface: data.surface,
+                    zone: data.zone,
+                    tags: data.tags
+                }
+            });
+
+            if (data.features) {
+                await tx.listingFeatures.update({
+                    where: { listingId: id },
+                    data: data.features
+                });
+            }
+
+            return updated;
+        });
     }
 }

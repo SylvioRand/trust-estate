@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import zonesData from '../../shared/zones.json';
 
-const validZoneIds = zonesData.zones.map(z => z.displayName) as [string, ...string[]];
-const ZoneIdSchema = z.enum(validZoneIds);
+const validZone = zonesData.zones.map(z => z.displayName) as [string, ...string[]];
+const ZoneSchema = z.enum(validZone);
 
 export const PublishListingSchema = z.object({
   type: z.enum(['sale', 'rent']),
@@ -14,7 +14,7 @@ export const PublishListingSchema = z.object({
   price: z.number().int().positive().max(999_999_999_999),
   surface: z.number().int().positive().max(10_000),
 
-  zone: ZoneIdSchema,
+  zone: ZoneSchema,
 
   features: z.object({
     bedrooms: z.number().int().min(0),
@@ -58,3 +58,19 @@ export const SearchListingsSchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
 });
 export type SearchListingsQuery = z.infer<typeof SearchListingsSchema>;
+
+
+
+export const UpdateListingSchema = PublishListingSchema.pick({
+  type: true,
+  propertyType: true,
+  title: true,
+  description: true,
+  price: true,
+  surface: true,
+  zone: true,
+  features: true,
+  tags: true
+}).partial().strict();
+
+export type UpdateListingData = z.infer<typeof UpdateListingSchema>;
