@@ -72,5 +72,11 @@ export const UpdateListingSchema = PublishListingSchema.pick({
   features: true,
   tags: true
 }).partial().strict();
-
 export type UpdateListingData = z.infer<typeof UpdateListingSchema>;
+
+
+
+export const ArchiveListingSchema = z.object({
+  sold: z.boolean().default(false)
+}).strict();
+export type ArchiveListingData = z.infer<typeof ArchiveListingSchema>;
