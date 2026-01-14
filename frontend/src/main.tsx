@@ -4,11 +4,8 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import "./index.css"
 import "./i18n/i18n.ts";
 
-import PublicRoot from './components/PublicRoot.tsx';
-import ProtectedRoute from './components/ProtectedRoot.tsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import SignUpPage from './pages/sign_up.tsx';
-import NavBar from './components/NavBar.tsx';
 import MainLayout from './layout/layout.tsx';
 import SignInPage from './pages/sign_in.tsx';
 import ForgotPassPage from './pages/forgot_pass.tsx';
@@ -21,11 +18,11 @@ import EmailSentPage from './pages/email_sent.tsx';
 import VerifyEmailPage from './pages/verify_email.tsx';
 import ListingsPage from './pages/listings.tsx';
 import DataProvider from './provider/DataProvider.tsx';
-import Ai from './pages/ai.tsx';
 import PublishPage from './pages/publish.tsx';
 import SlotsPage from './pages/slots.tsx';
 import SettingsPage from './pages/settings.tsx';
 import ProfilePage from './pages/profile.tsx';
+import AIPage from './pages/ai.tsx';
 
 const router = createBrowserRouter([
 	{
@@ -82,7 +79,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/ai",
-				element: <Ai />
+				element: <AIPage />
 			},
 			{
 				path: "/profile",
