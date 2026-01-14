@@ -13,31 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  MODERATOR
-}
-
-// least privilege (uniquement ce dont on a besoin pour afficher l'annonce et gérer les crédits)
-model User {
-  id            String      @id @default(uuid())
-  email         String      @unique
-  firstName     String
-  lastName      String?
-  phone         String?     @unique
-  role          Role        @default(USER)
-  creditBalance Int         @default(10)
-  createdAt     DateTime    @default(now()) @map("createAt")
-  updatedAt     DateTime    @updatedAt @map("updateAt")
-  sellerStats   SellerStats?
-  listings      Listing[]
-
-  @@map("User")
-}
 
 model SellerStats {
   id              String   @id @default(uuid())
-  userId          String   @unique
+  userId          String   @unique @map("user_id")
   totalListings   Int      @default(0)
   activeListings  Int      @default(0)
   successfulSales Int      @default(0)
@@ -45,7 +24,6 @@ model SellerStats {
   averageRating   Float    @default(0)
   responseRate    Float    @default(0)
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([averageRating])
   @@index([successfulSales])
@@ -103,7 +81,6 @@ model Listing {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
-  seller         User           @relation(fields: [sellerId], references: [id])
   features       ListingFeatures?
   availability   ListingAvailability[]
   stats          ListingStats?
