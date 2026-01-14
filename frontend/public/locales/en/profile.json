@@ -1,0 +1,16 @@
+{
+	"buttons": {
+		"archive": "Archive",
+		"edit": "Edit"
+	},
+
+	"section": {
+		"favorites": {
+			"title": "Favorites"
+		},
+
+		"myListings": {
+			"title": "My listings"
+		}
+	}
+}

@@ -1,4 +1,4 @@
-import { type HTMLInputTypeAttribute, useState } from "react";
+import { type HTMLInputTypeAttribute, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 
 interface ErrorInputProps {
@@ -39,6 +39,7 @@ interface SimpleInputProps {
 	pattern?: string;
 	minLength?: number;
 	maxLength?: number;
+	ref?: RefObject<HTMLInputElement | null>;
 }
 
 const	SimpleInput: React.FC<SimpleInputProps> = ({
@@ -51,7 +52,8 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 	error = [],
 	pattern,
 	minLength = 8,
-	maxLength = 256
+	maxLength = 256,
+	ref
 }) => {
 	const	[focused, setFocused] = useState<boolean>(false);
 
@@ -79,7 +81,8 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 					gridTemplateColumns: icon ? "auto 1fr" : "auto"
 				}}
 			>
-				{ icon &&
+				{
+					icon &&
 					<div className="flex items-center justify-center
 						w-6
 						relative"
@@ -107,8 +110,11 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 					{...(pattern ? { pattern } : {})}
 					{...(minLength ? { minLength } : {})}
 					{...(maxLength ? { maxLength } : {})}
+					{...(ref ? { ref } : {})}
 					onFocus={ () => setFocused(true) }
-					onBlur={ () => setFocused(false) }
+					onBlur={ () => {
+						setFocused(false);
+					}}
 				/>
 			</div>
 
@@ -185,6 +191,7 @@ export const	PasswordInput: React.FC<PasswordInputProps> = ({
 				/>
 
 				<button className="flex items-center justify-center
+					cursor-pointer
 					w-7 h-full"
 					onClick={ () => setShow(show ? false : true) }
 					type="button"

@@ -1,129 +1,244 @@
-import FormField, { FormIconField } from "../components/FormField";
-import UserToggle, { ModeratorToggle } from "../components/RoleStatus";
-import { useState } from "react";
-import SellerStat, { CustomerStat } from "../components/SellerStat";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import housePicture from "../images/terrain0.webp";
+import { dataProfileExample, type ProfileDataType } from "../dataModel/modelProfile";
+import { useTranslation } from "react-i18next";
+import ActionButton from "../components/ActionButton";
+import ContentDivider from "../components/ContentDivider";
+import type { SellerStatsDataType } from "../dataModel/modelListings";
+import { CreateDateForMemberSince } from "../utils/Format";
+import BoxSection from "../components/BoxSection";
+import { listData, type ListingsProps } from "../dataModel/modelPropertyList";
+import { PublicationCard } from "./property";
 
-
-
-import type { SettingBlocProps } from "../interfaces/profileInfos"; // added by srandria
-
-const SettingBloc: React.FC<SettingBlocProps> = ({ type, value, first }) => {
-    return (
-        <div className="flex flex-col">
-            <FormIconField type={type} value={value} />
-            <div className="flex flex-row w-full h-full items-center space-x-3">
-                <input type="text" className="bg-white text-black h-8 rounded-lg pl-3"
-                    defaultValue={first} />
-                <button className="font-icon  text-3xl"></button>
-            </div>
-        </div>
-    );
+interface	StatsProps {
+	value: number;
+	title: string;
 }
 
-const UserProfile: React.FC = () => {
-    const [role, setRole] = useState("Customer");
-    const [setting, setSetting] = useState("off");
-    return (
-        <div className="flex flex-row w-screen h-2/3 space-x-5 justify-center items-center">
-            <div className="flex flex-col w-1/2 h-full text-gray-300 
-                rounded-lg p-10 space-y-10 border border-white m-20">
-                <div className="relative flex w-full h-full">
-                    {setting === "off" ?
-                        <div className="flex flex-col justify-center items-center flex-1">
-                            <div className="flex flex-col items-center space-y-5">
-                                <FormIconField type="" value="USER" />
-                                <div>
-                                    <FormIconField type="" value="Jules Mureau" />
-                                    <FormIconField type="󰇮" value="Jules@gmail.com" />
-                                    <FormIconField type="" value="+261344512512" />
-                                    <FormIconField type="󰻗" value="10/11/2025" />
-                                </div>
-                            </div>
-                        </div>
-                        :
-                        <div className="flex flex-col w-full justify-center items-center flex-1">
-                            <div className="flex flex-col w-full space-y-3 items-center">
-                                <FormIconField type="" value="USER" />
-                                <SettingBloc type="" value="Name" first="Jules Mureau" />
-                                <SettingBloc type="󰇮" value="Adress email" first="Jules@gmail.com" />
-                                <SettingBloc type="" value="Phone number" first="+261344512512" />
-                            </div>
-                        </div>
-                    }
-                    {setting === "off" ?
-                        <button className="flex justify-end font-icon text-yellow-300 text-4xl" onClick={() => setSetting(setting === "off" ? "on" : "off")}></button> :
-                        <button className="flex justify-end text-yellow-300 font-icon text-4xl" onClick={() => setSetting(setting === "off" ? "on" : "off")}></button>
-                    }
-                </div>
-            </div>
-
-            <div className="text-white w-1/2 h-full rounded-lg m-20 border border-white">
-                <div className="flex justify-center h-1/7 font-serif">
-                    <UserToggle role={role} setRole={setRole} />
-                </div>
-                {role === "Customer" &&
-                    <div className="h-6/7">
-                        <CustomerStat />
-                    </div>
-                }
-                {role === "Seller" &&
-                    <div className="h-6/7">
-                        <SellerStat />
-                    </div>
-                }
-            </div>
-        </div>
-    );
+const	Stats: React.FC<StatsProps> = ({
+	value = 0,
+	title = "Title"
+}) => {
+	return (
+		<div className="flex flex-col items-start justify-center
+			place-items-center
+			border border-background/25
+			rounded-xl
+			shadow-standard
+			p-2
+			flex-none
+			text-center
+			w-full
+			whitespace-nowrap
+			gap-3"
+		>
+			<div className="font-bold text-accent text-4xl
+				text-shadow-lg
+				truncate max-w-32"
+			>
+				{ value }
+			</div>
+			<div className="font-light text-sm
+				truncate max-w-32">
+				{ title }
+			</div>
+		</div>
+	);
 }
 
-
-const ModeratorProfile: React.FC = () => {
-    const [role, setRole] = useState("Customer");
-    const [setting, setSetting] = useState("off");
-    return (
-        <div className="flex flex-row w-screen h-2/3 space-x-5 justify-center items-center">
-            <div className="flex flex-col w-1/2 h-full text-gray-300 
-                rounded-lg p-10 space-y-10 border border-white m-20">
-                <div className="relative flex w-full h-full">
-                    {setting === "off" ?
-                        <div className="flex flex-col justify-center items-center flex-1">
-                            <div className="flex flex-col items-center space-y-5">
-                                <FormIconField type="" value="MODERATOR" />
-                                <div className="flex flex-col">
-                                    <FormIconField type="" value="Romeo Elias" />
-                                    <FormIconField type="󰇮" value="Rom@gmail.com" />
-                                    <FormIconField type="" value="+261244542517" />
-                                    <FormIconField type="󰻗" value="10/11/2004" />
-                                </div>
-                            </div>
-                        </div>
-                        :
-                        <div className="flex flex-col w-full justify-center items-center flex-1">
-                            <div className="flex flex-col w-full space-y-5 items-center">
-                                <FormIconField type="" value="USER" />
-                                <SettingBloc type="" value="Name" first="Romeo Elias" />
-                                <SettingBloc type="󰇮" value="Adress email" first="Rom@gmail.com" />
-                                <SettingBloc type="" value="Phone number" first="+261244542517" />
-                            </div>
-                        </div>
-                    }
-                    {setting === "off" ?
-                        <button className="flex justify-end font-icon text-yellow-300 text-4xl" onClick={() => setSetting(setting === "off" ? "on" : "off")}></button> :
-                        <button className="flex justify-end text-yellow-300 font-icon text-4xl" onClick={() => setSetting(setting === "off" ? "on" : "off")}></button>
-                    }
-                </div>
-            </div>
-        </div>
-    );
+interface	ProfileSectionProps {
+	title: string;
+	children: React.ReactNode;
 }
 
-const Profile: React.FC = () => {
-    return (
-        <div className="flex flex-col w-screen h-screen justify-center items-start"
-        >
-            <UserProfile />
-        </div>
-    );
+const	ProfileSection: React.FC<ProfileSectionProps> = ({
+	title = "Title",
+	children
+}) => {
+	return (
+		<div
+			className="grid grid-cols-1 grid-rows-[auto_1fr]
+			place-items-center
+			gap-4
+			w-full"
+		>
+			<div className="grid grid-cols-[auto_1fr] grid-rows-1
+				gap-4
+				place-items-center
+				font-bold
+				w-full"
+			>
+				<div>
+					{ title }
+				</div>
+				<div
+					className="w-full"
+				>
+					<ContentDivider
+						line_color="linear-gradient(to left,
+						transparent,
+						var(--color-background) 10%,
+						var(--color-background) 90%,
+						transparent)"
+					/>
+				</div>
+			</div>
+			<div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] grid-rows-1
+				gap-4
+				w-full"
+			>
+				{ children }
+			</div>
+		</div>
+	);
 }
 
-export default Profile;
+const	ProfilePage: React.FC = () => {
+	const	navigate = useNavigate();
+	const	{ t } = useTranslation(["profile", "listings"]);
+
+	// NOTE: check if an user is connected, if not redirect.
+	return (
+		<div className="flex flex-col items-center justify-start
+			px-2 md:px-7 xl:px-64
+			overflow-y-scroll
+			w-full h-screen"
+		>
+			<div className="w-full h-20 flex-none"></div>
+			<div className="w-full h-36
+				flex-none
+				flex items-center justify-center
+				relative
+				overflow-hidden
+				drop-shadow-standard
+				rounded-xl"
+			>
+				<img
+					className="w-full h-full object-cover"
+					src={ housePicture }
+					alt="Picture of a house"
+				/>
+			</div>
+
+
+			<div className="grid grid-cols-1 grid-rows-2
+				md:grid-cols-[1fr_auto] md:grid-rows-1
+				w-full"
+			>
+				<div className="flex flex-col items-center justify-center
+					p-2
+					md:p-4
+					w-full"
+				>
+					<div className="font-bold
+						mr-auto"
+					>
+						{ dataProfileExample.firstName + " " + dataProfileExample.lastName }
+					</div>
+					<div className="font-light
+						whitespace-pre-line
+						mr-auto"
+					>
+						{
+							dataProfileExample.email + "\n"
+							+ dataProfileExample.phone + "\n\n"
+							+ t("listings:section.contact.memberSince")
+							+ " "
+							+ CreateDateForMemberSince(dataProfileExample.createdAt)
+						}
+					</div>
+				</div>
+				<div className="grid grid-cols-1 grid-rows-2
+					md:grid-cols-2 md:grid-rows-1
+					p-2
+					md:p-4
+					gap-4"
+				>
+					<Link
+						to="/profile/settings"
+					>
+						<ActionButton
+							icon="󰚼"
+							title={ t("buttons.edit") }
+						/>
+					</Link>
+					<ActionButton
+						icon="󰀼"
+						title={ t("buttons.archive") }
+					/>
+				</div>
+			</div>
+
+			<div
+				className="w-full"
+			>
+				<ContentDivider
+					line_color="linear-gradient(to left,
+					transparent,
+					var(--color-background) 10%,
+					var(--color-background) 90%,
+					transparent)"
+				/>
+			</div>
+
+			<div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] grid-rows-1
+				p-4
+				place-items-center
+				gap-4
+				w-full"
+			>
+				{
+					Object.entries(dataProfileExample.sellerStats).map(([key, value]) => {
+						return (
+							<Stats
+								key={ key }
+								value={ value }
+								title={ t(`listings:section.stats.sellerStats.${key}`) }
+							/>
+						)
+					})
+				}
+			</div>
+
+			<div className="flex flex-col items-center justify-center
+				mt-12
+				gap-24
+				w-full p-2"
+			>
+				<ProfileSection
+					title={ t("section.myListings.title") }
+				>
+					{
+						listData.map((value: ListingsProps, index: number) => {
+							return (
+								<PublicationCard
+									key={ index }
+									propertyData={ value }
+								/>
+							);
+						})
+					}
+				</ProfileSection>
+
+				<ProfileSection
+					title={ t("section.favorites.title") }
+				>
+					{
+						listData.map((value: ListingsProps, index: number) => {
+							return (
+								<PublicationCard
+									key={ index }
+									propertyData={ value }
+								/>
+							);
+						})
+					}
+				</ProfileSection>
+			</div>
+
+		</div>
+	);
+}
+
+export default ProfilePage;

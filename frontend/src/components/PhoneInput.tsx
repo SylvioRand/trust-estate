@@ -12,6 +12,7 @@ interface PhoneInputProps {
 	pattern?: string;
 	minLength?: number;
 	maxLength?: number;
+	ref?: RefObject<HTMLInputElement | null>;
 }
 
 const	PhoneInput: React.FC<PhoneInputProps> = ({
@@ -22,7 +23,8 @@ const	PhoneInput: React.FC<PhoneInputProps> = ({
 	error = [],
 	pattern,
 	minLength = 8,
-	maxLength = 256
+	maxLength = 256,
+	ref
 }) => {
 	const	[focused, setFocused] = useState<boolean>(false);
 	const	icon = "󰏲";
@@ -100,6 +102,7 @@ const	PhoneInput: React.FC<PhoneInputProps> = ({
 					{...(pattern ? { pattern } : {})}
 					{...(minLength ? { minLength } : {})}
 					{...(maxLength ? { maxLength } : {})}
+					{...(ref ? { ref } : {})}
 					onFocus={ () => setFocused(true) }
 					onBlur={ () => setFocused(false) }
 				/>

@@ -13,6 +13,7 @@ import { type ListingsTags, type ListingsData, dataExampleListingsData as dataEx
 import BoxSection from "../components/BoxSection";
 import i18n from "../i18n/i18n";
 import PopUp, { type PopUpAPI } from "../components/PopUp";
+import { CreateDateForMemberSince, CreateDateForPost } from "../utils/Format";
 
 interface	TagsComponentsProps {
 	tags: ListingsTags;
@@ -484,28 +485,6 @@ const	ListingsPage: React.FC = () => {
 	// NOTE: need to fetch first to see if it's favorite or not, or maybe just send it through query
 	const	[isFavorite, setIsFavorite] = useState<boolean>(false);
 
-	function	CreateDateForMemberSince(data: string): string {
-		const	date = new Date(data);
-
-		const	result = new Intl.DateTimeFormat(i18n.language, {
-			month: "long",
-			year: "numeric"
-		}).format(date);
-
-		return (result);
-	}
-
-	function	CreateDateForPost(data: string): string {
-		const	date = new Date(data);
-
-		const	result = new Intl.DateTimeFormat(i18n.language, {
-			day: "numeric",
-			month: "long",
-			year: "numeric"
-		}).format(date);
-
-		return (result);
-	}
 
 	// NOTE: I invert the value of isAvailable to get the correct UI representation
 	const	[openPopupAvailability, setOpenPopupAvailability] = useState<boolean>(false);
