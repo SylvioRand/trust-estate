@@ -1,5 +1,6 @@
 import React, { useRef, useState, type RefObject } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
+import { useTranslation } from "react-i18next";
 
 interface	MessageProps {
 	value: string;
@@ -49,6 +50,7 @@ type	MessageType = {
 const	AIPage: React.FC = () => {
 	const	[chatValue, setChatValue] = useState<string>("");
 	const	messageRef: RefObject<MessageType[]> = useRef<MessageType[]>([]);
+	const	{ t } = useTranslation("ai");
 
 	const	handleSendButton = async () => {
 
@@ -99,10 +101,9 @@ const	AIPage: React.FC = () => {
 						value={ chatValue }
 						onChange={ setChatValue }
 						maxRows={7}
-						placeholder="What are you looking for?"
+						placeholder={ t("inputChat.placeholder") }
 						onKeyDown={(e) => {
-							e.currentTarget.value.trim();
-							if (e.key === "Enter")
+							if (e.key === "Enter" && chatValue !== "\n")
 								handleSendButton();
 						}}
 					/>
