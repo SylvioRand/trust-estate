@@ -1,5 +1,5 @@
 import { prisma } from '../../config/prisma';
-import { PropertyListing, GetMineListingsQuery } from "./listing.schema";
+import { PropertyListing, GetMineListingsQuery, SearchListingsQuery } from "./listing.schema";
 import path from 'path';
 
 export class ListingService {
@@ -90,5 +90,41 @@ export class ListingService {
                 archived: (sellerStats?.totalListings || 0) - (sellerStats?.activeListings || 0)
             }
         };
+    }
+
+    static async searchListings(query: SearchListingsQuery) {
+        const where: any = {
+            status: 'active',
+            isAvailable: true
+        };
+
+        if (query.type) where.type = query.type;
+        if (query.propertyType) where.propertyType = query.propertyType;
+        if (query.zone) where.zone = query.zone;
+
+        if (query.minPrice || query.maxPrice) {
+            where.price = {};
+            if (query.minPrice) where.price.gte = query.minPrice;
+            if (query.maxPrice) where.price.lte = query.maxPrice;
+        }
+
+        if (query.minSurface || query.maxSurface) {
+            where.surface = {};
+            if (query.minSurface) where.surface.gte = query.minSurface;
+            if (query.maxSurface) where.surface.lte = query.maxSurface;
+        }
+
+        const [listings, countMatching] = await Promise.all([
+            prisma.listing.findMany({
+                where,
+                skip: (query.page - 1) * query.limit,
+                take: query.limit,
+                orderBy: { createdAt: 'desc' },
+                include: { features: true }
+            }),
+            prisma.listing.count({ where })
+        ]);
+
+        return { listings, countMatching };
     }
 }
