@@ -1,74 +1,387 @@
-import React from "react";
+import type { TFunction } from "i18next";
+import React, { useEffect, useMemo, useRef, useState, type Dispatch, type RefObject, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
+import PopUp, { type PopUpAPI } from "../components/PopUp";
+import TimeInput from "../components/TimeInput";
+import ActionButton from "../components/ActionButton";
+import type { SlotsData } from "../dataModel/modelSlots";
+import i18n from "../i18n/i18n";
+import { toast } from "react-toastify";
 
-const	SlotsPage: React.FC = () => {
-	const	{ t } = useTranslation("slots");
+interface	AddSlotsButtonProps {
+	t: TFunction<"slots">;
+	setOpenPopUpAddSlots: Dispatch<SetStateAction<boolean>>;
+}
 
-	const	day: string[] = ["1", "2", "3", "4", "5", "6", "7"];
-	const	time: string[] = [
-		"9AM - 10AM",
-		"10AM - 11AM",
-		"11AM - 12PM",
-		"12PM - 1PM",
-		"1PM - 2PM",
-		"2PM - 3PM",
-		"3PM - 4PM"
-	];
+const	AddSlotsButton: React.FC<AddSlotsButtonProps> = ({
+	t = null,
+	setOpenPopUpAddSlots = null
+}) => {
+	const	[hovered, setHovered] = useState<boolean>(false);
 
 	return (
 		<div className="flex flex-col items-center justify-center
-			px-4 md:px-7 xl:px-64
-			gap-4
-			w-full h-screen"
+			border border-background/25
+			rounded-md
+			p-2
+			cursor-pointer
+			transition-colors duration-200
+			shadow-standard
+			w-40 h-40"
+			onPointerEnter={ () => setHovered(true) }
+			onPointerLeave={ () => setHovered(false) }
+			style={{
+				background: hovered ? "color-mix(in srgb, var(--color-accent) 25%, transparent)" : "transparent"
+			}}
+			onClick={ () => {
+				if (setOpenPopUpAddSlots)
+					setOpenPopUpAddSlots(true);
+			}}
 		>
-			<div className="grid grid-cols-8 grid-rows-1
-				border border-background/25
-				py-4
-				shadow-standard
-				rounded-md
-				place-items-center
+			<div className="font-icon text-2xl">
+				󰐕
+			</div>
+			<div className="font-light text-sm">
+				{ t && t("buttons.create.title") }
+			</div>
+		</div>
+	);
+}
+
+const	CreateNumberRange = (min: number, max: number) => Array.from({ length: max + 1 }, (_, i) => i);
+
+interface	CreateSlotPopUpContentProps {
+	t: TFunction<"slots">;
+	refOpenPopUpAddSlots: RefObject<PopUpAPI | null>;
+	fetchedSlots: SlotsData[];
+	setFetchedSlots: Dispatch<SetStateAction<SlotsData[]>>;
+}
+
+const	CreateSlotPopUpContent: React.FC<CreateSlotPopUpContentProps> = ({
+	t = null,
+	refOpenPopUpAddSlots = null,
+	fetchedSlots = [],
+	setFetchedSlots
+}) => {
+	let		tmpSlots: SlotsData;
+
+	function	toMinutes(time: string): number {
+		const	[h, m] = time.split(":").map(Number);
+
+		return (h * 60 + m);
+	}
+
+	function	isOverlapping(a: SlotsData, b: SlotsData): boolean {
+		if (a.dayOfWeek !== b.dayOfWeek)
+			return (false);
+
+		const	startA = toMinutes(a.startTime);
+		const	endA = toMinutes(a.endTime);
+		const	startB = toMinutes(b.startTime);
+		const	endB = toMinutes(b.endTime);
+
+		return (startA < endB && startB < endA);
+	}
+
+	function	areInvalid(value: SlotsData): boolean {
+		const	startTime = toMinutes(value.startTime);
+		const	endTime = toMinutes(value.endTime);
+
+		return (startTime > endTime);
+	}
+
+	const	handleAdd = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const	formData = new FormData(e.currentTarget);
+		const	data = Object.fromEntries(formData.entries());
+
+		tmpSlots = {
+			dayOfWeek: Number(data.dayOfWeek),
+			startTime: data.startTime.toString(),
+			endTime: data.endTime.toString(),
+			taken: true,
+		}
+
+		if (areInvalid(tmpSlots))
+		{
+			toast.error(t && t("errors.time_invalid"));
+			return ;
+		}
+
+		for (let i = 0; i < fetchedSlots.length; i++)
+		{
+			if (isOverlapping(fetchedSlots[i], tmpSlots))
+			{
+				toast.error(t && t("errors.overlapping"));
+				return ;
+			}
+		}
+
+		console.log(data);
+		// NOTE: append the slots to the Array
+		setFetchedSlots([...fetchedSlots, tmpSlots]);
+
+		if (refOpenPopUpAddSlots)
+			refOpenPopUpAddSlots.current?.close();
+	}
+
+	return (
+		<form
+			className="flex flex-col items-center justify-center
+			gap-4
+			w-full"
+			onSubmit={ handleAdd }
+		>
+
+			<div className="grid grid-cols-[auto_1fr] grid-rows-1
 				w-full"
 			>
-				<div className="w-full h-full">
-				</div>
-				{
-					day.map((value: string, index: number) => {
-						return (
-							<div
-								key={ index }
-								className="
-								text-sm"
-							>
-								{ t(`day.${value}`) }
-							</div>
-						);
-					})
-				}
-			</div>
-
-			<div className="grid grid-cols-7 grid-rows-1
-				w-full h-100">
-				<div className="grid grid-cols-1 grid-rows-7
+				<label
+					className="justify-self-start"
+					htmlFor="dayOfWeek"
+				>
+					{ t && t("popup.create.dayOfTheWeek") }
+				</label>
+				<select
+					name="dayOfWeek"
+					className="justify-self-end
 					border border-background/25
 					rounded-md
-					shadow-standard
-					place-items-center
-					w-full h-full"
+					px-2 py-1
+					shadow-standard"
+					id="dayOfWeek"
 				>
 					{
-						time.map((value: string, index: number) => {
+						CreateNumberRange(0,6).map((value: number, index: number) => {
 							return (
-								<div
+								<option
 									key={ index }
-									className="font-light text-sm"
+									value={ index }
 								>
-									{ value }
-								</div>
+									{ t && t(`day.${ index }`) }
+								</option>
 							);
 						})
 					}
+				</select>
+			</div>
+
+			<TimeInput
+				id="startTime"
+				name="startTime"
+				min="09:00"
+				max="16:00"
+				title={ t && t("popup.create.startTime") || "startTime" }
+			/>
+			<TimeInput
+				id="endTime"
+				name="endTime"
+				min="09:00"
+				max="16:00"
+				title={ t && t("popup.create.endTime") || "endTime" }
+			/>
+
+			<div className="w-full mt-4">
+				<ActionButton
+					title={ t && t("buttons.create.title") || "" }
+					icon="󰐕"
+					icon_size={24}
+					icon_place="right"
+					type="submit"
+				/>
+			</div>
+		</form>
+	);
+}
+
+interface	SlotsBoxProps {
+	data: SlotsData;
+	t: TFunction<"slots">;
+	fetchedSlots: SlotsData[];
+	setFetchedSlots: Dispatch<SetStateAction<SlotsData[]>>;
+}
+
+const	SlotsBox: React.FC<SlotsBoxProps> = ({
+	data,
+	t = null,
+	fetchedSlots = [],
+	setFetchedSlots
+}) => {
+
+	function	formatTimeLocales(time: string): string {
+		const	date = new Date(`1970-01-01T${time}:00`);
+		const	formatted = new Intl.DateTimeFormat(i18n.language, {
+			hour: "numeric",
+			minute: "2-digit"
+		}).format(date);
+
+		return (formatted);
+	}
+
+	return (
+		<div className="grid grid-cols-1 grid-rows-2
+			border border-background/25
+			p-2
+			w-40 h-40
+			shadow-standard
+			relative
+			rounded-md"
+			style={{
+				backgroundColor: data.taken ? "color-mix(in srgb, var(--color-accent) 25%, transparent)" : "transparent"
+			}}
+		>
+			<div className="flex flex-col items-start justify-center
+				font-bold text-2xl
+				mb-auto
+				w-full"
+			>
+				<div>
+					{ formatTimeLocales(data.startTime) }
+				</div>
+				<div>
+					{ formatTimeLocales(data.endTime) }
 				</div>
 			</div>
+			<div className="font-light text-md mt-auto">
+				{ t && t(`day.${data.dayOfWeek}`) }
+			</div>
+
+			<div className="absolute bottom-1 right-2
+				select-none
+				cursor-pointer
+				font-icon text-2xl
+				transition-colors duration-200
+				hover:text-red-500"
+				onClick={() => {
+					const	index: number = fetchedSlots.findIndex((value: SlotsData) => {
+						return (
+							value.dayOfWeek === data.dayOfWeek
+							&& value.startTime === data.startTime
+							&& value.endTime === data.endTime
+							&& value.taken === data.taken
+						);
+					});
+
+					setFetchedSlots([
+						...fetchedSlots.slice(0, index),
+						...fetchedSlots.slice(index + 1)
+					]);
+				}}
+			>
+				
+			</div>
+		</div>
+	);
+}
+
+const	SlotsPage: React.FC = () => {
+	const	{ t } = useTranslation("slots");
+	const	[openPopUpAddSlots, setOpenPopUpAddSlots] = useState<boolean>(false);
+	const	refOpenPopUpAddSlots = useRef<PopUpAPI | null>(null);
+	const	[fetchedSlots, setFetchedSlots] = useState<SlotsData[]>([]);
+
+	// NOTE: store the fetched data here and do a deep copy every render to see
+	// if the value changed or not
+	// SlotKey can only compare string, so we create a string from the SlotsData.
+	const	slotKey = (s: SlotsData): string => `${s.dayOfWeek}|${s.startTime}|${s.endTime}|${s.taken}`;
+
+	function	areSlotsEqual(a: SlotsData[], b: SlotsData[]): boolean {
+		if (a.length !== b.length)
+			return (false);
+		const	set = new Set(a.map(slotKey));
+
+		for (const s of b)
+		{
+			if (!set.has(slotKey(s)))
+				return (false);
+		}
+		return (true);
+	}
+
+	const	[initialData, setInitialData] = useState<SlotsData[]>(fetchedSlots.map(s => ({ ...s })));
+	const	dataChanged: boolean = areSlotsEqual(fetchedSlots, initialData);
+	const	[areSaving, setAreSaving] = useState<boolean>(false);
+	const	[areProcessingSave, setAreProcessingSave] = useState<boolean>(false);
+
+	const	handleSaving = async () => {
+		console.log("Saving!");
+
+		// change the version
+		setInitialData(fetchedSlots.map(s => ({ ...s })));
+		// console.log("current Version: ", initialData);
+		// console.log("fetchedSlots: ", fetchedSlots);
+	}
+
+	return (
+		<div className="flex flex-col items-center justify-start
+			overflow-y-scroll
+			transition-discrete duration-500
+			px-4 md:px-7 xl:px-64
+			w-full h-screen"
+		>
+			<div className="w-full h-20 flex-none"></div>
+
+			<div className="grid grid-cols-[1fr_auto] grid-rows-1
+				place-items-center
+				mb-4
+				w-full"
+			>
+				<div className="justify-self-start w-full">
+					{ t("title") }
+				</div>
+				<div className="justify-self-end">
+					<ActionButton
+						title={ t("buttons.save.title") }
+						icon="󰆓"
+						disabled={ dataChanged }
+						processing_action={ areProcessingSave }
+						onClick={ handleSaving }
+					/>
+				</div>
+			</div>
+
+			<div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] grid-rows-1
+				gap-x-4 gap-y-4
+				w-full"
+			>
+
+				{
+					fetchedSlots.map((value: SlotsData, index: number) => {
+						return (
+							<SlotsBox
+								key={ index }
+								data={ value }
+								t={ t }
+								fetchedSlots={ fetchedSlots }
+								setFetchedSlots={ setFetchedSlots }
+							/>
+						);
+					})
+				}
+
+				<AddSlotsButton
+					t={ t }
+					setOpenPopUpAddSlots={ setOpenPopUpAddSlots }
+				/>
+			</div>
+
+			<div className="w-full h-7 flex-none">
+			</div>
+
+			{
+				openPopUpAddSlots && <PopUp
+					title={ t("buttons.create.title") }
+					onClose={ () => setOpenPopUpAddSlots(false) }
+					ref={ refOpenPopUpAddSlots }
+				>
+					<CreateSlotPopUpContent
+						t={ t }
+						refOpenPopUpAddSlots={ refOpenPopUpAddSlots }
+						fetchedSlots={ fetchedSlots }
+						setFetchedSlots={ setFetchedSlots }
+					/>
+				</PopUp>
+			}
 		</div>
 	);
 }
