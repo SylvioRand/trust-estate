@@ -29,8 +29,8 @@ export const PublishListingSchema = z.object({
 
   tags: z.array(z.enum(['urgent', 'exclusive', 'discount'])).default([])
 }).strict();
-
 export type PropertyListing = z.infer<typeof PublishListingSchema>;
+
 
 
 export const GetMineListingsSchema = z.object({
@@ -40,3 +40,21 @@ export const GetMineListingsSchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
 });
 export type GetMineListingsQuery = z.infer<typeof GetMineListingsSchema>;
+
+
+
+export const SearchListingsSchema = z.object({
+  type: z.enum(['sale', 'rent']).optional(),
+  propertyType: z.enum(['apartment', 'house', 'loft', 'land', 'commercial']).optional(), // Add to contract if needed
+
+  minPrice: z.coerce.number().optional(),
+  maxPrice: z.coerce.number().optional(),
+  minSurface: z.coerce.number().optional(), // Add to contract if needed
+  maxSurface: z.coerce.number().optional(), // Add to contract if needed
+
+  zone: z.string().optional(),
+
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+export type SearchListingsQuery = z.infer<typeof SearchListingsSchema>;

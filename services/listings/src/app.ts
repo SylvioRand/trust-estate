@@ -21,6 +21,15 @@ app.decorate('authenticate', async (request: any, reply: any) => {
   }
 });
 
+app.decorate('optionalAuthenticate', async (request: any, reply: any) => {
+  try {
+    const user = await AuthClient.verifyToken(request.headers.cookie);
+    request.user = user;
+  } catch (error) {
+    request.user = undefined;
+  }
+});
+
 app.register(multipart, {
   attachFieldsToBody: false, // stream directement le disque
   limits: {

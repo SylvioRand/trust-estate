@@ -1,36 +1,37 @@
-import { FastifyRequest, FastifyReply } from "fastify";
-import { GetMineListingsSchema } from "../listing.schema";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { ListingService } from "../listing.service";
+import { SearchListingsSchema } from "../listing.schema";
 import { ZodError } from "zod";
 
-export async function handleGetMine(request: FastifyRequest, reply: FastifyReply) {
+export async function handleSearch(request: FastifyRequest, reply: FastifyReply) {
     try {
-        const user = (request as any).user;
+        const query = SearchListingsSchema.parse(request.query);
+        const result = await ListingService.searchListings(query);
 
-        const query = GetMineListingsSchema.parse(request.query);
-
-        const result = await ListingService.getMineListings(user.id, query);
+        const currentUser = (request as any).user;
 
         const formattedData = result.listings.map(listing => ({
             id: listing.id,
             title: listing.title,
             price: listing.price,
             type: listing.type,
+            propertyType: listing.propertyType,
+            mine: currentUser ? listing.sellerId === currentUser.id : false,
+            zone: listing.zone,
+            surface: listing.surface,
+            photos: listing.photos,
             status: listing.status,
             isAvailable: listing.isAvailable,
             tags: listing.tags,
-            views: listing.stats?.views || 0,
-            reservations: listing.stats?.reservations || 0,
             createdAt: listing.createdAt
         }));
 
         return reply.send({
             data: formattedData,
-            stats: result.stats,
-            pagination: {           // Add to contract if needed 
+            pagination: {
                 page: query.page,
                 limit: query.limit,
-                totalMatching: result.countMatching,
+                totalMatching: result.countMatching, // Add to contract if needed
                 totalPages: Math.ceil(result.countMatching / query.limit)
             }
         });
