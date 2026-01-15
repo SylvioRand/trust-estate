@@ -32,9 +32,11 @@ db-sync:
 	@echo "✅ Auth service is ready! Proceeding with listings sync..."
 	@echo "🔄 Synchronizing Prisma schemas with database..."
 	@echo "   -> Pushing listings schema..."
-	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=listings" npx prisma db push --accept-data-loss
+	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=listings" npx -y prisma@6.19.1 db push --accept-data-loss
 	@echo "   -> Pushing auth schema..."
-	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx prisma db push --accept-data-loss
+	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx -y prisma@6.19.1 db push --accept-data-loss
+	@echo "   -> Pushing reservation schema..."
+	@cd services/reservation && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=reservation" npx -y prisma@6.19.1 db push --accept-data-loss
 	@echo "✅ Database schemas synchronized!"
 
 # Seed the database with test data
