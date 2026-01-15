@@ -33,7 +33,7 @@ const VerifyEmailPage: React.FC = () => {
 			setStatus("confirmed");
 
 			setTimeout(() => {
-				navigate("/property");
+				navigate("/welcome");
 			}, 2000);
 
 		} catch (e) {
