@@ -2,8 +2,8 @@ import fastify from 'fastify';
 import multipart from '@fastify/multipart';
 import cors from '@fastify/cors';
 import fastifyCookie from '@fastify/cookie';
-import { AuthClient } from './modules/listing/auth.client';
-import { listingRoutes } from './modules/listing/listing.controller';
+import { AuthClient } from './modules/auth.client';
+import { listingRoutes } from './modules/listing.controller';
 
 const app = fastify();
 

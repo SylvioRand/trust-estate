@@ -1,5 +1,5 @@
-import { prisma } from '../../config/prisma';
-import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData } from "./listing.schema";
+import { prisma } from '../config/prisma';
+import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing } from "./listing.schema";
 import path from 'path';
 
 export class ListingService {
@@ -198,5 +198,28 @@ export class ListingService {
 
             return archivedListing;
         });
+    }
+
+    static async reportListing(id: string, reporterId: string, data: ReportListing) {
+        const listing = await prisma.listing.findUnique({ where: { id } });
+
+        if (!listing) throw new Error('listing.not_found');
+
+        if (listing.sellerId === reporterId) throw new Error('listing.cannot_report_own');
+        try {
+            return await prisma.report.create({
+                data: {
+                    listingId: id,
+                    reporterId: reporterId,
+                    reason: data.reason,
+                    comment: data.comment
+                }
+            });
+        } catch (error: any) {
+            if (error.code === 'P2002') {
+                throw new Error('listing.already_reported');
+            }
+            throw error;
+        }
     }
 }

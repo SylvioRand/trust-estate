@@ -4,6 +4,7 @@ import { handleGetMine } from "./handlers/get-mine.handler";
 import { handleSearch } from "./handlers/search.handler";
 import { handleUpdate } from "./handlers/update.handler";
 import { handleArchive } from "./handlers/archive.handler";
+import { handleReport } from "./handlers/report.handler";
 
 export async function listingRoutes(app: FastifyInstance) {
   app.post('/publish', { preHandler: (app as any).authenticate }, handlePublish);
@@ -12,4 +13,5 @@ export async function listingRoutes(app: FastifyInstance) {
   app.get('/', { preHandler: (app as any).optionalAuthenticate }, handleSearch);
   app.put('/:id', { preHandler: (app as any).authenticate }, handleUpdate);
   app.post('/:id/archive', { preHandler: (app as any).authenticate }, handleArchive);
+  app.post('/:id/report', { preHandler: (app as any).authenticate }, handleReport);
 }
