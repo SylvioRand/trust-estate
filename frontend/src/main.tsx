@@ -24,6 +24,7 @@ import DataProvider from './provider/DataProvider.tsx';
 import Profile from './pages/profile.tsx';
 import Ai from './pages/ai.tsx';
 import PublishPage from './pages/publish.tsx';
+import ProfilePage from './pages/profile.tsx';
 
 const router = createBrowserRouter([
 	{
@@ -84,7 +85,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/profile",
-				element: <Profile />
+				element: <ProfilePage />
 			},
 
 			{
