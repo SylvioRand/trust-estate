@@ -33,7 +33,7 @@ app.decorate('optionalAuthenticate', async (request: any, reply: any) => {
 app.register(multipart, {
   attachFieldsToBody: false, // stream directement le disque
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB par fichier
+    fileSize: 30 * 1024 * 1024, // 10MB par fichier
     files: 10 // Max 10 fichiers
   }
 });
