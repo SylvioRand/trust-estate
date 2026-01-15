@@ -4,29 +4,15 @@ const prisma = new PrismaClient();
 
 async function main() {
     try {
-        const testUser = await prisma.user.upsert({
-            where: { email: "srandria@trust-estate.mg" },
-            update: {
-                firstName: "Sylvio",
-                lastName: "Rand"
-            },
-            create: {
-                id: "sylvio-rand-id",
-                email: "srandria@trust-estate.mg",
-                firstName: "Sylvio",
-                lastName: "Rand",
-                phone: "0340000000",
-                role: "USER",
-            },
-        });
+        const testUserId = "sylvio-rand-id";
 
-        console.log("Utilisateur de test prêt :", testUser.id);
+        console.log("Utilisateur de test cible :", testUserId);
 
         const stats = await prisma.sellerStats.upsert({
-            where: { userId: testUser.id },
+            where: { userId: testUserId },
             update: {},
             create: {
-                userId: testUser.id,
+                userId: testUserId,
                 totalListings: 0,
                 activeListings: 0
             }

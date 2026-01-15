@@ -84,6 +84,7 @@ model Listing {
   features       ListingFeatures?
   availability   ListingAvailability[]
   stats          ListingStats?
+  reports        Report[]
 
   @@map("Listing")
 }
@@ -125,4 +126,24 @@ model ListingStats {
   feedbacks    Int     @default(0)
 
   @@map("ListingStats")
+}
+
+enum ReportReason {
+  fraud
+  spam
+  incorrect_info
+  inappropriate
+}
+
+model Report {
+  id          String       @id @default(uuid())
+  listingId   String
+  listing     Listing      @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  reporterId  String
+  reason      ReportReason
+  comment     String?
+  createdAt   DateTime     @default(now())
+
+  @@unique([listingId, reporterId]) // Un utilisateur ne peut signaler une annonce qu'une fois
+  @@map("Report")
 }
