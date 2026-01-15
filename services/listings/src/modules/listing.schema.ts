@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import zonesData from '../../shared/zones.json';
+import zonesData from '../shared/zones.json';
 
 const validZone = zonesData.zones.map(z => z.displayName) as [string, ...string[]];
 const ZoneSchema = z.enum(validZone);
@@ -72,5 +72,24 @@ export const UpdateListingSchema = PublishListingSchema.pick({
   features: true,
   tags: true
 }).partial().strict();
-
 export type UpdateListingData = z.infer<typeof UpdateListingSchema>;
+
+
+
+export const ArchiveListingSchema = z.object({
+  sold: z.boolean().default(false)
+}).strict();
+export type ArchiveListingData = z.infer<typeof ArchiveListingSchema>;
+
+
+
+export const ReportListingSchema = z.object({
+  reason: z.enum(['fraud', 'spam', 'incorrect_info', 'inappropriate'], {
+    message: 'validation.listing.report_reason.invalid'
+  }),
+  comment: z.string()
+    .min(10, { message: 'validation.listing.report_comment.too_short' })
+    .max(500, { message: 'validation.listing.report_comment.too_long' })
+    .optional()
+}).strict();
+export type ReportListing = z.infer<typeof ReportListingSchema>;
