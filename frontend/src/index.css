@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-	--push: 42px;
+	--push: 70px;
 	--push-speed: 0.75s;
 	--fade-speed: 0.3s;
 	--scale-speed: 1s;
@@ -50,7 +50,7 @@
 	--animate-fade-in: fade_in var(--fade-speed) linear forwards;
 	--animate-fade-out: fade_out var(--fade-speed) linear forwards;
 	--animate-from-bottom: from_bottom var(--push-speed) ease-in-out forwards;
-	--animate-from-top: from_bottom var(--push-speed) ease-in-out forwards;
+	--animate-from-top: from_top var(--push-speed) ease-in-out forwards;
 	--animate-scale-in-x: scale_in_x var(--scale-speed) ease-in-out forwards;
 	--animate-scale-out-x: scale_out_x var(--scale-speed) ease-in-out forwards;
 	--animate-scale-in-y: scale_in_y var(--scale-speed) ease-in-out forwards;
@@ -253,10 +253,6 @@ body {
 		transform: translateY(var(--push));
 	}
 
-	50% {
-		transform: translateY(-25px);
-	}
-
 	100% {
 		transform: translate(0px);
 	}
@@ -265,10 +261,6 @@ body {
 @keyframes from_top {
 	0% {
 		transform: translateY(-var(--push));
-	}
-
-	50% {
-		transform: translateY(25px);
 	}
 
 	100% {

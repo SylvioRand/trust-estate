@@ -2,6 +2,7 @@ import house0 from "../../src/images/house0.webp";
 import house1 from "../../src/images/house1.webp";
 import house2 from "../../src/images/house2.webp";
 import house3 from "../../src/images/house3.webp";
+import type { ListingsTags } from "./modelListings";
 
 export type ListingType = "sale" | "rent"
 
@@ -17,6 +18,8 @@ export interface ListingsProps {
 			surface: number,
 			photos: string[],
 			status: boolean,
+			isAvailable: boolean,
+			tags: ListingsTags[],
 			createdAt: string,
 			expiresAt: string
 		}
@@ -44,6 +47,8 @@ export const	listData: ListingsProps[] = [
 						house0
 					],
 					status: true,
+					isAvailable: true,
+					tags: ["urgent"],
 					createdAt: "2025-01-10T08:00:00Z",
 					expiresAt: "2025-02-09T08:00:00Z"
 				}
@@ -69,6 +74,8 @@ export const	listData: ListingsProps[] = [
 						house1
 					],
 					status: true,
+					isAvailable: true,
+					tags: ["exclusive"],
 					createdAt: "2025-01-10T08:00:00Z",
 					expiresAt: "2025-02-09T08:00:00Z"
 				}
@@ -94,6 +101,8 @@ export const	listData: ListingsProps[] = [
 						house2
 					],
 					status: true,
+					isAvailable: true,
+					tags: ["urgent", "exclusive", "discount"],
 					createdAt: "2025-01-10T08:00:00Z",
 					expiresAt: "2025-02-09T08:00:00Z"
 				}
@@ -119,6 +128,8 @@ export const	listData: ListingsProps[] = [
 						house3
 					],
 					status: true,
+					isAvailable: true,
+					tags: ["urgent", "exclusive", "discount"],
 					createdAt: "2025-01-10T08:00:00Z",
 					expiresAt: "2025-02-09T08:00:00Z"
 				}
@@ -144,6 +155,8 @@ export const	listData: ListingsProps[] = [
 						house0
 					],
 					status: true,
+					isAvailable: true,
+					tags: ["urgent", "exclusive"],
 					createdAt: "2025-01-10T08:00:00Z",
 					expiresAt: "2025-02-09T08:00:00Z"
 				}
@@ -169,6 +182,8 @@ export const	listData: ListingsProps[] = [
 						house1
 					],
 					status: true,
+					isAvailable: true,
+					tags: ["urgent"],
 					createdAt: "2025-01-10T08:00:00Z",
 					expiresAt: "2025-02-09T08:00:00Z"
 				}
@@ -194,6 +209,8 @@ export const	listData: ListingsProps[] = [
 						house2
 					],
 					status: true,
+					isAvailable: true,
+					tags: ["discount"],
 					createdAt: "2025-01-10T08:00:00Z",
 					expiresAt: "2025-02-09T08:00:00Z"
 				}
@@ -219,6 +236,8 @@ export const	listData: ListingsProps[] = [
 						house3
 					],
 					status: true,
+					isAvailable: true,
+					tags: [],
 					createdAt: "2025-01-10T08:00:00Z",
 					expiresAt: "2025-02-09T08:00:00Z"
 				}
