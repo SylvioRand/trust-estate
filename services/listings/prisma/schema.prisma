@@ -13,17 +13,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model SellerStats {
-  id              String   @id @default(uuid())
-  userId          String   @unique @map("user_id")
-  totalListings   Int      @default(0)
-  activeListings  Int      @default(0)
-  successfulSales Int      @default(0)
-  successfulRents Int      @default(0)
-  averageRating   Float    @default(0)
-  responseRate    Float    @default(0)
-
+  id              String @id @default(uuid())
+  userId          String @unique @map("user_id")
+  totalListings   Int    @default(0)
+  activeListings  Int    @default(0)
+  successfulSales Int    @default(0)
+  successfulRents Int    @default(0)
+  averageRating   Float  @default(0)
+  responseRate    Float  @default(0)
 
   @@index([averageRating])
   @@index([successfulSales])
@@ -64,36 +62,37 @@ enum MarketingTag {
 }
 
 model Listing {
-  id             String         @id @default(uuid())
-  type           ListingType
-  propertyType   PropertyType
-  title          String
-  description    String
-  price          Float
-  surface        Float
-  zone           String
-  photos         String[]       @default([])
-  tags           MarketingTag[] @default([])
-  status         ListingStatus  @default(active)
-  isAvailable    Boolean        @default(true)
-  soldAt         DateTime?
-  sellerId       String
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id           String         @id @default(uuid())
+  type         ListingType
+  propertyType PropertyType
+  title        String
+  description  String
+  price        Float
+  surface      Float
+  zone         String
+  photos       String[]       @default([])
+  tags         MarketingTag[] @default([])
+  status       ListingStatus  @default(active)
+  isAvailable  Boolean        @default(true)
+  soldAt       DateTime?
+  sellerId     String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
-  features       ListingFeatures?
-  availability   ListingAvailability[]
-  stats          ListingStats?
-  reports        Report[]
+  features          ListingFeatures?
+  availability      ListingAvailability[]
+  stats             ListingStats?
+  reports           Report[]
+  moderationActions ModerationAction[]
 
   @@map("Listing")
 }
 
 model ListingFeatures {
-  id                 String      @id @default(uuid())
-  listingId          String      @unique
-  listing            Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  
+  id        String  @id @default(uuid())
+  listingId String  @unique
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
   bedrooms           Int?
   bathrooms          Int?
   wc_separate        Boolean?
@@ -107,12 +106,12 @@ model ListingFeatures {
 }
 
 model ListingAvailability {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   listingId String
-  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  dayOfWeek Int      // 0=Dimanche, 1=Lundi... 6=Samedi
-  startTime String   // "09:00"
-  endTime   String   // "18:00"
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  dayOfWeek Int // 0=Dimanche, 1=Lundi... 6=Samedi
+  startTime String // "09:00"
+  endTime   String // "18:00"
 
   @@map("ListingAvailability")
 }
@@ -138,14 +137,37 @@ enum ReportReason {
 }
 
 model Report {
-  id          String       @id @default(uuid())
-  listingId   String
-  listing     Listing      @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  reporterId  String
-  reason      ReportReason
-  comment     String?
-  createdAt   DateTime     @default(now())
+  id         String       @id @default(uuid())
+  listingId  String
+  listing    Listing      @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  reporterId String
+  reason     ReportReason
+  comment    String?
+  createdAt  DateTime     @default(now())
 
   @@unique([listingId, reporterId]) // Un utilisateur ne peut signaler une annonce qu'une fois
   @@map("Report")
+}
+
+enum ModerationActionType {
+  block_temporary
+  archive_permanent
+  request_clarification
+  reject_reports
+}
+
+model ModerationAction {
+  id              String               @id @default(uuid())
+  listingId       String
+  listing         Listing              @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  moderatorId     String
+  action          ModerationActionType
+  reason          String
+  internalNote    String?
+  messageToSeller String?
+  createdAt       DateTime             @default(now())
+
+  @@index([listingId])
+  @@index([moderatorId])
+  @@map("ModerationAction")
 }
