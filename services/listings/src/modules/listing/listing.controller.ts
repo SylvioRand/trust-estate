@@ -7,11 +7,14 @@ import { handleArchive } from "./handlers/archive.handler";
 import { handleReport } from "./handlers/report.handler";
 
 export async function listingRoutes(app: FastifyInstance) {
-  app.post('/publish', { preHandler: (app as any).authenticate }, handlePublish);
   app.get("/health", async (req, reply) => reply.status(200).send({ status: "ok" }));
+  app.post('/publish', { preHandler: (app as any).authenticate }, handlePublish);
   app.get('/mine', { preHandler: (app as any).authenticate }, handleGetMine);
   app.get('/', { preHandler: (app as any).optionalAuthenticate }, handleSearch);
   app.put('/:id', { preHandler: (app as any).authenticate }, handleUpdate);
   app.post('/:id/archive', { preHandler: (app as any).authenticate }, handleArchive);
   app.post('/:id/report', { preHandler: (app as any).authenticate }, handleReport);
+  app.get('/:id', { preHandler: (app as any).optionalAuthenticate }, (req, reply) => { reply.status(200).send({ message: 'ok' }) });
+  app.post('/:id/availability', { preHandler: (app as any).authenticate }, (req, reply) => { reply.status(200).send({ message: 'ok' }) });
+  app.get('/:id/slots', { preHandler: (app as any).optionalAuthenticate }, (req, reply) => { reply.status(200).send({ message: 'ok' }) });
 }
