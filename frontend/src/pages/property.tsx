@@ -5,6 +5,8 @@ import { listData, type ListingsProps } from "../dataModel/modelPropertyList";
 import ActionButton from "../components/ActionButton";
 import { TagsComponents } from "./listings";
 import type { ListingsTags } from "../dataModel/modelListings";
+import InputEnum from "../components/InputEnum";
+import type { TFunction } from "i18next";
 
 interface PublicationCardProps {
 	propertyData: ListingsProps;
@@ -27,7 +29,6 @@ export const	PublicationCard: React.FC<PublicationCardProps> = ({
 			w-full h-full
 			min-h-90 max-h-90
 			border border-background/25
-			cursor-pointer
 			overflow-hidden"
 			onPointerOver={ () => setHovered(true) }
 			onPointerLeave={ () => setHovered(false) }
@@ -128,9 +129,103 @@ export const	PublicationCard: React.FC<PublicationCardProps> = ({
 	);
 }
 
+interface	FilterProps {
+	t: TFunction<"property">;
+}
+
+const	Filter: React.FC<FilterProps> = ({
+	t
+}) => {
+	const	[isOpen, setIsOpen] = useState<boolean>(false);
+	const	[hovered, setHovered] = useState<boolean>(false);
+
+	return (
+		<div className="sticky top-14
+			border border-background/25
+			bg-linear-to-b from-foreground via-foreground/75 to-transparent
+			flex flex-col items-center justify-start gap-3
+			backdrop-blur-lg
+			rounded-xl
+			shadow-standard
+			p-2
+			z-2
+			flex-none
+			overflow-hidden
+			transition-discrete duration-500
+			w-full"
+			style={{
+				height: isOpen ? "280px" : "55px"
+			}}
+		>
+			<button
+				className="border border-background/25
+				shadow-standard
+				px-2 py-1
+				w-full
+				grid grid-cols-[1fr_auto] grid-rows-1
+				transition-colors duration-200
+				cursor-pointer
+				rounded-md"
+				onClick={ () => setIsOpen(isOpen ? false : true) }
+				onPointerEnter={ () => setHovered(true) }
+				onPointerLeave={ () => setHovered(false) }
+				style={{
+					backgroundColor: hovered ? "color-mix(in srgb, var(--color-accent) 25%, transparent)" : "transparent"
+				}}
+			>
+				<div
+					className="justify-self-start"
+				>
+					{ t("buttons.filter.title") }
+				</div>
+				<div
+					className="font-icon
+					transition-transform duration-300"
+					style={{
+						transform: isOpen ? "rotateZ(-180deg)" : "none"
+					}}
+				>
+					
+				</div>
+			</button>
+
+			<InputEnum
+				title={ t("buttons.filter.contract.title") }
+				name="filterContract"
+				dataEnum={[
+					{ value: "sale", title: t("buttons.filter.contract.sale") },
+					{ value: "rent", title: t("buttons.filter.contract.rent") }
+				]}
+			/>
+			<InputEnum
+				title={ t("buttons.filter.propertyType.title") }
+				name="filterpropertyType"
+				dataEnum={[
+					{ value: "none", title: t("buttons.filter.propertyType.none") },
+					{ value: "apartment", title: t("buttons.filter.propertyType.apartment") },
+					{ value: "house", title: t("buttons.filter.propertyType.house") },
+					{ value: "loft", title: t("buttons.filter.propertyType.loft") },
+					{ value: "land", title: t("buttons.filter.propertyType.land") },
+					{ value: "commercial", title: t("buttons.filter.propertyType.commercial") }
+				]}
+			/>
+			<InputEnum
+				title={ t("buttons.filter.tag.title") }
+				name="filtertag"
+				dataEnum={[
+					{ value: "none", title: t("buttons.filter.tag.none") },
+					{ value: "urgent", title: t("buttons.filter.tag.urgent") },
+					{ value: "exclusive", title: t("buttons.filter.tag.exclusive") },
+					{ value: "discount", title: t("buttons.filter.tag.discount") }
+				]}
+			/>
+
+		</div>
+	);
+}
 
 const	PropertyPage: React.FC = () => {
-	const	{ t } = useTranslation("proprerty");
+	const	{ t } = useTranslation("property");
 	const	[filterActive, setFilterActive] = useState<boolean>(false);
 	const	[filterOpened, setFilterOpened] = useState<boolean>(false);
 
@@ -145,6 +240,10 @@ const	PropertyPage: React.FC = () => {
 			<div className="w-full h-12 flex-none"
 			>
 			</div>
+
+			<Filter
+				t={ t }
+			/>
 
 			<div className="flex flex-col items-center justify-start gap-4
 				md:grid md:grid-cols-2 md:grid-rows-2

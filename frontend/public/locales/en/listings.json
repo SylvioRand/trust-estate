@@ -7,11 +7,12 @@
 	"no": "No",
 
 	"viewDetails": "View Details",
+	"areaUnit": "sqft",
 
 	"section": {
 		"listingType": {
 			"rent": "Rent",
-			"sale": "Sell"
+			"sale": "For sale"
 		},
 
 		"features": {

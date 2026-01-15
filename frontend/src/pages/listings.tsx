@@ -639,6 +639,11 @@ const	ListingsPage: React.FC = () => {
 						w-full
 						place-items-center"
 					>
+						<FeaturesCard
+							title={ t("section.features.area") }
+							icon="󰳂"
+							value={ dataExample.surface.toString() + " " + t("areaUnit") }
+						/>
 						{
 							Object.entries(dataExample.features).map(([key, value]) => {
 								const	data: string = value.toString();

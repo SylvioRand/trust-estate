@@ -1,5 +1,5 @@
 {
-	"button": {
+	"buttons": {
 		"filter": {
 			"title": "Filtres",
 			"contract": {
@@ -15,7 +15,7 @@
 			"propertyType": {
 				"title": "Type de bien",
 				"none": "Tout",
-				"appartment": "Appartement",
+				"apartment": "Appartement",
 				"house": "Maison",
 				"loft": "Loft",
 				"land": "Terrain",

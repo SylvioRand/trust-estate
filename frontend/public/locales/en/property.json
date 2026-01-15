@@ -1,12 +1,12 @@
 {
-	"button": {
+	"buttons": {
 		"filter": {
 			"title": "Filter",
 			"contract": {
 				"title": "Contract",
 				"none": "None",
-				"sale": "Sell",
-				"rent": "Rent"
+				"sale": "For Sell",
+				"rent": "For Rent"
 			},
 			"area": {
 				"title": "Area",
@@ -15,7 +15,7 @@
 			"propertyType": {
 				"title": "Property Type",
 				"none": "All",
-				"appartment": "Appartment",
+				"apartment": "Appartment",
 				"house": "House",
 				"loft": "Loft",
 				"land": "Land",
