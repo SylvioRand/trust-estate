@@ -1,5 +1,5 @@
-import { prisma } from '../../config/prisma';
-import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData } from "./listing.schema";
+import { prisma } from '../config/prisma';
+import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing } from "./listing.schema";
 import path from 'path';
 
 export class ListingService {
@@ -160,5 +160,66 @@ export class ListingService {
 
             return updated;
         });
+    }
+
+    static async archiveListing(id: string, sellerId: string, data: ArchiveListingData) {
+        // 1. Vérification propriété
+        const listing = await prisma.listing.findUnique({ where: { id } });
+
+        if (!listing) throw new Error('listing.not_found');
+        if (listing.sellerId !== sellerId) throw new Error('forbidden');
+        if (listing.status === 'archived') throw new Error('listing.already_archived');
+
+        return await prisma.$transaction(async (tx) => {
+            const now = new Date();
+
+            const archivedListing = await tx.listing.update({
+                where: { id },
+                data: {
+                    status: 'archived',
+                    isAvailable: false,
+                    soldAt: data.sold ? now : null
+                }
+            });
+
+            const statsUpdate: any = {
+                activeListings: { decrement: 1 }
+            };
+
+            if (data.sold) {
+                if (listing.type === 'sale') statsUpdate.successfulSales = { increment: 1 };
+                else statsUpdate.successfulRents = { increment: 1 };
+            }
+
+            await tx.sellerStats.update({
+                where: { userId: sellerId },
+                data: statsUpdate
+            });
+
+            return archivedListing;
+        });
+    }
+
+    static async reportListing(id: string, reporterId: string, data: ReportListing) {
+        const listing = await prisma.listing.findUnique({ where: { id } });
+
+        if (!listing) throw new Error('listing.not_found');
+
+        if (listing.sellerId === reporterId) throw new Error('listing.cannot_report_own');
+        try {
+            return await prisma.report.create({
+                data: {
+                    listingId: id,
+                    reporterId: reporterId,
+                    reason: data.reason,
+                    comment: data.comment
+                }
+            });
+        } catch (error: any) {
+            if (error.code === 'P2002') {
+                throw new Error('listing.already_reported');
+            }
+            throw error;
+        }
     }
 }
