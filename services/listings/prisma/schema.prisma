@@ -130,9 +130,11 @@ model ListingStats {
 
 enum ReportReason {
   fraud
+  duplicate
   spam
   incorrect_info
   inappropriate
+  other
 }
 
 model Report {
