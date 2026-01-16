@@ -64,13 +64,14 @@ const	AIPage: React.FC = () => {
 
 	return (
 		<div className="flex flex-col-reverse items-center justify-start
+			overflow-y-scroll
 			gap-3
 			px-4 md:px-7 xl:px-64
 			relative
 			w-full h-screen"
 		>
 
-			<div className="w-full h-28">
+			<div className="w-full h-24 flex-none">
 			</div>
 
 			{
