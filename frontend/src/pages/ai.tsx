@@ -50,7 +50,10 @@ type	MessageType = {
 const	AIPage: React.FC = () => {
 	const	[chatValue, setChatValue] = useState<string>("");
 	// const	messageRef: RefObject<MessageType[]> = useRef<MessageType[]>([]);
-	const	[messageData, setMessageData] = useState<MessageType[]>([]);
+	const	[messageData, setMessageData] = useState<MessageType[]>([
+		{ value: "Ok, I've actually found 2 property that match your criteria.", side: "left" },
+		{ value: "I'm actually looking for an affordable apartment to rent near the capital.", side: "right" }
+	]);
 	const	{ t } = useTranslation("ai");
 
 	const	handleSendButton = async () => {
