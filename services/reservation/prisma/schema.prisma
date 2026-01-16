@@ -7,6 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ReservationStatus {
+	pending
+	confirmed
+	rejected
+	cancelled
+	done
+}
+
+enum CancelledBy {
+	buyer
+	seller
+	system
+}
+
 model Reservation {
 	reservationId	String			 @id @default(uuid())
 	listingId		String			 @map("listing_id")
@@ -24,6 +38,7 @@ model Reservation {
 	feedbackGiven	Boolean			@default(false) @map("feedback_given")
 	createdAt		DateTime			@default(now()) @map("created_at")
 	updatedAt		DateTime			@updatedAt @map("updated_at")
+	feedbacks		Feedback[]
 
 	@@index([listingId])
 	@@index([buyerId])
@@ -34,16 +49,25 @@ model Reservation {
 	@@map("reservations")
 }
 
-enum ReservationStatus {
-	pending
-	confirmed
-	rejected
-	cancelled
-	done
-}
 
-enum CancelledBy {
-	buyer
-	seller
-	system
+model Feedback {
+	id				String   @id @default(uuid())
+	reservationId	String   @unique
+	listingId		String?
+	authorId		String
+	targetId		String
+	rating			Int
+	comment			String
+	listingAccurate	Boolean? 
+	sellerReactive	Boolean?
+	visitUseful		Boolean?
+	visible			Boolean  @default(true)
+	moderatedAt		DateTime?
+	moderationReason	String?
+	createdAt		DateTime @default(now())
+	updatedAt		DateTime @default(now())
+	reservation		Reservation @relation(fields: [reservationId], references: [reservationId])
+	
+	@@index([listingId])
+	@@index([targetId])
 }
