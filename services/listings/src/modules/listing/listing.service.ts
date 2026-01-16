@@ -222,4 +222,10 @@ export class ListingService {
             throw error;
         }
     }
+
+    static async getSellerStats(userId: string) {
+        return await prisma.sellerStats.findUnique({
+            where: { userId }
+        });
+    }
 }
