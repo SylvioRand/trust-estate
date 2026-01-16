@@ -6,6 +6,7 @@ export interface EnvConfigInterface {
 	GMAIL_APP_PASSWORD: string
 	COOKIE_SECRET: string
 	FRONTEND_URL: string
+	INTERNAL_KEY_SECRET: string
 }
 
 export interface UserInterface {

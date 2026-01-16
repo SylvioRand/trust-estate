@@ -19,7 +19,7 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 
 		const internalToken = jwt.sign(
 			{ service: 'auth-gateway' }, 
-			"INTERNAL_KEY", 
+			app.config.INTERNAL_KEY_SECRET, 
 			{ algorithm: 'HS256', expiresIn: '30s' }
 		);
 	
