@@ -145,7 +145,7 @@ Toutes les erreurs (4xx, 5xx) suivent ce format JSON.
 
 ### Sanitization Anti-XSS
 
-Tous les champs texte (`title`, `description`, `comment`, `firstName`, etc.) doivent être nettoyés :
+Tous les champs texte (`title`, `description`, `comment`, `firstName`, `lastName`) doivent être nettoyés :
 
 ```javascript
 // Backend (Node.js)
@@ -935,7 +935,7 @@ GET /auth/check-phone?phone=+261340000000
 
 ### 1.14 Vérification Token (Interne - Service-to-Service)
 
-**Description :** Endpoint **interne** permettant aux autres microservices (listings-service, reservations-service, etc.) de valider un token JWT et d'obtenir les informations utilisateur essentielles.
+**Description :** Endpoint **interne** permettant aux autres microservices (`listings-service`, `reservations-service`, `payment-service`, `ai-service`) de valider un token JWT et d'obtenir les informations utilisateur essentielles.
 
 **Cas d'usage :**
 - Le `listings-service` reçoit une requête de publication → appelle `auth-service` pour valider le token
@@ -1081,7 +1081,7 @@ GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000
   "pagination": {
     "page": 1,
     "limit": 20,
-    "total": 45,
+    "totalMatching": 45,
     "totalPages": 3
   }
 }
@@ -1094,7 +1094,7 @@ GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000
   "pagination": {
     "page": 1,
     "limit": 20,
-    "total": 0,
+    "totalMatching": 0,
     "totalPages": 0
   }
 }
@@ -1643,6 +1643,12 @@ GET /listings/mine?status=active&page=1
     "total": 5,
     "active": 2,
     "archived": 3
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "totalMatching": 5,
+    "totalPages": 1
   }
 }
 ```
@@ -1668,7 +1674,7 @@ POST /listings/:id/report
 **Request :**
 ```json
 {
-  "reason": "fraud", // Enum: "fraud", "spam", "incorrect_info", "inappropriate"
+  "reason": "fraud" | "spam" | "incorrect_info" | "inappropriate",
   "comment": "Les photos ne correspondent pas à la description..."
 }
 ```
@@ -1719,8 +1725,6 @@ POST /listings/:id/report
 
 ---
 
----
-
 ### 2.10 Génération Description IA
 
 ```http
@@ -1757,6 +1761,51 @@ POST /listings/generate-description
   "error": "rate_limited",
   "message": "common.rate_limited",
   "retryAfter": 60
+}
+```
+
+---
+
+### 2.11 Récupérer stats vendeur (Interne)
+
+```http
+GET /listings/seller/:userId/stats
+```
+
+**Description :** Endpoint **interne** permettant au service `auth-service` (ou d'autres) de récupérer les statistiques consolidées d'un vendeur.
+
+**Auth :** Header `x-internal-key` (clé API interne partagée)
+
+**Parameters :**
+- `userId` (path) : UUID du vendeur
+
+**Response 200 :**
+```json
+{
+  "data": {
+    "totalListings": 5,
+    "activeListings": 4,
+    "successfulSales": 1,
+    "successfulRents": 0,
+    "averageRating": 4.5,
+    "responseRate": 85
+  }
+}
+```
+
+**Response 401 (clé interne invalide) :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Missing internal key"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "seller_stats_not_found",
+  "message": "Seller statistics not found for this user."
 }
 ```
 
@@ -2322,7 +2371,12 @@ GET /credits/history
       "createdAt": "2025-01-15T11:30:00Z"
     }
   ],
-  "pagination": {...}
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "totalMatching": 45,
+    "totalPages": 3
+  }
 }
 ```
 
@@ -2348,10 +2402,14 @@ GET /credits/history
 GET /admin/listings/flagged
 ```
 
+**Description :** Tableau de bord pour les modérateurs affichant toutes les annonces ayant reçu au moins un signalement utilisateur. Les annonces sont triées par date de signalement (le plus récent en premier).
+
+**Auth :** Cookie HttpOnly + Rôle `moderator`
+
 **Query params :**
-- `reason` : `user_reported`
-
-
+- `page` : number (défaut: 1)
+- `limit` : number (défaut: 20)
+- `reportReason` : Enum (optionnel) - `["fraud", "duplicate", "spam", "incorrect_info", "inappropriate", "other"]`
 
 **Response 200 :**
 ```json
@@ -2359,70 +2417,22 @@ GET /admin/listings/flagged
   "data": [
     {
       "listingId": "l5",
-      "title": "Terrain 500m²",
-      "reason": "user_reported", // Enum: "user_reported"
-      "reportedBy": "u15",
-      "reportReason": "Photos suspectes", // Enum: "fraud", "spam", "incorrect_info", "inappropriate"
+      "title": "Terrain 500m² à Ivandry",
+      "reportCount": 3,
+      "latestReportReason": "fraud",
       "seller": {
         "id": "u10",
-        "name": "Nom Vendeur",
+        "name": "Jean Rakoto",
         "email": "vendeur@mail.com"
       },
       "flaggedAt": "2025-01-15T10:00:00Z"
     }
-  ]
-}
-```
-
-**Response 403 :**
-```json
-{
-  "error": "forbidden",
-  "message": "admin.forbidden.moderator_only"
-}
-```
-
----
-
-### 6.2 Appliquer une action (Modération)
-
-```http
-POST /admin/listings/:id/action
-```
-
-**Description :** Applique une décision de modération sur une annonce spécifique.
-
-**Auth :** Cookie HttpOnly + Rôle `moderator`
-
-**Request :**
-```json
-{
-  "action": "block_temporary", // Enum: "block_temporary", "archive_permanent", "request_clarification"
-  "reason": "Non-respect des CGU (Photos non conformes)",
-  "metadata": {
-    "messageToSeller": "Veuillez mettre à jour vos photos sous 48h."
-  }
-}
-```
-
-**Response 200 :**
-```json
-{
-  "success": true,
-  "actionId": "ma2",
-  "newStatus": "blocked", // Enum: "active", "blocked", "archived"
-  "message": "admin.action_applied_successfully"
-}
-```
-
-**Response 400 (validation) :**
-```json
-{
-  "error": "validation_failed",
-  "message": "Données invalides",
-  "details": {
-    "action": ["validation.admin.action.invalid"],
-    "reason": ["validation.admin.reason.too_short", "validation.admin.reason.too_long"]
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "totalMatching": 12,
+    "totalPages": 1
   }
 }
 ```
@@ -2439,7 +2449,66 @@ POST /admin/listings/:id/action
 ```json
 {
   "error": "forbidden",
-  "message": "admin.forbidden.moderator_only"
+  "message": "admin.forbidden.moderator_only",
+  "requiredRole": "moderator"
+}
+```
+
+---
+
+### 6.2 Consulter détail annonce (Admin)
+
+```http
+GET /admin/listings/:id
+```
+
+**Description :** Vue complète et sans restriction d'une annonce spécifique pour investigation. Contrairement à la vue publique, cette version révèle toutes les données privées (contacts du vendeur, notes internes, signalements détaillés).
+
+**Auth :** Cookie HttpOnly + Rôle `moderator`
+
+**Response 200 :**
+```json
+{
+  "listing": {
+    "id": "l5",
+    "title": "Terrain 500m² à Ivandry",
+    "description": "Superbe terrain...",
+    "price": 150000000,
+    "status": "active", 
+    "createdAt": "2025-01-10T08:00:00Z"
+  },
+  "seller": {
+    "id": "u10",
+    "firstName": "Jean",
+    "lastName": "Rakoto",
+    "email": "vendeur@mail.com",
+    "phone": "+261340000000",
+    "memberSince": "2024-06-15T00:00:00Z",
+    "identityVerified": true
+  },
+  "reports": [
+    {
+      "id": "rep1",
+      "reporterId": "u15",
+      "reason": "fraud",
+      "comment": "Les photos appartiennent à une autre annonce sur un site concurrent.",
+      "createdAt": "2025-01-15T10:00:00Z"
+    },
+    {
+      "id": "rep2",
+      "reporterId": "u18",
+      "reason": "incorrect_info",
+      "comment": "Le terrain n'est pas à Ivandry mais beaucoup plus loin.",
+      "createdAt": "2025-01-15T11:30:00Z"
+    }
+  ],
+  "moderationHistory": [
+    {
+      "action": "request_clarification",
+      "reason": "Signalement pour localisation erronée",
+      "date": "2025-01-15T12:00:00Z"
+    }
+  ]
 }
 ```
 
@@ -2451,21 +2520,107 @@ POST /admin/listings/:id/action
 }
 ```
 
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "common.unauthorized"
+}
+```
+
+**Response 403 :**
+```json
+{
+  "error": "forbidden",
+  "message": "admin.forbidden.moderator_only",
+  "requiredRole": "moderator"
+}
+```
+
 ---
 
-### 6.3 Historique Modération (Admin)
+### 6.3 Appliquer une action (Modération)
+
+```http
+POST /admin/listings/:id/action
+```
+
+**Description :** Point d'entrée unique pour toutes les décisions de modération. L'action choisie impacte directement le statut de l'annonce et peut déclencher des notifications au vendeur. Fusionne les anciennes actions séparées pour une meilleure centralisation.
+
+**Auth :** Cookie HttpOnly + Rôle `moderator`
+
+**Action Types (`action`) :**
+- `block_temporary` : Suspend l'annonce (devient invisible). Passage du statut à `blocked`.
+- `archive_permanent` : Archivage définitif pour fraude ou violation grave. Non réversible par le vendeur.
+- `request_clarification` : Envoie une notification de mise en demeure. L'annonce reste `active` ou passe en `blocked` selon la gravité.
+- `reject_reports` : Ignore les signalements et marque l'annonce comme "vérifiée".
+
+**Request :**
+```json
+{
+  "action": "block_temporary", // Enum: ["block_temporary", "archive_permanent", "request_clarification", "reject_reports"]
+  "reason": "Photos non conformes aux CGU",
+  "messageToSeller": "Veuillez remplacer vos photos par des prises de vue réelles sous 48h.",
+  "internalNote": "Utilisateur suspecté de multi-compte, à surveiller."
+}
+```
+
+**Response 200 :**
+```json
+{
+  "success": true,
+  "actionId": "ma2",
+  "newStatus": "blocked",
+  "message": "admin.action_applied_successfully"
+}
+```
+
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "common.validation_failed",
+  "details": {
+    "action": ["validation.admin.action.invalid"],
+    "reason": ["validation.admin.reason.too_short"]
+  }
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "common.unauthorized"
+}
+```
+
+**Response 403 :**
+```json
+{
+  "error": "forbidden",
+  "message": "admin.forbidden.moderator_only",
+  "requiredRole": "moderator"
+}
+```
+
+---
+
+### 6.4 Historique Modération (Admin)
 
 ```http
 GET /admin/actions
 ```
 
-**Auth :** Cookie HttpOnly (`realestate_access_token`) + Rôle `moderator`
+**Description :** Journal global de toutes les actions effectuées par l'équipe de modération pour permettre le suivi, l'audit et la cohérence des décisions.
+
+**Auth :** Cookie HttpOnly + Rôle `moderator`
 
 **Query params :**
-- `targetId` : string (optionnel)
-- `moderatorId` : string (optionnel)
-- `page` : number (défaut: 1)
-- `limit` : number (défaut: 50)
+- `moderatorId` : UUID (optionnel)
+- `targetId` : UUID (optionnel) - Pour voir les actions sur une annonce précise
+- `page` : number
+- `limit` : number
 
 **Response 200 :**
 ```json
@@ -2474,51 +2629,39 @@ GET /admin/actions
     {
       "id": "ma1",
       "moderatorId": "m1",
-      "targetType": "listing", // Enum: "listing", "user", "feedback"
+      "targetType": "listing", 
       "targetId": "l5",
-      "action": "block_temporary",
-      "reason": "Photos trompeuses confirmées",
-      "applied": true,
+      "action": "archive_permanent", // Enum: ["block_temporary", "archive_permanent", "request_clarification", "reject_reports"]
+      "reason": "Fraude confirmée",
       "appliedAt": "2025-01-15T14:00:00Z"
     }
   ],
   "pagination": {
     "page": 1,
-    "total": 120
+    "limit": 50,
+    "totalMatching": 120,
+    "totalPages": 3
   }
 }
-```
 
----
-
-### 6.4 Archivage Permanent (Sécurité)
-
-```http
-POST /admin/listings/:id/archive-permanent
-```
-
-**Request :**
+**Response 401 :**
 ```json
 {
-  "reason": "Fraude avérée. Bien inexistant.",
-  "notifySeller": true
+  "error": "unauthorized",
+  "message": "common.unauthorized"
 }
 ```
 
-**Response 200 :**
+**Response 403 :**
 ```json
 {
-  "archived": true,
-  "listing": {
-    "id": "l5",
-    "status": "archived", // Enum: "active", "blocked", "archived"
-    "archivedBy": "moderator",
-    "archivedAt": "2025-01-15T14:00:00Z"
-  }
+  "error": "forbidden",
+  "message": "admin.forbidden.moderator_only",
+  "requiredRole": "moderator"
 }
 ```
+```
 
----
 
 ---
 
@@ -2725,7 +2868,7 @@ GET /ai/market-data
 
 **Exemple :**
 ```
-GET /ai/market-data?zone=tana-ivandry&type=sale&propertyType=villa&period=6m
+GET /ai/market-data?zone=tana-ivandry&type=sale&propertyType=house&period=6m
 ```
 
 **Response 200 :**
@@ -3041,7 +3184,6 @@ GET /ai/health
 |                      | `GET`    | `/listings/:id/slots`                       |
 |                      | `POST`   | `/listings/:id/report`                      |
 |                      | `GET`    | `/listings/mine`                            |
-|                      | `POST`   | `/listings/generate-description`            |
 | **Réservations**     | `GET`    | `/reservations/mine`                        |
 |                      | `POST`   | `/reservations`                             |
 |                      | `GET`    | `/reservations/check-slot`                  |
@@ -3057,12 +3199,12 @@ GET /ai/health
 |                      | `POST`   | `/admin/listings/:id/action`                |
 |                      | `GET`    | `/admin/actions`                            |
 | **AI (Assistant)**   | `POST`   | `/ai/chat`                                  |
-|                      | `POST`   | `/ai/generate`                              |
+| **AI (Outils)**      | `POST`   | `/ai/generate`                              |
 |                      | `GET`    | `/ai/market-data`                           |
 |                      | `POST`   | `/ai/index` (INTERNE)                       |
 |                      | `GET`    | `/ai/index-status/:listingId`               |
 |                      | `GET`    | `/ai/health`                                |
-| **TOTAL**            |          | **45 Endpoints**                            |
+| **TOTAL**            |          | **46 Endpoints**                            |
 
 
 ---
