@@ -4,56 +4,57 @@ import house0 from "../../src/images/house0.webp";
 import house1 from "../../src/images/house1.webp";
 import house2 from "../../src/images/house2.webp";
 import house3 from "../../src/images/house3.webp";
+import bentoSmartAi from "../../src/images/bento_smart_ai.png";
+import bentoVerifiedProperty from "../../src/images/bento_verified_property.png";
+import bentoInstantNotification from "../../src/images/bento_instant_notification.png";
+import bentoAccurateValuation from "../../src/images/bento_accurate_valuation.png";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
-interface CardProps {
-	icon: string;
+interface	BentoProps {
 	title: string;
 	content: string;
+	picture: string;
 }
 
-const	Card: React.FC<CardProps> = ({
-	icon = "X",
+const	Bento: React.FC<BentoProps> = ({
 	title = "Title",
-	content = "Content"
+	content = "Content",
+	picture
 }) => {
 	return (
-		<div className="grid grid-cols-1 grid-rows-[auto_1fr]
-			transition-transform duration-200
-			hover:-translate-y-4
-			border border-background/25
-			ease-in-out
+		<div
+			className="grid grid-cols-1 grid-rows-[auto_1fr]
+			w-full h-full
+			shadow-standard
 			rounded-xl
-			shadow-xl
-			p-4
-			w-full h-63"
+			border border-background/25
+			overflow-hidden
+			max-w-100 max-h-100"
 		>
-
-			<div className="grid grid-cols-[auto_1fr] grid-rows-1
-				w-full"
+			<div className="w-full h-50
+			relative
+			flex items-center justify-center
+			overflow-hidden
+			flex-none
+			bg-blue-500"
 			>
-				<div className="font-higuen font-bold text-xl w-full">
-					{ title }
-				</div>
-				<div className="flex items-center justify-center
-					ml-auto
-					relative
-					w-5 h-5"
-				>
-					<div className="absolute
-						bg-linear-to-t from-[color-mix(in_srgb,var(--color-foreground)_25%,var(--color-accent))] via-[color-mix(in_srgb,var(--color-foreground)_25%,var(--color-accent))] to-accent
-						bg-clip-text
-						text-transparent
-						font-icon text-4xl"
-					>
-						{ icon }
-					</div>
-				</div>
+			<img
+				className="w-full h-full object-cover"
+				src={ picture }
+				alt="Bento presenting the advantage of the using Ai."
+			/>
 			</div>
 
-			<div className="font-inter font-light text-md mt-auto"
+			<div className="grid grid-cols-1 grid-rows-[auto_1fr]
+			border-t border-background/25
+			p-4"
 			>
-				{ content }
+				<div className="font-bold">
+					{ title }
+				</div>
+				<div className="font-extralight text-sm">
+					{ content }
+				</div>
 			</div>
 		</div>
 	);
@@ -95,11 +96,11 @@ const	HomePage: React.FC = () => {
 		{ title: t("aboutUs.stats.3"), value: "7+" }
 	]
 
-	const	cardData: CardProps[] = [
-		{ icon: "󰓎", title: t("aboutUs.card.AI.title"), content: t("aboutUs.card.AI.content") },
-		{ icon: "󰄬", title: t("aboutUs.card.verifiedProperty.title"), content: t("aboutUs.card.verifiedProperty.content") },
-		{ icon: "", title: t("aboutUs.card.accurateValuation.title"), content: t("aboutUs.card.accurateValuation.content") },
-		{ icon: "󰥔", title: t("aboutUs.card.instantNotification.title"), content: t("aboutUs.card.instantNotification.content") }
+	const	bentoCard: BentoProps[] = [
+		{ picture: bentoSmartAi, title: t("aboutUs.card.AI.title"), content: t("aboutUs.card.AI.content") },
+		{ picture: bentoVerifiedProperty, title: t("aboutUs.card.verifiedProperty.title"), content: t("aboutUs.card.verifiedProperty.content") },
+		{ picture: bentoAccurateValuation, title: t("aboutUs.card.accurateValuation.title"), content: t("aboutUs.card.accurateValuation.content") },
+		{ picture: bentoInstantNotification, title: t("aboutUs.card.instantNotification.title"), content: t("aboutUs.card.instantNotification.content") }
 	]
 	VerifyUsersState();
 	return (
@@ -227,19 +228,18 @@ const	HomePage: React.FC = () => {
 					</div>
 				</div>
 
-				<div className="flex flex-col items-center justify-evenly
-					md:grid md:grid-cols-2 md:grid-rows-2
-					xl:flex xl:flex-row 
+				<div className="grid grid-cols-[repeat(auto-fill,minmax(316px,1fr))] grid-rows-1
+					place-items-center
 					gap-8
 					max-w-350
 					w-full"
 				>
 					{
-						cardData.map((value: CardProps, index: number) => {
+						bentoCard.map((value: BentoProps, index: number) => {
 							return (
-								<Card
+								<Bento
 									key={ index }
-									icon = { value.icon }
+									picture = { value.picture }
 									title = { value.title }
 									content = { value.content }
 								/>
@@ -247,7 +247,6 @@ const	HomePage: React.FC = () => {
 						})
 					}
 				</div>
-
 			</div>
 
 			<div className="w-full h-50 flex-none">

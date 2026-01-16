@@ -1,5 +1,5 @@
 import React from "react";
-import SimpleInput, { PasswordInput } from "../components/Input";
+import SimpleInput from "../components/Input";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
 import { Link } from "react-router-dom";

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSearchParams, Link, Navigate, useNavigate } from "react-router-dom";
+import { useSearchParams, Navigate, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LoadingPage from "./loading";
 import ContentDivider from "../components/ContentDivider";
