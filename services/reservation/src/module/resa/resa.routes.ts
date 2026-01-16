@@ -36,5 +36,4 @@ export async function reservationRoutes(app: FastifyInstance, options: FastifyPl
 			schema: ReservationIdSchema,
 			preHandler: app.authentication
 		}, resaControllers.rejectReservation);
-	// app.post("/reservations/mine", {preHandler: app.authentication}, resaControllers.get)
 }

@@ -33,6 +33,7 @@ async function autoRefreshToken(
 			reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
 			return null;
 		}
+	
 		const tokenHash = await refreshTokenExists(request.server, decoded.userId, refreshToken);
 
 		if (!tokenHash) {
