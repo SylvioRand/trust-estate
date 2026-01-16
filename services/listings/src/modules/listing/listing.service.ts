@@ -1,4 +1,4 @@
-import { prisma } from '../config/prisma';
+import { prisma } from '../../config/prisma';
 import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing } from "./listing.schema";
 import path from 'path';
 
@@ -221,5 +221,11 @@ export class ListingService {
             }
             throw error;
         }
+    }
+
+    static async getSellerStats(userId: string) {
+        return await prisma.sellerStats.findUnique({
+            where: { userId }
+        });
     }
 }

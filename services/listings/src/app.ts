@@ -1,9 +1,11 @@
 import fastify from 'fastify';
+import jwt from 'jsonwebtoken';
 import multipart from '@fastify/multipart';
 import cors from '@fastify/cors';
 import fastifyCookie from '@fastify/cookie';
-import { AuthClient } from './modules/auth.client';
-import { listingRoutes } from './modules/listing.controller';
+import { AuthClient } from './infrastructure/auth.client';
+import { listingRoutes } from './modules/listing/listing.controller';
+import { adminRoutes } from './modules/admin/admin.controller';
 
 const app = fastify();
 
@@ -30,6 +32,21 @@ app.decorate('optionalAuthenticate', async (request: any, reply: any) => {
   }
 });
 
+app.decorate('internalAuthenticate', async (request: any, reply: any) => {
+  const internalKey = request.headers['x-internal-key'];
+  const secret = process.env.INTERNAL_KEY_SECRET || "INTERNAL_KEY";
+
+  if (!internalKey) {
+    return reply.status(401).send({ error: 'unauthorized', message: 'Missing internal key' });
+  }
+
+  try {
+    jwt.verify(internalKey as string, secret);
+  } catch (error) {
+    return reply.status(401).send({ error: 'unauthorized', message: 'Invalid internal key' });
+  }
+});
+
 app.register(multipart, {
   attachFieldsToBody: false, // stream directement le disque
   limits: {
@@ -46,6 +63,7 @@ app.register(cors, {
 });
 
 app.register(listingRoutes, { prefix: '/listings' });
+app.register(adminRoutes, { prefix: '/admin' });
 
 app.listen({ port: 3002, host: '0.0.0.0' }, (err, address) => {
   if (err) {
