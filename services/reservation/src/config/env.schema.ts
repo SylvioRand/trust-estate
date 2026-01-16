@@ -5,9 +5,11 @@ export const envSchema = {
 		'API_AUTH_URL_SERVICE',
 		'JWT_SECRET_PUBLIC_KEY',
 		'GMAIL_USER', 'GMAIL_APP_PASSWORD', 
-		'COOKIE_SECRET', 'FRONTEND_URL'
+		'COOKIE_SECRET', 'FRONTEND_URL',
+		'INTERNAL_KEY_SECRET'
 	],
 	properties: {
+		INTERNAL_KEY_SECRET: { type: 'string' },
 		PORT_AUTH_RESERVATION: {
 			type: 'number',
 			default: 3003

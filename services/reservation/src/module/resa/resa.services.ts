@@ -9,9 +9,12 @@ export async function getAllUserReservation(app: FastifyInstance, userId: string
 				{ buyerId: userId },
 				{ sellerId: userId }
 			]
+		},
+		include: {
+			feedbacks: true
 		}
 	});
-
+	console.log(reservation);
 	if (!reservation)
 		throw new Error("slot_unavailable");
 	return (reservation);
