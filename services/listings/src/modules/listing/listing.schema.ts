@@ -95,3 +95,9 @@ export const ReportListingSchema = z.object({
     .optional()
 }).strict();
 export type ReportListing = z.infer<typeof ReportListingSchema>;
+
+
+export const GetSellerStatsParamsSchema = z.object({
+  userId: z.string().uuid()
+});
+export type GetSellerStatsParams = z.infer<typeof GetSellerStatsParamsSchema>;

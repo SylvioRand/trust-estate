@@ -1,4 +1,5 @@
 import fastify from 'fastify';
+import jwt from 'jsonwebtoken';
 import multipart from '@fastify/multipart';
 import cors from '@fastify/cors';
 import fastifyCookie from '@fastify/cookie';
@@ -28,6 +29,21 @@ app.decorate('optionalAuthenticate', async (request: any, reply: any) => {
     request.user = user;
   } catch (error) {
     request.user = undefined;
+  }
+});
+
+app.decorate('internalAuthenticate', async (request: any, reply: any) => {
+  const internalKey = request.headers['x-internal-key'];
+  const secret = process.env.INTERNAL_KEY_SECRET || "INTERNAL_KEY";
+
+  if (!internalKey) {
+    return reply.status(401).send({ error: 'unauthorized', message: 'Missing internal key' });
+  }
+
+  try {
+    jwt.verify(internalKey as string, secret);
+  } catch (error) {
+    return reply.status(401).send({ error: 'unauthorized', message: 'Invalid internal key' });
   }
 });
 

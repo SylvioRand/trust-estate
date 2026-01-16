@@ -1766,6 +1766,51 @@ POST /listings/generate-description
 
 ---
 
+### 2.11 Récupérer stats vendeur (Interne)
+
+```http
+GET /listings/seller/:userId/stats
+```
+
+**Description :** Endpoint **interne** permettant au service `auth-service` (ou d'autres) de récupérer les statistiques consolidées d'un vendeur.
+
+**Auth :** Header `x-internal-key` (clé API interne partagée)
+
+**Parameters :**
+- `userId` (path) : UUID du vendeur
+
+**Response 200 :**
+```json
+{
+  "data": {
+    "totalListings": 5,
+    "activeListings": 4,
+    "successfulSales": 1,
+    "successfulRents": 0,
+    "averageRating": 4.5,
+    "responseRate": 85
+  }
+}
+```
+
+**Response 401 (clé interne invalide) :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Missing internal key"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "seller_stats_not_found",
+  "message": "Seller statistics not found for this user."
+}
+```
+
+---
+
 ## 3. Réservations (reservations-service)
 
 ### 3.1 Vérifier Disponibilité Slot (UX)
