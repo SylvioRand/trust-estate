@@ -87,7 +87,6 @@ const	DataAbousUs: React.FC<DataAboutUsProps> = ({
 
 const	HomePage: React.FC = () => {
 	const	{ t } = useTranslation("home");
-	const	imgStyle = "w-full aspect-square rounded-xl max-w-80";
 
 	const	statsData: DataAboutUsProps[] = [
 		{ title: t("aboutUs.stats.0"), value: "24/7" },
