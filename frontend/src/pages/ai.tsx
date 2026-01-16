@@ -1,4 +1,4 @@
-import React, { useRef, useState, type RefObject } from "react";
+import React, { useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
 import { useTranslation } from "react-i18next";
 
@@ -49,12 +49,14 @@ type	MessageType = {
 
 const	AIPage: React.FC = () => {
 	const	[chatValue, setChatValue] = useState<string>("");
-	const	messageRef: RefObject<MessageType[]> = useRef<MessageType[]>([]);
+	// const	messageRef: RefObject<MessageType[]> = useRef<MessageType[]>([]);
+	const	[messageData, setMessageData] = useState<MessageType[]>([]);
 	const	{ t } = useTranslation("ai");
 
 	const	handleSendButton = async () => {
 
-		messageRef.current.unshift({ value: chatValue, side: "right" });
+		// messageRef.current.unshift({ value: chatValue, side: "right" });
+		setMessageData([{ value: chatValue, side: "right" }, ...messageData]);
 
 		// NOTE: Clear the value
 		setChatValue("");
@@ -74,7 +76,7 @@ const	AIPage: React.FC = () => {
 			</div>
 
 			{
-				messageRef.current.map((value: MessageType, index: number) => {
+				messageData.map((value: MessageType, index: number) => {
 					return (
 						<Message
 							key={ index }
