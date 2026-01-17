@@ -74,6 +74,7 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 				p-2
 				rounded-md
 				shadow-standard
+				bg-foreground
 				w-full h-10"
 				style={{
 					borderColor: error.length > 0 ? "var(--color-red-500)" : "color-mix(in srgb, var(--color-background) 25%, transparent)",

@@ -112,6 +112,7 @@ const	SettingsPage: React.FC = () => {
 			className="flex flex-col items-center justify-start
 			overflow-y-scroll
 			gap-7
+			animate-fade-in
 			px-4 md:px-7 xl:px-64
 			w-full h-screen"
 		>
