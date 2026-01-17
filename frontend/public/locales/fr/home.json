@@ -2,6 +2,13 @@
 	"brand": {
 		"name": "CASA"
 	},
+
+	"buttons": {
+		"search": {
+			"title": "Rechercher",
+			"placeholder": "Rechercher un bien à"
+		}
+	},
 	
 	"header": {
 		"title": "Trouvez le bien de vos rêves",

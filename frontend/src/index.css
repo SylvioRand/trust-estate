@@ -2,6 +2,7 @@
 
 :root {
 	--push: 70px;
+	--push-neg: -70px;
 	--push-speed: 0.75s;
 	--fade-speed: 0.3s;
 	--scale-speed: 1s;
@@ -260,7 +261,7 @@ body {
 
 @keyframes from_top {
 	0% {
-		transform: translateY(-var(--push));
+		transform: translateY(var(--push-neg));
 	}
 
 	100% {

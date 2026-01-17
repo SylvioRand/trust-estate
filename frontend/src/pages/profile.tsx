@@ -103,6 +103,7 @@ const	ProfilePage: React.FC = () => {
 		<div className="flex flex-col items-center justify-start
 			px-2 md:px-7 xl:px-64
 			overflow-y-scroll
+			animate-fade-in
 			w-full h-screen"
 		>
 			<div className="w-full h-20 flex-none"></div>
