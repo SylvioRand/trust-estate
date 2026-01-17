@@ -50,6 +50,7 @@
 
 		"settings": {
 			"title": "Settings",
+			"downloadGDPR": "Download GDPR",
 			"deleteAccount": "Delete your account",
 			"logout": "Log out"
 		}

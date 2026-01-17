@@ -50,6 +50,7 @@
 
 		"settings": {
 			"title": "Paramètres",
+			"downloadGDPR": "Télécharger mes informations GDPR",
 			"deleteAccount": "Supprimer mon compte",
 			"logout": "Se déconnecter"
 		}
