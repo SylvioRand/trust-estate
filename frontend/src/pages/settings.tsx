@@ -18,7 +18,7 @@ interface	SettingsButtonProps {
 const	SettingsButton: React.FC<SettingsButtonProps> = ({
 	icon = "",
 	title = "Title",
-	hover_color = "var(--color-midtone)",
+	hover_color = "var(--color-accent)",
 	onClick = () => console.error("SettingsButton: onClick not overrided.")
 }) => {
 	const	[hovered, setHovered] = useState<boolean>(false);
@@ -239,6 +239,11 @@ const	SettingsPage: React.FC = () => {
 					gap-1
 					w-full"
 				>
+					<SettingsButton
+						icon="󰇚"
+						title={ t("section.settings.downloadGDPR") }
+						onClick={ handleLogOut }
+					/>
 					<SettingsButton
 						icon=""
 						title={ t("section.settings.deleteAccount") }
