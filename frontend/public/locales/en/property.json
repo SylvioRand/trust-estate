@@ -35,6 +35,10 @@
 				"urgent": "Urgent",
 				"exclusive": "Exclusive",
 				"discount": "Discount"
+			},
+			"location": {
+				"title": "Location",
+				"none": "All"
 			}
 		}
 	}

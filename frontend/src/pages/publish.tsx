@@ -9,6 +9,7 @@ import InputEnum, { type InputEnumData } from "../components/InputEnum";
 import type { ListingsTags } from "../dataModel/modelListings";
 import { TagsComponents } from "./listings";
 import PopUp, { type PopUpAPI } from "../components/PopUp";
+import { ZONE_ENUM } from "../dataModel/dataZone";
 
 interface	PicturePreviewerProps {
 	src: string;
@@ -211,11 +212,7 @@ const	PublishPage: React.FC = () => {
 				<InputEnum
 					title={ t("section.main.form.zone.title") }
 					name="zone"
-					dataEnum={ [
-						// should fetch those Data or use the shared/zone.json
-						{ value: "Analakely", title: "Analakely" },
-						{ value: "Ambondrona", title: "Ambondrona" }
-					] }
+					dataEnum={ ZONE_ENUM }
 				/>
 				<div className="grid grid-cols-2 grid-rows-2
 					gap-x-7 gap-y-3
