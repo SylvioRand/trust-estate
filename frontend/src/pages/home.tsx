@@ -219,40 +219,72 @@ const	HomePage: React.FC = () => {
 							xl:max-w-145
 							xl:text-right"
 						>
-							<div className="font-higuen font-bold text-[42px] leading-tight
+							<div
+							className="animate-fade-in"
+							>
+								<div
+								className="font-higuen font-bold text-[42px] leading-tight
 								bg-linear-to-t from-[color-mix(in_srgb,var(--color-foreground)_25%,var(--color-background))] to-background
 								bg-clip-text text-transparent
+								animate-from-bottom
 								">
-								{ t("header.title") }
+									{ t("header.title") }
+								</div>
 							</div>
-							<div className="font-inter font-extralight text-md">
-								{ t("header.subtitle") }
+							<div
+							className="animate-fade-in opacity-0"
+							style={{
+								animationDelay: "200ms"
+							}}
+							>
+								<div
+								className="font-inter font-extralight text-md
+								animate-from-bottom"
+								style={{
+									animationDelay: "200ms"
+								}}
+								>
+									{ t("header.subtitle") }
+								</div>
 							</div>
 						</div>
 						
-						<form
-						className="grid grid-cols-[1fr_auto] grid-rows-1
-						gap-3
-						place-items-center
+						<div
+						className="animate-fade-in
+						opacity-0
 						w-full"
-						onSubmit={ handleSearch }
+						style={{
+							animationDelay: "400ms"
+						}}
 						>
-							<SimpleInput
-							title=""
-							icon=""
-							name="searchAtLocation"
-							placeholder={ t("buttons.search.placeholder") }
-							list="zoneInputSuggestion"
-							error={[]}
-							/>
-							<ActionButton
-								title={ t("buttons.search.title") }
-								icon=""
-								icon_place="right"
-								type="submit"
-								processing_action={ isProcessingSearch }
-							/>
-						</form>
+							<form
+							className="grid grid-cols-[1fr_auto] grid-rows-1
+							animate-from-bottom
+							gap-3
+							place-items-center
+							w-full"
+							style={{
+								animationDelay: "400ms"
+							}}
+							onSubmit={ handleSearch }
+							>
+								<SimpleInput
+								title=""
+								icon=""
+								name="searchAtLocation"
+								placeholder={ t("buttons.search.placeholder") }
+								list="zoneInputSuggestion"
+								error={[]}
+								/>
+								<ActionButton
+									title={ t("buttons.search.title") }
+									icon=""
+									icon_place="right"
+									type="submit"
+									processing_action={ isProcessingSearch }
+								/>
+							</form>
+						</div>
 						<datalist
 						id="zoneInputSuggestion"
 						>
@@ -276,11 +308,26 @@ const	HomePage: React.FC = () => {
 						>
 							{ statsData.map((value: DataAboutUsProps, index: number) => {
 								return (
-									<DataAbousUs
-										key={ index }
-										title={ value.title }
-										value={ value.value }
-									/>
+									<div
+									key={ index }
+									className="animate-fade-in
+									opacity-0"
+									style={{
+										animationDelay: `${600 + (100 * index)}ms`
+									}}
+									>
+										<div
+										className="animate-from-bottom"
+										style={{
+											animationDelay: `${600 + (100 * index)}ms`
+										}}
+										>
+											<DataAbousUs
+												title={ value.title }
+												value={ value.value }
+											/>
+										</div>
+									</div>
 								);
 							})}
 						</div>
@@ -321,7 +368,7 @@ const	HomePage: React.FC = () => {
 					bg-accent
 					w-50 h-50
 					rounded-full
-					blur-[64px]
+					blur-3xl
 					scale-y-200
 					bg-blend-hard-light
 					rotate-z-45
