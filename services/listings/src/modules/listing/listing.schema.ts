@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { uuid, z } from 'zod';
 import zonesData from '../../shared/zones.json';
 
 const validZone = zonesData.zones.map(z => z.displayName) as [string, ...string[]];
@@ -99,5 +99,10 @@ export type ReportListing = z.infer<typeof ReportListingSchema>;
 
 export const GetSellerStatsParamsSchema = z.object({
   userId: z.string().uuid()
-});
+}).strict();
 export type GetSellerStatsParams = z.infer<typeof GetSellerStatsParamsSchema>;
+
+export const GetOneParamsSchema = z.object({
+  id: z.string().uuid()
+}).strict();
+
