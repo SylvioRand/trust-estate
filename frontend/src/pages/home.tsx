@@ -12,6 +12,8 @@ import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import ActionButton from "../components/ActionButton";
 import SimpleInput from "../components/Input";
 import { useNavigate } from "react-router-dom";
+import { ZONE_ENUM } from "../dataModel/dataZone";
+import type { InputEnumData } from "../components/InputEnum";
 
 interface	BentoProps {
 	title: string;
@@ -240,6 +242,7 @@ const	HomePage: React.FC = () => {
 							icon=""
 							name="searchAtLocation"
 							placeholder={ t("buttons.search.placeholder") }
+							list="zoneInputSuggestion"
 							error={[]}
 							/>
 							<ActionButton
@@ -250,6 +253,18 @@ const	HomePage: React.FC = () => {
 								processing_action={ isProcessingSearch }
 							/>
 						</form>
+						<datalist
+						id="zoneInputSuggestion"
+						>
+							{ ZONE_ENUM.map((value: InputEnumData, index: number) => {
+								return (
+									<option
+									key={ index }
+									value={ value.title }
+									/>
+								);
+							})}
+						</datalist>
 
 						<div className="grid grid-cols-2 grid-rows-2
 							my-4
@@ -306,7 +321,7 @@ const	HomePage: React.FC = () => {
 					bg-accent
 					w-50 h-50
 					rounded-full
-					blur-[256px]
+					blur-[64px]
 					scale-y-200
 					bg-blend-hard-light
 					rotate-z-45

@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { listData, type ListingsProps } from "../dataModel/modelPropertyList";
 import ActionButton from "../components/ActionButton";
 import { TagsComponents } from "./listings";
 import type { ListingsTags } from "../dataModel/modelListings";
-import InputEnum from "../components/InputEnum";
+import InputEnum, { type InputEnumData } from "../components/InputEnum";
 import type { TFunction } from "i18next";
+import { ZONE_ENUM } from "../dataModel/dataZone";
 
 interface PublicationCardProps {
 	propertyData: ListingsProps;
@@ -36,6 +37,7 @@ export const	PublicationCard: React.FC<PublicationCardProps> = ({
 			<div className="w-full h-50
 				flex items-center justify-center
 				relative
+				overflow-hidden
 				bg-red-500"
 			>
 				<img
@@ -154,7 +156,7 @@ const	Filter: React.FC<FilterProps> = ({
 			transition-discrete duration-500
 			w-full"
 			style={{
-				height: isOpen ? "280px" : "55px"
+				height: isOpen ? "355px" : "55px"
 			}}
 		>
 			<button
@@ -219,15 +221,20 @@ const	Filter: React.FC<FilterProps> = ({
 					{ value: "discount", title: t("buttons.filter.tag.discount") }
 				]}
 			/>
-
+			<InputEnum
+				title={ t("buttons.filter.location.title") }
+				name="filtertag"
+				dataEnum={[
+					{ value: "none", title: t("buttons.filter.location.none") },
+					...ZONE_ENUM
+				]}
+			/>
 		</div>
 	);
 }
 
 const	PropertyPage: React.FC = () => {
 	const	{ t } = useTranslation("property");
-	const	[filterActive, setFilterActive] = useState<boolean>(false);
-	const	[filterOpened, setFilterOpened] = useState<boolean>(false);
 
 	return (
 		<div className="flex flex-col items-center justify-start gap-4

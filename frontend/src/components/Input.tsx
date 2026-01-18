@@ -40,6 +40,7 @@ interface SimpleInputProps {
 	minLength?: number;
 	maxLength?: number;
 	ref?: RefObject<HTMLInputElement | null>;
+	list?: string;
 }
 
 const	SimpleInput: React.FC<SimpleInputProps> = ({
@@ -53,7 +54,8 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 	pattern,
 	minLength = 8,
 	maxLength = 256,
-	ref
+	ref,
+	list
 }) => {
 	const	[focused, setFocused] = useState<boolean>(false);
 
@@ -112,6 +114,7 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 					{...(minLength ? { minLength } : {})}
 					{...(maxLength ? { maxLength } : {})}
 					{...(ref ? { ref } : {})}
+					{...(list ? { list } : {})}
 					onFocus={ () => setFocused(true) }
 					onBlur={ () => {
 						setFocused(false);

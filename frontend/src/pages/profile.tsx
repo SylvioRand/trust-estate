@@ -165,8 +165,9 @@ const	ProfilePage: React.FC = () => {
 						/>
 					</Link>
 					<ActionButton
-						icon="󰀼"
-						title={ t("buttons.archive") }
+						icon="󰚧"
+						icon_size={22}
+						title={ t("buttons.publish") }
 					/>
 				</div>
 			</div>
