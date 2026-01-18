@@ -87,6 +87,11 @@ dev: build
 	@echo "🔧 Starting in development mode..."
 	$(DOCKER_COMPOSE) up
 
+# Fast reload for listings service only
+reload-listings:
+	@echo "🔄 Reloading listings service..."
+	$(DOCKER_COMPOSE) up -d --build listings-service
+
 # Show which docker compose command is being used
 check:
 	@echo "🐳 Docker Compose command: $(DOCKER_COMPOSE)"
