@@ -57,7 +57,7 @@ export const	dataExampleListingsData: ListingsData = {
 	price: 4300000,
 	type: "rent",
 	propertyType: "loft",
-	mine: true,
+	mine: false,
 	surface: 184,
 	zone: "Antananarivo - Analakely",
 	photos: [],

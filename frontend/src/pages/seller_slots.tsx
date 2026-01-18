@@ -7,6 +7,8 @@ import ActionButton from "../components/ActionButton";
 import type { SlotsData } from "../dataModel/modelSlots";
 import i18n from "../i18n/i18n";
 import { toast } from "react-toastify";
+import { Link, useSearchParams } from "react-router-dom";
+import ContentDivider from "../components/ContentDivider";
 
 interface	AddSlotsButtonProps {
 	t: TFunction<"slots">;
@@ -274,8 +276,8 @@ const	SlotsBox: React.FC<SlotsBoxProps> = ({
 	);
 }
 
-const	SlotsPage: React.FC = () => {
-	const	{ t } = useTranslation("slots");
+const	SellerSlotsPage: React.FC = () => {
+	const	{ t } = useTranslation("sellerSlots");
 	const	[openPopUpAddSlots, setOpenPopUpAddSlots] = useState<boolean>(false);
 	const	refOpenPopUpAddSlots = useRef<PopUpAPI | null>(null);
 	const	[fetchedSlots, setFetchedSlots] = useState<SlotsData[]>([]);
@@ -303,6 +305,10 @@ const	SlotsPage: React.FC = () => {
 	const	[areSaving, setAreSaving] = useState<boolean>(false);
 	const	[areProcessingSave, setAreProcessingSave] = useState<boolean>(false);
 
+	// get the id inside the query
+	const	[searchParams] = useSearchParams();
+	const	listingID = searchParams.get("id");
+
 	const	handleSaving = async () => {
 		console.log("Saving!");
 
@@ -320,6 +326,28 @@ const	SlotsPage: React.FC = () => {
 			w-full h-screen"
 		>
 			<div className="w-full h-20 flex-none"></div>
+
+			<div className="grid grid-cols-[auto_1fr] grid-rows-1
+				place-items-center
+				mb-4
+				w-full"
+			>
+				<Link
+					to={ `/property/listings?id=${listingID}` }
+				>
+					<ActionButton
+						icon=""
+						title={ t("buttons.goBackToListing") }
+					/>
+				</Link>
+				<div
+					className="w-full"
+				>
+					<ContentDivider
+						line_color="linear-gradient(to right,var(--color-background) 80%,transparent)"
+					/>
+				</div>
+			</div>
 
 			<div className="grid grid-cols-[1fr_auto] grid-rows-1
 				place-items-center
@@ -386,4 +414,4 @@ const	SlotsPage: React.FC = () => {
 	);
 }
 
-export default SlotsPage;
+export default SellerSlotsPage;

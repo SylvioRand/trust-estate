@@ -45,6 +45,7 @@ const	ComponentPhotoViewer: React.FC<PhotoViewerProps> = ({
 					w-full">
 					<button className="font-icon
 						transition-colors duration-300
+						cursor-pointer
 						text-2xl hover:text-red-500"
 						onClick={ handleClose }
 					>

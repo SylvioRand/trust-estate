@@ -2,9 +2,8 @@ import React, { useRef, useState } from "react";
 import house0 from "../../src/images/house0.webp";
 import house1 from "../../src/images/house1.webp";
 import house2 from "../../src/images/house2.webp";
-import house3 from "../../src/images/house3.webp";
-import { useTranslation, type UseTranslationResponse } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Link, useSearchParams } from "react-router-dom";
 import type { TFunction } from "i18next";
 import ActionButton from "../components/ActionButton";
 import ToggleButton from "../components/ToggleButton";
@@ -610,10 +609,14 @@ const	ListingsPage: React.FC = () => {
 										onClick={ () => setIsFavorite(isFavorite ? false : true) }
 									/>
 
-									<ActionButton
-										title={ t("section.quickButtons.visit") }
-										icon="󰃭"
-									/>
+									<Link
+									to={`/property/listings/buyer-slots?id=${dataExample.id}`}
+									>
+										<ActionButton
+											title={ t("section.quickButtons.visit") }
+											icon="󰃭"
+										/>
+									</Link>
 								</>
 							}
 
@@ -625,10 +628,14 @@ const	ListingsPage: React.FC = () => {
 										icon=""
 									/>
 
-									<ActionButton
-										title={ t("section.quickButtons.visitSlot") } // NOTE: Should redirect to the Reservation Page
-										icon="󰃭"
-									/>
+									<Link
+									to={`/property/listings/seller-slots?id=${dataExample.id}`}
+									>
+										<ActionButton
+											title={ t("section.quickButtons.visitSlot") } // NOTE: Should redirect to the Reservation Page
+											icon="󰃭"
+										/>
+									</Link>
 								</>
 							}
 						</div>
