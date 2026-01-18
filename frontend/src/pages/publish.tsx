@@ -10,6 +10,7 @@ import type { ListingsTags } from "../dataModel/modelListings";
 import { TagsComponents } from "./listings";
 import PopUp, { type PopUpAPI } from "../components/PopUp";
 import { ZONE_ENUM } from "../dataModel/dataZone";
+import { Link } from "react-router-dom";
 
 interface	PicturePreviewerProps {
 	src: string;
@@ -133,9 +134,32 @@ const	PublishPage: React.FC = () => {
 		<div className="flex flex-col items-center justify-start
 			px-4 md:px-7 xl:px-64
 			overflow-y-scroll
+			animate-fade-in
 			w-full h-screen"
 		>
 			<div className="w-full h-20 flex-none"></div>
+
+			<div className="grid grid-cols-[auto_1fr] grid-rows-1
+				mb-4
+				place-items-center
+				w-full"
+			>
+				<Link
+					to="/profile"
+				>
+					<ActionButton
+						icon=""
+						title={ t("buttons.goBackToProfile") }
+					/>
+				</Link>
+				<div
+					className="w-full"
+				>
+					<ContentDivider
+						line_color="linear-gradient(to right,var(--color-background) 80%,transparent)"
+					/>
+				</div>
+			</div>
 
 			<form
 				className="flex flex-col items-center justify-center gap-4
@@ -152,8 +176,9 @@ const	PublishPage: React.FC = () => {
 					error={ errorTitle }
 				/>
 
-				<div className="relative
-					w-full"
+				<div
+				className="relative
+				w-full"
 				>
 					<TextArea
 						ref={ refToDescription }

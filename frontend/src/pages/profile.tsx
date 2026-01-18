@@ -168,6 +168,11 @@ const	ProfilePage: React.FC = () => {
 						icon="󰚧"
 						icon_size={22}
 						title={ t("buttons.publish") }
+						onClick={
+							() => {
+								navigate("/profile/publish")
+							}
+						}
 					/>
 				</div>
 			</div>

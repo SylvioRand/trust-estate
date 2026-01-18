@@ -53,7 +53,7 @@ const router = createBrowserRouter([
 				element: <ListingsPage />
 			},
 			{
-				path: "/publish",
+				path: "/profile/publish",
 				element: <PublishPage/>
 			},
 			{
