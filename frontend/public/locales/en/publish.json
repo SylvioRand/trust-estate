@@ -1,4 +1,8 @@
 {
+	"buttons": {
+		"goBackToProfile": "Back to profile"
+	},
+
 	"section": {
 		"main": {
 			"title": "Publish a listings",
