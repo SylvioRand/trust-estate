@@ -19,10 +19,11 @@ import VerifyEmailPage from './pages/verify_email.tsx';
 import ListingsPage from './pages/listings.tsx';
 import DataProvider from './provider/DataProvider.tsx';
 import PublishPage from './pages/publish.tsx';
-import SlotsPage from './pages/slots.tsx';
+import SellerSlotsPage from './pages/seller_slots.tsx';
 import SettingsPage from './pages/settings.tsx';
 import ProfilePage from './pages/profile.tsx';
 import AIPage from './pages/ai.tsx';
+import BuyerSlotsPage from './pages/buyer_slots.tsx';
 
 const router = createBrowserRouter([
 	{
@@ -90,10 +91,13 @@ const router = createBrowserRouter([
 				element: <SettingsPage />
 			},
 			{
-				path: "/slots",
-				element: <SlotsPage />
+				path: "/property/listings/seller-slots",
+				element: <SellerSlotsPage />
 			},
-
+			{
+				path: "/property/listings/buyer-slots",
+				element: <BuyerSlotsPage />
+			},
 			{
 				path: "/",
 				element: <Navigate to="/home" replace />

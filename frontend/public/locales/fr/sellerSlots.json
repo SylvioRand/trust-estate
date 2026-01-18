@@ -7,6 +7,8 @@
 	},
 
 	"buttons": {
+		"goBackToListing": "Retourner à l'annonce",
+
 		"create": {
 			"title": "Créer un créneau"
 		},
