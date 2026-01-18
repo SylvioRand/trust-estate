@@ -798,6 +798,47 @@ PUT /users/me
 }
 ```
 
+### 1.11 Récupérer infos utilisateur (Interne)
+
+```http
+GET /users/:id/details
+```
+
+**Description :** Endpoint **interne** pour récupérer les informations d'un utilisateur (vendeur) par son ID. Utilisé par le service `listings` pour afficher les détails du vendeur (ex: après réservation).
+
+**Auth :** Header `x-internal-key` (clé API interne partagée)
+
+**Parameters :**
+- `id` (path) : UUID de l'utilisateur
+
+**Response 200 :**
+```json
+{
+  "id": "u5",
+  "firstName": "Jean",
+  "lastName": "Rakoto",
+  "email": "jean@mail.com",
+  "phone": "+261340000000",
+}
+```
+
+**Response 401 (clé interne invalide) :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Missing or invalid internal key"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "user_not_found",
+  "message": "User not found"
+}
+```
+
+
 **Response 401 :**
 ```json
 {
@@ -2164,6 +2205,37 @@ POST /reservations/:id/reject
 {
   "error": "reservation_already_processed",
   "message": "reservation.already_processed"
+}
+```
+
+---
+
+### 3.7 Vérifier statut réservation (Interne)
+
+```http
+GET /reservations/internal/status?listingId=l1&userId=u1
+```
+
+**Description :** Endpoint **interne** permettant au service `listings-service` de vérifier si un utilisateur a une réservation confirmée pour une annonce spécifique (pour afficher les contacts du vendeur).
+
+**Auth :** Header `x-internal-key` (clé API interne partagée)
+
+**Query Params :**
+- `listingId` : UUID de l'annonce
+- `userId` : UUID de l'utilisateur consultant l'annonce
+
+**Response 200 :**
+```json
+{
+  "confirmed": true
+}
+```
+
+**Response 401 (clé interne invalide) :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Missing or invalid internal key"
 }
 ```
 

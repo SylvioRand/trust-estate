@@ -56,6 +56,8 @@ services:
       FRONTEND_URL: ${FRONTEND_URL:-https://localhost:8443}
       # Internal key
       INTERNAL_KEY_SECRET: ${INTERNAL_KEY_SECRET}
+      # DNS preference
+      NODE_OPTIONS: "--dns-result-order=ipv4first"
     volumes:
       - ./secret/jwtTokenService:/app/secret:ro
     depends_on:

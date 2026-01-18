@@ -173,11 +173,13 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 				"error": "invalid_google_token",
 				"message": "auth.google_token_invalid"
 			});
-		else
+		else {
+			console.error("Google Callback Error:", error);
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
 			});
+		}
 	}
 }
 
