@@ -161,7 +161,7 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 		const user = await authServices.createOrUpdateUserAccount(request.server, userData);
 		await generateAccessToken(request, reply, user);
 
-		return (reply.redirect(request.server.config.FRONTEND_URL));
+		return (reply.redirect(`${request.server.config.FRONTEND_URL}?auth_google=success`));
 	} catch (error: any) {
 		if (error.message === "Invalid credential")
 			return reply.status(400).send({
@@ -174,7 +174,6 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 				"message": "auth.google_token_invalid"
 			});
 		else {
-			console.error("Google Callback Error:", error);
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
