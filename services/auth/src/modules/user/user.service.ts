@@ -156,7 +156,7 @@ export async function getUserDetails(app: FastifyInstance, userId: string) {
 	if (!user)
 		throw new Error("User not found");
 
-	const respone : UserDetailsInterface = {
+	const response : UserDetailsInterface = {
 		id: user.id,
 		firstName: user.firstName,
 		lastName: user.lastName ?? undefined,
@@ -165,5 +165,5 @@ export async function getUserDetails(app: FastifyInstance, userId: string) {
 		createdAt: user.createAt
 	};
 
-	return (respone);
+	return (response);
 }

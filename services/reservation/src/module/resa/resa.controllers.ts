@@ -23,7 +23,6 @@ export async function listReservation(request: FastifyRequest, reply: FastifyRep
 				"availableSlots": []
 		});
 		else
-			console.log(error)
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
@@ -172,6 +171,16 @@ export async function confirmReservation(request: FastifyRequest<
 				"message": "reservation.slot_unavailable",
 				"availableSlots": []
 		});
+		else if (error.message === "insufficient_credits")
+			return reply.status(402).send({
+				"error": "insufficient_credits",
+				"message": "payment.insufficient_credits"
+			});
+		else if (error.message === "credit_service_error")
+			return reply.status(503).send({
+				"error": "service_unavailable",
+				"message": "common.service_unavailable"
+			});
 		else
 			console.log(error)
 			return reply.status(500).send({
