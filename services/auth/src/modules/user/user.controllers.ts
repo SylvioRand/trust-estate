@@ -163,4 +163,33 @@ export async function userDetails(request: FastifyRequest<{Params: {id: string}}
 				"message": "common.internal_server_error"
 			});
 	}
+};
+
+export async function requestDeleteAccompte(request: FastifyRequest<{Body: {password: string}}>, reply: FastifyReply) {
+	const password = request.body.password;
+	const userId = (request.user as UserInterface).id;
+
+	try {
+		await userServices.DeleteUser(request.server, userId, password);
+		return reply.status(200).send({
+			"deleted": true,
+			"message": "auth.account_deleted_success"
+		});
+	} catch (error: any) {
+		if (error.message === "User not found")
+			return reply.code(404).send({
+					"error": "user_not_found",
+					"message": "User not found"
+				});
+		else if (error.message === "Invalid password")
+			return reply.code(400).send({
+					"error": "invalid_credentials",
+					"message": "auth.invalid_credentials"
+				});
+		else
+			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
 }
