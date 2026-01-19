@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import housePicture from "../images/terrain0.webp";
 import { useTranslation } from "react-i18next";
@@ -97,12 +97,15 @@ const	ProfileSection: React.FC<ProfileSectionProps> = ({
 
 const	ProfilePage: React.FC = () => {
 	const	navigate = useNavigate();
-	const	{ t } = useTranslation(["profile", "listings"]);
-	const	{ userData } = useDataProvider();
-
+	const	{ userData, isConnected } = useDataProvider();
 	VerifyUsersState();
+	const	{ t } = useTranslation(["profile", "listings"]);
 
-	// NOTE: check if an user is connected, if not redirect.
+	useEffect(() => {
+		console.log("ProfilePage: isConnected: " ,isConnected);
+		if (!isConnected)
+			navigate("/sign-in");
+	}, []);
 	return (
 		<div className="flex flex-col items-center justify-start
 			px-2 md:px-7 xl:px-64

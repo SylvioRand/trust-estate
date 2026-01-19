@@ -8,6 +8,7 @@ import { dataProfileExample, type ProfileDataType } from "../dataModel/modelProf
 import { Link, useNavigate } from "react-router-dom";
 import ContentDivider from "../components/ContentDivider";
 import useDataProvider from "../provider/useDataProvider";
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 interface	SettingsButtonProps {
 	icon: string;
@@ -60,6 +61,10 @@ const	SettingsButton: React.FC<SettingsButtonProps> = ({
 }
 
 const	SettingsPage: React.FC = () => {
+	const	navigate = useNavigate();
+	const	{ userData, isConnected, setIsConnected } = useDataProvider();
+	VerifyUsersState();
+
 	const	{ t } = useTranslation(["settings"]);
 	const	[errorFirstName, setErrorFirstName] = useState<string[]>([]);
 	const	[errorLastName, setErrorLastName] = useState<string[]>([]);
@@ -85,9 +90,7 @@ const	SettingsPage: React.FC = () => {
 		// NOTE: handle all possible error here.
 	}
 
-	const	{ setIsConnected } = useDataProvider();
 
-	const	navigate = useNavigate();
 
 	const	handleLogOut = async () => {
 		try {
@@ -104,12 +107,16 @@ const	SettingsPage: React.FC = () => {
 	}
 
 	useEffect(() => {
+		console.log("SettingsPage: isConnected: " ,isConnected);
+
+		if (!isConnected)
+			navigate("/sign-in");
 		if (refFirstNameInput.current)
-			refFirstNameInput.current.value = fetchedUserData.firstName;
+			refFirstNameInput.current.value = userData?.firstName ?? "";
 		if (refLastNameInput.current)
-			refLastNameInput.current.value = fetchedUserData.lastName;
+			refLastNameInput.current.value = userData?.lastName ?? "";
 		if (refPhoneInput.current)
-			refPhoneInput.current.value = fetchedUserData.phone.slice(4);
+			refPhoneInput.current.value = userData?.phone.slice(4) ?? "";
 	}, []);
 	return (
 		<div
@@ -208,30 +215,43 @@ const	SettingsPage: React.FC = () => {
 					<BoxSection
 						title={ t("section.accountSettings.title") }
 					>
-						<PasswordInput
-							title={ t("section.accountSettings.form.changePassword.currentPassword.label") }
-							name="password"
-							placeholder={ t("section.accountSettings.form.changePassword.currentPassword.placeholder") }
-							error={ errorCurrentPassword }
-						/>
-						<PasswordInput
-							title={ t("section.accountSettings.form.changePassword.newPassword.label") }
-							name="password"
-							placeholder={ t("section.accountSettings.form.changePassword.newPassword.placeholder") }
-							error={ errorNewPassword }
-						/>
-						<div className="flex items-center justify-end
-							w-full"
-						>
-							<div>
-								<ActionButton
-									icon="󰆓"
-									title={ t("section.accountSettings.form.changePassword.buttons.change") }
-									processing_action={ isProcessingPasswordChange }
-									type="submit"
+						{
+							userData?.hasPassword &&
+							<>
+								<PasswordInput
+									title={ t("section.accountSettings.form.changePassword.currentPassword.label") }
+									name="password"
+									placeholder={ t("section.accountSettings.form.changePassword.currentPassword.placeholder") }
+									error={ errorCurrentPassword }
 								/>
+								<PasswordInput
+									title={ t("section.accountSettings.form.changePassword.newPassword.label") }
+									name="password"
+									placeholder={ t("section.accountSettings.form.changePassword.newPassword.placeholder") }
+									error={ errorNewPassword }
+								/>
+								<div className="flex items-center justify-end
+									w-full"
+								>
+									<div>
+										<ActionButton
+											icon="󰆓"
+											title={ t("section.accountSettings.form.changePassword.buttons.change") }
+											processing_action={ isProcessingPasswordChange }
+											type="submit"
+										/>
+									</div>
+								</div>
+							</>
+						}
+						{
+							!userData?.hasPassword &&
+							<div
+							className="bg-red-500"
+							>
+								DON't HAVE PASSWORD, SHOULD ADD ONE
 							</div>
-						</div>
+						}
 					</BoxSection>
 				</form>
 			</div>
