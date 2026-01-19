@@ -117,8 +117,8 @@ const	ProfilePage: React.FC = () => {
 			>
 				<img
 					className="w-full h-full object-cover"
-					src={ housePicture }
-					alt="Picture of a house"
+					src="https://www.maxfosterphotography.com/images/xl/Radiant-Swirl.jpg"
+					alt="Abstract image"
 				/>
 			</div>
 
