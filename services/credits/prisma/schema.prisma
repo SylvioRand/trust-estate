@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+	provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model CreditBalance {
+	id				String   @id @default(uuid())
+	userId			String   @unique              // 1 solde par utilisateur
+	
+	balance			Float    @default(0)          // Crédits disponibles
+	totalEarned		Float    @default(0)          // Total reçu (achats + bonus)
+	totalSpent		Float    @default(0)          // Total dépensé
+	
+	lastRechargeAt		DateTime?                      // Dernière recharge
+	createdAt			DateTime @default(now())
+	updatedAt			DateTime @updatedAt
+}
+
+model CreditTransaction {
+	id			String            @id @default(uuid())
+	userId		String
+
+	amount		Float                          // Positif (+) ou négatif (-)
+	type		TransactionType
+	reason		TransactionReason
+
+	listingId		String?                         // Si lié à une annonce
+	reservationId	String?                        // Si lié à une réservation
+
+	balanceAfter	Float                          // Solde après transaction
+
+	createdAt		DateTime          @default(now())
+
+	@@index([userId])
+}
+
+enum TransactionType {
+	recharge    // Achat de crédits
+	consume     // Dépense
+	bonus       // Crédits offerts
+	refund      // Remboursement
+}
+
+enum TransactionReason {
+	initial_bonus      // 5 crédits gratuits à l'inscription
+	recharge_pack      // Achat pack crédits
+	publish_listing    // Publication annonce (-1)
+	renew_listing      // Renouvellement annonce (-0.5)
+	reserve_visit      // Réservation visite (-1)
+	refund_cancelled   // Remboursement annulation
+}

@@ -1,9 +1,8 @@
 export const envSchema = {
 	type: 'object',
 	required: [
-		'PORT_AUTH_RESERVATION',
+		'PORT_AUTH_CREDIT',
 		'API_AUTH_URL_SERVICE',
-		'API_CREDITS_URL_SERVICE',
 		'JWT_SECRET_PUBLIC_KEY',
 		'GMAIL_USER', 'GMAIL_APP_PASSWORD', 
 		'COOKIE_SECRET', 'FRONTEND_URL',
@@ -11,12 +10,11 @@ export const envSchema = {
 	],
 	properties: {
 		INTERNAL_KEY_SECRET: { type: 'string' },
-		PORT_AUTH_RESERVATION: {
+		PORT_AUTH_CREDIT: {
 			type: 'number',
-			default: 3003
+			default: 3004
 		},
 		API_AUTH_URL_SERVICE :{type: 'string'},
-		API_CREDITS_URL_SERVICE :{type: 'string'},
 		JWT_SECRET_PUBLIC_KEY:{ type: 'string' },
 		GMAIL_USER: { type: 'string' },
 		GMAIL_APP_PASSWORD: { type: 'string' },

@@ -149,8 +149,8 @@ export async function userDetails(request: FastifyRequest<{Params: {id: string}}
 	const userId = request.params.id;
 
 	try {
-		const respone = await userServices.getUserDetails(request.server, userId);
-		return reply.status(200).send(respone);
+		const response = await userServices.getUserDetails(request.server, userId);
+		return reply.status(200).send(response);
 	} catch (error: any) {
 		if (error.message === "User not found")
 			return reply.code(404).send({
