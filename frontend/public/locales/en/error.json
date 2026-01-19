@@ -20,7 +20,8 @@
 		"login_max_attempts_exceeded": "Too many login attempts. The account has been temporarily locked.",
 		"logout_success": "You have been successfully logged out.",
 		"phone_update_success": "The phone number has been successfully updated.",
-		"invalid_or_expired_token": "The token is invalid or has expired."
+		"invalid_or_expired_token": "The token is invalid or has expired.",
+		"password_add_success": "Your password was added successfully."
 	},
 	"validation": {
 		"email": {

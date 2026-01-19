@@ -20,7 +20,8 @@
 		"login_max_attempts_exceeded": "Trop de tentatives de connexion. Le compte a été temporairement bloqué.",
 		"logout_success": "Vous avez été déconnecté avec succès.",
 		"phone_update_success": "Le numéro de téléphone a été mis à jour avec succès.",
-		"invalid_or_expired_token": "Le jeton est invalide ou a expiré."
+		"invalid_or_expired_token": "Le jeton est invalide ou a expiré.",
+		"password_add_success": "Le numéro de téléphone a été ajouté avec succès."
 	},
 	"validation": {
 		"email": {
