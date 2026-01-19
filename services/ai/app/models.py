@@ -25,16 +25,7 @@ class ResponseSource(BaseModel):
 
 class ResponseChat(BaseModel):
     reply: str = "Sorry something went wrong"
-    sources: Optional[ResponseSource] = None
-
-#============= Embedding data =================
-# class EmbeddingText(BaseModel):
-#     text: str
-#
-# class EmbeddingInfo(BaseModel):
-#     is_successful: bool = False
-#     mssg: str
-#     size: int
+    links: Optional[list[str]] = None
 
 #=========== Collection models ============
 class Description(BaseModel):
