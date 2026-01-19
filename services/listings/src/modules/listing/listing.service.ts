@@ -20,11 +20,12 @@ export class ListingService {
         }
       });
 
-      await tx.listingFeatures.create({
+      const listingFeatures = await tx.listingFeatures.create({
         data: {
           listingId: listing.id,
           bedrooms: validatedData.features.bedrooms,
           bathrooms: validatedData.features.bathrooms,
+          wc: validatedData.features.wc,
           wc_separate: validatedData.features.wc_separate,
           parking_type: validatedData.features.parking_type,
           garden_private: validatedData.features.garden_private,
@@ -56,7 +57,7 @@ export class ListingService {
         }
       });
 
-      return listing;
+      return { listing, listingFeatures };
     });
   }
 
