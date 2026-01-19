@@ -161,7 +161,7 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 		const user = await authServices.createOrUpdateUserAccount(request.server, userData);
 		await generateAccessToken(request, reply, user);
 
-		return (reply.redirect(`${request.server.config.FRONTEND_URL}?auth_google=success`));
+		return (reply.redirect(`${request.server.config.FRONTEND_URL}/home?auth_google=success`));
 	} catch (error: any) {
 		if (error.message === "Invalid credential")
 			return reply.status(400).send({

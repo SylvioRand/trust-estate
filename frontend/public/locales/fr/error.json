@@ -21,7 +21,8 @@
 		"logout_success": "Vous avez été déconnecté avec succès.",
 		"phone_update_success": "Le numéro de téléphone a été mis à jour avec succès.",
 		"invalid_or_expired_token": "Le jeton est invalide ou a expiré.",
-		"password_add_success": "Le numéro de téléphone a été ajouté avec succès."
+		"password_add_success": "Le mot de passe a été ajouté avec succès.",
+		"password_update_success": "Le mot de passe a été mis à jour avec succès."
 	},
 	"validation": {
 		"email": {
