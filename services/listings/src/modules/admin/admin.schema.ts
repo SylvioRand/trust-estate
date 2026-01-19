@@ -13,5 +13,10 @@ export const AdminActionSchema = z.object({
   internalNote: z.string().optional()
 }).strict();
 
+export const ListingPostParamsSchema = z.object({
+  id: z.string().uuid()
+})
+
 export type FlaggedListingsQuery = z.infer<typeof FlaggedListingsQuerySchema>;
 export type AdminAction = z.infer<typeof AdminActionSchema>;
+export type ListingPostParams = z.infer<typeof ListingPostParamsSchema>;

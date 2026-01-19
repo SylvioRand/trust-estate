@@ -72,6 +72,49 @@ export class AdminServices {
         totalPages
       }
     }
+  }
 
+  static async getListingPost(id: string) {
+    const listing = await prisma.listing.findUnique({
+      where: { id },
+      include: {
+        reports: true,
+        moderationActions: true
+      }
+    });
+    if (!listing) {
+      throw new Error('Listing not found');
+    }
+    const sellerDetails = await AuthClient.getUserDetails(null as any, listing.sellerId);
+    return {
+      listing: {
+        id: listing?.id,
+        title: listing?.title,
+        description: listing?.description,
+        price: listing?.price,
+        status: listing?.status,
+        createdAT: listing?.createdAt
+      },
+      seller: {
+        id: sellerDetails?.id,
+        firstName: sellerDetails?.firstName,
+        lastName: sellerDetails?.lastName,
+        email: sellerDetails?.email,
+        phone: sellerDetails?.phone,
+        memberSince: sellerDetails?.createdAt,
+      },
+      reports: listing.reports.map((report) => ({
+        id: report.id,
+        reportedId: report.reporterId,
+        reason: report.reason,
+        comment: report.comment,
+        createdAt: report.createdAt,
+      })),
+      moderationHistory: listing.moderationActions.map((action) => ({
+        action: action.action,
+        reason: action.reason,
+        date: action.createdAt
+      }))
+    };
   }
 }
