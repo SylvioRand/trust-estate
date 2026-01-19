@@ -103,7 +103,7 @@ const	ProfilePage: React.FC = () => {
 
 	useEffect(() => {
 		console.log("ProfilePage: isConnected: " ,isConnected);
-		if (!isConnected)
+		if (isConnected === false)
 			navigate("/sign-in");
 	}, []);
 	return (

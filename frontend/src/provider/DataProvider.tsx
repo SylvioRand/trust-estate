@@ -23,7 +23,7 @@ export type UserModelData = {
 const	DataProvider: React.FC<DataProviderProps> = ({
 	children
 }) => {
-	const	[isConnected, setIsConnected] = useState<boolean>(false);
+	const	[isConnected, setIsConnected] = useState<boolean | null>(null);
 	const	[isLoading, setIsLoading] = useState<boolean>(false);
 	const	[userData, setUserData] = useState<UserModelData | null>(null);
 
