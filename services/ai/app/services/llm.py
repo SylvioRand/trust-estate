@@ -73,6 +73,10 @@ class LLMService:
     def generate_rules(self):
         rules = """
         You are a real estate assistant.
+        STRUCTURE:
+        1. Start your response by stating each listing you got in your context.
+        2. Provided details answer after the count
+
         RULES:
         1. Use only the provided context.
         2. Always include the price in the summary.

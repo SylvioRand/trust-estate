@@ -10,6 +10,7 @@
 #                                                                              #
 #******************************************************************************#
 
+from os import stat
 from app.services.llm import LLMService
 from app.models import Description, RequestChat, ResponseChat, PostModel
 
@@ -58,10 +59,10 @@ async def lifespan(_: FastAPI):
             id = "moi",
             title = "White house",
             post_type = "sale",
-            property_type = "house",
+            property_type = "apartment",
             description = "President House, beautiful, smell money",
             price = 80000000,
-            zone = "Madagascar",
+            zone = "Ivandry",
             surface = 35,
             photos = [],
             features = [],
@@ -71,17 +72,32 @@ async def lifespan(_: FastAPI):
             id = "momo",
             title = "Haunted house",
             post_type = "sale",
-            property_type = "house",
+            property_type = "apartment",
             description = "Horror house, there is ghost here",
             price = 200000000,
-            zone = "France",
+            zone = "Ivandry",
             surface = 200,
             photos = [],
             features = ["toilet", "bathroom", "parking", "kitcken"],
             tags = ["urgent"]
         )
+
+        post3 = PostModel(
+            id = "koko",
+            title = "Haunted house",
+            post_type = "sale",
+            property_type = "apartment",
+            description = "Horror house, there is ghost here",
+            price = 100000000,
+            zone = "Ivandry",
+            surface = 400,
+            photos = [],
+            tags = ["urgent"]
+        )
+
         await chromadb_service.add_to_collection("posts", post1)
         await chromadb_service.add_to_collection("posts", post2)
+        await chromadb_service.add_to_collection("posts", post3)
     yield
     
 app = FastAPI(lifespan=lifespan)
@@ -115,6 +131,7 @@ async def chatbot(text: RequestChat):
     context = None
     chroma_reply = None
 
+    await chromadb_service.get_all_in_collection("posts")
     if text.context and len(text.context) > 0:
         context = text.context
 
@@ -159,22 +176,26 @@ async def update_datas(to_update: PostModel):
 async def isListIndexed(listingId: str):
     result = await chromadb_service.is_post_in_collection("posts", listingId)
 
-    if result:
-        return {
-                "listingId": listingId,
-                "isIndexed": result,
-                "status": "ready"
-        }
     return {
         "listingId": listingId,
         "isIndexed": result,
-        "status": "not_found"
     }
 
 @app.post("/api/generate")
 async def generate_better_description(text: Description):
-    llm_response = llm_service.generate_response(text.description, llm_service.generate_description())
 
-    return {
+    try:
+        llm_response = llm_service.generate_response(text.description, llm_service.generate_description())
+
+        return {
             "reply": llm_response
-    }
+        }
+
+    except Exception as e:
+        return JSONResponse(
+                status_code = status.HTTP_400_BAD_REQUEST,
+                content = {
+                    "status": "failure",
+                    "reason": e
+                }
+        )
