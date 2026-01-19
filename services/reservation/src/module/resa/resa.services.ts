@@ -243,3 +243,18 @@ export async function rejectStatusReservation(app: FastifyInstance, userId: stri
 		return (data.rejectedAt);
 	});
 }
+
+export async function getStatusUserListing(app: FastifyInstance, listingId: string, userId: string) {
+	const reservation = await app.prisma.reservation.findFirst({
+		where: {
+			AND: [
+				{listingId},
+				{buyerId: userId}
+			]
+		}
+	});
+
+	if (!reservation)
+		throw new Error("reservation_not_found");
+
+}
