@@ -1,6 +1,6 @@
 export interface EnvConfigInterface {
 	PORT_AUTH_CREDIT: string
-	API_AUTH_URL_SERVICE: string
+	AUTH_SERVICE_URL: string
 	JWT_SECRET_PUBLIC_KEY: string
 	GMAIL_USER: string
 	GMAIL_APP_PASSWORD: string

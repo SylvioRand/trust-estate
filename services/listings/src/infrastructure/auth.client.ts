@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 
 export class AuthClient {
   private static AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://auth-service:3001';
+  private static AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://ai-service:3005';
   private static INTERNAL_KEY_SECRET = process.env.INTERNAL_KEY_SECRET || "INTERNAL_KEY";
 
   static async verifyToken(rawCookie: string | undefined) {
@@ -45,7 +46,7 @@ export class AuthClient {
     );
 
     try {
-      const response = await fetch(`${this.AUTH_SERVICE_URL}/auth//users/${sellerId}/details`, {
+      const response = await fetch(`${this.AUTH_SERVICE_URL}/auth/users/${sellerId}/details`, {
         method: 'GET',
         headers: {
           'x-internal-key': internalToken,
@@ -64,7 +65,6 @@ export class AuthClient {
       if (!response.ok) {
         throw new Error('internal server error')
       }
-      return await response.json() as { id: string, firstName: string, lastName: string, email: string, phone: string, createdAt: string };
     } catch (error) {
       throw error;
     }

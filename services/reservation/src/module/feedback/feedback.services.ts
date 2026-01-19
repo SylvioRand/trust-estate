@@ -1,13 +1,16 @@
 import type { FastifyInstance } from "fastify";
 import { FeedbackInterface } from "./feedback.interface";
+import { PrismaClient } from "@prisma/client";
+
+type TransactionClient = Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>;
 
 export async function addFeedback(app: FastifyInstance, userId: string, data: FeedbackInterface) {
-	return await app.prisma.$transaction(async (tx) => {
+	return await app.prisma.$transaction(async (tx: TransactionClient) => {
 		const exist = await tx.feedback.findFirst({
 			where: {
 				AND: [
-					{reservationId: data.reservationId},
-					{authorId: userId}
+					{ reservationId: data.reservationId },
+					{ authorId: userId }
 				]
 			}
 		})
@@ -17,8 +20,8 @@ export async function addFeedback(app: FastifyInstance, userId: string, data: Fe
 		const reservationExist = await tx.reservation.findFirst({
 			where: {
 				AND: [
-					{reservationId: data.reservationId},
-					{buyerId: userId}
+					{ reservationId: data.reservationId },
+					{ buyerId: userId }
 				]
 			}
 		});
@@ -56,8 +59,8 @@ export async function addFeedback(app: FastifyInstance, userId: string, data: Fe
 		});
 
 		await tx.reservation.update({
-			where: {reservationId: data.reservationId},
-			data: {feedbackGiven: true}
+			where: { reservationId: data.reservationId },
+			data: { feedbackGiven: true }
 		});
 
 		return feedback.id;
@@ -66,10 +69,10 @@ export async function addFeedback(app: FastifyInstance, userId: string, data: Fe
 
 export async function getUserFeedback(app: FastifyInstance, userId: string) {
 	return await app.prisma.feedback.findMany({
-		where:{
+		where: {
 			OR: [
-				{authorId: userId},
-				{targetId: userId}
+				{ authorId: userId },
+				{ targetId: userId }
 			]
 		}
 	});

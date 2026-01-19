@@ -29,11 +29,11 @@ const server = fastify({
 
 await server.register(fastifyCors, {
 	origin: ['http://127.0.0.1:3001', 'http://127.0.0.1:5500', 'http://localhost:5500'],
-	methods: ['GET','POST','PUT', 'DELETE', 'PATCH'],
-	allowedHeaders: ['Content-Type','Authorization'],
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+	allowedHeaders: ['Content-Type', 'Authorization'],
 	exposedHeaders: ['X-Total-Count'],
-	credentials:true,
-	maxAge:600
+	credentials: true,
+	maxAge: 600
 });
 
 await server.register(fastifyEnv, options);
@@ -42,7 +42,11 @@ await pluginRegister(server);
 await resaRoutes(server);
 await feedbackRoutes(server);
 
-server.get("/api/auth", async (req:FastifyRequest, reply: FastifyReply) => {
+server.get("/health", async (req: FastifyRequest, reply: FastifyReply) => {
+	return reply.status(200).send({ status: "ok" });
+});
+
+server.get("/api/auth", async (req: FastifyRequest, reply: FastifyReply) => {
 	return reply.status(200).send("Bonjour depuis auth");
 });
 
@@ -53,7 +57,7 @@ const start = async () => {
 			host: '0.0.0.0'
 		});
 
-	} catch (error : any) {
+	} catch (error: any) {
 		server.log.error(error);
 		process.exit(1);
 	}

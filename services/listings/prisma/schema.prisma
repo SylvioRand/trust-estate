@@ -95,6 +95,7 @@ model ListingFeatures {
 
   bedrooms           Int?
   bathrooms          Int?
+  wc                 Boolean?
   wc_separate        Boolean?
   water_access       Boolean?
   electricity_access Boolean?
