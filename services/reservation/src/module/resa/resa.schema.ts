@@ -51,3 +51,21 @@ export const StatusListingSchema = {
 		additionalProperties: false
 	}
 };
+
+export const CheckSlotSchema = {
+	querystring : {
+		type: 'object',
+		required: ['listingId', 'slot'],
+		properties: {
+			listingId: {
+				type: 'string',
+				format: 'uuid'
+			},
+			slot: {
+				type: "string",
+				format: "date-time"
+			}
+		},
+		additionalProperties: false
+	}
+}

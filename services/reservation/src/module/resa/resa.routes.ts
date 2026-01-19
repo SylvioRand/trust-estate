@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyPluginOptions } from "fastify";
 import * as resaControllers from './resa.controllers'
-import { ReservationIdInterface, ReservationInterface, StatusInterface } from "./resa.interface";
-import { ReservationIdSchema, ReservationSchema, StatusListingSchema } from "./resa.schema";
+import { CheckSlotInterface, ReservationIdInterface, ReservationInterface, StatusInterface } from "./resa.interface";
+import { CheckSlotSchema, ReservationIdSchema, ReservationSchema, StatusListingSchema } from "./resa.schema";
 
 export async function reservationRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
 	app.get("/reservations/mine",
@@ -40,5 +40,10 @@ export async function reservationRoutes(app: FastifyInstance, options: FastifyPl
 		{
 			schema: StatusListingSchema,
 			preHandler: app.authentication
-		}, resaControllers.statusListing)
+		}, resaControllers.statusListing);
+	app.get<{Querystring: CheckSlotInterface}>("/reservations/check-slot",
+		{
+			schema: CheckSlotSchema,
+			preHandler: app.authentication
+		}, resaControllers.checkSlot);
 }
