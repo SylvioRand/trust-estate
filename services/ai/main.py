@@ -26,13 +26,17 @@ import asyncio
 import httpx
 
 # ====================== Utils ==================
-def format_chroma_response(user_mssg, chroma_text):
+def format_chroma_response(user_mssg, chroma_text, history: list[str]):
     context = llm_service.format_for_llm(chroma_text)
     formated = "CONTEXT:\n"
     if context:
         formated += context
     else:
         formated += "None"
+    if len(history) > 0:
+        formated += "USER HISTORY:\n" 
+        for elem in history:
+            formated += elem + "\n"
     formated += "USER INPUT:\n" + user_mssg
     return formated
 
@@ -161,7 +165,7 @@ async def chatbot(text: RequestChat):
         chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt)
     else:
         chroma_reply = await chromadb_service.get_post_in_collection("posts", context)
-    formated = format_chroma_response(user_mssg, chroma_reply)
+    formated = format_chroma_response(user_mssg, chroma_reply, prompt.get_history())
 
     id_found = chromadb_service.get_ids_from_query(chroma_reply)
     llm_response = llm_service.generate_response(formated, llm_service.generate_rules())
