@@ -10,8 +10,6 @@ export function VerifyUsersState() {
 
 	useEffect(() => {
 		const checkAuth = async () => {
-			console.log("VerifyUsersState: called.");
-
 			try {
 				// Vérifier si l'utilisateur est authentifié
 				// Les cookies sont envoyés automatiquement
@@ -27,7 +25,6 @@ export function VerifyUsersState() {
 
 					setIsConnected(true);
 					setUserData(serverResponse);
-					console.log("userData: ", serverResponse);
 					return;
 				}
 

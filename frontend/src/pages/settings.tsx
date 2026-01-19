@@ -159,6 +159,8 @@ const	SettingsPage: React.FC = () => {
 	const	[processingAddPassword, setProcessingAddPassword] = useState<boolean>(false);
 	const	[errorAddPassword, setErrorAddPassword] = useState<string[]>([]);
 
+	const	{ setUserData } = useDataProvider();
+
 	const	handleAddPassword = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
@@ -168,8 +170,8 @@ const	SettingsPage: React.FC = () => {
 		const data = Object.fromEntries(formData.entries()) as Record<string, string>;
 
 		try {
-			const	response = await fetch("/api/user/add-password", {
-				method: "POST",
+			const	response = await fetch("/api/users/me/add-password", {
+				method: "PUT",
 				headers: {
 					"Content-type": "application/json"
 				},
@@ -188,7 +190,10 @@ const	SettingsPage: React.FC = () => {
 				throw new Error(errorData.message);
 			}
 			toast.success(t(`error:${responseData?.message ?? "success"}`));
-			VerifyUsersState();
+			setUserData(prev =>
+				prev ? { ...prev, hasPassword: true } : prev
+			);
+
 		} catch (e) {
 			toast.error(t(`error:${e}`));
 			console.error("SettingsPage: handleAddPassword: ", t(`error:${e}`));
@@ -303,7 +308,9 @@ const	SettingsPage: React.FC = () => {
 					{
 						userData?.hasPassword &&
 						<form
-							className="w-full"
+							className="flex flex-col items-center justify-center
+							gap-4
+							w-full"
 							onSubmit={ handleChangePassword }
 						>
 							<PasswordInput
@@ -335,7 +342,9 @@ const	SettingsPage: React.FC = () => {
 					{
 						!userData?.hasPassword &&
 						<form
-						className="w-full"
+						className="flex flex-col items-center justify-center
+						gap-4
+						w-full"
 						onSubmit={ handleAddPassword }
 						>
 							<PasswordInput
