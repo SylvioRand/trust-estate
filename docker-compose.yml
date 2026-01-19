@@ -114,6 +114,12 @@ services:
     volumes:
       - ./services/ai/:/app
     restart:  unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3005/api/health" ]
+      interval: 2s
+      timeout: 10s
+      retries: 3
+
 
   # ChromaDB- Vector Database
   ft_chromadb:
@@ -128,6 +134,11 @@ services:
       - CHROMA_TELEMETRY_ENABLED=False
       - ANONYMIZED_TELEMETRY=False
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat" ]
+      interval: 2s
+      timeout: 10s
+      retries: 3
 
   # ==============================================
   # POSTGRESQL - Database

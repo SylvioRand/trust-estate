@@ -14,7 +14,7 @@ from os import stat
 from app.services.llm import LLMService
 from app.models import Description, RequestChat, ResponseChat, PostModel
 
-from fastapi import FastAPI, status, Request
+from fastapi import FastAPI, status, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -103,9 +103,9 @@ async def lifespan(_: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # ====================== Default route ================
-@app.get("/")
-def default_root():
-    print("Hello there !")
+# @app.get("/")
+# def default_root():
+#     print("Hello there !")
 
 # ===================== Test LLM messages ===============================
 
@@ -123,6 +123,17 @@ async def exception_handler(_: Request, exception_error: RequestValidationError)
                 "missing_fields": [err["loc"] for err in exception_error.errors()]
                 },
             )
+
+@app.get("/api/health")
+async def check_health():
+    try:
+        await chromadb_service.initRequest()
+        return {
+            "status": "success"
+        }
+    except Exception:
+        return Response(status_code = status.HTTP_503_SERVICE_UNAVAILABLE)
+
 
 @app.post("/api/chat")
 async def chatbot(text: RequestChat):
