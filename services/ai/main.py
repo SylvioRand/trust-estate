@@ -20,6 +20,7 @@ from fastapi.responses import JSONResponse
 
 from contextlib import asynccontextmanager
 from app.services.chromadb import chromadb_service
+from app.user_prompt import prompt
 
 import asyncio
 import httpx
@@ -124,7 +125,7 @@ async def exception_handler(_: Request, exception_error: RequestValidationError)
                 },
             )
 
-@app.get("/api/health")
+@app.get("/ai/health")
 async def check_health():
     try:
         await chromadb_service.initRequest()
@@ -135,8 +136,18 @@ async def check_health():
         return Response(status_code = status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
-@app.post("/api/chat")
+@app.post("/ai/chat")
 async def chatbot(text: RequestChat):
+    prompt.add(text.message)
+    print("======================================================================")
+    print(f"Current: {prompt.get_current()}")
+    print(f"history: {prompt.get_history()}")
+
+    print("======================================================================")
+
+
+
+
     user_mssg = text.message
     sys_prompt = chromadb_service.get_parse_prompt()
     context = None
@@ -161,7 +172,7 @@ async def chatbot(text: RequestChat):
         links = id_found
     )
 
-@app.delete("/api/index/{listingId}")
+@app.delete("/ai/index/{listingId}")
 async def deletePost(listingId: str):
     result = await chromadb_service.remove_data_from_collection("posts", listingId)
     return {
@@ -169,7 +180,7 @@ async def deletePost(listingId: str):
     }
 
 # call the route GET /listings/:id when merging with the main
-@app.post("/api/index")
+@app.post("/ai/index")
 async def update_datas(to_update: PostModel):
     result = False
     exist = await chromadb_service.is_post_in_collection("posts", to_update.id)
@@ -183,7 +194,7 @@ async def update_datas(to_update: PostModel):
             "success": result
     }
 
-@app.get("/api/index-status/{listingId}")
+@app.get("/ai/index-status/{listingId}")
 async def isListIndexed(listingId: str):
     result = await chromadb_service.is_post_in_collection("posts", listingId)
 
@@ -192,7 +203,7 @@ async def isListIndexed(listingId: str):
         "isIndexed": result,
     }
 
-@app.post("/api/generate")
+@app.post("/ai/generate")
 async def generate_better_description(text: Description):
 
     try:
