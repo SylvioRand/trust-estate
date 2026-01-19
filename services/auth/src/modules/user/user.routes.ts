@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyPluginOptions } from "fastify";
 import * as userControllers from './user.controllers'
 import { UpdatePhoneNumberSchema } from "../auth/auth.schema";
-import { addPasswordSchema, UpdateInfoUserSchema, UpdatePasswordSchema } from "./user.schema";
+import { addPasswordSchema, DeleteAccompte, UpdateInfoUserSchema, UpdatePasswordSchema } from "./user.schema";
 import type { UpdateInfoUserInterface, UpdatePasswordInterface } from "./user.interface";
 import { validatePassword } from "../../hooks/hooks";
 
@@ -32,4 +32,12 @@ export async function userRoutes(app: FastifyInstance, options: FastifyPluginOpt
 		{
 			preHandler: app.authentication
 		}, userControllers.userDetails);
+}
+
+export async function RGPDRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
+	app.delete("/users/me",
+		{
+			schema: DeleteAccompte,
+			preHandler: app.authentication
+		}, userControllers.requestDeleteAccompte);
 }

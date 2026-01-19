@@ -152,11 +152,10 @@ export async function getUserDetails(app: FastifyInstance, userId: string) {
 		where: {id : userId}
 	});
 
-	console.log(user);
 	if (!user)
 		throw new Error("User not found");
 
-	const respone : UserDetailsInterface = {
+	const response : UserDetailsInterface = {
 		id: user.id,
 		firstName: user.firstName,
 		lastName: user.lastName ?? undefined,
@@ -165,5 +164,34 @@ export async function getUserDetails(app: FastifyInstance, userId: string) {
 		createdAt: user.createAt
 	};
 
-	return (respone);
+	return (response);
+}
+
+export async function DeleteUser(app: FastifyInstance, userId: string, password: string) {
+	const user = await app.prisma.user.findUnique({
+		where: {id : userId}
+	});
+
+	if (!user)
+		throw new Error("User not found");
+
+	if (user.password === null)
+		throw new Error("Invalid password");
+
+	const isValid = await bcrypt.compare(password, user.password);
+
+	if (!isValid)
+		throw new Error("Invalid password");
+
+	await app.prisma.user.delete({
+		where: {id: userId}
+	});
+
+	app.log.info({
+		userId,
+		action: 'user_deleted',
+		timestamp: new Date().toISOString()
+	});
+
+	return { success: true };
 }
