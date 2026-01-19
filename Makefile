@@ -68,7 +68,8 @@ down:
 # Clean everything (containers, images, volumes)
 clean:
 	@echo "🧹 Cleaning up..."
-	$(DOCKER_COMPOSE) down -v --rmi local
+# 	$(DOCKER_COMPOSE) down -v --rmi local
+	$(DOCKER_COMPOSE) down -v local
 	@echo "✅ Cleanup complete"
 
 # View logs
@@ -91,6 +92,11 @@ dev: build
 reload-listings:
 	@echo "🔄 Reloading listings service..."
 	$(DOCKER_COMPOSE) up -d --build listings-service
+
+# Fast reload for listings service only
+reload-nginx:
+	@echo "🔄 Reloading nginx service..."
+	$(DOCKER_COMPOSE) up -d --build nginx
 
 # Show which docker compose command is being used
 check:

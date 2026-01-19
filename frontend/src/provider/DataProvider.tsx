@@ -5,32 +5,54 @@ interface	DataProviderProps {
 	children: React.ReactNode;
 }
 
+export type UserModelData = {
+  id: string,
+  email: string,
+  emailVerified: string,
+  firstName: string,
+  lastName: string,
+  phone: string,
+  phoneVerified: boolean,
+  role: "user" | "moderator",
+  hasPassword: boolean,
+  creditBalance: number,
+  createdAt: string,
+  updatedAt: string
+}
+
 const	DataProvider: React.FC<DataProviderProps> = ({
 	children
 }) => {
 	const	[isConnected, setIsConnected] = useState<boolean>(false);
 	const	[isLoading, setIsLoading] = useState<boolean>(false);
+	const	[userData, setUserData] = useState<UserModelData | null>(null);
 
 	useEffect(() => {
 		const checkAuth = async () => {
 			try {
 				// Vérifier si l'utilisateur est authentifié
 				// Les cookies sont envoyés automatiquement
-				const res = await fetch(`/api/users/me`, {
+				const response = await fetch(`/api/users/me`, {
 					method: "GET",
 					credentials: "include", // Envoie les cookies automatiquement
 				});
+
+				const	responseData = await response.json();
 				
-				if (res.ok) {
+				if (response.ok) {
+					const	serverResponse = responseData as UserModelData;
+
 					setIsConnected(true);
+
+					// NOTE: use the response and populate the data.
+					setUserData(serverResponse);
 					return;
 				}
 
-				if (res.status === 403) {
-					const errorData = await res.json();
+				if (response.status === 403) {
+					const errorData = await response.json();
 					
 					setIsConnected(true);
-					console.log("HERE 403 DATA PROVIDER");
 					if (errorData.error === "phone_number_not_verified") {
 						return;
 					}
@@ -51,7 +73,9 @@ const	DataProvider: React.FC<DataProviderProps> = ({
 			value={{
 				isConnected,
 				isLoading,
-				setIsConnected
+				setIsConnected,
+				userData,
+				setUserData
 			}}
 		>
 			{ children }
