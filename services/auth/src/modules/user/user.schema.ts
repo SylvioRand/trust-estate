@@ -58,4 +58,18 @@ export const UpdateInfoUserSchema = {
 		},
 		additionalProperties: false
 	}
+};
+
+export const UserDetailsSchema = {
+	params: {
+		type: 'object',
+		required: ['id'],
+		properties: {
+			id: {
+				type: 'string',
+				format: 'uuid'
+			}
+		},
+		additionalProperties: false
+	}
 }
