@@ -7,6 +7,7 @@ import ActionButton from "../components/ActionButton";
 import { dataProfileExample, type ProfileDataType } from "../dataModel/modelProfile";
 import { Link, useNavigate } from "react-router-dom";
 import ContentDivider from "../components/ContentDivider";
+import useDataProvider from "../provider/useDataProvider";
 
 interface	SettingsButtonProps {
 	icon: string;
@@ -84,6 +85,8 @@ const	SettingsPage: React.FC = () => {
 		// NOTE: handle all possible error here.
 	}
 
+	const	{ setIsConnected } = useDataProvider();
+
 	const	navigate = useNavigate();
 
 	const	handleLogOut = async () => {
@@ -96,6 +99,7 @@ const	SettingsPage: React.FC = () => {
 			console.error("SettingsPage: handleLogOut: error logging out.");
 		} finally {
 			navigate("/home");
+			setIsConnected(false);
 		}
 	}
 
