@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useDataProvider from "../provider/useDataProvider";
 import type { UserModelData } from "../provider/DataProvider";
+import type { APIResponse } from "../pages/sign_up";
 
 export function VerifyUsersState() {
 	const	navigate = useNavigate();
@@ -26,11 +27,12 @@ export function VerifyUsersState() {
 
 					setIsConnected(true);
 					setUserData(serverResponse);
+					console.log("userData: ", serverResponse);
 					return;
 				}
 
 				if (response.status === 403) {
-					const errorData = await response.json();
+					const errorData = responseData as APIResponse;
 					
 					setIsConnected(true);
 					if (errorData.error === "phone_number_not_verified") {

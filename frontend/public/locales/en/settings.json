@@ -44,6 +44,15 @@
 					"buttons": {
 						"change": "Change Password"
 					}
+				},
+				"addPassword": {
+					"input": {
+						"label": "Password",
+						"placeholder": "Enter your new password"
+					},
+					"buttons": {
+						"save": "Save"
+					}
 				}
 			}
 		},

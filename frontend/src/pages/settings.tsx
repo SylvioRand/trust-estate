@@ -105,6 +105,9 @@ const	SettingsPage: React.FC = () => {
 				method: "POST",
 				credentials: "include"
 			});
+
+			// TODO: handle gracefully if there is an error while logging out
+
 		} catch (e) {
 			console.error("SettingsPage: handleLogOut: error logging out.");
 		} finally {
@@ -121,7 +124,6 @@ const	SettingsPage: React.FC = () => {
 		const formData = new FormData(e.currentTarget);
 		const data = Object.fromEntries(formData.entries()) as Record<string, string>;
 
-		console.log("data: ", data);
 		try {
 			const	response = await fetch("/api/users/me", {
 				method: "DELETE",
@@ -154,10 +156,49 @@ const	SettingsPage: React.FC = () => {
 		}
 	}
 
-	useEffect(() => {
-		console.log("SettingsPage: isConnected: " ,isConnected);
+	const	[processingAddPassword, setProcessingAddPassword] = useState<boolean>(false);
+	const	[errorAddPassword, setErrorAddPassword] = useState<string[]>([]);
 
-		if (!isConnected)
+	const	handleAddPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		setProcessingAddPassword(true);
+		setErrorAddPassword([]);
+		const formData = new FormData(e.currentTarget);
+		const data = Object.fromEntries(formData.entries()) as Record<string, string>;
+
+		try {
+			const	response = await fetch("/api/user/add-password", {
+				method: "POST",
+				headers: {
+					"Content-type": "application/json"
+				},
+				credentials: "include",
+				body: JSON.stringify(data)
+			});
+
+			const	responseData = await response.json();
+
+			if (!response.ok)
+			{
+				const errorData = responseData as APIResponse;
+				
+				if (response.status === 400)
+					setErrorAddPassword([errorData.message]);
+				throw new Error(errorData.message);
+			}
+			toast.success(t(`error:${responseData?.message ?? "success"}`));
+			VerifyUsersState();
+		} catch (e) {
+			toast.error(t(`error:${e}`));
+			console.error("SettingsPage: handleAddPassword: ", t(`error:${e}`));
+		} finally {
+			setProcessingAddPassword(false);
+		}
+	}
+
+	useEffect(() => {
+		if (isConnected === false)
 			navigate("/sign-in");
 		if (refFirstNameInput.current)
 			refFirstNameInput.current.value = userData?.firstName ?? "";
@@ -255,53 +296,70 @@ const	SettingsPage: React.FC = () => {
 						</div>
 					</BoxSection>
 				</form>
-
-				<form
-					className="w-full"
-					onSubmit={ handleChangePassword }
+				<BoxSection
+					title={ t("section.accountSettings.title") }
 				>
-					<BoxSection
-						title={ t("section.accountSettings.title") }
-					>
-						{
-							userData?.hasPassword &&
-							<>
-								<PasswordInput
-									title={ t("section.accountSettings.form.changePassword.currentPassword.label") }
-									name="password"
-									placeholder={ t("section.accountSettings.form.changePassword.currentPassword.placeholder") }
-									error={ errorCurrentPassword }
-								/>
-								<PasswordInput
-									title={ t("section.accountSettings.form.changePassword.newPassword.label") }
-									name="password"
-									placeholder={ t("section.accountSettings.form.changePassword.newPassword.placeholder") }
-									error={ errorNewPassword }
-								/>
-								<div className="flex items-center justify-end
-									w-full"
-								>
-									<div>
-										<ActionButton
-											icon="󰆓"
-											title={ t("section.accountSettings.form.changePassword.buttons.change") }
-											processing_action={ isProcessingPasswordChange }
-											type="submit"
-										/>
-									</div>
-								</div>
-							</>
-						}
-						{
-							!userData?.hasPassword &&
-							<div
-							className="bg-red-500"
+
+					{
+						userData?.hasPassword &&
+						<form
+							className="w-full"
+							onSubmit={ handleChangePassword }
+						>
+							<PasswordInput
+								title={ t("section.accountSettings.form.changePassword.currentPassword.label") }
+								name="password"
+								placeholder={ t("section.accountSettings.form.changePassword.currentPassword.placeholder") }
+								error={ errorCurrentPassword }
+							/>
+							<PasswordInput
+								title={ t("section.accountSettings.form.changePassword.newPassword.label") }
+								name="password"
+								placeholder={ t("section.accountSettings.form.changePassword.newPassword.placeholder") }
+								error={ errorNewPassword }
+							/>
+							<div className="flex items-center justify-end
+								w-full"
 							>
-								DON't HAVE PASSWORD, SHOULD ADD ONE
+								<div>
+									<ActionButton
+										icon="󰆓"
+										title={ t("section.accountSettings.form.changePassword.buttons.change") }
+										processing_action={ isProcessingPasswordChange }
+										type="submit"
+									/>
+								</div>
 							</div>
-						}
-					</BoxSection>
-				</form>
+						</form>
+					}
+					{
+						!userData?.hasPassword &&
+						<form
+						className="w-full"
+						onSubmit={ handleAddPassword }
+						>
+							<PasswordInput
+								title={ t("section.accountSettings.form.addPassword.input.label") }
+								name="password"
+								placeholder={ t("section.accountSettings.form.addPassword.input.placeholder") }
+								error={ errorAddPassword }
+								pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
+							/>
+							<div
+							className="grid grid-cols-[1fr_auto] grid-rows-1
+							w-full"
+							>
+								<div className="w-full"></div>
+								<ActionButton
+									icon=""
+									title={ t("section.accountSettings.form.addPassword.buttons.save") }
+									processing_action={ processingAddPassword }
+									type="submit"
+								/>
+							</div>
+						</form>
+					}
+				</BoxSection>
 			</div>
 
 			<BoxSection
@@ -361,6 +419,7 @@ const	SettingsPage: React.FC = () => {
 						>
 							<ActionButton
 								title={ t("section.settings.popup.deleteAccount.buttons.cancel") }
+								onClick={ () => refPopUpDeleteAccount.current?.close() }
 							/>
 							<ActionButton
 								title={ t("section.settings.popup.deleteAccount.buttons.confirm") }
