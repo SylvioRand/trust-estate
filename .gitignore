@@ -84,3 +84,19 @@ public/uploads/
 *.bak
 
 .obsidian
+
+# ==============================================
+# AI
+# ==============================================
+
+.env
+__pycache__/
+*. py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
