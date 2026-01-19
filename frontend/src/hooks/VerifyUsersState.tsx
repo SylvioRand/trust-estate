@@ -19,7 +19,6 @@ export function VerifyUsersState() {
 				});
 				
 				if (res.ok) {
-					console.log("VerifyUsersState: 200 OK?");
 					setIsConnected(true);
 					return;
 				}
@@ -27,7 +26,6 @@ export function VerifyUsersState() {
 				if (res.status === 403) {
 					const errorData = await res.json();
 					
-					console.log("VerifyUsersState: 403, ", errorData.error);
 					setIsConnected(true);
 					if (errorData.error === "phone_number_not_verified") {
 						navigate("/add-phone", { replace: true });
