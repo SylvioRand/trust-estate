@@ -10,11 +10,13 @@
 #                                                                              #
 #******************************************************************************#
 
-from os import stat
+# from os import stat
+# from typing import Optional
+from app.config import config
 from app.services.llm import LLMService
 from app.models import Description, RequestChat, ResponseChat, PostModel
 
-from fastapi import FastAPI, status, Request, Response
+from fastapi import FastAPI, status, Request, Response, Header, HTTPException, Depends
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -24,6 +26,7 @@ from app.user_prompt import prompt
 
 import asyncio
 import httpx
+import jwt
 
 # ====================== Utils ==================
 def format_chroma_response(user_mssg, chroma_text, history: list[str]):
@@ -39,6 +42,25 @@ def format_chroma_response(user_mssg, chroma_text, history: list[str]):
             formated += elem + "\n"
     formated += "USER INPUT:\n" + user_mssg
     return formated
+
+async def check_keys(x_internal_key: str = Header(None)):
+    if not x_internal_key:
+        raise HTTPException(
+            status_code = 401,
+            details = "Missing internal key"
+        )
+    try:
+        payload = jwt.decode(
+                x_internal_key,
+                config.INTERNAL_KEY,
+                algorithms = ["HS256"]
+                )
+        return payload
+    except jwt.PyJWTError:
+        raise HTTPException(
+            status_code = 401,
+            details = "Invalide token"
+        )
 
 # ====================== Init connection to service chromadb ==================
 @asynccontextmanager
@@ -177,25 +199,27 @@ async def chatbot(text: RequestChat):
     )
 
 @app.delete("/ai/index/{listingId}")
-async def deletePost(listingId: str):
+async def deletePost(listingId: str, _: dict = Depends(check_keys)):
     result = await chromadb_service.remove_data_from_collection("posts", listingId)
     return {
             "success": result
     }
 
-# call the route GET /listings/:id when merging with the main
 @app.post("/ai/index")
-async def update_datas(to_update: PostModel):
-    result = False
-    exist = await chromadb_service.is_post_in_collection("posts", to_update.id)
+async def add_datas(to_update: PostModel, _: dict = Depends(check_keys)):
 
-    if not exist:
-        result = await chromadb_service.add_to_collection("posts", to_update)
-    else:
-        result = await chromadb_service.update_in_collection("posts", to_update)
+    result = await chromadb_service.add_to_collection("posts", to_update)
 
     return {
-            "success": result
+        "success": result
+    }
+
+@app.put("/ai/index")
+async def update_datas(to_update: PostModel, _: dict = Depends(check_keys)):
+    result = await chromadb_service.update_in_collection("posts", to_update)
+
+    return {
+        "success": result
     }
 
 @app.get("/ai/index-status/{listingId}")

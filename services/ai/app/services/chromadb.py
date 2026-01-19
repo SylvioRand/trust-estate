@@ -62,8 +62,8 @@ class ChromadbService:
         embedding_result = embeddingService.generate_embedding(text)
         metadata = {
             "title": data.title,
-            "post_type": data.post_type,
-            "property_type": data.property_type,
+            "post_type": data.type,
+            "property_type": data.propertyType,
             "price": data.price,
             "zone": data.zone,
         }
@@ -92,8 +92,8 @@ class ChromadbService:
         embedding_result = embeddingService.generate_embedding(text)
         metadata = {
             "title": data.title,
-            "post_type": data.post_type,
-            "property_type": data.property_type,
+            "post_type": data.type,
+            "property_type": data.propertyType,
             "price": data.price,
             "zone": data.zone,
         }

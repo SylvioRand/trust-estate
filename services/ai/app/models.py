@@ -10,7 +10,7 @@
 #                                                                              #
 #******************************************************************************#
 
-from typing import Literal, Optional
+from typing import Literal, Optional, Any
 from pydantic import BaseModel, Field
 
 #============== Discussion with AI ===============
@@ -34,29 +34,29 @@ class Description(BaseModel):
 class PostModel(BaseModel):
     id: str
     title: str = "Hello world"
-    post_type: Literal["sale", "rent"] = "sale"
-    property_type: Literal['apartment', 'house', 'loft', 'land', 'commercial'] = "apartment"
     description: str = "Beautiful property"
-    price: float = Field(default=100000, ge=100000)
-    zone: str = "Madagascar"
-    surface: Optional[float] = Field(default=45, gt=0)
-    photos: list[str] = []
-    features: Optional[list[str]] = None
-    tags: Optional[list[str]] = None
+    price: float = Field(default=100000)
+    type: Literal["sale", "rent"] = "sale"
+    propertyType: Literal['apartment', 'house', 'loft', 'land', 'commercial'] = "apartment"
+    surface: Optional[float] = Field(default=45)
+    zone: str = "Ivandry"
+    features: Optional[dict[str, Any]] = None
+    tags: Optional[list[Literal["urgent", "exclusive", "discount"]]] = None
 
     def get_embedding_format(self):
         values = [
             f"Title: {self.title}",
-            f"Type: {self.post_type}",
+            f"Type: {self.type}",
             f"Description: {self.description}",
-            f"Property type: {self.property_type}"
+            f"Property type: {self.propertyType}"
+            f"Location: {self.zone}"
         ]
         return ". ".join(values) + " ."
         
     def get_text_format(self):
         values = [
             f"Title: {self.title}",
-            f"Type: {self.post_type}",
+            f"Type: {self.type}",
             f"Description: {self.description}",
             f"Zone: {self.zone}",
             f"Price: {self.price}",
@@ -67,7 +67,8 @@ class PostModel(BaseModel):
             all_tags = ", ".join(self.tags)
             values.append(f"Tags: {all_tags}")
         if self.features:
-            all_features = ", ".join(self.features)
+            features_to_list = [f"{k}: {v}" for k, v in self.features.items()] 
+            all_features = ", ".join(features_to_list)
             values.append(f"Features: {all_features}")
         data = ". ".join(values) + "."
 
