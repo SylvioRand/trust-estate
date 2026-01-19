@@ -160,8 +160,8 @@ const	ProfilePage: React.FC = () => {
 						to="/profile/settings"
 					>
 						<ActionButton
-							icon="󰚼"
-							title={ t("buttons.edit") }
+							icon=""
+							title={ t("buttons.settings") }
 						/>
 					</Link>
 					<ActionButton
