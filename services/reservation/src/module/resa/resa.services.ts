@@ -14,7 +14,6 @@ export async function getAllUserReservation(app: FastifyInstance, userId: string
 			feedbacks: true
 		}
 	});
-	console.log(reservation);
 	if (!reservation)
 		throw new Error("slot_unavailable");
 	return (reservation);
@@ -43,7 +42,7 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 					lte: slotEnd
 				},
 				status: {
-					in: ['pending', 'confirmed']
+					in: ['confirmed']
 				}
 			}
 		});
@@ -152,6 +151,10 @@ export async function changeStatusReservation(app: FastifyInstance, userId: stri
 		else
 			cancel = CancelledBy.system;
 
+		if (reservation.status === "confirmed" && cancel === CancelledBy.seller) {
+				await crediter(app, reservation.buyerId);
+		}
+
 		await tx.reservation.update({
 			where: {reservationId},
 			data: {
@@ -164,7 +167,7 @@ export async function changeStatusReservation(app: FastifyInstance, userId: stri
 };
 
 export async function confirmStatusReservation(app: FastifyInstance, userId: string, reservationId: string) {
-	await app.prisma.$transaction(async (tx) => {
+	return await app.prisma.$transaction(async (tx) => {
 		const reservation = await tx.reservation.findFirst({
 			where: {
 				AND: [
@@ -201,6 +204,24 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 		if (conflictingReservation) {
 			throw new Error("seller_slot_unavailable");
 		}
+
+		await debiter(app, reservation.buyerId);
+
+		await tx.reservation.updateMany({
+			where: {
+				sellerId: userId,
+				reservationId: { not: reservationId },
+				slot: {
+					gte: slotStart,
+					lte: slotEnd
+				},
+				status: 'pending'
+			},
+			data: {
+				status: 'rejected',
+				rejectedAt: new Date()
+			}
+		});
 
 		const data = await tx.reservation.update({
 			where: {reservationId},
@@ -289,4 +310,71 @@ export async function getSlot(app: FastifyInstance, listingId: string, slot: Dat
 		if (reservation)
 			throw new Error("reservation.slot_already_reserved");
 	})
+};
+
+async function debiter(app: FastifyInstance, buyerId: string){
+	const jwt = await import('jsonwebtoken');
+	const internalToken = jwt.default.sign(
+		{ service: 'reservation-service', userId: buyerId },
+		app.config.INTERNAL_KEY_SECRET,
+		{ algorithm: 'HS256', expiresIn: '30s' }
+	);
+
+	try {
+		const response = await fetch(`${app.config.API_CREDITS_URL_SERVICE}/internal/credits/debit`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'x-internal-key': internalToken,
+				'x-user-id': buyerId
+			},
+			body: JSON.stringify({
+				reason: 'reserve_visit'
+			})
+		});
+
+		if (!response.ok) {
+			const error = await response.json() as any;
+
+			if (error.error === 'insufficient_credits') {
+				throw new Error('insufficient_credits');
+			}
+			throw new Error('credit_service_error');
+		}
+	} catch (error: any) {
+		app.log.error({ error }, 'Failed to debit credits');
+		throw error;
+	}
+}
+
+async function crediter(app: FastifyInstance, userId: string) {
+	const jwt = await import('jsonwebtoken');
+	const internalToken = jwt.default.sign(
+		{ service: 'reservation-service', userId },
+		app.config.INTERNAL_KEY_SECRET,
+		{ algorithm: 'HS256', expiresIn: '30s' }
+	);
+
+	try {
+		const response = await fetch(`${app.config.API_CREDITS_URL_SERVICE}/internal/credits/credit`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'x-internal-key': internalToken,
+				'x-user-id': userId
+			},
+			body: JSON.stringify({
+				reason: "refund_cancelled",
+				type: 'refund'
+			})
+		});
+
+		if (!response.ok) {
+			const error = await response.json() as any;
+			throw new Error('credit_service_error');
+		}
+	} catch (error: any) {
+		app.log.error({ error }, 'Failed to credit user');
+		throw error;
+	}
 }
