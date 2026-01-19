@@ -35,7 +35,7 @@ export async function userRoutes(app: FastifyInstance, options: FastifyPluginOpt
 }
 
 export async function RGPDRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
-	app.delete("/users/me",
+	app.delete<{Body: {password:string}}>("/users/me",
 		{
 			schema: DeleteAccompte,
 			preHandler: app.authentication

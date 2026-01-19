@@ -9,6 +9,10 @@ import { Link, useNavigate } from "react-router-dom";
 import ContentDivider from "../components/ContentDivider";
 import useDataProvider from "../provider/useDataProvider";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
+import type { PopUpAPI } from "../components/PopUp";
+import PopUp from "../components/PopUp";
+import type { APIResponse } from "./sign_up";
+import { toast } from "react-toastify";
 
 interface	SettingsButtonProps {
 	icon: string;
@@ -65,7 +69,7 @@ const	SettingsPage: React.FC = () => {
 	const	{ userData, isConnected, setIsConnected } = useDataProvider();
 	VerifyUsersState();
 
-	const	{ t } = useTranslation(["settings"]);
+	const	{ t } = useTranslation(["settings", "error"]);
 	const	[errorFirstName, setErrorFirstName] = useState<string[]>([]);
 	const	[errorLastName, setErrorLastName] = useState<string[]>([]);
 	const	[errorPhone, setErrorPhone] = useState<string[]>([]);
@@ -73,7 +77,6 @@ const	SettingsPage: React.FC = () => {
 	const	refLastNameInput = useRef<HTMLInputElement | null>(null);
 	const	refPhoneInput = useRef<HTMLInputElement | null>(null);
 
-	const	[fetchedUserData, setFetchedUserData] = useState<ProfileDataType>(dataProfileExample);
 	const	[isProcessingSavingInfo, setIsProcessingSavingInfo] = useState<boolean>(false);
 	const	handleSavingInfo = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -90,7 +93,11 @@ const	SettingsPage: React.FC = () => {
 		// NOTE: handle all possible error here.
 	}
 
+	const	refPopUpDeleteAccount = useRef<PopUpAPI>(null);
+	const	[openPopupDeleteAccount, setOpenPopupDeleteAccount] = useState<boolean>(false);
 
+	const	[errorDeletePassword, setErrorDeletePassword] = useState<string[]>([]);
+	const	[processingAccountDeletion, setProcessingAccountDeletion] = useState<boolean>(false);
 
 	const	handleLogOut = async () => {
 		try {
@@ -103,6 +110,47 @@ const	SettingsPage: React.FC = () => {
 		} finally {
 			navigate("/home");
 			setIsConnected(false);
+		}
+	}
+
+	const	handleAccountDeletion = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		setProcessingAccountDeletion(true);
+		setErrorDeletePassword([]);
+		const formData = new FormData(e.currentTarget);
+		const data = Object.fromEntries(formData.entries()) as Record<string, string>;
+
+		console.log("data: ", data);
+		try {
+			const	response = await fetch("/api/users/me", {
+				method: "DELETE",
+				headers: {
+					"Content-type": "application/json"
+				},
+				credentials: "include",
+				body: JSON.stringify(data)
+			});
+
+			const	responseData = await response.json();
+
+			if (!response.ok)
+			{
+				const errorData = responseData as APIResponse;
+				
+				if (response.status === 400)
+					setErrorDeletePassword([errorData.message]);
+				throw new Error(errorData.message);
+			}
+			toast.success(t(`error:${responseData?.message ?? "success"}`));
+			refPopUpDeleteAccount.current?.close();
+			setIsConnected(false);
+			navigate("/sign-in");
+		} catch (e) {
+			toast.error(t(`error:${e}`));
+			console.error("SettingsPage: handleAccountDeletion: ", t(`error:${e}`));
+		} finally {
+			setProcessingAccountDeletion(false);
 		}
 	}
 
@@ -272,7 +320,7 @@ const	SettingsPage: React.FC = () => {
 						icon=""
 						title={ t("section.settings.deleteAccount") }
 						hover_color="var(--color-red-500)"
-						onClick={ () => console.log("deleteAccount") }
+						onClick={ () => setOpenPopupDeleteAccount(true) }
 					/>
 					<SettingsButton
 						icon="󰍃"
@@ -282,6 +330,48 @@ const	SettingsPage: React.FC = () => {
 					/>
 				</div>
 			</BoxSection>
+
+			{
+				openPopupDeleteAccount && <PopUp
+				title={ t("section.settings.popup.deleteAccount.title") }
+				ref={ refPopUpDeleteAccount }
+				onClose={ () => setOpenPopupDeleteAccount(false) }
+				>
+					<div
+					className="font-light"
+					>
+						{ t("section.settings.popup.deleteAccount.subTitle") }
+					</div>
+					<form
+					className="flex flex-col items-center justify-center
+					gap-4
+					w-full"
+					onSubmit={ handleAccountDeletion }
+					>
+						<PasswordInput
+							title={ t("section.settings.popup.deleteAccount.input.title") }
+							name="password"
+							placeholder={ t("section.settings.popup.deleteAccount.input.placeholder") }
+							error={ errorDeletePassword }
+						/>
+						<div
+						className="grid grid-cols-2 grid-rows-1
+						gap-4
+						w-full"
+						>
+							<ActionButton
+								title={ t("section.settings.popup.deleteAccount.buttons.cancel") }
+							/>
+							<ActionButton
+								title={ t("section.settings.popup.deleteAccount.buttons.confirm") }
+								type="submit"
+								accent_color="var(--color-red-500)"
+								processing_action={ processingAccountDeletion }
+							/>
+						</div>
+					</form>
+				</PopUp>
+			}
 
 			<div className="w-full h-8
 				flex-none"
