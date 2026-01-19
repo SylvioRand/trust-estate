@@ -47,7 +47,7 @@ export async function updatePhoneNumber(request: FastifyRequest <{Body: {phoneNu
 					"message": "Ce numéro de téléphone est déjà utilisé par un autre compte"
 				});
 		else if (error.message === "User not found")
-			return reply.code(400).send({
+			return reply.code(404).send({
 					"error": "invalid_credentials",
 					"message": "auth.invalid_credentials"
 				});
@@ -128,15 +128,35 @@ export async function updateInfoUser(request: FastifyRequest<{Body: UpdateInfoUs
 		})
 	} catch (error : any) {
 		if (error.message === "User not found")
-			return reply.code(400).send({
-				"error": "invalid_credentials",
-				"message": "auth.invalid_credentials"
+			return reply.code(404).send({
+				"error": "user_not_found",
+				"message": "User not found"
 			});
 		else if (error.message === "phone_exists")
 			return reply.code(400).send({
 				"error": "phone_exists",
 				"message": "auth.phone_already_exists"
 			})
+		else
+			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
+};
+
+export async function userDetails(request: FastifyRequest<{Params: {id: string}}>, reply: FastifyReply) {
+	const userId = request.params.id;
+
+	try {
+		const respone = await userServices.getUserDetails(request.server, userId);
+		return reply.status(200).send(respone);
+	} catch (error: any) {
+		if (error.message === "User not found")
+			return reply.code(404).send({
+					"error": "user_not_found",
+					"message": "User not found"
+				});
 		else
 			return reply.status(500).send({
 				"error": "internal_server_error",

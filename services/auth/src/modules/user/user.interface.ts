@@ -8,3 +8,12 @@ export interface UpdateInfoUserInterface {
 	lastName: string
 	phone: string
 }
+
+export interface UserDetailsInterface {
+	id: string
+	firstName: string
+	lastName?: string
+	email: string
+	phone?: string
+	createdAt: Date
+}
