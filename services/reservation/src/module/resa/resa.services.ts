@@ -243,3 +243,50 @@ export async function rejectStatusReservation(app: FastifyInstance, userId: stri
 		return (data.rejectedAt);
 	});
 }
+
+export async function getStatusUserListing(app: FastifyInstance, listingId: string, userId: string) {
+	const reservation = await app.prisma.reservation.findFirst({
+		where: {
+			AND: [
+				{listingId},
+				{buyerId: userId}
+			]
+		}
+	});
+
+	if (!reservation)
+		throw new Error("reservation_not_found");
+
+};
+
+export async function getSlot(app: FastifyInstance, listingId: string, slot: Date, userId: string) {
+	return await app.prisma.$transaction(async (tx) => {
+		const slotDate = new Date(slot);
+
+		const slotStart = new Date(slotDate.getTime() - 60 * 60 * 1000);
+		const slotEnd = new Date(slotDate.getTime() + 60 * 60 * 1000);
+
+		const reservation = await tx.reservation.findFirst({
+			where: {
+				AND: [
+					{ listingId },
+					{
+						OR: [
+							{ sellerId: userId },
+							{ buyerId: userId }
+						]
+					},
+					{
+						slot: {
+							gte: slotStart,
+							lte: slotEnd
+						}
+					}
+				]
+			}
+		});
+
+		if (reservation)
+			throw new Error("reservation.slot_already_reserved");
+	})
+}

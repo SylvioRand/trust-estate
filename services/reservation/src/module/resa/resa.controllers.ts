@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { UserInterface } from "../../interfaces/config.interface";
 import * as resaServices from "./resa.services"
-import type { ReservationIdInterface, ReservationInterface } from "./resa.interface";
+import type { CheckSlotInterface, ReservationIdInterface, ReservationInterface, StatusInterface } from "./resa.interface";
 
 export async function listReservation(request: FastifyRequest, reply: FastifyReply) {
 	const user = (request as any).user as UserInterface;
@@ -210,7 +210,59 @@ export async function rejectReservation(request: FastifyRequest<
 				"message": "reservation.not_found"
 			})
 		else
-			console.log(error)
+			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
+};
+
+export async function statusListing(request: FastifyRequest<{Querystring: StatusInterface}>, reply: FastifyReply) {
+	const listingId = request.query.listingId;
+	const userId = request.query.userId;
+
+	try {
+		await resaServices.getStatusUserListing(request.server, listingId, userId);
+		return reply.status(200).send({
+			"confirmed": true
+		})
+	} catch (error: any) {
+		if (error.message === "reservation_not_found")
+			return reply.status(404).send({
+				"error": "reservation_not_found",
+				"message": "reservation.not_found"
+			})
+		else
+			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
+};
+
+export async function checkSlot(request: FastifyRequest<{Querystring: CheckSlotInterface}>, reply: FastifyReply) {
+	const	listingId = request.query.listingId;
+	const	slot = request.query.slot;
+	const	user = (request as any).user as UserInterface;
+
+	if (!user)
+		return reply.status(401).send({
+			"error": "unauthorized",
+			"message": "common.unauthorized"
+		});
+	try {
+		await resaServices.getSlot(request.server, listingId, slot, user.id);
+		return reply.status(200).send({
+				"available": true,
+				"expiresIn": 300
+			})
+	} catch (error: any) {
+		if (error.message === "reservation.slot_already_reserved")
+			return reply.status(409).send({
+				"available": false,
+				"message": "reservation.slot_already_reserved",
+			})
+		else
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"

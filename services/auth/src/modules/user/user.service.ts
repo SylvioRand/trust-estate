@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type { UserInterface } from "../auth/auth.interface";
 import bcrypt from 'bcrypt'
+import { UserDetailsInterface } from "./user.interface";
 
 export async function showProfile(app: FastifyInstance, userPayload: UserInterface) {
 	const user = await app.prisma.user.findUnique({
@@ -143,4 +144,26 @@ export async function updateUser(app: FastifyInstance, phone: string, firstName:
 	});
 
 	return (updatedUser);
+}
+
+
+export async function getUserDetails(app: FastifyInstance, userId: string) {
+	const user = await app.prisma.user.findUnique({
+		where: {id : userId}
+	});
+
+	console.log(user);
+	if (!user)
+		throw new Error("User not found");
+
+	const respone : UserDetailsInterface = {
+		id: user.id,
+		firstName: user.firstName,
+		lastName: user.lastName ?? undefined,
+		email: user.email,
+		phone: user.phone ?? undefined,
+		createdAt: user.createAt
+	};
+
+	return (respone);
 }
