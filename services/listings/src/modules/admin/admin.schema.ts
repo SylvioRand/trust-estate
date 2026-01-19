@@ -3,8 +3,8 @@ import { z } from 'zod';
 export const FlaggedListingsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-  reportReason: z.enum(['fraud', 'duplicate', 'spam', 'incorrect_info', 'inappropriate', 'other']).optional()
-});
+  reportReason: z.enum(['fraud', 'duplicate', 'spam', 'incorrect_info', 'inappropriate']).optional()
+}).strict();
 
 export const AdminActionSchema = z.object({
   action: z.enum(['block_temporary', 'archive_permanent', 'request_clarification', 'reject_reports']),
