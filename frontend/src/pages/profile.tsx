@@ -1,7 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import housePicture from "../images/terrain0.webp";
-import { dataProfileExample, type ProfileDataType } from "../dataModel/modelProfile";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
@@ -10,6 +9,8 @@ import { CreateDateForMemberSince } from "../utils/Format";
 import BoxSection from "../components/BoxSection";
 import { listData, type ListingsProps } from "../dataModel/modelPropertyList";
 import { PublicationCard } from "./property";
+import useDataProvider from "../provider/useDataProvider";
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 interface	StatsProps {
 	value: number;
@@ -97,6 +98,9 @@ const	ProfileSection: React.FC<ProfileSectionProps> = ({
 const	ProfilePage: React.FC = () => {
 	const	navigate = useNavigate();
 	const	{ t } = useTranslation(["profile", "listings"]);
+	const	{ userData } = useDataProvider();
+
+	VerifyUsersState();
 
 	// NOTE: check if an user is connected, if not redirect.
 	return (
@@ -107,6 +111,7 @@ const	ProfilePage: React.FC = () => {
 			w-full h-screen"
 		>
 			<div className="w-full h-20 flex-none"></div>
+
 			<div className="w-full h-36
 				flex-none
 				flex items-center justify-center
@@ -135,29 +140,30 @@ const	ProfilePage: React.FC = () => {
 					<div className="font-bold
 						mr-auto"
 					>
-						{ dataProfileExample.firstName + " " + dataProfileExample.lastName }
+						{ userData?.firstName + " " + userData?.lastName }
 					</div>
 					<div className="font-light
 						whitespace-pre-line
 						mr-auto"
 					>
 						{
-							dataProfileExample.email + "\n"
-							+ dataProfileExample.phone + "\n\n"
+							userData?.email + "\n"
+							+ userData?.phone + "\n\n"
 							+ t("listings:section.contact.memberSince")
 							+ " "
-							+ CreateDateForMemberSince(dataProfileExample.createdAt)
+							+ CreateDateForMemberSince(userData?.createdAt)
 						}
 					</div>
 				</div>
 				<div className="grid grid-cols-1 grid-rows-2
 					md:grid-cols-2 md:grid-rows-1
+					place-items-start
 					p-2
 					md:p-4
 					gap-4"
 				>
 					<Link
-						to="/profile/settings"
+					to="/profile/settings"
 					>
 						<ActionButton
 							icon=""
@@ -189,6 +195,8 @@ const	ProfilePage: React.FC = () => {
 				/>
 			</div>
 
+			{/* This part may be implemented but not immediately, will wait for the back-end team first.
+
 			<div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] grid-rows-1
 				p-4
 				place-items-center
@@ -196,7 +204,7 @@ const	ProfilePage: React.FC = () => {
 				w-full"
 			>
 				{
-					Object.entries(dataProfileExample.sellerStats).map(([key, value]) => {
+					Object.entries(userData?.sellerStats).map(([key, value]) => {
 						return (
 							<Stats
 								key={ key }
@@ -206,9 +214,10 @@ const	ProfilePage: React.FC = () => {
 						)
 					})
 				}
-			</div>
+			</div> */}
 
-			<div className="flex flex-col items-center justify-center
+			{ // TODO: the data will be need to be fetched, so I will just comment it first
+			/* <div className="flex flex-col items-center justify-center
 				mt-12
 				gap-24
 				w-full p-2"
@@ -242,7 +251,7 @@ const	ProfilePage: React.FC = () => {
 						})
 					}
 				</ProfileSection>
-			</div>
+			</div> */}
 
 		</div>
 	);
