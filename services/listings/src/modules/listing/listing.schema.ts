@@ -19,6 +19,7 @@ export const PublishListingSchema = z.object({
   features: z.object({
     bedrooms: z.number().int().min(0),
     bathrooms: z.number().int().min(0),
+    wc: z.boolean(),
     wc_separate: z.boolean(),
     parking_type: z.enum(['none', 'garage', 'box', 'parking']),
     garden_private: z.boolean(),

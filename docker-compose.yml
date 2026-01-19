@@ -58,6 +58,9 @@ services:
       INTERNAL_KEY_SECRET: ${INTERNAL_KEY_SECRET}
       # DNS preference
       NODE_OPTIONS: "--dns-result-order=ipv4first"
+      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
+      RESERVATION_SERVICE_URL: ${RESERVATION_SERVICE_URL}
+      AI_SERVICE_URL: ${AI_SERVICE_URL}
     volumes:
       - ./secret/jwtTokenService:/app/secret:ro
     depends_on:
@@ -65,7 +68,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3001/api/auth" ]
+      test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3001/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -87,6 +90,9 @@ services:
       PORT: 3002
       # Internal key
       INTERNAL_KEY_SECRET: ${INTERNAL_KEY_SECRET}
+      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
+      RESERVATION_SERVICE_URL: ${RESERVATIONS_SERVICE_URL}
+      AI_SERVICE_URL: ${AI_SERVICE_URL}
     depends_on:
       db:
         condition: service_healthy
@@ -96,6 +102,41 @@ services:
       #- uploads_data:/app/uploads # Dossier partagé (Read-Write pour API)
     healthcheck:
       test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3002/listings/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==============================================
+  # RESERVATIONS SERVICE - Fastify
+  # ==============================================
+  reservations-service:
+    build:
+      context: ./services/reservation
+      dockerfile: Dockerfile
+    container_name: trust-estate-reservations
+    expose:
+      - "3003"
+    ports:
+      - "3003:3003"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}?schema=reservations
+      PORT_AUTH_RESERVATION: 3003
+      # Internal key
+      INTERNAL_KEY_SECRET: ${INTERNAL_KEY_SECRET}
+      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
+      LISTINGS_SERVICE_URL: ${LISTINGS_SERVICE_URL}
+      CREDITS_SERVICE_URL: ${CREDITS_SERVICE_URL}
+      JWT_SECRET_PUBLIC_KEY: ${JWT_SECRET_PUBLIC_KEY}
+      GMAIL_USER: ${GMAIL_USER}
+      GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
+      COOKIE_SECRET: ${COOKIE_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3003/health" ]
       interval: 30s
       timeout: 10s
       retries: 3

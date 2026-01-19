@@ -1,5 +1,5 @@
 import fastifyPlugin from "fastify-plugin";
-import type { FastifyBaseLogger, FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest,  } from "fastify";
+import type { FastifyBaseLogger, FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest, } from "fastify";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import { UserInterface } from "../interfaces/config.interface";
@@ -20,13 +20,13 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 		const cookies = request.headers.cookie || '';
 
 		const internalToken = jwt.sign(
-			{ service: 'auth-gateway' }, 
-			app.config.INTERNAL_KEY_SECRET, 
+			{ service: 'auth-gateway' },
+			app.config.INTERNAL_KEY_SECRET,
 			{ algorithm: 'HS256', expiresIn: '30s' }
 		);
-	
+
 		try {
-			const response = await fetch(`${app.config.API_AUTH_URL_SERVICE}/auth/verify-token`, {
+			const response = await fetch(`${app.config.AUTH_SERVICE_URL}/auth/verify-token`, {
 				method: 'POST',
 				headers: {
 					'x-internal-key': internalToken,
@@ -35,8 +35,7 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 				credentials: 'include'
 			});
 
-			if (!response.ok)
-			{
+			if (!response.ok) {
 				const data = await response.json();
 				return reply.status(response.status).send(data)
 			}
@@ -57,28 +56,28 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 		const userId = (request as any).headers['x-user-id'];
 
 		if (!internalToken || !userId) {
-			return reply.code(401).send({ 
+			return reply.code(401).send({
 				error: 'unauthorized',
-				message: 'Missing internal token or user ID' 
+				message: 'Missing internal token or user ID'
 			});
 		}
 
 		try {
-			const payload = jwt.verify(internalToken, app.config.INTERNAL_KEY_SECRET, { 
-				algorithms: ["HS256"] 
+			const payload = jwt.verify(internalToken, app.config.INTERNAL_KEY_SECRET, {
+				algorithms: ["HS256"]
 			}) as any;
 
 			if (!payload.service || !payload.userId) {
-				return reply.code(401).send({ 
+				return reply.code(401).send({
 					error: 'invalid_token',
-					message: 'Invalid internal token structure' 
+					message: 'Invalid internal token structure'
 				});
 			}
 
 			if (payload.userId !== userId) {
-				return reply.code(403).send({ 
+				return reply.code(403).send({
 					error: 'forbidden',
-					message: 'User ID mismatch' 
+					message: 'User ID mismatch'
 				});
 			}
 
@@ -87,9 +86,9 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 			} as UserInterface;
 
 		} catch (err) {
-			return reply.code(401).send({ 
+			return reply.code(401).send({
 				error: 'invalid_token',
-				message: 'Invalid or expired internal token' 
+				message: 'Invalid or expired internal token'
 			});
 		}
 	});
