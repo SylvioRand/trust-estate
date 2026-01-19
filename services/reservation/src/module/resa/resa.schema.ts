@@ -33,3 +33,21 @@ export const ReservationIdSchema = {
 		additionalProperties: false
 	}
 };
+
+export const StatusListingSchema = {
+	querystring : {
+		type: 'object',
+		required: ['listingId', 'userId'],
+		properties: {
+			listingId: {
+				type: 'string',
+				format: 'uuid'
+			},
+			userId: {
+				type: 'string',
+				format: 'uuid'
+			}
+		},
+		additionalProperties: false
+	}
+};

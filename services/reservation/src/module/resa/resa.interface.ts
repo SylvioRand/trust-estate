@@ -7,3 +7,8 @@ export interface ReservationInterface {
 export interface ReservationIdInterface {
 	id: string
 }
+
+export interface StatusInterface {
+	listingId: string
+	userId: string
+}
