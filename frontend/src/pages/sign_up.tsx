@@ -5,7 +5,9 @@ import ContentDivider from "../components/ContentDivider";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { useAuthRedirect } from "../hooks/useAuthRedirect";
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
+import useDataProvider from "../provider/useDataProvider";
+import PhoneInput from "../components/PhoneInput";
 
 export type APIResponse = {
 	error: string;
@@ -14,23 +16,24 @@ export type APIResponse = {
 }
 
 const SignUpPage: React.FC = () => {
-	const { t } = useTranslation(["signUp", "error"]);
-	const navigate = useNavigate();
-	const [processSignUp, setProcessSignUp] = useState<boolean>(false);
-	const [errorEmail, setErrorEmail] = useState<string[]>([]);
-	const [errorPhone, setErrorPhone] = useState<string[]>([]);
-	const [errorFirstName, setErrorFirstName] = useState<string[]>([]);
-	const [errorLastName, setErrorLastName] = useState<string[]>([]);
-	const [errorPassword, setErrorPassword] = useState<string[]>([]);
+	const	{ t } = useTranslation(["signUp", "error"]);
+	const	navigate = useNavigate();
+	const	[processSignUp, setProcessSignUp] = useState<boolean>(false);
+	const	[errorEmail, setErrorEmail] = useState<string[]>([]);
+	const	[errorPhone, setErrorPhone] = useState<string[]>([]);
+	const	[errorFirstName, setErrorFirstName] = useState<string[]>([]);
+	const	[errorLastName, setErrorLastName] = useState<string[]>([]);
+	const	[errorPassword, setErrorPassword] = useState<string[]>([]);
+	const	{ setIsConnected } = useDataProvider();
 
-	useAuthRedirect();
+	VerifyUsersState();
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
 		setProcessSignUp(true);
 		const formData = new FormData(e.currentTarget);
-		const data = Object.fromEntries(formData.entries());
+		const data = Object.fromEntries(formData.entries()) as Record<string, string>;
 
 		// Reset all error first
 		setErrorEmail([]);
@@ -40,6 +43,9 @@ const SignUpPage: React.FC = () => {
 		setErrorPassword([]);
 
 		try {
+			data.phone = data.phoneCountryCode + data.phone;
+			delete data.phoneCountryCode;
+
 			const response = await fetch("/api/auth/register", {
 				method: "POST",
 				headers: {
@@ -47,19 +53,19 @@ const SignUpPage: React.FC = () => {
 				},
 				body: JSON.stringify(data)
 			})
+			console.log("DEBUG: ", JSON.stringify(data));
 
 			const responseData = await response.json();
-			console.log("Response Body:", responseData);
 
 			if (!response.ok) {
 				const errorData = responseData as APIResponse;
 
 				if (errorData.error === "email_exists") {
-					setErrorEmail(["error:" + errorData.message]);
+					setErrorEmail([errorData.message]);
 					throw new Error("Email already in used.");
 				}
 				else if (errorData.error === "phone_exists") {
-					setErrorPhone(["error:" + errorData.message]);
+					setErrorPhone([errorData.message]);
 					throw new Error("Phone already in used.");
 				}
 				else if (errorData.error === "validation_failed") {
@@ -92,11 +98,12 @@ const SignUpPage: React.FC = () => {
 					throw new Error("Invalid Request.");
 				}
 				else if (errorData.error === "rate_limited") {
-					toast.error(t("error:" + errorData.message));
+					toast.error(t(errorData.message));
 					throw new Error("Rate Limited.");
 				}
 			}
 
+			setIsConnected(true);
 			navigate("/email-sent");
 
 		} catch (error) {
@@ -178,12 +185,11 @@ const SignUpPage: React.FC = () => {
 						/>
 					</div>
 
-					<SimpleInput
-						icon="󰏲"
+					<PhoneInput
 						title={t("form.phone.label")}
 						name="phone"
-						type="tel"
-						placeholder={t("form.phone.placeholder")}
+						nameCountryCode="phoneCountryCode"
+						placeholder="XX XX XXX XX"
 						error={errorPhone}
 					/>
 
@@ -251,7 +257,7 @@ const SignUpPage: React.FC = () => {
 						w-full mb-4"
 					>
 						{t("footer.alreadyHaveAccount")}
-						<Link to="/sign_in">
+						<Link to="/sign-in">
 							<span className="underline cursor-pointer font-bold">
 								{t("footer.signIn")}
 							</span>

@@ -8,7 +8,7 @@ Définir des contrats API REST clairs, stables et mockables, permettant :
 
 ⚠️ Ces contrats décrivent le comportement attendu, pas l'implémentation.
 
-**🆕 Cette version corrige et complète le document initial avec :**
+**Cette version corrige et complète le document initial avec :**
 - Workflow téléphone simple (sans OTP)
 - Endpoints zones
 - Endpoints modérateur
@@ -24,7 +24,7 @@ Ces endpoints sont répartis entre 4 services Fastify derrière un Nginx gateway
 | Service                  | Port | Endpoints                             |
 |--------------------------|------|---------------------------------------|
 | **auth-service**         | 3001 | `/auth/*`, `/users/*`                 |
-| **listings-service**     | 3002 | `/listings/*`, `/zones/*`, `/admin/*` |
+| **listings-service**     | 3002 | `/listings/*`, `/admin/*` |
 | **reservations-service** | 3003 | `/reservations/*`, `/feedback/*`      |
 | **credits-service**      | 3004 | `/credits/*`                          |
 | **ai-service**           | 3005 | `/ai/*`                               |
@@ -39,12 +39,12 @@ Ces endpoints sont répartis entre 4 services Fastify derrière un Nginx gateway
 
 **Auth :** Cookies HttpOnly (Standard strict)
 
-| Nom du cookie             | Contenu       | Durée (MVP) | Attributs requis                                      |
+| Nom du cookie             | Contenu       | Durée       | Attributs requis                                      |
 |---------------------------|---------------|-------------|-------------------------------------------------------|
 | `realestate_access_token` | JWT (String)  | 15 min      | `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/`     |
 | `realestate_refresh_token`| UUID (String) | 7 jours     | `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/auth` |
 
-> **Note pour les Mocks :** Le serveur de mock DOIT renvoyer ces headers `Set-Cookie` exacts.
+
 > **Note pour les Devs :** Le frontend ne manipule JAMAIS ces cookies directement.
 
 
@@ -145,7 +145,7 @@ Toutes les erreurs (4xx, 5xx) suivent ce format JSON.
 
 ### Sanitization Anti-XSS
 
-Tous les champs texte (`title`, `description`, `comment`, `firstName`, etc.) doivent être nettoyés :
+Tous les champs texte (`title`, `description`, `comment`, `firstName`, `lastName`) doivent être nettoyés :
 
 ```javascript
 // Backend (Node.js)
@@ -251,8 +251,8 @@ Les valeurs autorisées **DOIVENT** être strictement identiques entre le fronte
 ```typescript
 // shared/constants/enums.ts
 export const LISTING_TYPE = ['sale', 'rent'] as const;
-export const LISTING_STATUS = ['active', 'blocked', 'archived'] as const;
-export const PARKING_TYPE = ['none', 'street', 'garage', 'covered'] as const;
+export const LISTING_STATUS = ['active', 'reserved', 'sold', 'rented', 'blocked', 'archived'] as const;
+export const PARKING_TYPE = ['none', 'garage', 'box', 'parking'] as const;
 export const RESERVATION_STATUS = ['pending', 'confirmed', 'rejected', 'cancelled', 'done'] as const;
 export const REPORT_REASON = ['fraud', 'spam', 'incorrect_info', 'inappropriate'] as const;
 export const MOD_ACTION = ['block_temporary', 'archive_permanent', 'request_clarification'] as const;
@@ -278,28 +278,15 @@ const listingSchema = {
 | Enum                 | Valeurs autorisées                                              |
 |----------------------|-----------------------------------------------------------------|
 | `type` (listing)     | `sale`, `rent`                                                  |
-| `status` (listing)   | `active`, `blocked`, `archived`                                 |
-| `parking_type`       | `none`, `street`, `garage`, `covered`                           |
+| `status` (listing)   | `active`, `reserved`, `sold`, `rented`, `blocked`, `archived` |
+| `parking_type`       | `none`, `garage`, `box`, `parking`                              |
 | `reservation.status` | `pending`, `confirmed`, `rejected`, `cancelled`, `done`         |
 | `report.reason`      | `fraud`, `spam`, `incorrect_info`, `inappropriate`              |
 | `mod.action`         | `block_temporary`, `archive_permanent`, `request_clarification` |
 | `credit.provider`    | `orange-money`, `mvola`                                         |
 | `feedback.rating`    | `1`, `2`, `3`, `4`, `5`                                         |
 
-### ✅ Checklist Validation Complète
 
-Avant chaque endpoint POST/PUT, vérifier :
-
-- [ ] Schema JSON avec `additionalProperties: false`
-- [ ] Limites de taille identiques frontend/backend
-- [ ] Enums stricts avec valeurs partagées
-- [ ] Regex téléphone Madagascar appliquée
-- [ ] Sanitization XSS sur champs texte
-- [ ] Rate limiting configuré
-- [ ] Vérification crédits avant opération (402)
-- [ ] Transaction atomique si multi-opérations
-
----
 
 ## 1. Authentification (auth-service)
 
@@ -421,16 +408,18 @@ POST /auth/verify-email
   "user": {
     "id": "235afa03-4130-44d5-8002-522a58ab164d",
     "email": "Icie64@hotmail.com",
-    "emailVerified": "true",
+    "emailVerified": true,
     "phone": "+261340000000",
     "firstName": "Sydni",
     "lastName": "Ziemann",
-    "role": "user",
+    "role": "user", // Enum: "user", "moderator"
     "sellerStats": {
       "totalListings": 5,
       "activeListings": 4,
       "successfulSales": 1,
-      "averageRating": 8.5
+      "successfulRents": 0,
+      "averageRating": 4.5,
+      "responseRate": 85
     },
     "creditBalance": 45,
     "createdAt": "2025-12-26T08:55:19.215Z"
@@ -490,7 +479,7 @@ POST /auth/resend-verification
 
 ---
 
-### 1.4 Mot de passe oublié (🆕 NOUVEAU)
+### 1.4 Mot de passe oublié (NOUVEAU)
 
 ```http
 POST /auth/forgot-password
@@ -522,7 +511,7 @@ POST /auth/forgot-password
 
 ---
 
-### 1.5 Réinitialiser Mot de passe (🆕 NOUVEAU)
+### 1.5 Réinitialiser Mot de passe (NOUVEAU)
 
 ```http
 POST /auth/reset-password
@@ -578,25 +567,25 @@ POST /auth/login
 
 ```json
 {
-{
   "user": {
     "id": "b016c7e2-9a78-4c86-a5ab-5f4166e6deaa",
     "email": "Destiny_Dickinson25@gmail.com",
-    "emailVerified": false,
+    "emailVerified": true,
     "phone": "+261340000000",
     "firstName": "Sonya",
     "lastName": "Leuschke",
-    "role": "user",
+    "role": "user", // Enum: "user", "moderator"
     "sellerStats": {
       "totalListings": 5,
       "activeListings": 4,
       "successfulSales": 1,
-      "averageRating": 8.5
+      "successfulRents": 0,
+      "averageRating": 4.5,
+      "responseRate": 85
     },
     "creditBalance": 45,
     "createdAt": "2025-12-26T08:49:13.639Z"
   }
-}
 }
 ```
 
@@ -668,16 +657,18 @@ POST /auth/google
   "user": {
     "id": "8757f505-eb47-4078-8c64-b33239e264e6",
     "email": "Monty_Rempel@gmail.com",
-    "emailVerified": "true",
+    "emailVerified": true,
     "phone": "+261340000000",
     "firstName": "Edwin",
     "lastName": "Bernier",
-    "role": "moderator",
+    "role": "moderator", // Enum: "user", "moderator"
     "sellerStats": {
       "totalListings": 5,
       "activeListings": 4,
       "successfulSales": 1,
-      "averageRating": 8.5
+      "successfulRents": 0,
+      "averageRating": 4.5,
+      "responseRate": 90
     },
     "creditBalance": 45,
     "createdAt": "2025-12-26T08:51:13.893Z"
@@ -693,7 +684,7 @@ POST /auth/google
 }
 ```
 
-**Règles mock MVP :**
+
 - Tout token accepté
 - Crée utilisateur auto si nouveau
 
@@ -734,12 +725,14 @@ GET /users/me
   "phone": "+261340000000",
   "firstName": "Jean",
   "lastName": "Rakoto",
-  "role": "user",
+  "role": "user", // Enum: "user", "moderator"
   "sellerStats": {
     "totalListings": 5,
     "activeListings": 2,
     "successfulSales": 3,
-    "averageRating": 4.2
+    "successfulRents": 1,
+    "averageRating": 4.2,
+    "responseRate": 92
   },
   "creditBalance": 10,
   "createdAt": "2025-01-10T08:00:00Z"
@@ -805,6 +798,47 @@ PUT /users/me
 }
 ```
 
+### 1.11 Récupérer infos utilisateur (Interne)
+
+```http
+GET /users/:id/details
+```
+
+**Description :** Endpoint **interne** pour récupérer les informations d'un utilisateur (vendeur) par son ID. Utilisé par le service `listings` pour afficher les détails du vendeur (ex: après réservation).
+
+**Auth :** Header `x-internal-key` (clé API interne partagée)
+
+**Parameters :**
+- `id` (path) : UUID de l'utilisateur
+
+**Response 200 :**
+```json
+{
+  "id": "u5",
+  "firstName": "Jean",
+  "lastName": "Rakoto",
+  "email": "jean@mail.com",
+  "phone": "+261340000000",
+}
+```
+
+**Response 401 (clé interne invalide) :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Missing or invalid internal key"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "user_not_found",
+  "message": "User not found"
+}
+```
+
+
 **Response 401 :**
 ```json
 {
@@ -815,7 +849,7 @@ PUT /users/me
 
 ---
 
-### 1.11 Ajouter/Modifier Téléphone (🆕 NOUVEAU)
+### 1.11 Ajouter/Modifier Téléphone (NOUVEAU)
 
 ```http
 PUT /users/me/phone
@@ -866,7 +900,7 @@ PUT /users/me/phone
 
 ---
 
-### 1.12 🆕 Vérifier Disponibilité Email (UX)
+### 1.12 Vérifier Disponibilité Email (UX)
 
 ```http
 GET /auth/check-email?email=user@mail.com
@@ -903,7 +937,7 @@ GET /auth/check-email?email=user@mail.com
 
 ---
 
-### 1.13 🆕 Vérifier Disponibilité Téléphone (UX)
+### 1.13 Vérifier Disponibilité Téléphone (UX)
 
 ```http
 GET /auth/check-phone?phone=+261340000000
@@ -940,6 +974,105 @@ GET /auth/check-phone?phone=+261340000000
 
 ---
 
+### 1.14 Vérification Token (Interne - Service-to-Service)
+
+**Description :** Endpoint **interne** permettant aux autres microservices (`listings-service`, `reservations-service`, `payment-service`, `ai-service`) de valider un token JWT et d'obtenir les informations utilisateur essentielles.
+
+**Cas d'usage :**
+- Le `listings-service` reçoit une requête de publication → appelle `auth-service` pour valider le token
+- Le `reservations-service` vérifie que l'utilisateur a le droit de réserver
+- Tout service ayant besoin de connaître l'identité de l'utilisateur
+
+**Auth :** Header `x-internal-key` (clé API interne partagée entre services)
+
+```http
+POST /auth/verify-token
+```
+
+**Headers requis :**
+```
+x-internal-key: ${INTERNAL_API_KEY}
+Content-Type: application/json
+```
+
+**Request :**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Response 200 (token valide) :**
+```json
+{
+  "valid": true,
+  "user": {
+    "id": "u123",
+    "role": "user",
+    "emailVerified": true
+  },
+  "expiresAt": "2025-01-07T12:00:00Z"
+}
+```
+
+**Response 401 (token invalide) :**
+```json
+{
+  "valid": false,
+  "reason": "token_invalid",
+  "message": "auth.token_invalid"
+}
+```
+
+**Response 401 (token expiré) :**
+```json
+{
+  "valid": false,
+  "reason": "token_expired",
+  "message": "auth.token_expired"
+}
+```
+
+**Response 401 (token révoqué) :**
+```json
+{
+  "valid": false,
+  "reason": "token_revoked",
+  "message": "auth.token_revoked"
+}
+```
+
+**Response 403 (clé interne invalide) :**
+```json
+{
+  "error": "forbidden",
+  "message": "auth.invalid_internal_key"
+}
+```
+
+> [!IMPORTANT]
+> **Sécurité :**
+> - Cet endpoint ne doit **jamais** être exposé via l'API Gateway public
+> - La clé `INTERNAL_API_KEY` doit être générée avec au moins 32 caractères aléatoires
+> - Communication interne en HTTPS ou via réseau Docker isolé
+
+**Exemple d'appel depuis un autre service (Node.js) :**
+```javascript
+const response = await fetch('http://auth-service:3001/auth/verify-token', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-internal-key': process.env.INTERNAL_API_KEY
+  },
+  body: JSON.stringify({ token: accessToken })
+});
+
+const { valid, user } = await response.json();
+if (!valid) throw new UnauthorizedException();
+```
+
+---
+
 ---
 
 ## 2. Annonces (listings-service)
@@ -972,22 +1105,24 @@ GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000
       "id": "l1",
       "title": "Maison T3 Analakely",
       "price": 50000000,
-      "type": "sale",
+      "type": "sale", // Enum: "sale", "rent"
+      "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial"
+      "mine": true,
       "zone": "tana-analakely",
-      "zoneDisplay": "Antananarivo - Analakely",
       "surface": 120,
       "photos": [
         "https://mock-cdn.com/photo1.jpg"
       ],
-      "status": "active",
-      "createdAt": "2025-01-10T08:00:00Z",
-      "expiresAt": "2025-02-09T08:00:00Z"
+      "status": "active", // Enum: "active", "blocked", "archived"
+      "isAvailable": true, // Visibilité marché
+      "tags": ["urgent"], // Enum: "urgent", "exclusive", "discount"
+      "createdAt": "2025-01-10T08:00:00Z"
     }
   ],
   "pagination": {
     "page": 1,
     "limit": 20,
-    "total": 45,
+    "totalMatching": 45,
     "totalPages": 3
   }
 }
@@ -1000,7 +1135,7 @@ GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000
   "pagination": {
     "page": 1,
     "limit": 20,
-    "total": 0,
+    "totalMatching": 0,
     "totalPages": 0
   }
 }
@@ -1021,10 +1156,11 @@ GET /listings/:id
   "title": "Maison T3 Analakely",
   "description": "Maison lumineuse avec jardin...",
   "price": 50000000,
-  "type": "sale",
+  "type": "sale", // Enum: "sale", "rent"
+  "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial"
+  "mine": true,
   "surface": 120,
   "zone": "tana-analakely",
-  "zoneDisplay": "Antananarivo - Analakely",
   "photos": [
     "https://mock-cdn.com/photo1.jpg",
     "https://mock-cdn.com/photo2.jpg"
@@ -1033,21 +1169,30 @@ GET /listings/:id
     "bedrooms": 3,
     "bathrooms": 2,
     "wc_separate": true,
-    "parking_type": "garage",
+    "parking_type": "garage", // Enum: "garage", "box", "parking", "none"
     "garden_private": true,
     "water_access": true,
     "electricity_access": true
   },
-  "status": "active",
+  "status": "active", // Enum: "active", "blocked", "archived"
+  "isAvailable": true,
   "sellerVisible": false,
   "sellerStats": {
     "totalListings": 5,
+    "activeListings": 2,
     "successfulSales": 3,
-    "averageRating": 4.2
+    "successfulRents": 1,
+    "averageRating": 4.2,
+    "responseRate": 92
   },
+  "stats": {                    // Visible uniquement si mine=true
+    "views": 245,
+    "reservations": 3,
+    "feedbacks": 2
+  },
+  "tags": ["urgent"], // Enum: "urgent", "exclusive", "discount"
   "createdAt": "2025-01-10T08:00:00Z",
-  "updatedAt": "2025-01-12T14:30:00Z",
-  "expiresAt": "2025-02-09T08:00:00Z"
+  "updatedAt": "2025-01-12T14:30:00Z"
 }
 ```
 
@@ -1058,13 +1203,15 @@ GET /listings/:id
   "title": "Maison T3 Analakely",
   "description": "Maison lumineuse avec jardin...",
   "price": 50000000,
-  "type": "sale",
+  "type": "sale", // Enum: "sale", "rent"
+  "propertyType": "house", // Enum: "apartment", "house", "loft", "land", "commercial"
+  "mine": false,
   "surface": 120,
   "zone": "tana-analakely",
-  "zoneDisplay": "Antananarivo - Analakely",
   "photos": [...],
   "features": {...},
-  "status": "active",
+  "status": "active", // Enum: "active", "blocked", "archived"
+  "isAvailable": true,
   "sellerVisible": true,
   "seller": {
     "id": "u5",
@@ -1075,9 +1222,13 @@ GET /listings/:id
   },
   "sellerStats": {
     "totalListings": 5,
+    "activeListings": 2,
     "successfulSales": 3,
-    "averageRating": 4.2
+    "successfulRents": 1,
+    "averageRating": 4.2,
+    "responseRate": 92
   },
+  "tags": ["urgent"], // Enum: "urgent", "exclusive", "discount"
   "createdAt": "2025-01-10T08:00:00Z",
   "updatedAt": "2025-01-12T14:30:00Z"
 }
@@ -1091,48 +1242,89 @@ GET /listings/:id
 }
 ```
 
+> [!NOTE]
+> **Choix de design (Privacy) :**
+> `sellerId` n'est **pas exposé directement** — le vendeur est révélé via l'objet `seller` uniquement après réservation confirmée (`sellerVisible: true`)
+
 ---
 
-### 2.3 Créer annonce
+### 2.3 Créer annonce (avec Upload Photos)
 
 ```http
 POST /listings/publish
 ```
 
+**Description :** Création d'une annonce avec upload intégré des photos.
+Les photos sont envoyées **avec** les métadonnées dans une seule requête multipart.
+Le backend utilise le **streaming** pour écrire les fichiers directement sur disque (mémoire optimisée).
+
 **Auth :** Cookie HttpOnly (`realestate_access_token`)
 
 **Request :**
+- `Content-Type`: `multipart/form-data`
+
+| Part    | Type               | Description                                          |
+|---------|--------------------|------------------------------------------------------|
+| `data`  | `application/json` | Métadonnées de l'annonce (voir structure ci-dessous) |
+| `files` | Fichiers binaires  | Photos de l'annonce (3-10 fichiers)                  |
+
+**Structure du champ `data` (JSON) :**
 ```json
 {
-  "type": "sale",
+  "type": "sale",           // Enum: "sale", "rent" (Requis)
+  "propertyType": "house",  // Enum: "apartment", "house", "loft", "land", "commercial" (Requis)
   "title": "Villa T4 avec piscine",
   "description": "Belle villa moderne...",
   "price": 120000000,
   "surface": 200,
   "zone": "tana-ivandry",
-  "photos": [
-    "data:image/jpeg;base64,...",
-    "data:image/jpeg;base64,..."
-  ],
   "features": {
     "bedrooms": 4,
     "bathrooms": 3,
     "wc_separate": true,
-    "parking_type": "garage",
+    "parking_type": "garage",  // Enum: "garage", "box", "parking", "none"
     "garden_private": true,
     "pool": true,
     "water_access": true,
     "electricity_access": true
   },
-  "tags": ["exclusive"]
+  "tags": ["urgent"]        // Enum: "urgent", "exclusive", "discount"
 }
 ```
+
+**Contraintes fichiers :**
+- Min 3, max 10 fichiers par requête
+- Taille max par fichier : 5 Mo
+- Taille max totale : 55 Mo (10 × 5MB + JSON)
+- Formats acceptés : `.jpg`, `.jpeg`, `.png`, `.webp`
+
+**Exemple requête HTTP brute :**
+```http
+POST /listings/publish HTTP/1.1
+Content-Type: multipart/form-data; boundary=---Boundary123
+Cookie: realestate_access_token=...
+
+-----Boundary123
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{"type":"sale","title":"Belle maison T4","price":500000000,"zone":"tana-ivandry","features":{"bedrooms":4}}
+-----Boundary123
+Content-Disposition: form-data; name="files"; filename="salon.jpg"
+Content-Type: image/jpeg
+
+[...données binaires...]
+-----Boundary123--
+```
+
+
 
 **Response 201 :**
 ```json
 {
   "listingId": "l2",
-  "status": "active",
+  "status": "active", // Enum: "active", "blocked", "archived"
+  "isAvailable": true,
   "creditConsumed": 1,
   "remainingCredits": 4,
   "message": "listing.publish_success"
@@ -1167,7 +1359,7 @@ POST /listings/publish
 }
 ```
 
-**Response 413 :**
+**Response 413 (fichier trop volumineux) :**
 ```json
 {
   "error": "file_too_large",
@@ -1175,12 +1367,11 @@ POST /listings/publish
 }
 ```
 
-**Response 422 (format invalide) :**
+**Response 422 (format fichier invalide) :**
 ```json
 {
   "error": "invalid_mime_type",
-  "message": "validation.file.invalid_format",
-  "invalidFiles": ["photo_3.gif"]
+  "message": "validation.file.invalid_format"
 }
 ```
 
@@ -1196,16 +1387,16 @@ POST /listings/publish
 
 **Frontend :**
 
-| Champ                | Règles                                             |
-|----------------------|----------------------------------------------------|
-| `title`              | 10-100 caractères                                  |
-| `description`        | 50-2000 caractères                                 |
-| `price`              | Nombre positif, max 999 999 999 999                |
-| `surface`            | Nombre positif, max 10 000 m²                      |
-| `zone`               | Doit exister dans la liste `/zones`                |
-| `photos`             | 3-10 images, max 5MB chacune, formats JPG/PNG/WebP |
-| `features.bedrooms`  | 0-20                                               |
-| `features.bathrooms` | 0-10                                               |
+| Champ                | Règles                                               |
+|----------------------|------------------------------------------------------|
+| `title`              | 10-100 caractères                                    |
+| `description`        | 50-2000 caractères                                   |
+| `price`              | Nombre positif, max 999 999 999 999                  |
+| `surface`            | Nombre positif, max 10 000 m²                        |
+| `zone`               | Doit être une zone valide (voir `shared/zones.json`) |
+| `photos`             | 3-10 images, max 5MB chacune, formats JPG/PNG/WebP   |
+| `features.bedrooms`  | 0-20                                                 |
+| `features.bathrooms` | 0-10                                                 |
 
 **Backend (CRITIQUE) :**
 - ✅ Toutes les règles frontend PLUS :
@@ -1219,7 +1410,7 @@ POST /listings/publish
 
 ---
 
-### 2.4 🆕 Modifier annonce
+### 2.4 Modifier annonce
 
 ```http
 PUT /listings/:id
@@ -1227,26 +1418,32 @@ PUT /listings/:id
 
 **Auth :** Cookie HttpOnly (`realestate_access_token`)
 
+**Description :** Modifie les métadonnées d'une annonce existante.
+
+> [!NOTE]
+> **Les photos ne peuvent pas être modifiées après publication.** Pour changer les photos, l'utilisateur doit archiver l'annonce et en créer une nouvelle. Cette simplification évite la complexité de gestion des fichiers orphelins.
+
 **Request :**
 ```json
 {
+  "type": "sale",                    // Enum: "sale", "rent"
+  "propertyType": "house",           // Enum: "apartment", "house", "loft", "land", "commercial"
   "title": "Villa T4 avec piscine (Updated)",
   "description": "Belle villa moderne... (Nouvelle description)",
   "price": 115000000,
-  "photos": [
-    "data:image/jpeg;base64,...",
-    "https://existing-image.com/..."
-  ],
+  "surface": 120,
+  "zone": "tana-analakely",
   "features": {
     "bedrooms": 4,
     "bathrooms": 3,
     "wc_separate": true,
-    "parking_type": "garage",
+    "parking_type": "garage",        // Enum: "garage", "box", "parking", "none"
     "garden_private": true,
     "pool": true,
     "water_access": true,
     "electricity_access": true
-  }
+  },
+  "tags": ["exclusive"]              // Enum: "urgent", "exclusive", "discount"
 }
 ```
 *Note : Tous les champs sont optionnels. Envoyez uniquement ceux à modifier.*
@@ -1297,61 +1494,7 @@ PUT /listings/:id
 
 ---
 
-### 2.5 Renouveler Annonce (Prolonger annonce)
-
-```http
-POST /listings/:id/renew
-```
-
-**Auth :** Cookie HttpOnly (`realestate_access_token`)
-
-**Description :** Prolonge la visibilité de 30 jours. Coût : 0.5 crédit.
-
-**Response 200 :**
-```json
-{
-  "success": true,
-  "newExpiresAt": "2025-03-11T08:00:00Z",
-  "creditConsumed": 0.5,
-  "message": "listing.renew_success"
-}
-```
-
-**Response 402 :**
-```json
-{
-  "error": "insufficient_credits",
-  "message": "payment.insufficient_credits_renew"
-}
-```
-
-**Response 401 :**
-```json
-{
-  "error": "unauthorized",
-  "message": "common.unauthorized"
-}
-```
-
-**Response 403 :**
-```json
-{
-  "error": "forbidden",
-  "message": "listing.permission_denied"
-}
-```
-
-**Response 404 :**
-```json
-{
-  "error": "listing_not_found",
-  "message": "listing.not_found"
-}
-```
-
----
-
-### 2.6 Définir Disponibilités (Seller)
+### 2.5 Définir Disponibilités (Seller)
 
 ```http
 POST /listings/:id/availability
@@ -1415,7 +1558,7 @@ POST /listings/:id/availability
 
 ---
 
-### 2.7 Récupérer créneaux disponibles
+### 2.6 Récupérer créneaux disponibles
 ```http
 GET /listings/:id/slots
 ```
@@ -1440,38 +1583,38 @@ GET /listings/:id/slots
 
 ---
 
-### 2.8 Archiver Annonce (Vendu/Loué)
-
-```http
-POST /listings/:id/archive
-```
-
-**Request :**
-```json
-{
-  "finalStatus": "sold" | "rented",
-  "soldTo": "u7" // optionnel
-}
-```
-
-**Response 200 :**
-```json
-{
-  "archived": true,
-  "finalStatus": "sold",
-  "archivedAt": "2025-01-15T16:00:00Z"
-}
-```
-
-**Response 400 (validation) :**
-```json
-{
-  "error": "validation_failed",
-  "message": "common.validation_failed",
-  "details": {
-    "finalStatus": ["validation.listing.status.invalid"]
-  }
-}
+### 2.7 Clôturer/Archiver Annonce
+ 
+ ```http
+ POST /listings/:id/archive
+ ```
+ 
+ **Request :**
+ ```json
+ {
+   "sold": true       // Si vendu/loué
+ }
+ ```
+ 
+ **Response 200 :**
+ ```json
+ {
+   "archived": true,
+   "status": "archived", // Enum: "active", "blocked", "archived"
+   "isAvailable": false,
+   "soldAt": "2025-01-15T16:00:00Z"
+ }
+ ```
+ 
+ **Response 400 (validation) :**
+ ```json
+ {
+   "error": "validation_failed",
+   "message": "common.validation_failed",
+   "details": {
+     "sold": ["validation.type_invalid"]
+   }
+ }
 ```
 
 **Response 401 :**
@@ -1500,7 +1643,7 @@ POST /listings/:id/archive
 
 ---
 
-### 2.9 🆕 Mes Annonces
+### 2.8 Mes Annonces
 
 ```http
 GET /listings/mine
@@ -1528,8 +1671,10 @@ GET /listings/mine?status=active&page=1
       "id": "l1",
       "title": "Maison T3 Analakely",
       "price": 50000000,
-      "type": "sale",
-      "status": "active",
+      "type": "sale", // Enum: "sale", "rent"
+      "status": "active", // Enum: "active", "blocked", "archived"
+      "isAvailable": true,
+      "tags": ["discount"], // Enum: "urgent", "exclusive", "discount"
       "views": 150,
       "reservations": 3,
       "createdAt": "2025-01-10T08:00:00Z"
@@ -1539,6 +1684,12 @@ GET /listings/mine?status=active&page=1
     "total": 5,
     "active": 2,
     "archived": 3
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "totalMatching": 5,
+    "totalPages": 1
   }
 }
 ```
@@ -1553,7 +1704,7 @@ GET /listings/mine?status=active&page=1
 
 ---
 
-### 2.10 🆕 Signaler une annonce
+### 2.9 Signaler une annonce
 
 ```http
 POST /listings/:id/report
@@ -1615,9 +1766,7 @@ POST /listings/:id/report
 
 ---
 
----
-
-### 2.11 🆕 Génération Description IA
+### 2.10 Génération Description IA
 
 ```http
 POST /listings/generate-description
@@ -1658,9 +1807,54 @@ POST /listings/generate-description
 
 ---
 
+### 2.11 Récupérer stats vendeur (Interne)
+
+```http
+GET /listings/seller/:userId/stats
+```
+
+**Description :** Endpoint **interne** permettant au service `auth-service` (ou d'autres) de récupérer les statistiques consolidées d'un vendeur.
+
+**Auth :** Header `x-internal-key` (clé API interne partagée)
+
+**Parameters :**
+- `userId` (path) : UUID du vendeur
+
+**Response 200 :**
+```json
+{
+  "data": {
+    "totalListings": 5,
+    "activeListings": 4,
+    "successfulSales": 1,
+    "successfulRents": 0,
+    "averageRating": 4.5,
+    "responseRate": 85
+  }
+}
+```
+
+**Response 401 (clé interne invalide) :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Missing internal key"
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "seller_stats_not_found",
+  "message": "Seller statistics not found for this user."
+}
+```
+
+---
+
 ## 3. Réservations (reservations-service)
 
-### 3.1 🆕 Vérifier Disponibilité Slot (UX)
+### 3.1 Vérifier Disponibilité Slot (UX)
 
 ```http
 GET /reservations/check-slot?listingId=l1&slot=2025-01-20T10:00:00Z
@@ -1719,11 +1913,9 @@ POST /reservations
 ```json
 {
   "reservationId": "r1",
-  "status": "pending",
+  "status": "pending", // Enum: "pending", "confirmed", "rejected", "cancelled", "done"
   "slot": "2025-01-20T10:00:00Z",
   "creditConsumed": 1,
-  "remainingCredits": 4,
-  "sellerContactVisible": false,
   "remainingCredits": 4,
   "sellerContactVisible": false,
   "message": "reservation.created_success"
@@ -1824,7 +2016,7 @@ POST /reservations
 
 ---
 
-### 3.3 🆕 Lister mes réservations
+### 3.3 Lister mes réservations
 
 ```http
 GET /reservations/mine
@@ -1845,7 +2037,7 @@ GET /reservations/mine
         "photo": "https://mock-cdn.com/photo1.jpg"
       },
       "slot": "2025-01-20T10:00:00Z",
-      "status": "confirmed",
+      "status": "confirmed", // Enum: "pending", "confirmed", "rejected", "cancelled", "done"
       "feedbackEligible": false,
       "createdAt": "2025-01-15T14:00:00Z"
     }
@@ -1863,7 +2055,7 @@ GET /reservations/mine
 
 ---
 
-### 3.4 🆕 Annuler réservation
+### 3.4 Annuler réservation
 
 #### `DELETE /reservations/:id`
 **Rôle :** Annulation d'une réservation (autorisé jusqu'à 2h avant le slot).
@@ -1911,7 +2103,7 @@ GET /reservations/mine
 }
 ```
 
-### 3.5 🆕 Confirmer réservation (Vendeur)
+### 3.5 Confirmer réservation (Vendeur)
 
 **Rôle :** Le vendeur accepte la demande de visite.
 **Action :** Le statut passe à `confirmed`. L'acheteur est notifié.
@@ -1926,7 +2118,7 @@ POST /reservations/:id/confirm
 **Response 200 :**
 ```json
 {
-  "status": "confirmed",
+  "status": "confirmed", // Enum: "pending", "confirmed", "rejected", "cancelled", "done"
   "confirmedAt": "2025-01-16T10:00:00Z"
 }
 ```
@@ -1965,7 +2157,7 @@ POST /reservations/:id/confirm
 
 ---
 
-### 3.6 🆕 Refuser réservation (Vendeur)
+### 3.6 Refuser réservation (Vendeur)
 
 **Rôle :** Le vendeur refuse la demande de visite.
 **Action :** Le statut passe à `rejected`. L'acheteur est notifié.
@@ -1980,7 +2172,7 @@ POST /reservations/:id/reject
 **Response 200 :**
 ```json
 {
-  "status": "rejected"
+  "status": "rejected" // Enum: "pending", "confirmed", "rejected", "cancelled", "done"
 }
 ```
 
@@ -2018,6 +2210,37 @@ POST /reservations/:id/reject
 
 ---
 
+### 3.7 Vérifier statut réservation (Interne)
+
+```http
+GET /reservations/internal/status?listingId=l1&userId=u1
+```
+
+**Description :** Endpoint **interne** permettant au service `listings-service` de vérifier si un utilisateur a une réservation confirmée pour une annonce spécifique (pour afficher les contacts du vendeur).
+
+**Auth :** Header `x-internal-key` (clé API interne partagée)
+
+**Query Params :**
+- `listingId` : UUID de l'annonce
+- `userId` : UUID de l'utilisateur consultant l'annonce
+
+**Response 200 :**
+```json
+{
+  "confirmed": true
+}
+```
+
+**Response 401 (clé interne invalide) :**
+```json
+{
+  "error": "unauthorized",
+  "message": "Missing or invalid internal key"
+}
+```
+
+---
+
 ## 4. Feedback
 
 ### 4.1 Créer feedback
@@ -2032,7 +2255,7 @@ POST /feedback
 ```json
 {
   "reservationId": "r1",
-  "rating": 4,
+  "rating": 4, // Enum: 1, 2, 3, 4, 5
   "comment": "Visite conforme. Vendeur sérieux.",
   "categories": {
     "listingAccurate": true,
@@ -2137,7 +2360,7 @@ POST /credits/recharge
 {
   "amount": 10,
   "method": "mobile-money",
-  "provider": "orange-money" | "mvola"
+  "provider": "orange-money" // Enum: "orange-money", "mvola"
 }
 ```
 
@@ -2188,7 +2411,7 @@ POST /credits/recharge
 }
 ```
 
-### 5.3 🆕 Historique transactions
+### 5.3 Historique transactions
 
 ```http
 GET /credits/history
@@ -2204,9 +2427,9 @@ GET /credits/history
   "data": [
     {
       "id": "tx1",
-      "type": "recharge",
+      "type": "recharge", // Enum: "recharge", "consume", "bonus", "refund"
       "amount": +10,
-      "reason": "recharge_pack",
+      "reason": "recharge_pack", // Enum: "initial_bonus", "recharge_pack", "recharge_bonus", "publish_listing", "reserve_visit", "refund_cancelled"
       "balanceAfter": 15,
       "createdAt": "2025-01-15T10:00:00Z"
     },
@@ -2220,7 +2443,12 @@ GET /credits/history
       "createdAt": "2025-01-15T11:30:00Z"
     }
   ],
-  "pagination": {...}
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "totalMatching": 45,
+    "totalPages": 3
+  }
 }
 ```
 
@@ -2234,72 +2462,26 @@ GET /credits/history
 
 ---
 
-## 6. 🆕 Zones
 
-### 6.1 Lister zones disponibles
 
-```http
-GET /zones
-```
-
-**Query params :**
-- `level` : `city` | `district` | `neighborhood` (optionnel)
-- `parentId` : string (optionnel, pour hiérarchie)
-
-**Response 200 :**
-```json
-{
-  "data": [
-    {
-      "id": "tana-analakely",
-      "displayName": "Antananarivo - Analakely",
-      "level": "neighborhood",
-      "parentId": "tana-renivohitra"
-    },
-    {
-      "id": "tana-ankorondrano",
-      "displayName": "Antananarivo - Ankorondrano",
-      "level": "neighborhood",
-      "parentId": "tana-renivohitra"
-    },
-    {
-      "id": "tana-ivandry",
-      "displayName": "Antananarivo - Ivandry",
-      "level": "neighborhood",
-      "parentId": "tana"
-    }
-  ]
-}
-```
-
-**Données mock MVP (20 zones principales Antananarivo) :**
-```json
-[
-  {"id": "tana-analakely", "displayName": "Antananarivo - Analakely"},
-  {"id": "tana-ankorondrano", "displayName": "Antananarivo - Ankorondrano"},
-  {"id": "tana-ivandry", "displayName": "Antananarivo - Ivandry"},
-  {"id": "tana-ambohimanarina", "displayName": "Antananarivo - Ambohimanarina"},
-  {"id": "tana-67ha", "displayName": "Antananarivo - 67 Ha"},
-  {"id": "tana-autre", "displayName": "Antananarivo - Autre"}
-]
-```
-
----
-
-## 7. 🆕 Modération (Admin)
+## 6. Modération (Admin)
 
 **⚠️ Tous les endpoints ci-dessous nécessitent `role = 'moderator'`**
 
-### 7.1 Liste annonces signalées
+### 6.1 Liste annonces signalées
 
 ```http
 GET /admin/listings/flagged
 ```
 
+**Description :** Tableau de bord pour les modérateurs affichant toutes les annonces ayant reçu au moins un signalement utilisateur. Les annonces sont triées par date de signalement (le plus récent en premier).
+
+**Auth :** Cookie HttpOnly + Rôle `moderator`
+
 **Query params :**
-- `reason` : `user_reported` (en MVP, seul le signalement utilisateur existe)
-
-
+- `page` : number (défaut: 1)
+- `limit` : number (défaut: 20)
+- `reportReason` : Enum (optionnel) - `["fraud", "duplicate", "spam", "incorrect_info", "inappropriate", "other"]`
 
 **Response 200 :**
 ```json
@@ -2307,18 +2489,31 @@ GET /admin/listings/flagged
   "data": [
     {
       "listingId": "l5",
-      "title": "Terrain 500m²",
-      "reason": "user_reported",
-      "reportedBy": "u15",
-      "reportReason": "Photos suspectes",
+      "title": "Terrain 500m² à Ivandry",
+      "reportCount": 3,
+      "latestReportReason": "fraud",
       "seller": {
         "id": "u10",
-        "name": "Nom Vendeur",
+        "name": "Jean Rakoto",
         "email": "vendeur@mail.com"
       },
       "flaggedAt": "2025-01-15T10:00:00Z"
     }
-  ]
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "totalMatching": 12,
+    "totalPages": 1
+  }
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "common.unauthorized"
 }
 ```
 
@@ -2326,30 +2521,119 @@ GET /admin/listings/flagged
 ```json
 {
   "error": "forbidden",
-  "message": "admin.forbidden.moderator_only"
+  "message": "admin.forbidden.moderator_only",
+  "requiredRole": "moderator"
 }
 ```
 
 ---
 
-### 7.2 Appliquer une action (Modération)
+### 6.2 Consulter détail annonce (Admin)
+
+```http
+GET /admin/listings/:id
+```
+
+**Description :** Vue complète et sans restriction d'une annonce spécifique pour investigation. Contrairement à la vue publique, cette version révèle toutes les données privées (contacts du vendeur, notes internes, signalements détaillés).
+
+**Auth :** Cookie HttpOnly + Rôle `moderator`
+
+**Response 200 :**
+```json
+{
+  "listing": {
+    "id": "l5",
+    "title": "Terrain 500m² à Ivandry",
+    "description": "Superbe terrain...",
+    "price": 150000000,
+    "status": "active", 
+    "createdAt": "2025-01-10T08:00:00Z"
+  },
+  "seller": {
+    "id": "u10",
+    "firstName": "Jean",
+    "lastName": "Rakoto",
+    "email": "vendeur@mail.com",
+    "phone": "+261340000000",
+    "memberSince": "2024-06-15T00:00:00Z",
+    "identityVerified": true
+  },
+  "reports": [
+    {
+      "id": "rep1",
+      "reporterId": "u15",
+      "reason": "fraud",
+      "comment": "Les photos appartiennent à une autre annonce sur un site concurrent.",
+      "createdAt": "2025-01-15T10:00:00Z"
+    },
+    {
+      "id": "rep2",
+      "reporterId": "u18",
+      "reason": "incorrect_info",
+      "comment": "Le terrain n'est pas à Ivandry mais beaucoup plus loin.",
+      "createdAt": "2025-01-15T11:30:00Z"
+    }
+  ],
+  "moderationHistory": [
+    {
+      "action": "request_clarification",
+      "reason": "Signalement pour localisation erronée",
+      "date": "2025-01-15T12:00:00Z"
+    }
+  ]
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "listing_not_found",
+  "message": "listing.not_found"
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "common.unauthorized"
+}
+```
+
+**Response 403 :**
+```json
+{
+  "error": "forbidden",
+  "message": "admin.forbidden.moderator_only",
+  "requiredRole": "moderator"
+}
+```
+
+---
+
+### 6.3 Appliquer une action (Modération)
 
 ```http
 POST /admin/listings/:id/action
 ```
 
-**Description :** Applique une décision de modération sur une annonce spécifique.
+**Description :** Point d'entrée unique pour toutes les décisions de modération. L'action choisie impacte directement le statut de l'annonce et peut déclencher des notifications au vendeur. Fusionne les anciennes actions séparées pour une meilleure centralisation.
 
 **Auth :** Cookie HttpOnly + Rôle `moderator`
+
+**Action Types (`action`) :**
+- `block_temporary` : Suspend l'annonce (devient invisible). Passage du statut à `blocked`.
+- `archive_permanent` : Archivage définitif pour fraude ou violation grave. Non réversible par le vendeur.
+- `request_clarification` : Envoie une notification de mise en demeure. L'annonce reste `active` ou passe en `blocked` selon la gravité.
+- `reject_reports` : Ignore les signalements et marque l'annonce comme "vérifiée".
 
 **Request :**
 ```json
 {
-  "action": "block_temporary" | "archive_permanent" | "request_clarification",
-  "reason": "Non-respect des CGU (Photos non conformes)",
-  "metadata": {
-    "messageToSeller": "Veuillez mettre à jour vos photos sous 48h."
-  }
+  "action": "block_temporary", // Enum: ["block_temporary", "archive_permanent", "request_clarification", "reject_reports"]
+  "reason": "Photos non conformes aux CGU",
+  "messageToSeller": "Veuillez remplacer vos photos par des prises de vue réelles sous 48h.",
+  "internalNote": "Utilisateur suspecté de multi-compte, à surveiller."
 }
 ```
 
@@ -2367,10 +2651,10 @@ POST /admin/listings/:id/action
 ```json
 {
   "error": "validation_failed",
-  "message": "Données invalides",
+  "message": "common.validation_failed",
   "details": {
     "action": ["validation.admin.action.invalid"],
-    "reason": ["validation.admin.reason.too_short", "validation.admin.reason.too_long"]
+    "reason": ["validation.admin.reason.too_short"]
   }
 }
 ```
@@ -2387,7 +2671,382 @@ POST /admin/listings/:id/action
 ```json
 {
   "error": "forbidden",
-  "message": "admin.forbidden.moderator_only"
+  "message": "admin.forbidden.moderator_only",
+  "requiredRole": "moderator"
+}
+```
+
+---
+
+### 6.4 Historique Modération (Admin)
+
+```http
+GET /admin/actions
+```
+
+**Description :** Journal global de toutes les actions effectuées par l'équipe de modération pour permettre le suivi, l'audit et la cohérence des décisions.
+
+**Auth :** Cookie HttpOnly + Rôle `moderator`
+
+**Query params :**
+- `moderatorId` : UUID (optionnel)
+- `targetId` : UUID (optionnel) - Pour voir les actions sur une annonce précise
+- `page` : number
+- `limit` : number
+
+**Response 200 :**
+```json
+{
+  "data": [
+    {
+      "id": "ma1",
+      "moderatorId": "m1",
+      "targetType": "listing", 
+      "targetId": "l5",
+      "action": "archive_permanent", // Enum: ["block_temporary", "archive_permanent", "request_clarification", "reject_reports"]
+      "reason": "Fraude confirmée",
+      "appliedAt": "2025-01-15T14:00:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 50,
+    "totalMatching": 120,
+    "totalPages": 3
+  }
+}
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "common.unauthorized"
+}
+```
+
+**Response 403 :**
+```json
+{
+  "error": "forbidden",
+  "message": "admin.forbidden.moderator_only",
+  "requiredRole": "moderator"
+}
+```
+```
+
+
+---
+
+## 7. Intelligence Artificielle (ai-service)
+
+> **🔧 Stack Technique :**
+> - **Service :** Python FastAPI (port 3005)
+> - **LLM :** OpenRouter + DeepSeek V3 (Cloud gratuit)
+> - **Embeddings :** Sentence Transformers (all-MiniLM-L6-v2)
+> - **Vector Database :** ChromaDB (Local)
+> 
+> Voir [Niveau_3.5_Architecture_Microservices.md](./Niveau_3.5_Architecture_Microservices.md) pour la configuration Docker.
+
+> [!NOTE]
+> **Composants du système RAG (Retrieval-Augmented Generation) :**
+> - **ChromaDB** : Stocke les embeddings vectoriels des annonces et données marché
+> - **Sentence Transformers** : Convertit le texte en vecteurs pour la recherche sémantique
+> - **LLM (DeepSeek V3)** : Génère les réponses contextualisées à partir des documents récupérés
+
+---
+
+### 7.1 Assistant Chat (RAG)
+
+**Description :** Chatbot intelligent permettant aux utilisateurs de poser des questions sur le marché immobilier malgache ou sur une annonce spécifique. Utilise la technologie RAG pour fournir des réponses précises basées sur les vraies données.
+
+**Workflow RAG :**
+1. L'utilisateur envoie une question
+2. Le système recherche les documents pertinents dans ChromaDB (annonces, rapports marché)
+3. Les documents trouvés sont injectés comme contexte au LLM
+4. Le LLM génère une réponse enrichie et sourcée
+
+**Auth :** Cookie HttpOnly (optionnel pour personnalisation)
+
+```http
+POST /ai/chat
+```
+
+**Request :**
+```json
+{
+  "message": "Quel est le prix moyen à Ivandry pour une villa T4 ?",
+  "context": {
+    "listingId": "l1",         // Optionnel - pour chat contextuel sur une annonce
+    "conversationId": "conv1"  // Optionnel - pour maintenir l'historique
+  },
+  "language": "fr"             // Enum: "fr", "mg"
+}
+```
+
+**Règles de validation :**
+| Champ | Règle |
+|-------|-------|
+| `message` | Requis, 2-1000 caractères |
+| `context.listingId` | Optionnel, format UUID valide |
+| `context.conversationId` | Optionnel, format UUID valide |
+| `language` | Optionnel, défaut: "fr" |
+
+**Response 200 :**
+```json
+{
+  "reply": "À Ivandry, le prix moyen pour une villa T4 est d'environ 850.000.000 Ar à 1.200.000.000 Ar selon l'état et les équipements. Les biens avec piscine se situent généralement dans la fourchette haute.",
+  "sources": [
+    {
+      "type": "market_report",
+      "id": "market_2024_q4",
+      "title": "Rapport marché Ivandry Q4 2024"
+    },
+    {
+      "type": "listing",
+      "id": "l1",
+      "title": "Villa T4 Ivandry avec piscine"
+    }
+  ],
+  "conversationId": "conv1",
+  "confidence": 0.89
+}
+```
+
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "common.validation_failed",
+  "details": {
+    "message": ["validation.ai.message.too_short", "validation.ai.message.too_long"]
+  }
+}
+```
+
+**Response 429 (rate limiting) :**
+```json
+{
+  "error": "rate_limited",
+  "message": "ai.rate_limited_chat",
+  "retryAfter": 60
+}
+```
+
+**Response 503 (LLM indisponible) :**
+```json
+{
+  "error": "llm_unavailable",
+  "message": "ai.llm_service_unavailable"
+}
+```
+
+---
+
+### 7.2 Génération Description Annonce
+
+**Description :** Génère automatiquement une description professionnelle pour une annonce immobilière à partir des caractéristiques saisies par le vendeur. Utilisé lors de la **création** ou **modification** d'une annonce.
+
+**Workflow d'utilisation :**
+1. Le vendeur remplit le formulaire de création/modification d'annonce
+2. Il clique sur le bouton **"Générer description IA"**
+3. Toutes les caractéristiques déjà saisies sont envoyées à l'API
+4. L'IA génère une description professionnelle
+5. Le vendeur peut modifier le texte avant publication
+
+**Auth :** Cookie HttpOnly (requis - vendeur authentifié)
+
+```http
+POST /ai/generate
+```
+
+**Request :**
+```json
+{
+  description: The current description of the USER
+}
+```
+**Response 200 :**
+```json
+{
+  reply: The better description (gramatical error review)
+}
+```
+
+**Response 400 (validation) :**
+```json
+{
+  "error": "validation_failed",
+  "message": "common.validation_failed",
+  "details": {
+    "listingData.propertyType": ["validation.ai.property_type.required"],
+    "listingData.area": ["validation.ai.area.required", "validation.ai.area.positive"],
+    "listingData.zone": ["validation.ai.zone.invalid"]
+  }
+}
+```
+
+**Response 401 :**
+```json
+{
+  "error": "unauthorized",
+  "message": "common.unauthorized"
+}
+```
+
+**Response 429 (rate limiting) :**
+```json
+{
+  "error": "rate_limited",
+  "message": "ai.rate_limited_generate",
+  "retryAfter": 60
+}
+```
+
+> [!TIP]
+> **Rate Limiting :** 10 générations par minute par utilisateur. Encouragez les vendeurs à bien remplir les caractéristiques avant de générer pour obtenir un meilleur résultat dès la première tentative.
+
+**Response 503 (LLM indisponible) :**
+```json
+{
+  "error": "llm_unavailable",
+  "message": "ai.llm_service_unavailable"
+}
+```
+
+---
+
+### 7.3 Données Marché
+
+**Description :** Fournit les statistiques du marché immobilier pour une zone donnée. Utilisé comme source de données pour le système RAG et peut être affiché directement dans l'interface utilisateur.
+
+**Cas d'usage :**
+- Enrichir les réponses du chatbot avec des données marché actuelles
+- Afficher un widget "Prix du marché" sur la page d'une annonce
+- Aider les vendeurs à fixer un prix compétitif
+
+**Auth :** Aucune (endpoint public)
+
+```http
+GET /ai/market-data
+```
+
+**Query params :**
+| Paramètre | Type | Requis | Description |
+|-----------|------|--------|-------------|
+| `zone` | string | Oui | ID de la zone (ex: "tana-ivandry") |
+| `type` | string | Non | Enum: "sale", "rent" (défaut: "sale") |
+| `propertyType` | string | Non | Enum: "apartment", "house", "loft", "land", "commercial" |
+| `period` | string | Non | Enum: "3m", "6m", "1y" (défaut: "6m") |
+
+**Exemple :**
+```
+GET /ai/market-data?zone=tana-ivandry&type=sale&propertyType=house&period=6m
+```
+
+**Response 200 :**
+```json
+{
+  "zone": {
+    "id": "tana-ivandry",
+    "displayName": "Antananarivo - Ivandry"
+  },
+  "transactionType": "sale",
+  "propertyType": "villa",
+  "period": "6m",
+  "statistics": {
+    "averagePricePerSqm": 4500000,
+    "medianPrice": 750000000,
+    "minPrice": 350000000,
+    "maxPrice": 2500000000,
+    "totalListings": 45,
+    "averageDaysOnMarket": 62
+  },
+  "trends": {
+    "priceChange": "+5.2%",
+    "direction": "up",
+    "demandLevel": "high",
+    "supplyLevel": "medium"
+  },
+  "comparison": {
+    "vsCity": "+15%",
+    "vsLastPeriod": "+3.5%"
+  },
+  "generatedAt": "2025-01-07T08:00:00Z",
+  "disclaimer": "Données indicatives basées sur les annonces publiées sur la plateforme."
+}
+```
+
+**Response 400 :**
+```json
+{
+  "error": "validation_failed",
+  "message": "common.validation_failed",
+  "details": {
+    "zone": ["validation.ai.zone.required", "validation.ai.zone.invalid"]
+  }
+}
+```
+
+**Response 404 :**
+```json
+{
+  "error": "zone_not_found",
+  "message": "ai.zone_not_found"
+}
+```
+
+---
+
+### 7.4 Indexer une annonce
+
+> [!IMPORTANT]
+> Les endpoints 7.4, 7.5 et 7.6 sont **internes** et appelés automatiquement par le `listings-service`. Ils ne doivent pas être exposés publiquement via l'API Gateway.
+
+Ces endpoints synchronisent la base SQL principale avec le moteur de recherche vectoriel (ChromaDB) pour permettre la recherche sémantique et le RAG.
+
+**Description :** Crée ou met à jour les embeddings vectoriels d'une annonce dans ChromaDB.
+
+**Workflow automatique :**
+1. `listings-service` publie ou modifie une annonce
+2. Appel automatique à `POST /ai/index`
+3. Le service AI récupère les données complètes de l'annonce
+4. Génération des embeddings via Sentence Transformers
+5. Stockage dans ChromaDB
+
+**Auth :** Service-to-service (API Key interne)
+
+```http
+POST /ai/index
+```
+
+**Request :**
+```json
+{
+  "listingId": "l123",
+  "action": "upsert"         // Enum: "upsert", "delete"
+}
+```
+
+**Response 200 :**
+```json
+{
+  "success": true,
+  "listingId": "l123",
+  "vectorId": "vec_abc123",
+  "action": "upsert",         // Enum: "upsert", "delete"
+  "indexedAt": "2025-01-07T08:53:00Z",
+  "message": "ai.indexing_completed"
+}
+```
+
+**Response 400 :**
+```json
+{
+  "error": "validation_failed",
+  "message": "common.validation_failed",
+  "details": {
+    "listingId": ["validation.ai.listing_id.required", "validation.ai.listing_id.invalid_format"]
+  }
 }
 ```
 
@@ -2399,243 +3058,174 @@ POST /admin/listings/:id/action
 }
 ```
 
----
-
-### 7.3 Historique Modération (Admin)
-
-```http
-GET /admin/actions
-```
-
-**Auth :** Cookie HttpOnly (`realestate_access_token`) + Rôle `moderator`
-
-**Query params :**
-- `targetId` : string (optionnel)
-- `moderatorId` : string (optionnel)
-- `page` : number (défaut: 1)
-- `limit` : number (défaut: 50)
-
-**Response 200 :**
+**Response 503 :**
 ```json
 {
-  "data": [
-    {
-      "id": "ma1",
-      "moderatorId": "m1",
-      "targetType": "listing",
-      "targetId": "l5",
-      "action": "block_temporary",
-      "reason": "Photos trompeuses confirmées",
-      "applied": true,
-      "appliedAt": "2025-01-15T14:00:00Z"
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "total": 120
-  }
+  "error": "vector_db_unavailable",
+  "message": "ai.vector_db_unavailable"
 }
 ```
 
 ---
 
-### 7.4 Archivage Permanent (Sécurité)
+### 7.5 Vérifier le statut d'indexation
 
-```http
-POST /admin/listings/:id/archive-permanent
-```
+**Description :** Vérifie si une annonce est correctement indexée dans ChromaDB.
 
-**Request :**
-```json
-{
-  "reason": "Fraude avérée. Bien inexistant.",
-  "notifySeller": true
-}
-```
+**Cas d'usage Frontend :**
+- Avant d'activer le bouton "Poser une question sur ce bien"
+- Évite les réponses "Je ne connais pas cette annonce"
+- Affiche un indicateur de chargement si l'indexation est en cours
 
-**Response 200 :**
-```json
-{
-  "archived": true,
-  "listing": {
-    "id": "l5",
-    "status": "archived",
-    "archivedBy": "moderator",
-    "archivedAt": "2025-01-15T14:00:00Z"
-  }
-}
-```
-
----
-
----
-
-## 8. 🆕 Intelligence Artificielle (ai-service)
-
-> **🔧 Stack Technique :**
-> - **Service :** Python FastAPI (port 3005)
-> - **LLM :** OpenRouter + DeepSeek V3 (Cloud gratuit)
-> - **Embeddings :** Sentence Transformers (all-MiniLM-L6-v2)
-> - **Vector Database :** ChromaDB (Local)
-> 
-> Voir [Niveau_3.5_Architecture_Microservices.md](./Niveau_3.5_Architecture_Microservices.md) pour la configuration Docker.
-
-### 8.1 Assistant Chat (RAG)
-
-```http
-POST /ai/chat
-```
-
-**Request :**
-```json
-{
-  "message": "Quel est le prix moyen à Ivandry ?",
-  "context": {
-    "listingId": "l1" // Optionnel
-  }
-}
-```
-
-**Response 200 :**
-```json
-{
-  "reply": "À Ivandry, le prix moyen au m² est d'environ 4.500.000 Ar...",
-  "sources": ["market_report_2024", "listing_l1"]
-}
-```
-
-### 8.2 Génération Texte (Streaming)
-
-```http
-POST /ai/generate
-```
-
-**Request :**
-```json
-{
-  "prompt": "Rédige une description pour une villa T4...",
-  "stream": true
-}
-```
-
-**Response 200 (Stream) :**
-- Flux d'événements SSE (Server-Sent Events)
-
-### 8.3 Données Marché (RAG source)
-
-```http
-GET /ai/market-data
-```
-
-**Query params :**
-- `zone`: string
-- `type`: `sale` | `rent`
-
-**Response 200 :**
-```json
-{
-  "averagePrice": 4500000,
-  "trend": "up",
-  "demandLevel": "high"
-}
-```
-
----
-
-### 8.3 Indexation & Synchronisation
-
-Ces endpoints sont utilisés pour synchroniser la base SQL principale avec le moteur de recherche vectoriel (ChromaDB).
-
-#### Indexer une annonce
-
-**Utilisation :** Appelé par le `listings-service` après la création ou modification d'une annonce pour synchroniser les données avec le moteur vectoriel.
-
-```http
-POST /ai/index
-```
-
-**Body :**
-```json
-{
-  "listingId": "l123"
-}
-```
-
-**Response 200 :**
-```json
-{
-  "status": "queued",
-  "jobId": "job_999"
-}
-```
-
-#### Vérifier le statut d'indexation
-
-**Utilisation :** Utilisé par le Frontend pour valider si le chat contextuel peut être activé (évite les réponses "Je ne connais pas ce bien").
+**Auth :** Aucune (endpoint public)
 
 ```http
 GET /ai/index-status/:listingId
 ```
 
-**Response 200 :**
+**Response 200 (indexé) :**
 ```json
 {
   "listingId": "l123",
   "isIndexed": true,
-  "lastIndexedAt": "2024-03-20T10:00:00Z"
+  "status": "ready", // Enum: "ready", "processing", "not_found"
+  "lastIndexedAt": "2025-01-07T08:00:00Z",
+  "vectorId": "vec_abc123",
+  "version": 3
 }
 ```
 
-#### Supprimer de l'index
-
-**Utilisation :** Appelé par le `listings-service` lors de la suppression d'une annonce pour nettoyer ChromaDB.
-
-```http
-DELETE /ai/index/:listingId
-```
-
-**Response 200 :**
+**Response 200 (en cours) :**
 ```json
 {
-  "success": true
+  "listingId": "l123",
+  "isIndexed": false,
+  "status": "processing", // Enum: "ready", "processing", "not_found"
+  "queuePosition": 5,
+  "estimatedTime": "30s"
 }
 ```
 
-#### Health Check
-
-```http
-GET /ai/health
-```
-
-**Response 200 :**
+**Response 200 (non indexé) :**
 ```json
 {
-  "status": "healthy",
-  "providers": {
-    "llm": "online",
-    "vector_db": "connected"
+  "listingId": "l123",
+  "isIndexed": false,
+  "status": "not_found", // Enum: "ready", "processing", "not_found"
+  "message": "ai.listing_not_indexed"
+}
+```
+
+**Response 400 :**
+```json
+{
+  "error": "validation_failed",
+  "message": "common.validation_failed",
+  "details": {
+    "listingId": ["validation.ai.listing_id.invalid_format"]
   }
 }
 ```
 
 ---
 
-## 9. Notes MVP
+### 7.6 Health Check
 
-**Toutes les données sont mockées :**
-- ✅ Aucune persistance réelle
-- ✅ Données statiques ou simulées
-- ✅ Tous les paiements simulés (succès automatique)
-- ✅ Tous les SMS simulés (jamais envoyés réellement)
-- ✅ Validation IA simulée (règles simples)
+**Description :** Vérifie l'état de santé du service AI et de ses dépendances.
 
-**Objectif :** Tester les flows UX, pas la logique serveur.
+**Utilisé par :**
+- Kubernetes/Docker pour les health probes
+- Dashboard de monitoring
+- Alerting automatique
 
-**Outils recommandés pour le mock :**
-- Apidog
-- MSW (Mock Service Worker)
-- JSON Server
-- Mirage JS
+**Auth :** Aucune (endpoint public)
+
+```http
+GET /ai/health
+```
+
+**Response 200 (healthy) :**
+```json
+{
+  "status": "healthy", // Enum: "healthy", "degraded", "down"
+  "uptime": "3d 5h 23m",
+  "version": "1.2.0",
+  "providers": {
+    "llm": {
+      "status": "online",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-chat",
+      "latency": "245ms"
+    },
+    "vector_db": {
+      "status": "connected",
+      "provider": "chromadb",
+      "collections": 3,
+      "totalVectors": 1250
+    },
+    "embeddings": {
+      "status": "loaded",
+      "model": "all-MiniLM-L6-v2"
+    }
+  },
+  "metrics": {
+    "requestsLast24h": 1523,
+    "averageResponseTime": "1.2s",
+    "errorRate": "0.5%"
+  }
+}
+```
+
+**Response 503 (degraded) :**
+```json
+{
+  "status": "degraded", // Enum: "healthy", "degraded", "down"
+  "uptime": "3d 5h 23m",
+  "version": "1.2.0",
+  "providers": {
+    "llm": {
+      "status": "offline",
+      "error": "Connection timeout to OpenRouter",
+      "lastCheck": "2025-01-07T08:50:00Z"
+    },
+    "vector_db": {
+      "status": "connected",
+      "provider": "chromadb"
+    },
+    "embeddings": {
+      "status": "loaded",
+      "model": "all-MiniLM-L6-v2"
+    }
+  },
+  "message": "ai.service_degraded"
+}
+```
+
+---
+
+### 7.7 Récapitulatif Endpoints AI
+
+| Endpoint | Méthode | Auth | Description |
+|----------|---------|------|-------------|
+| `/ai/chat` | POST | Optionnel | Chat RAG avec contexte annonces et marché |
+| `/ai/generate` | POST | Requise | Génération de description d'annonce |
+| `/ai/market-data` | GET | Public | Statistiques du marché par zone |
+| `/ai/index` | POST | Interne | Indexer/Mettre à jour/Supprimer une annonce de ChromaDB |
+| `/ai/index-status/:id` | GET | Public | Vérifier statut d'indexation |
+| `/ai/health` | GET | Public | Health check du service |
+
+### 7.8 Rate Limiting AI
+
+| Endpoint | Limite | Fenêtre | Scope |
+|----------|--------|---------|-------|
+| `/ai/chat` | 30 requêtes | 1 minute | Par utilisateur |
+| `/ai/generate` | 10 requêtes | 1 minute | Par utilisateur |
+| `/ai/market-data` | 60 requêtes | 1 minute | Par IP |
+| `/ai/index` | 100 requêtes | 1 minute | Par service |
+
+---
+
+
 
 
 ## Récapitulatif des Endpoints MVP
@@ -2645,28 +3235,30 @@ GET /ai/health
 | **Authentification** | `POST`   | `/auth/register`                            |
 |                      | `POST`   | `/auth/verify-email`                        |
 |                      | `POST`   | `/auth/resend-verification`                 |
+|                      | `POST`   | `/auth/forgot-password`                     |
+|                      | `POST`   | `/auth/reset-password`                      |
 |                      | `POST`   | `/auth/login`                               |
 |                      | `POST`   | `/auth/google`                              |
 |                      | `POST`   | `/auth/refresh`                             |
-|                      | `POST`   | `/auth/logout`                              |
-|                      | `GET`    | `/auth/check-email` 🆕                      |
-|                      | `GET`    | `/auth/check-phone` 🆕                      |
+|                      | `GET`    | `/auth/logout`                              |
+|                      | `GET`    | `/auth/check-email`                         |
+|                      | `GET`    | `/auth/check-phone`                         |
+|                      | `POST`   | `/auth/verify-token` (INTERNE)              |
 | **Profil**           | `GET`    | `/users/me`                                 |
 |                      | `PUT`    | `/users/me`                                 |
+|                      | `PUT`    | `/users/me/phone`                           |
 | **Annonces**         | `GET`    | `/listings`                                 |
 |                      | `GET`    | `/listings/:id`                             |
 |                      | `POST`   | `/listings/publish`                         |
 |                      | `PUT`    | `/listings/:id`                             |
-|                      | `POST`   | `/listings/:id/renew`                       |
 |                      | `POST`   | `/listings/:id/archive`                     |
 |                      | `POST`   | `/listings/:id/availability`                |
 |                      | `GET`    | `/listings/:id/slots`                       |
 |                      | `POST`   | `/listings/:id/report`                      |
 |                      | `GET`    | `/listings/mine`                            |
-|                      | `POST`   | `/listings/generate-description`            |
 | **Réservations**     | `GET`    | `/reservations/mine`                        |
 |                      | `POST`   | `/reservations`                             |
-|                      | `GET`    | `/reservations/check-slot` 🆕               |
+|                      | `GET`    | `/reservations/check-slot`                  |
 |                      | `POST`   | `/reservations/:id/confirm`                 |
 |                      | `POST`   | `/reservations/:id/reject`                  |
 |                      | `DELETE` | `/reservations/:id`                         |
@@ -2674,75 +3266,19 @@ GET /ai/health
 | **Crédits**          | `GET`    | `/credits/balance`                          |
 |                      | `POST`   | `/credits/recharge`                         |
 |                      | `GET`    | `/credits/history`                          |
-| **Zones**            | `GET`    | `/zones`                                    |
 | **Modération**       | `GET`    | `/admin/listings/flagged`                   |
 |                      | `GET`    | `/admin/listings/:id`                       |
 |                      | `POST`   | `/admin/listings/:id/action`                |
 |                      | `GET`    | `/admin/actions`                            |
 | **AI (Assistant)**   | `POST`   | `/ai/chat`                                  |
+| **AI (Outils)**      | `POST`   | `/ai/generate`                              |
 |                      | `GET`    | `/ai/market-data`                           |
-|                      | `POST`   | `/ai/index`                                 |
+|                      | `POST`   | `/ai/index` (INTERNE)                       |
 |                      | `GET`    | `/ai/index-status/:listingId`               |
-|                      | `DELETE` | `/ai/index/:listingId`                      |
-| **TOTAL**            |          | **39 Endpoints**                            |
-
----
-
-## 10. Changelog (Version Corrigée)
-
-**🆕 Ajouts (Validation & UX) :**
-- **Section "Règles de Validation"** complète (défense en profondeur, sanitization XSS, rate limiting)
-- Endpoints validation temps réel : `GET /auth/check-email`, `GET /auth/check-phone`, `GET /reservations/check-slot`
-- Règles de validation détaillées par endpoint critique (register, login, publish, reservations)
-- Codes d'erreur 400 avec structure `details` standardisée
-- Tableau rate limiting par endpoint
-- Règles upload fichiers (formats, tailles, MIME type)
-
-**🆕 Ajouts (Endpoints) :**
-- Resend email verification (POST /auth/resend-verification)
-- Inscription utilisateur (POST /auth/register)
-- Logout
-- Endpoints zones (GET /zones)
-- Endpoints modérateur (6 endpoints admin)
-- Historique crédits (GET /credits/history)
-- Modification annonce (PUT /listings/:id)
-- Archivage annonce (POST /listings/:id/archive)
-- Annulation réservation (DELETE /reservations/:id)
-- Mes réservations (GET /reservations/mine)
-- Mes annonces (GET /listings/mine)
-- Génération description IA
-- Profil utilisateur (GET/PUT /users/me)
-
-
-**🔧 Améliorations :**
-- Gestion erreurs enrichie (400, 402, 403, 409, 413, 422, 429)
-- Réponses IA validation détaillées
-- Pagination sur toutes les listes
-- Query params exhaustifs
-
-**✅ Cohérence :**
-- Aligné avec Niveau 2.4 (Décisions Produit)
-- Workflow téléphone complet
-- Rôle IA clarifié (suggère, pas bloque)
-- Zones structurées
-- **Validation frontend ET backend spécifiée (exigence respectée)**
-
-**🆕 Audit Erreurs Complet (27 Décembre 2024) :**
-- **16 endpoints corrigés** avec erreurs manquantes
-- Ajout systématique des codes : 400 (validation détaillée), 401, 403, 404, 409, 422, 429
-- `/auth/register` : ajout `phone_exists`, validation password complète (majuscule, minuscule, chiffre), 429 rate limiting
-- `/auth/login` : ajout 429 rate limiting
-- `/auth/google` : ajout 400 invalid_google_token
-- `/listings/publish` : ajout 422 invalid_mime_type, 429 listing_limit
-- `PUT /listings/:id` : ajout 400, 401, 404
-- `/listings/:id/renew|availability|archive` : ajout 401, 403, 404
-- `/listings/:id/report` : ajout 400, 401, 404, 409 (already_reported)
-- `POST /reservations` : ajout 400, 401, 403 (cannot_reserve_own), 404
-- `DELETE /reservations/:id` : ajout 400 (too_late), 401, 403, 404
-- `POST /reservations/:id/confirm|reject` : ajout 401, 403, 404, 409
-- `POST /feedback` : ajout 400 validation, 401, 404
-- `POST /credits/recharge` : ajout 400 validation, 401, 429
-- `POST /admin/listings/:id/action` : ajout 400, 401, 403, 404
+|                      | `GET`    | `/ai/health`                                |
+| **TOTAL**            |          | **46 Endpoints**                            |
 
 
 ---
+
+

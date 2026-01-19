@@ -1,21 +1,62 @@
-import React from "react";
+import React, { useState } from "react";
 import SimpleInput, { PasswordInput } from "../components/Input";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import PhoneInput from "../components/PhoneInput";
+import type { APIResponse } from "./sign_up";
+import { toast } from "react-toastify";
 
 const	AddPhonePage: React.FC = () => {
-	const { t } = useTranslation("addPhone");
+	const { t } = useTranslation(["addPhone", "error"]);
+	const	[processingSubmit, setProcessingSubmit] = useState<boolean>(false);
+	const	[errorPhone, setErrorPhone] = useState<string[]>([]);
+	const	navigate = useNavigate();
 
-	const	handleOnSubmit = (e:React.FormEvent<HTMLFormElement>) => {
+	const	handleOnSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+
+		setProcessingSubmit(true);
 
 		const	formData = new FormData(e.currentTarget);
 
-		const	data = Object.fromEntries(formData.entries());
+		const	data = Object.fromEntries(formData.entries()) as Record<string, string>;
 
+		data.phoneNumber = data.phoneCountryCode + data.phoneNumber;
+
+		delete data.phoneCountryCode;
 		console.log(data);
+
+		try {
+			const	response = await fetch("/api/users/me/phone", {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				credentials: "include",
+				body: JSON.stringify(data)
+			});
+
+			const	responseData = await response.json();
+
+			if (!response.ok)
+			{
+				const	errorData = responseData as APIResponse;
+
+				setErrorPhone([ errorData.message ]);
+				throw new Error(t(`error:${errorData.message}`));
+			}
+
+			toast.success(t("notif.success"));
+			navigate("/home");
+
+		}
+		catch (e) {
+			console.error(e);
+		} finally {
+			setProcessingSubmit(false);
+		}
 	}
 
 	return (
@@ -59,13 +100,12 @@ const	AddPhonePage: React.FC = () => {
 						max-w-100"
 					onSubmit={handleOnSubmit}
 				>
-					<SimpleInput
-						icon="󰏲"
+					<PhoneInput
 						title={t("form.phone.label")}
-						name="phone"
-						type="tel"
-						placeholder={t("form.phone.placeholder")}
-						error={ [] }
+						name="phoneNumber"
+						nameCountryCode="phoneCountryCode"
+						placeholder="XX XX XXX XX"
+						error={ errorPhone }
 					/>
 
 					<div className="mt-2 w-full">
@@ -73,6 +113,7 @@ const	AddPhonePage: React.FC = () => {
 							title={t("actions.confirm")}
 							icon=""
 							icon_place="right"
+							processing_action={ processingSubmit }
 							type="submit"
 						/>
 					</div>

@@ -1,8 +1,4 @@
 {
-	"brand": {
-		"name": "CASA"
-	},
-
 	"header": {
 		"title": "Add phone number",
 		"subtitle": "Add your phone number to secure your account and verify your identity."
@@ -13,6 +9,10 @@
 			"label": "Phone Number",
 			"placeholder": "+261 XX XX XXX XX"
 		}
+	},
+
+	"notif": {
+		"success": "Your phone was successfully added."
 	},
 
 	"actions": {

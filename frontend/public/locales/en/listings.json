@@ -6,10 +6,13 @@
 	"yes": "Yes",
 	"no": "No",
 
+	"viewDetails": "View Details",
+	"areaUnit": "sqft",
+
 	"section": {
 		"listingType": {
-			"rent": "To rent",
-			"sale": "To sell"
+			"rent": "Rent",
+			"sale": "For sale"
 		},
 
 		"features": {
@@ -29,7 +32,93 @@
 
 		"quickButtons": {
 			"favorites": "Favorites",
-			"visit": "Plan a visit"
+			"report": "Report",
+			"visit": "Schedule a visit",
+			"visitSlot": "Visit Slot",
+			"editPost": "Edit post"
+		},
+
+		"tags": {
+			"urgent": "Urgent",
+			"exclusive": "Exclusive",
+			"discount": "Discount"
+		},
+
+		"contact": {
+			"title": "Contact",
+			"memberSince": "Member since"
+
+		},
+
+		"post": {
+			"title": "Post",
+			"publicationDate": "Posted the",
+			"updateDate": "Updated the",
+
+			"availability": {
+				"status": {
+					"available": "This offer is available.",
+					"not_available": "This offer is no more available."
+				},
+
+				"buttons": {
+					"rented": "Unavailable",
+					"sold": "Sold",
+					"markRented": "Mark as rented",
+					"markSold": "Mark as sold"
+				},
+
+				"popup": {
+					"markRented": {
+						"title": "Rented",
+						"explanation": "Mark the publication as rented, you can unmark it only after 1 month from the moment you change it.",
+						"accept": "Mark as rented"
+					},
+					"unmarkRented": {
+						"title": "Replace in market",
+						"explanation": "Unmarking this publication replace it on the feed of other users. Do you want to proceed?",
+						"accept": "Unmark"
+					},
+					"markSold": {
+						"title": "Sold",
+						"explanation": "Mark the publication as sold, you cannot invert this process. Are you certain to continue?",
+						"accept": "Mark as sold"
+					}
+				}
+			},
+
+			"archive": {
+				"buttons": {
+					"title": "Archive",
+					"disabled": "This post is archived"
+				},
+
+				"popup": {
+					"title": "Archive post",
+					"warning": "Archived post will not be visible by other users.\nThis action cannot be undo.\nAre you sure?",
+					"continue": "Archive it"
+				}
+			}
+		},
+
+		"stats": {
+			"title": "Statistics of the seller",
+
+			"sellerStats": {
+				"totalListings": "Listings",
+				"activeListings": "On Market",
+				"successfulSales": "Sold Property",
+				"successfulRents": "Rented Property",
+				"averageRating": "Rating",
+				"responseRate": "Response Rate"
+			}
+		},
+
+		"postStats": {
+			"title": "Post Statistics",
+			"views": "Views",
+			"reservations": "Reservations",
+			"feedbacks": "Feedbacks"
 		},
 
 		"pictures": {

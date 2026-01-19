@@ -1,29 +1,24 @@
 export interface LoginUserInterface {
-	email: string,
-	password: string
+  email: string,
+  password: string
 }
 
 export interface SignUpUserInterface {
-	email: string,
-	firstName: string,
-	lastName: string,
-	phone: string,
-	password: string
+  email: string,
+  firstName: string,
+  lastName: string,
+  phone: string,
+  password: string
 }
 
 export interface UserInterface {
-	id: string;
-	role: string;
-	phoneVerified?: boolean;
-	emailVerified?: boolean;
+  id: string;
+  role: string;
+  phoneVerified?: boolean;
+  emailVerified?: boolean;
 }
 
-export interface SellerStats {
-	totalListings: number;
-	activeListings: number;
-	successfulSales: number,
-	averageRating: number
-}
+
 
 export interface User {
   id: string;
@@ -35,7 +30,7 @@ export interface User {
   phoneVerified: boolean;
   role: string;
   hasPassword: boolean;
-  sellerStats: SellerStats;
+
   creditBalance: number;
   createdAt: string;
   updatedAt: string;
@@ -46,11 +41,11 @@ export interface LoginResponse {
 }
 
 export interface UserGoogleInterface {
-	id: string
-    email: string
-    verified_email: string
-    name: string
-    given_name: string
-    family_name: string
-    picture: string
+  id: string
+  email: string
+  verified_email: string
+  name: string
+  given_name: string
+  family_name: string
+  picture: string
 }

@@ -1,5 +1,5 @@
 import fastifyPlugin from "fastify-plugin";
-import type { FastifyBaseLogger, FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest,  } from "fastify";
+import type { FastifyBaseLogger, FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest, } from "fastify";
 import fastifyJwt from "@fastify/jwt";
 import jwt from "jsonwebtoken";
 import fs from "fs";
@@ -8,11 +8,11 @@ import type { UserInterface } from "../modules/auth/auth.interface";
 import { deleteRefreshToken, refreshTokenExists } from "../utils/token.utils";
 import { generateAccessToken } from "../utils/auth.utils";
 
-function loadKey(path:string, log: FastifyBaseLogger) {
+function loadKey(path: string, log: FastifyBaseLogger) {
 	try {
 		return (fs.readFileSync(path, 'utf8'));
 	} catch (error: any) {
-		log.fatal({error, path});
+		log.fatal({ error, path });
 		process.exit(1);
 	}
 }
@@ -26,29 +26,40 @@ async function autoRefreshToken(
 	cookieOptions: any
 ): Promise<UserInterface | null> {
 	try {
-		const decoded: any = jwt.verify(refreshToken, refreshSecret,{ algorithms: ["HS256"] });
+		const decoded: any = jwt.verify(refreshToken, refreshSecret, { algorithms: ["HS256"] });
 
 		if (decoded.type !== 'refresh' || !decoded.userId) {
+			reply.clearCookie("realestate_access_token", { ...cookieOptions });
+			reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
 			return null;
 		}
-
+	
 		const tokenHash = await refreshTokenExists(request.server, decoded.userId, refreshToken);
 
-		if (!tokenHash)
-		{
+		if (!tokenHash) {
 			reply.clearCookie("realestate_access_token", { ...cookieOptions });
 			reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
 			return (null);
 		}
-
 		const user = await request.server.prisma.user.findUnique({
-			where: { id: decoded.userId },
-			include: { sellerStats: true }
+			where: { id: decoded.userId }
 		});
 
-		if (!user) return null;
-		await deleteRefreshToken(request.server, refreshToken);
-		await generateAccessToken(request, reply, user);
+		if (!user) {
+			reply.clearCookie("realestate_access_token", { ...cookieOptions });
+			reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
+			return null;
+		}
+
+		try {
+			await generateAccessToken(request, reply, user);
+			await deleteRefreshToken(request.server, refreshToken);
+		} catch (error) {
+			request.server.log.error({ error }, 'Failed to generate new access token');
+			reply.clearCookie("realestate_access_token", { ...cookieOptions });
+			reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
+			return null;
+		}
 
 		return {
 			id: user.id,
@@ -57,6 +68,8 @@ async function autoRefreshToken(
 			emailVerified: user.emailVerified
 		} as UserInterface;
 	} catch (error) {
+		reply.clearCookie("realestate_access_token", { ...cookieOptions });
+		reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
 		return null;
 	}
 }
@@ -70,7 +83,6 @@ export async function verifyAccessToken(
 	cookieOptions: any
 ): Promise<UserInterface | void> {
 	const { realestate_access_token, realestate_refresh_token } = request.cookies;
-
 	if (!realestate_access_token) {
 		if (realestate_refresh_token) {
 			const user = await autoRefreshToken(
@@ -81,8 +93,8 @@ export async function verifyAccessToken(
 				privateKey,
 				cookieOptions
 			);
-			
 			console.log(user);
+
 			if (user) {
 				return user;
 			}
@@ -117,10 +129,23 @@ export async function verifyAccessToken(
 			}
 		}
 
+		reply.clearCookie("realestate_access_token", { ...cookieOptions });
+		reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
 		reply.code(401).send({
 			error: "invalid_or_expired_token",
 			message: "auth.verification_token_invalid"
 		});
+	}
+}
+
+async function validateToken(request: FastifyRequest, reply: FastifyReply) {
+	const internalToken = (request as any).headers['x-internal-key'];
+
+	try {
+		const payload = jwt.verify(internalToken, request.server.config.INTERNAL_KEY_SECRET, { algorithms: ["HS256"] }); // modified by srandria
+		return (payload);
+	} catch (err) {
+		reply.code(401).send({ error: 'Invalide' });
 	}
 }
 
@@ -129,10 +154,12 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 	const privateKey = loadKey(app.config.JWT_SECRET_PRIVATE_KEY, app.log);
 	const publicKey = loadKey(app.config.JWT_SECRET_PUBLIC_KEY, app.log);
 
+	const isProduction = process.env.NODE_ENV === 'production';
+
 	const cookieOptions = {
 		httpOnly: true,
-		secure: true,
-		sameSite: 'none' as const,
+		secure: isProduction,
+		sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
 		path: '/',
 		maxAge: 7 * 24 * 60 * 60 * 1000
 	};
@@ -181,7 +208,7 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 				"message": "auth.phone_number_verification_required",
 			});
 	});
-	
+
 	app.decorate("authentication", async function (request: FastifyRequest, reply: FastifyReply) {
 		const user = await verifyAccessToken(request, reply, publicKey, JWT_REFRESH_SECRET, privateKey, cookieOptions);
 
@@ -202,6 +229,31 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 			});
 		}
 	});
+
+	app.decorate("authValidations", async function (request: FastifyRequest, reply: FastifyReply) {
+		const payload = await validateToken(request, reply);
+		if (!payload)
+			return;
+
+		const user = await verifyAccessToken(request, reply, publicKey, JWT_REFRESH_SECRET, privateKey, cookieOptions);
+		if (!user) return;
+		request.user = user;
+
+		if (!user.phoneVerified)
+			return reply.code(403).send({
+				"error": "phone_number_not_verified",
+				"message": "auth.phone_number_verification_required",
+				"redirect": "/add-phone.html"
+			});
+		if (!user.emailVerified) {
+			return reply.code(403).send({
+				"error": "email_not_verified",
+				"message": "auth.email_verification_required",
+				"redirect": "/request-email-verification.html"
+			});
+		}
+	});
+
 };
 
 export default fastifyPlugin(jwtPlugin);

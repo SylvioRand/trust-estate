@@ -1,0 +1,16 @@
+{
+	"buttons": {
+		"publish": "Publish",
+		"edit": "Edit"
+	},
+
+	"section": {
+		"favorites": {
+			"title": "Favorites"
+		},
+
+		"myListings": {
+			"title": "My listings"
+		}
+	}
+}

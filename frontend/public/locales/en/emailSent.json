@@ -18,7 +18,6 @@
 	"buttons": {
 		"resendEmail": {
 			"title": "Resend",
-			"titleOrigin": "Send a Link",
 			"success": "An verification link has been re-sent to your email address.",
 			"timeLeft": "You will be able to resend a link after the countdown: ",
 			"error": {

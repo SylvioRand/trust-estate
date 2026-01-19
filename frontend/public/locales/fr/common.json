@@ -1,6 +1,7 @@
 {
 	"brand": {
 		"name": "CASA"
-		}
-	}
+	},
+	"true": "Oui",
+	"false": "Non"
 }

@@ -1,11 +1,11 @@
-import { type HTMLInputTypeAttribute, useState } from "react";
+import { type HTMLInputTypeAttribute, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 
 interface ErrorInputProps {
 	value: string;
 }
 
-const	ErrorInput: React.FC<ErrorInputProps> = ({
+export const	ErrorInput: React.FC<ErrorInputProps> = ({
 	value = "Error"
 }) => {
 	const	{ t } = useTranslation("error");
@@ -37,6 +37,10 @@ interface SimpleInputProps {
 	type?: HTMLInputTypeAttribute | undefined;
 	error: string[];
 	pattern?: string;
+	minLength?: number;
+	maxLength?: number;
+	ref?: RefObject<HTMLInputElement | null>;
+	list?: string;
 }
 
 const	SimpleInput: React.FC<SimpleInputProps> = ({
@@ -47,7 +51,11 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 	name = "SimpleInput",
 	type = "text",
 	error = [],
-	pattern
+	pattern,
+	minLength = 8,
+	maxLength = 256,
+	ref,
+	list
 }) => {
 	const	[focused, setFocused] = useState<boolean>(false);
 
@@ -67,7 +75,8 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 			<div className="grid grid-rows-1 gap-2
 				p-2
 				rounded-md
-				shadow-sm
+				shadow-standard
+				bg-foreground
 				w-full h-10"
 				style={{
 					borderColor: error.length > 0 ? "var(--color-red-500)" : "color-mix(in srgb, var(--color-background) 25%, transparent)",
@@ -75,7 +84,8 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 					gridTemplateColumns: icon ? "auto 1fr" : "auto"
 				}}
 			>
-				{ icon &&
+				{
+					icon &&
 					<div className="flex items-center justify-center
 						w-6
 						relative"
@@ -101,8 +111,14 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 					type={ type }
 					required={ true }
 					{...(pattern ? { pattern } : {})}
+					{...(minLength ? { minLength } : {})}
+					{...(maxLength ? { maxLength } : {})}
+					{...(ref ? { ref } : {})}
+					{...(list ? { list } : {})}
 					onFocus={ () => setFocused(true) }
-					onBlur={ () => setFocused(false) }
+					onBlur={ () => {
+						setFocused(false);
+					}}
 				/>
 			</div>
 
@@ -157,7 +173,7 @@ export const	PasswordInput: React.FC<PasswordInputProps> = ({
 				p-2
 				border
 				rounded-md
-				shadow-sm
+				shadow-standard
 				w-full h-10"
 				style={{
 					borderColor: error.length > 0 ? "var(--color-red-500)" : "color-mix(in srgb, var(--color-background) 25%, transparent)",
@@ -179,6 +195,7 @@ export const	PasswordInput: React.FC<PasswordInputProps> = ({
 				/>
 
 				<button className="flex items-center justify-center
+					cursor-pointer
 					w-7 h-full"
 					onClick={ () => setShow(show ? false : true) }
 					type="button"

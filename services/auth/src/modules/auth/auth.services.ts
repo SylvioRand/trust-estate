@@ -8,10 +8,8 @@ import type { UserGoogleInterface } from "./auth.interface";
 export async function findUserByEmail(app: FastifyInstance, email: string, password: string) {
 	const user = await app.prisma.user.findUnique({
 		where: { email: email },
-		include: {
-			sellerStats: true
-		}
 	});
+
 
 	if (!user) {
 		app.log.warn({
@@ -98,10 +96,8 @@ export async function createUserAccount(app: FastifyInstance,
 					}
 				}
 			},
-			include: {
-				sellerStats: true
-			}
 		});
+
 
 		const baseUrl = app.config.FRONTEND_URL;
 		const verificationUrl = `${baseUrl}/verify-email?token=${hash}`;
@@ -249,15 +245,25 @@ export async function getUserInfo(app: FastifyInstance, code: string): Promise<U
 	});
 
 	const tokens = await tokentResponse.json();
-	if (!tokens)
+	if (!tokentResponse.ok) {
+		console.error("Google Token Exchange Error:", tokens);
 		throw new Error("Invalid credentials");
+	}
+
+	if (!tokens || !(tokens as any).access_token) {
+		console.error("Google Token Response missing access_token:", tokens);
+		throw new Error("Invalid credentials");
+	}
 
 	const userResponse = await fetch(app.config.USER_INFO_URL, {
 		headers: { Authorization: `Bearer ${(tokens as any).access_token}` }
 	});
 
-	if (!userResponse.ok)
-		throw new Error("Something went wrong")
+	if (!userResponse.ok) {
+		const errorData = await userResponse.json();
+		console.error("Google User Info Error:", errorData);
+		throw new Error("Something went wrong");
+	}
 	const userData: any = await userResponse.json();
 	const userInfo: UserGoogleInterface = {
 		id: userData.id,
@@ -274,8 +280,8 @@ export async function getUserInfo(app: FastifyInstance, code: string): Promise<U
 export async function createOrUpdateUserAccount(app: FastifyInstance, userData: UserGoogleInterface) {
 	const user = await app.prisma.user.findUnique({
 		where: { email: userData.email },
-		include: { sellerStats: true }
 	});
+
 
 	if (!user) {
 		return await app.prisma.user.create({
@@ -287,8 +293,8 @@ export async function createOrUpdateUserAccount(app: FastifyInstance, userData: 
 				emailVerified: true,
 				phoneVerified: false
 			},
-			include: { sellerStats: true }
 		});
+
 	}
 	if (user.sub && user.sub !== userData.id) {
 		throw new Error("Ce compte est déjà lié à un autre compte Google");
@@ -312,10 +318,8 @@ export async function createOrUpdateUserAccount(app: FastifyInstance, userData: 
 export async function findUserById(app: FastifyInstance, id: string) {
 	const user = await app.prisma.user.findUnique({
 		where: { id: id },
-		include: {
-			sellerStats: true
-		}
 	});
+
 	if (!user) throw new Error("User not found");
 	return (user);
 }

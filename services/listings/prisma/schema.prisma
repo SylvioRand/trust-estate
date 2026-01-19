@@ -1,0 +1,173 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SellerStats {
+  id              String @id @default(uuid())
+  userId          String @unique @map("user_id")
+  totalListings   Int    @default(0)
+  activeListings  Int    @default(0)
+  successfulSales Int    @default(0)
+  successfulRents Int    @default(0)
+  averageRating   Float  @default(0)
+  responseRate    Float  @default(0)
+
+  @@index([averageRating])
+  @@index([successfulSales])
+  @@index([responseRate])
+  @@map("SellerStats")
+}
+
+enum ListingType {
+  sale
+  rent
+}
+
+enum PropertyType {
+  apartment
+  house
+  loft
+  land
+  commercial
+}
+
+enum ListingStatus {
+  active
+  blocked
+  archived
+}
+
+enum ParkingType {
+  none
+  garage
+  box
+  parking
+}
+
+enum MarketingTag {
+  urgent
+  exclusive
+  discount
+}
+
+model Listing {
+  id           String         @id @default(uuid())
+  type         ListingType
+  propertyType PropertyType
+  title        String
+  description  String
+  price        Float
+  surface      Float
+  zone         String
+  photos       String[]       @default([])
+  tags         MarketingTag[] @default([])
+  status       ListingStatus  @default(active)
+  isAvailable  Boolean        @default(true)
+  soldAt       DateTime?
+  sellerId     String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  features          ListingFeatures?
+  availability      ListingAvailability[]
+  stats             ListingStats?
+  reports           Report[]
+  moderationActions ModerationAction[]
+
+  @@map("Listing")
+}
+
+model ListingFeatures {
+  id        String  @id @default(uuid())
+  listingId String  @unique
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  bedrooms           Int?
+  bathrooms          Int?
+  wc_separate        Boolean?
+  water_access       Boolean?
+  electricity_access Boolean?
+  garden_private     Boolean?
+  parking_type       ParkingType? @default(none)
+  pool               Boolean?
+
+  @@map("ListingFeatures")
+}
+
+model ListingAvailability {
+  id        String  @id @default(uuid())
+  listingId String
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  dayOfWeek Int // 0=Dimanche, 1=Lundi... 6=Samedi
+  startTime String // "09:00"
+  endTime   String // "18:00"
+
+  @@map("ListingAvailability")
+}
+
+model ListingStats {
+  id           String  @id @default(uuid())
+  listingId    String  @unique
+  listing      Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  views        Int     @default(0)
+  reservations Int     @default(0)
+  feedbacks    Int     @default(0)
+
+  @@map("ListingStats")
+}
+
+enum ReportReason {
+  fraud
+  duplicate
+  spam
+  incorrect_info
+  inappropriate
+  other
+}
+
+model Report {
+  id         String       @id @default(uuid())
+  listingId  String
+  listing    Listing      @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  reporterId String
+  reason     ReportReason
+  comment    String?
+  createdAt  DateTime     @default(now())
+
+  @@unique([listingId, reporterId]) // Un utilisateur ne peut signaler une annonce qu'une fois
+  @@map("Report")
+}
+
+enum ModerationActionType {
+  block_temporary
+  archive_permanent
+  request_clarification
+  reject_reports
+}
+
+model ModerationAction {
+  id              String               @id @default(uuid())
+  listingId       String
+  listing         Listing              @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  moderatorId     String
+  action          ModerationActionType
+  reason          String
+  internalNote    String?
+  messageToSeller String?
+  createdAt       DateTime             @default(now())
+
+  @@index([listingId])
+  @@index([moderatorId])
+  @@map("ModerationAction")
+}

@@ -6,10 +6,13 @@
 	"yes": "Oui",
 	"no": "Non",
 
+	"viewDetails": "Voir les détails",
+	"areaUnit": "m2",
+
 	"section": {
 		"listingType": {
-			"rent": "A louer",
-			"sale": "A vendre"
+			"rent": "Location",
+			"sale": "Vente"
 		},
 
 		"features": {
@@ -29,7 +32,74 @@
 
 		"quickButtons": {
 			"favorites": "Favoris",
-			"visit": "Planifier une visite"
+			"report": "Signaler",
+			"visit": "Planifier une visite",
+			"visitSlot": "Voir créneaux",
+			"editPost": "Editer la publication"
+		},
+
+		"tags": {
+			"urgent": "Urgent",
+			"exclusive": "Exclusif",
+			"discount": "Promotion"
+		},
+
+		"contact": {
+			"title": "Contact",
+			"memberSince": "Membre depuis"
+		},
+
+		"post": {
+			"title": "Publication",
+			"publicationDate": "Publié le",
+			"updateDate": "Mis à jour le",
+
+			"availability": {
+				"status": {
+					"available": "Cette offre est encore disponible.",
+					"not_available": "Cette offre n'est plus disponible."
+				},
+
+				"buttons": {
+					"rented": "Loué",
+					"sold": "Vendue",
+					"markRented": "Marquer comme louer",
+					"markSold": "Marquer comme vendue"
+				}
+			},
+
+			"archive": {
+				"buttons": {
+					"title": "Archiver",
+					"disabled": "Cette publication est archiver"
+				},
+
+				"popup": {
+					"title": "Archiver la publication",
+					"warning": "Les postes archiver ne sont plus visibles par les autres utilisateurs.\nCette action est irréversible.\nEn êtes-vous sure?",
+					"continue": "Continuer"
+				}
+			}
+		},
+
+		"stats": {
+			"title": "Statistiques du vendeur",
+
+			"sellerStats": {
+				"totalListings": "Annonces",
+				"activeListings": "Sur le marché",
+				"successfulSales": "Biens Vendues",
+				"successfulRents": "Biens loués",
+				"averageRating": "Score",
+				"responseRate": "Score de réponse"
+			}
+		},
+
+		"postStats": {
+			"title": "Statistiques de la publication",
+			"views": "Vues",
+			"reservations": "Reservations",
+			"feedbacks": "Critiques"
 		},
 
 		"pictures": {

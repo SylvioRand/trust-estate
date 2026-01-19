@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ReservationStatus {
+	pending
+	confirmed
+	rejected
+	cancelled
+	done
+}
+
+enum CancelledBy {
+	buyer
+	seller
+	system
+}
+
+model Reservation {
+	reservationId	String			 @id @default(uuid())
+	listingId		String			 @map("listing_id")
+	buyerId			String			 @map("buyer_id")
+	sellerId		String			 @map("seller_id")
+	status			ReservationStatus @default(pending)
+	slot			DateTime
+	confirmedAt		DateTime?		@map("confirmed_at")
+	rejectedAt		DateTime?		@map("rejected_at")
+	cancelledAt		DateTime?		@map("cancelled_at")
+	cancelledBy		CancelledBy?	@map("cancelled_by")
+	doneAt			DateTime?		@map("done_at")
+	sellerContactVisible	Boolean		@default(false)
+	feedbackEligible	Boolean			@default(false) @map("feedback_eligible")
+	feedbackGiven	Boolean			@default(false) @map("feedback_given")
+	createdAt		DateTime			@default(now()) @map("created_at")
+	updatedAt		DateTime			@updatedAt @map("updated_at")
+	feedbacks		Feedback[]
+
+	@@index([listingId])
+	@@index([buyerId])
+	@@index([sellerId])
+	@@index([status])
+	@@index([slot])
+	@@unique([reservationId, buyerId])
+	@@map("reservations")
+}
+
+
+model Feedback {
+	id				String   @id @default(uuid())
+	reservationId	String   @unique
+	listingId		String?
+	authorId		String
+	targetId		String
+	rating			Int
+	comment			String
+	listingAccurate	Boolean? 
+	sellerReactive	Boolean?
+	visitUseful		Boolean?
+	visible			Boolean  @default(true)
+	moderatedAt		DateTime?
+	moderationReason	String?
+	createdAt		DateTime @default(now())
+	updatedAt		DateTime @default(now())
+	reservation		Reservation @relation(fields: [reservationId], references: [reservationId])
+	
+	@@index([listingId])
+	@@index([targetId])
+}
