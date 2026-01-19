@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState, type Dispatch } from "react";
 import { DataContext } from "./DataContext";
+import type { APIResponse } from "../pages/sign_up";
+import { useNavigate } from "react-router-dom";
 
 interface	DataProviderProps {
 	children: React.ReactNode;
@@ -50,13 +52,14 @@ const	DataProvider: React.FC<DataProviderProps> = ({
 				}
 
 				if (response.status === 403) {
-					const errorData = await response.json();
+					const errorData = responseData as APIResponse;
 					
 					setIsConnected(true);
 					if (errorData.error === "phone_number_not_verified") {
 						return;
 					}
 					if (errorData.error === "email_not_verified") {
+						console.log("Provider HERE");
 						return;
 					}
 				}

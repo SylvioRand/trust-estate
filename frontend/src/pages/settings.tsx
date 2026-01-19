@@ -89,8 +89,40 @@ const	SettingsPage: React.FC = () => {
 	const	[isProcessingPasswordChange, setIsProcessingPasswordChange] = useState<boolean>(false);
 	const	handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log("Change Password!");
-		// NOTE: handle all possible error here.
+
+		setIsProcessingPasswordChange(true);
+		setErrorCurrentPassword([]);
+		setErrorNewPassword([]);
+		const formData = new FormData(e.currentTarget);
+		const data = Object.fromEntries(formData.entries()) as Record<string, string>;
+
+		try {
+			const	response = await fetch("/api/users/me/update-password", {
+				method: "PUT",
+				headers: {
+					"Content-type": "application/json"
+				},
+				credentials: "include",
+				body: JSON.stringify(data)
+			});
+
+			const	responseData = await response.json();
+
+			if (!response.ok)
+			{
+				const errorData = responseData as APIResponse;
+				
+				if (response.status === 400)
+					setErrorCurrentPassword([errorData.message]);
+				throw new Error(errorData.message);
+			}
+			toast.success(t(`error:${responseData?.message ?? "success"}`));
+		} catch (e) {
+			toast.error(t(`error:${e}`));
+			console.error("SettingsPage: handleChangePassword: ", t(`error:${e}`));
+		} finally {
+			setIsProcessingPasswordChange(false);
+		}
 	}
 
 	const	refPopUpDeleteAccount = useRef<PopUpAPI>(null);
@@ -321,9 +353,10 @@ const	SettingsPage: React.FC = () => {
 							/>
 							<PasswordInput
 								title={ t("section.accountSettings.form.changePassword.newPassword.label") }
-								name="password"
+								name="newPassword"
 								placeholder={ t("section.accountSettings.form.changePassword.newPassword.placeholder") }
 								error={ errorNewPassword }
+								pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
 							/>
 							<div className="flex items-center justify-end
 								w-full"

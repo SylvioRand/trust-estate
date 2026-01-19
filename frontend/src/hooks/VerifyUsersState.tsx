@@ -37,6 +37,7 @@ export function VerifyUsersState() {
 						return;
 					}
 					if (errorData.error === "email_not_verified") {
+						console.log("VerifyUserState HERE");
 						navigate("/email-sent", { replace: true });
 						return;
 					}

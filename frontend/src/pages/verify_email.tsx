@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams, Link, Navigate, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import LoadingPage from "./loading";
 import ContentDivider from "../components/ContentDivider";
-import ActionButton from "../components/ActionButton";
 import { toast } from "react-toastify";
 
 type	EmailVerificationStatus = "loading" | "confirmed" | "invalid";
@@ -33,20 +31,23 @@ const VerifyEmailPage: React.FC = () => {
 			setStatus("confirmed");
 
 			setTimeout(() => {
+				console.log("GO WELCOME")
 				navigate("/welcome");
 			}, 2000);
 
 		} catch (e) {
 			toast.error(t("error:auth.invalid_or_expired_token"));
 			setStatus("invalid");
-
+			console.error(e);
 			setTimeout(() => {
+				console.log("GO HOME")
 				navigate("/home");
 			}, 2000);
 
 		}
 	}
 
+	console.log("VERIFY_EMAIL");
 	useEffect(() => {
 		verifyToken(); // verify the token sent
 	}, []);

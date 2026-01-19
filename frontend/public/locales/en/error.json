@@ -21,7 +21,8 @@
 		"logout_success": "You have been successfully logged out.",
 		"phone_update_success": "The phone number has been successfully updated.",
 		"invalid_or_expired_token": "The token is invalid or has expired.",
-		"password_add_success": "Your password was added successfully."
+		"password_add_success": "Your password was added successfully.",
+		"password_update_success": "Your password was updated successfully."
 	},
 	"validation": {
 		"email": {
