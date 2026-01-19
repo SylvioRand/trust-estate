@@ -259,9 +259,10 @@ class ChromadbService:
         return query
     
     def get_ids_from_query(self, query_result):
-        result = query_result['ids'][0]
 
-        return result
+        if query_result.get('ids') and len(query_result['ids']) > 0:
+            return query_result['ids'][0]
+        return []
 
     #================= DEBUG Methods =========================
     async def list_collections(self):
