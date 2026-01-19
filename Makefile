@@ -111,3 +111,6 @@ certs:
 	else \
 		echo "✅ Certificates already exist."; \
 	fi
+
+test:
+	$(DOCKER_COMPOSE) up -d --build ft_ai ft_chromadb
