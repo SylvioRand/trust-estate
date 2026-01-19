@@ -719,23 +719,19 @@ GET /users/me
 **Response 200 :**
 ```json
 {
-  "id": "u1",
-  "email": "user@mail.com",
-  "emailVerified": true,
-  "phone": "+261340000000",
-  "firstName": "Jean",
-  "lastName": "Rakoto",
-  "role": "user", // Enum: "user", "moderator"
-  "sellerStats": {
-    "totalListings": 5,
-    "activeListings": 2,
-    "successfulSales": 3,
-    "successfulRents": 1,
-    "averageRating": 4.2,
-    "responseRate": 92
-  },
-  "creditBalance": 10,
-  "createdAt": "2025-01-10T08:00:00Z"
+  id: user.id,
+  email: user.email,
+  emailVerified: user.emailVerified,
+  firstName: user.firstName,
+  lastName: user.lastName,
+  phone: user.phone,
+  phoneVerified: user.phoneVerified,
+  role: user.role,
+  hasPassword: user.password !== null,
+
+  creditBalance: user.creditBalance,
+  createdAt: user.createAt.toISOString(),
+  updatedAt: user.updateAt.toISOString()
 }
 ```
 
