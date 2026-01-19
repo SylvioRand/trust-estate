@@ -6,7 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { type APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
-import GoogleActionButton from "../components/GoogleButton";
 
 const SignInPage: React.FC = () => {
 	const { t } = useTranslation(["signIn", "error"]);
@@ -14,13 +13,6 @@ const SignInPage: React.FC = () => {
 	const [processSignIn, setProcessSignIn] = useState(false);
 	const [errorEmail, setErrorEmail] = useState<string[]>([]);
 	const [errorPassword, setErrorPassword] = useState<string[]>([]);
-
-	const debugURL = [
-		"https://mock.apidog.com/m1/1162080-1155411-default/auth/login", // 200 Success [OK]
-		"https://mock.apidog.com/m1/1162080-1155411-default/auth/login?apidogResponseId=179970236", // 400 Email Not Verified [OK]
-		"https://mock.apidog.com/m1/1162080-1155411-default/auth/login?apidogResponseId=190854310", // 400 Invalid Credentials [OK]
-		"https://mock.apidog.com/m1/1162080-1155411-default/auth/login?apidogResponseId=166620922", // 429 Rate Limiting [KO]
-	]
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -50,7 +42,7 @@ const SignInPage: React.FC = () => {
 					if (errorData.error === "email_not_verified") {
 						navigate("/email-sent");
 					}
-					else if (errorData.error === "email_not_verified") {
+					else if (errorData.error === "phone_not_verified") {
 						navigate("/add-phone");
 					}
 				}
@@ -69,7 +61,6 @@ const SignInPage: React.FC = () => {
 			setErrorEmail([]);
 			setErrorPassword([]);
 			navigate("/home");
-
 		} catch (error) {
 			console.error("Error: ", error);
 		} finally {

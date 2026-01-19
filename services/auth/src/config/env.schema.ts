@@ -1,22 +1,23 @@
 export const envSchema = {
 	type: 'object',
 	required: [
-		'PORT_AUTH_SERVICE', 'REFRESH_TOKEN_URL',
+		'PORT_AUTH_SERVICE',
 		'JWT_REFRESH_SECRET',
 		'JWT_SECRET_PRIVATE_KEY', 'JWT_SECRET_PUBLIC_KEY',
-		'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GMAIL_USER', 'GMAIL_APP_PASSWORD', 
+		'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GMAIL_USER', 'GMAIL_APP_PASSWORD',
 		'COOKIE_SECRET', 'FRONTEND_URL',
 		'REDIRECT_URI', 'AUTH_URL', 'TOKEN_URL', 'USER_INFO_URL',
+		'INTERNAL_KEY_SECRET' // add by srandria
 	],
 	properties: {
+		INTERNAL_KEY_SECRET: { type: 'string' }, // added by srandria
 		PORT_AUTH_SERVICE: {
 			type: 'number',
 			default: 3001
 		},
-		REFRESH_TOKEN_URL: {type: 'string', default: '/auth/refresh'},
 		JWT_REFRESH_SECRET: { type: 'string' },
-		JWT_SECRET_PRIVATE_KEY:{ type: 'string' },
-		JWT_SECRET_PUBLIC_KEY:{ type: 'string' },
+		JWT_SECRET_PRIVATE_KEY: { type: 'string' },
+		JWT_SECRET_PUBLIC_KEY: { type: 'string' },
 		GOOGLE_CLIENT_ID: { type: 'string' },
 		GOOGLE_CLIENT_SECRET: { type: 'string' },
 		GMAIL_USER: { type: 'string' },
@@ -29,9 +30,9 @@ export const envSchema = {
 			type: 'string',
 			default: "http://localhost:8080"
 		},
-		REDIRECT_URI:{ type: 'string' },
-		AUTH_URL:{ type: 'string' },
-		TOKEN_URL:{ type: 'string' },
-		USER_INFO_URL:{ type: 'string' },
+		REDIRECT_URI: { type: 'string' },
+		AUTH_URL: { type: 'string' },
+		TOKEN_URL: { type: 'string' },
+		USER_INFO_URL: { type: 'string' },
 	}
 };

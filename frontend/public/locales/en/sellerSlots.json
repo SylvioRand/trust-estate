@@ -1,0 +1,36 @@
+{
+	"title": "Manage slots",
+
+	"errors": {
+		"overlapping": "These configuration overlaps with another slots.",
+		"time_invalid": "Start time have to be earlier than end time."
+	},
+
+	"buttons": {
+		"goBackToListing": "Back to the listing",
+		"create": {
+			"title": "Create slot"
+		},
+		"save": {
+			"title": "Save"
+		}
+	},
+
+	"popup": {
+		"create": {
+			"dayOfTheWeek": "Day of the week",
+			"startTime": "Start time",
+			"endTime": "End time"
+		}
+	},
+
+	"day": {
+		"0": "Monday",
+		"1": "Tuesday",
+		"2": "Wednesday",
+		"3": "Thursday",
+		"4": "Friday",
+		"5": "Saturday",
+		"6": "Sunday"
+	}
+}

@@ -4,15 +4,15 @@
 
 Refléter la base de données réelle nécessaire pour les nouvelles features.
 
-⚠️ Ces modèles sont volontairement simplifiés pour le MVP.
 
-**🆕 Changements majeurs depuis feedback dev :**
+
+**Changements majeurs depuis feedback dev :**
 - `emailVerified` obligatoire (remplaçant phoneVerified)
 - PropertyType étendu (land, loft, commercial)
 - Nouveaux champs Listing (wc_separate, floor, elevator, water_access...)
 - Tags marketing
 - Suppression confidenceScore/validationBadge
-- Suppression totale `iaValidation` (Reporté post-MVP)
+
 
 ---
 
@@ -46,19 +46,19 @@ Refléter la base de données réelle nécessaire pour les nouvelles features.
 
 ### Contraintes par Champ
 
-| Modèle | Champ | Min | Max | Format/Règles |
-|--------|-------|-----|-----|---------------|
-| `User` | `email` | 5 | 255 | Format email valide |
-| `User` | `firstName` | 2 | 50 | Lettres et espaces uniquement |
-| `User` | `lastName` | 2 | 50 | Lettres et espaces uniquement |
-| `User` | `phone` | 13 | 13 | Regex: `^\+261(32\|33\|34\|38)\d{7}$` |
-| `User` | `password` | 8 | 128 | 1 majuscule, 1 minuscule, 1 chiffre |
-| `Listing` | `title` | 10 | 100 | Sanitization XSS |
-| `Listing` | `description` | 50 | 2000 | Sanitization XSS |
-| `Listing` | `price` | 1 | 999999999999 | Nombre positif |
-| `Listing` | `surface` | 1 | 10000 | m² |
-| `Feedback` | `comment` | 10 | 500 | Sanitization XSS |
-| `ModerationAction` | `reason` | 10 | 500 | Justification |
+| Modèle             | Champ         | Min | Max          | Format/Règles                         |
+|--------------------|---------------|-----|--------------|---------------------------------------|
+| `User`             | `email`       | 5   | 255          | Format email valide                   |
+| `User`             | `firstName`   | 2   | 50           | Lettres et espaces uniquement         |
+| `User`             | `lastName`    | 2   | 50           | Lettres et espaces uniquement         |
+| `User`             | `phone`       | 13  | 13           | Regex: `^\+261(32\|33\|34\|38)\d{7}$` |
+| `User`             | `password`    | 8   | 128          | 1 majuscule, 1 minuscule, 1 chiffre   |
+| `Listing`          | `title`       | 10  | 100          | Sanitization XSS                      |
+| `Listing`          | `description` | 50  | 2000         | Sanitization XSS                      |
+| `Listing`          | `price`       | 1   | 999999999999 | Nombre positif                        |
+| `Listing`          | `surface`     | 1   | 10000        | m²                                    |
+| `Feedback`         | `comment`     | 10  | 500          | Sanitization XSS                      |
+| `ModerationAction` | `reason`      | 10  | 500          | Justification                         |
 
 ### Enums Partagés (Source Unique)
 
@@ -66,12 +66,13 @@ Refléter la base de données réelle nécessaire pour les nouvelles features.
 // shared/constants/enums.ts
 export const LISTING_TYPE = ['sale', 'rent'] as const;
 export const LISTING_STATUS = ['active', 'blocked', 'archived'] as const;
-export const PARKING_TYPE = ['none', 'street', 'garage', 'covered'] as const;
+export const PARKING_TYPE = ['none', 'garage', 'box', 'parking'] as const;
 export const RESERVATION_STATUS = ['pending', 'confirmed', 'rejected', 'cancelled', 'done'] as const;
 export const REPORT_REASON = ['fraud', 'spam', 'incorrect_info', 'inappropriate'] as const;
 export const MOD_ACTION = ['block_temporary', 'archive_permanent', 'request_clarification'] as const;
 export const CREDIT_PROVIDER = ['orange-money', 'mvola'] as const;
 export const FEEDBACK_RATING = [1, 2, 3, 4, 5] as const;
+export const AI_INDEX_ACTION = ['upsert', 'delete'] as const;  // Interne: POST /ai/index
 ```
 
 > ⚠️ **Cohérence obligatoire :** Ces valeurs doivent être **strictement identiques** entre les schémas Zod (frontend) et JSON Schema (backend).
@@ -172,22 +173,52 @@ type PropertyType = 'apartment' | 'house' | 'loft' | 'land' | 'commercial';
 
 interface Listing {
   id: string;
-  type: PropertyType;
+  type: 'sale' | 'rent';         // Transaction Type
+  propertyType: PropertyType;    // Morphology (apartment, house...)
+  mine?: boolean;                // Champ virtuel (API uniquement)
+  
+  // Contenu principal
+  title: string;
+  description: string;
   
   // Config Générale
   price: number;
   surface: number;
   
+  // Localisation
+  zone: string;                  // ID de la zone (ex: "tana-analakely")
+  zoneDisplay: string;           // Nom lisible (ex: "Antananarivo - Analakely")
+  
+  // Médias
+  photos: string[];              // URLs des images
+  
   // Caractéristiques physiques (Groupées)
   features: ListingFeatures;
   
   // Marketing
-  tags: ('urgent' | 'exclusive' | 'new')[];
+  tags: ('urgent' | 'exclusive' | 'discount')[];
   
-  // Visibilité (Expiration)
-  expiresAt: string; // 🆕 Date d'expiration (Created + 30j)
+  // État et visibilité
+  status: ListingStatus;         // Cycle de vie (active/blocked/archived)
+  isAvailable: boolean;          // Visibilité marché (True=Visible, False=Paused/Sold)
+  soldAt?: string;               // Date de vente/location (si applicable)
 
+  sellerId: string;              // ⚠️ API: Exposé via objet `seller` après réservation confirmée (privacy)
+  sellerVisible: boolean;        // True après réservation confirmée
+  
+  // Statistiques
+  stats?: {
+    views: number;
+    reservations: number;
+    feedbacks: number;
+  };
+  
+  // Disponibilités
   availability?: ListingAvailability[]; // Plages horaires définies
+  
+  // Timestamps
+  createdAt: string;
+  updatedAt?: string;
 }
 
 interface ListingFeatures {
@@ -223,24 +254,30 @@ interface ListingAvailability {
   endTime: string;     // "18:00"
 }
 
-type ListingStatus = 'draft' | 'active' | 'reserved' | 'sold' | 'rented' | 'blocked' | 'archived';
+type ListingStatus = 'active' | 'blocked' | 'archived';
 ```
 
 **Règles :**
-- `sellerVisible` passe à `true` uniquement après réservation confirmée
-- Une annonce `archived` n'est jamais supprimée (conservée pour historique)
-- `status = 'blocked'` uniquement par action modérateur humain
-- Classement influencé par : complétude, photos, feedbacks, historique vendeur
+- `status` gère le cycle de vie technique (Validité, Modération).
+- `isAvailable` gère la disponibilité commerciale.
+- `soldAt` est renseigné quand le bien est vendu/loué.
+- `sellerVisible` passe à `true` uniquement après réservation confirmée.
+- Une annonce `archived` n'est jamais supprimée (conservée pour historique).
+- `status = 'blocked'` uniquement par action modérateur humain.
 
-**États du cycle de vie (MVP) :**
+**États du cycle de vie :**
 
 ```
-création → active → reserved → sold/rented → archived
-                   ↓
-                 blocked (modération humaine uniquement)
+[LifeCycle] création → active ↔ archived
+                          ↓
+                        blocked
+
+[Market] isAvailable: true ↔ false (Pause)
+                               ↓
+                             soldAt != null (Vendu/Loué)
 ```
 
-> **Note MVP :** Le status `draft` (brouillon) a été supprimé pour simplifier. Publication directe après création.
+
 
 **Exemples :**
 
@@ -248,6 +285,8 @@ création → active → reserved → sold/rented → archived
 {
   "id": "l1",
   "type": "sale",
+  "propertyType": "house",
+  "mine": true,
   "title": "Maison T3 Analakely",
   "description": "Belle maison lumineuse avec jardin arboré...",
   "price": 50000000,
@@ -255,20 +294,18 @@ création → active → reserved → sold/rented → archived
   "features": {
     "bedrooms": 3,
     "bathrooms": 2,
-    "parking": true,
-    "garden": true
+    "parking_type": "garage",
+    "garden_private": true
   },
+  "tags": ["urgent"],
   "zone": "tana-analakely",
   "zoneDisplay": "Antananarivo - Analakely",
   "photos": [
     "https://mock-cdn.com/l1-photo1.jpg",
     "https://mock-cdn.com/l1-photo2.jpg"
   ],
-  "photoHashes": [
-    "a3f5d9c2e1b4",
-    "b7e2c8f1a9d5"
-  ],
   "status": "active",
+  "isAvailable": true,
   "sellerId": "u5",
   "sellerVisible": false,
   "stats": {
@@ -277,30 +314,11 @@ création → active → reserved → sold/rented → archived
     "feedbacks": 2
   },
   "createdAt": "2025-01-10T08:00:00Z",
-  "updatedAt": "2025-01-12T14:30:00Z",
-  "expiresAt": "2025-02-09T08:00:00Z"
+  "updatedAt": "2025-01-12T14:30:00Z"
 }
 ```
 
-**Exemple avec incohérences mineures :**
 
-```json
-{
-  "id": "l3",
-  "type": "rent",
-  "title": "Appartement T2",
-  "description": "Joli appartement",
-  "price": 800000,
-  "surface": 60,
-  "zone": "tana-ankorondrano",
-  "zoneDisplay": "Antananarivo - Ankorondrano",
-  "photos": ["https://mock-cdn.com/l3-photo1.jpg"],
-  "status": "active",
-  "sellerId": "u8",
-  "sellerVisible": false,
-  "createdAt": "2025-01-11T09:50:00Z"
-}
-```
 
 ---
 
@@ -387,24 +405,24 @@ Job CRON (toutes les heures)
 Feedback {
   id: string
   reservationId: string         // Lien vers réservation
-  listingId: string             // 🆕 Pour faciliter requêtes
+  listingId: string             // Pour faciliter requêtes
   
   // Auteurs
   authorId: string              // Acheteur qui donne feedback
-  targetId: string              // 🆕 Vendeur qui reçoit feedback
+  targetId: string              // Vendeur qui reçoit feedback
   
   // Contenu
   rating: 1 | 2 | 3 | 4 | 5
   comment?: string              // Optionnel
   
-  // 🆕 Catégories feedback (optionnel)
+  // Catégories feedback (optionnel)
   categories?: {
     listingAccurate: boolean    // Bien conforme à l'annonce
     sellerReactive: boolean     // Vendeur réactif
     visitUseful: boolean        // Visite utile
   }
   
-  // 🆕 Visibilité
+  // Visibilité
   visible: boolean              // True par défaut, false si modéré
   moderatedAt?: string
   moderationReason?: string
@@ -456,7 +474,7 @@ CreditBalance {
   userId: string                // Clé primaire
   balance: number               // Crédits disponibles
   
-  // 🆕 Historique simplifié
+  // Historique simplifié
   totalEarned: number           // Total crédits reçus (achats + bonus)
   totalSpent: number            // Total crédits consommés
   
@@ -469,14 +487,13 @@ CreditBalance {
 - Enregistrement : **5 crédits gratuits** (Validité : illimitée)
 - Min Solde : **0** (Pas de découvert)
 
-**Table des coûts (MVP) :**
+**Table des coûts :**
 | Action              | Coût       | Durée Visibilité  |
 |---------------------|------------|-------------------|
 | Publication Annonce | 1 crédit   | 30 jours          |
-| Renouvellement      | 0.5 crédit | +30 jours         |
 | Réservation Visite  | 1 crédit   | - (Débit immédiat)|
 
-**Tarifs Recharges (Mocked) :**
+**Tarifs Recharges :**
 - Starter (5cr) : 5.000 Ar
 - Standard (12cr) : 10.000 Ar (+2 bonus)
 - Premium (30cr) : 20.000 Ar (+5 bonus)
@@ -507,13 +524,12 @@ CreditTransaction {
   amount: number                // Positif (recharge) ou négatif (consommation)
   type: 'recharge' | 'consume' | 'bonus' | 'refund'
   
-  // 🆕 Raisons détaillées
+  // Raisons détaillées
   reason: 
     | 'initial_bonus'           // 5 crédits gratuits inscription
     | 'recharge_pack'           // Achat pack crédits
     | 'recharge_bonus'          // Bonus recharge (ex: +2 cr sur pack Standard)
     | 'publish_listing'         // Publication annonce
-    | 'renew_listing'           // Renouvellement annonce
     | 'reserve_visit'           // Réservation visite
     | 'refund_cancelled'        // Remboursement annulation
   
@@ -580,7 +596,7 @@ CreditTransaction {
 
 ---
 
-## 7. 🆕 Zone
+## 7. Zone
 
 ```typescript
 Zone {
@@ -593,13 +609,11 @@ Zone {
   parentId?: string             // Ex: "tana-renivohitra"
   
   // État
-  active: boolean               // Zones actives dans le MVP
+  active: boolean
 }
 ```
 
-**Règles MVP :**
-- Liste prédéfinie de ~20 zones (Antananarivo uniquement)
-- `level = 'neighborhood'` pour toutes les zones MVP
+
 
 **Exemples :**
 
@@ -616,7 +630,7 @@ Zone {
 
 ---
 
-## 8. 🆕 ModerationAction (interface modérateur)
+## 8. ModerationAction (interface modérateur)
 
 ```typescript
 ModerationAction {
@@ -676,12 +690,9 @@ ModerationAction {
 }
 ```
 
-}
-```
-
 ---
 
-## 9. 🆕 Report (Signalement Utilisateur)
+## 9. Report (Signalement Utilisateur)
 
 ```typescript
 Report {
@@ -704,7 +715,7 @@ Report {
 
 ---
 
-## 10. 🆕 AI Service Modeling (Mapping)
+## 10. AI Service Modeling (Mapping)
 
 Modèle de correspondance utilisé par le service AI pour lier les données structurées (SQL) aux données vectorielles (ChromaDB).
 
@@ -717,8 +728,8 @@ interface AIListingLink {
 
 **Règles :**
 - `listingId` est la clé primaire unique dans la table de mapping AI.
-- Une entrée est créée lors de l'appel à `POST /ai/index`.
-- L'entrée est supprimée lors de l'appel à `DELETE /ai/index/:id`.
+- Une entrée est créée lors de l'appel à `POST /ai/index` avec `action: "upsert"`.
+- L'entrée est supprimée lors de l'appel à `POST /ai/index` avec `action: "delete"`.
 
 ---
 
@@ -788,51 +799,5 @@ ModerationAction N—1 User (modérateur)
 
 ---
 
-## 13. Notes MVP
-
-**Simplifications volontaires :**
-- Pas de relations complexes (JOIN multiples)
-- Pas de contraintes DB strictes (pour flexibilité prototypage)
-- Données mockées (pas de persistance réelle)
-- Modèles enrichis pour anticiper Phase 2
-- **AI Service :** Utilisation d'une table de mapping `AIListingLink` pour assurer la cohérence SQL ↔ Vectoriel. Le chat reste stateless (historique en mémoire/session).
-
-**Objectif :** Cohérence produit & UX, pas optimisation DB.
 
 
-
----
-
-## 14. Changelog (Version Corrigée)
-
-**🆕 Ajouts :**
-- Modèle `Zone` structuré (hiérarchie)
-- Modèle `ModerationAction` (traçabilité)
-- `User.sellerStats` (historique vendeur)
-- `Listing.moderationStatus`
-- `Listing.photoHashes` (détection doublons)
-- `Reservation.doneAt` (trigger feedback)
-- `Reservation.feedbackEligible`
-- `Feedback.categories` (détail évaluation)
-- `Feedback.targetId` (vendeur évalué)
-- `CreditTransaction.reason` enrichi (initial_bonus, etc.)
-- **AI Service :** Modèles stateless (pas de DB persistence pour le chat MVP)
-
-**🔧 Améliorations :**
-- Relations clarifiées (diagramme)
-- Règles métier explicites
-- Exemples JSON complets
-- États cycle de vie documentés
-
-**✅ Cohérence :**
-- Aligné avec Niveau 2.4 (Décisions Produit)
-- Zones structurées
-- Workflow feedback clarifié
-- Crédits initiaux gratuits
-- Modération tracée
-
----
-
-**Document validé par :** [À compléter]  
-**Date de validation :** [À compléter]  
-**Version :** 2.0 (Corrigée)

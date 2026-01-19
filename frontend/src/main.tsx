@@ -4,14 +4,10 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import "./index.css"
 import "./i18n/i18n.ts";
 
-import PublicRoot from './components/PublicRoot.tsx';
-import ProtectedRoute from './components/ProtectedRoot.tsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import SignUpPage from './pages/sign_up.tsx';
-import NavBar from './components/NavBar.tsx';
 import MainLayout from './layout/layout.tsx';
 import SignInPage from './pages/sign_in.tsx';
-import ChatBot from './pages/ChatBot.tsx';
 import ForgotPassPage from './pages/forgot_pass.tsx';
 import ResetPassPage from './pages/reset_pass.tsx';
 import AddPhonePage from './pages/add_phone.tsx';
@@ -21,14 +17,18 @@ import WelcomePage from './pages/welcome.tsx';
 import EmailSentPage from './pages/email_sent.tsx';
 import VerifyEmailPage from './pages/verify_email.tsx';
 import ListingsPage from './pages/listings.tsx';
+import DataProvider from './provider/DataProvider.tsx';
+import PublishPage from './pages/publish.tsx';
+import SellerSlotsPage from './pages/seller_slots.tsx';
+import SettingsPage from './pages/settings.tsx';
+import ProfilePage from './pages/profile.tsx';
+import AIPage from './pages/ai.tsx';
+import BuyerSlotsPage from './pages/buyer_slots.tsx';
 
 const router = createBrowserRouter([
 	{
 		element: <MainLayout />,
 		children: [
-			// ==========================================
-			// PAGES PUBLIQUES (non-authentifiés uniquement)
-			// ==========================================
 			{
 				path: "/sign-in",
 				element: <SignInPage />
@@ -50,17 +50,15 @@ const router = createBrowserRouter([
 				element: <WelcomePage />
 			},
 			{
-				path: "/listings",
+				path: "/property/listings",
 				element: <ListingsPage />
 			},
-
-
-
-			// ==========================================
-			// PAGES DE VÉRIFICATION (semi-protégées)
-			// ==========================================
 			{
-				path: "email-sent",
+				path: "/profile/publish",
+				element: <PublishPage/>
+			},
+			{
+				path: "/email-sent",
 				element: <EmailSentPage />
 			},
 			{
@@ -72,9 +70,6 @@ const router = createBrowserRouter([
 				element: <AddPhonePage />
 			},
 
-			// ==========================================
-			// PAGES PROTÉGÉES (authentifiés uniquement)
-			// ==========================================
 			{
 				path: "/home",
 				element: <HomePage />
@@ -85,12 +80,24 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/ai",
-				element: <ChatBot />
+				element: <AIPage />
 			},
-
-			// ==========================================
-			// REDIRECTIONS PAR DÉFAUT
-			// ==========================================
+			{
+				path: "/profile",
+				element: <ProfilePage />
+			},
+			{
+				path: "/profile/settings",
+				element: <SettingsPage />
+			},
+			{
+				path: "/property/listings/seller-slots",
+				element: <SellerSlotsPage />
+			},
+			{
+				path: "/property/listings/buyer-slots",
+				element: <BuyerSlotsPage />
+			},
 			{
 				path: "/",
 				element: <Navigate to="/home" replace />
@@ -106,7 +113,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
 		<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-			<RouterProvider router={router} />
+			<DataProvider>
+				<RouterProvider router={router} />
+			</DataProvider>
 		</GoogleOAuthProvider>
 	</React.StrictMode>,
 );

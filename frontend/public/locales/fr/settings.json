@@ -1,0 +1,59 @@
+{
+	"buttons": {
+		"goBackToProfile": "Retourner au profil"
+	},
+
+	"section": {
+		"profileSettings": {
+			"title": "Modifier les informations",
+
+			"form": {
+				"firstName": {
+					"label": "Nom",
+					"placeholder": "Entrer votre nouveau nom"
+				},
+				"lastName": {
+					"label": "Prénom",
+					"placeholder": "Entrer votre nouveau prénom"
+				},
+				"phone": {
+					"label": "Téléphone",
+					"placeholder": "Entrer votre nouveau numéro de portable"
+				}
+			},
+
+			"buttons": {
+				"save": "Enregistrer"
+			}
+		},
+
+		"accountSettings": {
+			"title": "Paramètres du compte",
+
+			"form": {
+				"changePassword": {
+					"currentPassword": {
+						"label": "Mot de passe actuel",
+						"placeholder": "Entrer votre mot de passe actuel"
+					},
+					"newPassword": {
+						"label": "Nouveau mot de passe",
+						"placeholder": "Entrer votre nouveau mot de passe"
+					},
+
+					"buttons": {
+						"change": "Changer"
+					}
+				}
+			}
+		},
+
+		"settings": {
+			"title": "Paramètres",
+			"downloadGDPR": "Télécharger mes informations GDPR",
+			"deleteAccount": "Supprimer mon compte",
+			"logout": "Se déconnecter"
+		}
+
+	}
+}

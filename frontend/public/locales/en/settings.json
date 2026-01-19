@@ -1,0 +1,58 @@
+{
+	"buttons": {
+		"goBackToProfile": "Back to profile"
+	},
+
+	"section": {
+		"profileSettings": {
+			"title": "Edit Profile Information",
+
+			"form": {
+				"firstName": {
+					"label": "First Name",
+					"placeholder": "Enter your new first name"
+				},
+				"lastName": {
+					"label": "Last Name",
+					"placeholder": "Enter your new last name"
+				},
+				"phone": {
+					"label": "Phone",
+					"placeholder": "Enter your new phone number"
+				}
+			},
+
+			"buttons": {
+				"save": "Save Changes"
+			}
+		},
+
+		"accountSettings": {
+			"title": "Account Settings",
+
+			"form": {
+				"changePassword": {
+					"currentPassword": {
+						"label": "Current Password",
+						"placeholder": "Enter your current password"
+					},
+					"newPassword": {
+						"label": "New Password",
+						"placeholder": "Enter your new password"
+					},
+
+					"buttons": {
+						"change": "Change Password"
+					}
+				}
+			}
+		},
+
+		"settings": {
+			"title": "Settings",
+			"downloadGDPR": "Download GDPR",
+			"deleteAccount": "Delete your account",
+			"logout": "Log out"
+		}
+	}
+}

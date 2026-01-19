@@ -1,0 +1,21 @@
+{
+	"header": {
+		"title": "Ajouter un numéro de téléphone",
+		"subtitle": "Ajoutez votre numéro de téléphone pour sécuriser votre compte et vérifier votre identité."
+	},
+
+	"form": {
+		"phone": {
+			"label": "Numéro de téléphone",
+		}
+	},
+
+	"notif": {
+		"success": "Votre numéro de téléphone a été ajouté avec succès."
+	},
+
+	"actions": {
+		"confirm": "Confirmer"
+	}
+}
+

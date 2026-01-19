@@ -24,6 +24,7 @@ COPY frontend/package*.json ./
 
 # Copy source code
 COPY frontend/ ./
+COPY shared/ ../shared/
 
 # Build for production
 RUN npm run build
@@ -31,18 +32,8 @@ RUN npm run build
 # Stage 3: Serve with Nginx
 FROM nginx:1.25-alpine
 
-# Install openssl for certificate generation
-RUN apk add --no-cache openssl
-
-# Generate self-signed SSL certificate
-RUN mkdir -p /etc/nginx/ssl && \
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout /etc/nginx/ssl/server.key \
-    -out /etc/nginx/ssl/server.crt \
-    -subj "/C=MG/ST=Antananarivo/L=Antananarivo/O=TrustEstate/OU=Dev/CN=localhost"
-
 # Copy nginx configuration
-COPY nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx/conf.d/ /etc/nginx/conf.d/
 
 # Copy built frontend from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html

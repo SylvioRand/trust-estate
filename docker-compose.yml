@@ -9,11 +9,15 @@ services:
     container_name: trust-estate-nginx
     ports:
       - "8443:443"
+      - "8080:80"
     depends_on:
       - auth-service
+    volumes:
+      - ./nginx/certs:/etc/nginx/ssl:ro
+      - uploads_data:/var/www/uploads:ro # Dossier partagé (Read-Only pour Nginx)
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "--no-check-certificate", "https://localhost/health"]
+      test: [ "CMD", "wget", "-q", "--spider", "--no-check-certificate", "https://127.0.0.1/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -30,7 +34,7 @@ services:
       - "3001"
     environment:
       # Database
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${DATABASE_URL}?schema=auth
       # Server
       PORT_AUTH_SERVICE: 3001
       # JWT (paths inside container)
@@ -50,6 +54,10 @@ services:
       # App
       COOKIE_SECRET: ${COOKIE_SECRET}
       FRONTEND_URL: ${FRONTEND_URL:-https://localhost:8443}
+      # Internal key
+      INTERNAL_KEY_SECRET: ${INTERNAL_KEY_SECRET}
+      # DNS preference
+      NODE_OPTIONS: "--dns-result-order=ipv4first"
     volumes:
       - ./secret/jwtTokenService:/app/secret:ro
     depends_on:
@@ -57,10 +65,69 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/api/auth"]
+      test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3001/api/auth" ]
       interval: 30s
       timeout: 10s
       retries: 3
+
+  # ==============================================
+  # LISTINGS SERVICE - Fastify
+  # ==============================================
+  listings-service:
+    build:
+      context: ./services/listings
+      dockerfile: Dockerfile
+    container_name: trust-estate-listings
+    expose:
+      - "3002"
+    ports:
+      - "3002:3002" # Expose port for direct access for testing (optional
+    environment:
+      DATABASE_URL: ${DATABASE_URL}?schema=listings
+      PORT: 3002
+      # Internal key
+      INTERNAL_KEY_SECRET: ${INTERNAL_KEY_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./uploads:/app/uploads # Dossier partagé (Read-Write pour API)
+      #- uploads_data:/app/uploads # Dossier partagé (Read-Write pour API)
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3002/listings/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend AI Service
+  ft_ai: 
+    container_name: ft_ai
+    image: ft_ai:bibidi
+    build: ./services/ai
+    ports: 
+      - "3005:3005"
+    env_file:
+      - .env
+    depends_on:
+      - ft_chromadb
+    volumes:
+      - ./services/ai/:/app
+    restart:  unless-stopped
+
+  # ChromaDB- Vector Database
+  ft_chromadb:
+    container_name: ft_chromadb
+    image: chromadb/chroma:0.6.3
+    ports:
+      - "8001:8000"
+    volumes:
+      - chromadb_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - CHROMA_TELEMETRY_ENABLED=False
+      - ANONYMIZED_TELEMETRY=False
+    restart: unless-stopped
 
   # ==============================================
   # POSTGRESQL - Database
@@ -73,11 +140,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trustestate_secret}
       POSTGRES_DB: ${POSTGRES_DB:-trustestate}
     ports:
-      - "5433:5433"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trustestate}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trustestate}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -85,3 +152,6 @@ services:
 
 volumes:
   postgres_data:
+  uploads_data: # Volume persistant pour les images
+  chromadb_data:
+    driver: local
