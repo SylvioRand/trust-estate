@@ -124,12 +124,13 @@ async def chatbot(text: RequestChat):
         chroma_reply = await chromadb_service.get_post_in_collection("posts", context)
     formated = format_chroma_response(user_mssg, chroma_reply)
 
-    srcs = chromadb_service.parse_json(llm_service.generate_response(formated, llm_service.get_sources()))
+    id_found = chromadb_service.get_ids_from_query(chroma_reply)
     llm_response = llm_service.generate_response(formated, llm_service.generate_rules())
 
+    print(id_found)
     return ResponseChat(
         reply = llm_response,
-        sources = srcs
+        links = id_found
     )
 
 @app.delete("/api/index/{listingId}")

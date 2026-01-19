@@ -257,6 +257,11 @@ class ChromadbService:
         if 'distances' in query and query['distances']:
             query['distances'][0].append(0.0)
         return query
+    
+    def get_ids_from_query(self, query_result):
+        result = query_result['ids'][0]
+
+        return result
 
     #================= DEBUG Methods =========================
     async def list_collections(self):
