@@ -69,6 +69,7 @@ const	PrivacyPolicyPage: React.FC = () => {
 
 			<div
 			className="flex items-center justify-start
+			animate-from-top
 			w-full
 			font-bold text-xl"
 			>
@@ -80,28 +81,43 @@ const	PrivacyPolicyPage: React.FC = () => {
 			{
 
 				sectionName.map((value: string, index: number) => {
+					const	delay: string = `${100 * index}ms`;
+
 					return (
 						<div
-						className="flex flex-col items-center justify-center
-						w-full
-						gap-4"
+						className="w-full
+						animate-from-bottom"
+						style={{
+							animationDelay: delay
+						}}
 						>
-							<Section
-							key={ index }
-							title={ (index + 1) + ". " + t(`section.${value}.title`) }
-							content={ t(`section.${value}.legalText`) }
-							/>
-							{
-								index !== sectionName.length - 1 &&
-								<div
-								className="w-full
-								opacity-25"
-								>
-									<ContentDivider
-									line_color="linear-gradient(to left, transparent, var(--color-background) 10%, var(--color-background) 90%, transparent)"
-									/>
-								</div>
-							}
+							<div
+							className="flex flex-col items-center justify-center
+							w-full
+							opacity-0
+							animate-fade-in
+							gap-4"
+							style={{
+								animationDelay: delay
+							}}
+							>
+								<Section
+								key={ index }
+								title={ (index + 1) + ". " + t(`section.${value}.title`) }
+								content={ t(`section.${value}.legalText`) }
+								/>
+								{
+									index !== sectionName.length - 1 &&
+									<div
+									className="w-full
+									opacity-25"
+									>
+										<ContentDivider
+										line_color="linear-gradient(to left, transparent, var(--color-background) 10%, var(--color-background) 90%, transparent)"
+										/>
+									</div>
+								}
+							</div>
 						</div>
 					);
 				})
