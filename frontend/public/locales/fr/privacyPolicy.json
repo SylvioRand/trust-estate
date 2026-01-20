@@ -1,0 +1,50 @@
+{
+	"title": "Privacy Policy",
+
+	"section": {
+		"introduction": {
+			"title": "Introduction",
+			"legalText": "Nous attachons une grande importance à la protection de vos données personnelles. Cette Politique de confidentialité explique quelles données nous collectons, comment nous les utilisons, et les droits dont vous disposez en tant qu’utilisateur de notre plateforme immobilière digitale à Madagascar. En utilisant notre service, vous acceptez la collecte et l’utilisation des informations conformément à cette politique."
+		},
+		"dataCollected": {
+			"title": "Données collectées",
+			"legalText": "Nous collectons uniquement les informations nécessaires au bon fonctionnement de la plateforme et à la protection de nos utilisateurs. Types de données : Informations personnelles (nom, adresse e-mail, numéro de téléphone), informations de compte (identifiants, mot de passe, historique des actions), contenu utilisateur (annonces, descriptions, photos, documents privés), données techniques (IP, navigateur, appareil, journal de connexion), et paiements (historique des crédits et transactions)."
+		},
+		"purposeOfData": {
+			"title": "Finalités de la collecte",
+			"legalText": "Nous utilisons vos données pour créer et gérer votre compte utilisateur, permettre la publication et la consultation des annonces, faciliter la réservation de visites et notifier les utilisateurs, prévenir et détecter les fraudes ou contenus trompeurs, améliorer nos services, et communiquer avec vous concernant votre compte ou les mises à jour de la plateforme."
+		},
+		"legalBasis": {
+			"title": "Bases légales",
+			"legalText": "Nous traitons vos données personnelles pour l’exécution du contrat (création et gestion du compte, réservation de visites), pour respecter nos obligations légales et réglementaires, et pour protéger nos intérêts légitimes (sécurité, lutte contre la fraude, amélioration du service)."
+		},
+		"dataSharing": {
+			"title": "Partage des données",
+			"legalText": "Nous ne vendons ni ne louons vos données personnelles. Vos informations peuvent être partagées avec des prestataires de services tiers (hébergement, e-mails, analyse technique, traitement des paiements) et avec les autorités légales si requis. Aucun document privé n’est partagé publiquement ou à des tiers."
+		},
+		"dataStorageAndSecurity": {
+			"title": "Stockage et sécurité",
+			"legalText": "Vos données sont stockées de manière sécurisée et accessibles uniquement au personnel autorisé. Les documents et photos uploadés sont protégés par des mesures de sécurité standards (chiffrement, accès restreint). Nous conservons vos données tant que votre compte existe ou selon les obligations légales."
+		},
+		"userRights": {
+			"title": "Vos droits",
+			"legalText": "Vous disposez des droits suivants : accès aux données, correction des informations inexactes, suppression des données personnelles, opposition à certains traitements, et portabilité des données. Pour exercer vos droits, contactez-nous via les informations fournies dans la section Contact."
+		},
+		"cookies": {
+			"title": "Cookies et technologies similaires",
+			"legalText": "Nous utilisons des cookies pour mémoriser vos préférences de langue, analyser l’utilisation de la plateforme, et assurer la sécurité et la prévention de la fraude. Vous pouvez configurer votre navigateur pour refuser les cookies, mais certaines fonctionnalités de la plateforme peuvent devenir limitées."
+		},
+		"dataRetention": {
+			"title": "Conservation des données",
+			"legalText": "Les informations de compte et de réservation sont conservées tant que le compte existe ou selon la législation applicable. Les annonces et documents uploadés restent stockés pour permettre la consultation historique et la gestion de la plateforme."
+		},
+		"policyChanges": {
+			"title": "Modifications de la politique",
+			"legalText": "Nous nous réservons le droit de modifier cette Politique de confidentialité à tout moment. Les changements seront publiés sur cette page avec la date de mise à jour. L’utilisation continue de la plateforme après modification constitue votre acceptation de la version mise à jour."
+		},
+		"contact": {
+			"title": "Contact",
+			"legalText": "Pour toute question concernant vos données personnelles ou l’application de cette Politique de confidentialité, vous pouvez nous contacter via les coordonnées officielles disponibles sur le site."
+		}
+	}
+}
