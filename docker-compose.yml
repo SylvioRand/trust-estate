@@ -61,6 +61,8 @@ services:
       AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
       RESERVATION_SERVICE_URL: ${RESERVATION_SERVICE_URL}
       AI_SERVICE_URL: ${AI_SERVICE_URL}
+      CREDITS_SERVICE_URL: ${CREDITS_SERVICE_URL}
+      LISTINGS_SERVICE_URL: ${LISTINGS_SERVICE_URL}
     volumes:
       - ./secret/jwtTokenService:/app/secret:ro
     depends_on:
