@@ -10,5 +10,5 @@ CREATE TYPE "TransactionReason_new" AS ENUM ('initial_bonus', 'recharge_pack', '
 ALTER TABLE "CreditTransaction" ALTER COLUMN "reason" TYPE "TransactionReason_new" USING ("reason"::text::"TransactionReason_new");
 ALTER TYPE "TransactionReason" RENAME TO "TransactionReason_old";
 ALTER TYPE "TransactionReason_new" RENAME TO "TransactionReason";
-DROP TYPE "credit"."TransactionReason_old";
+DROP TYPE "credits"."TransactionReason_old";
 COMMIT;

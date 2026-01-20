@@ -166,8 +166,8 @@ export async function history(request: FastifyRequest<{ Querystring: { page?: st
 			});
 		}
 
-		// const page = parseInt(request.query.page || "1");
-		// const limit = parseInt(request.query.limit || "10");
+		const page = parseInt(request.query.page || "1");
+		const limit = parseInt(request.query.limit || "10");
 
 		const result = await creditServices.getUserHistory(request.server, user.id, page, limit);
 
