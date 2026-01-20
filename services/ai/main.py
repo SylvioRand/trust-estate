@@ -32,14 +32,16 @@ import jwt
 def format_chroma_response(user_mssg, chroma_text, history: list[str]):
     context = llm_service.format_for_llm(chroma_text)
     formated = "CONTEXT:\n"
+    line = 1
     if context:
         formated += context
     else:
         formated += "None"
     if len(history) > 0:
-        formated += "USER HISTORY:\n" 
+        formated += "USER HISTORY (Previous user messages):\n" 
         for elem in history:
-            formated += elem + "\n"
+            formated += f"{line}. {elem}\n"
+            line += 1
     formated += "USER INPUT:\n" + user_mssg
     return formated
 
