@@ -1,0 +1,70 @@
+{
+	"title": "Term of Services",
+
+	"section": {
+		"acceptanceOfTerms": {
+			"title": "Acceptance of the Terms",
+			"legalText": "By accessing or using this website and its services, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service. If you do not agree to these terms, you must not use the platform. These terms constitute a legally binding agreement between you and the platform."
+		},
+		"descriptionOfService": {
+			"title": "Description of the Service",
+			"legalText": "The platform is a digital real estate marketplace designed to facilitate the publication of property listings and the reservation of property visits in Madagascar. The platform acts solely as an intermediary that organizes information and enables contact between users. It does not act as a real estate agency, notary, land authority, legal advisor, or financial institution."
+		},
+		"userAccounts": {
+			"title": "User Accounts and Responsibilities",
+			"legalText": "Certain features of the platform require the creation of a user account. Users agree to provide accurate, complete, and up-to-date information and to maintain the confidentiality of their login credentials. Users are solely responsible for all activities conducted through their account. The platform reserves the right to suspend or terminate accounts in case of violation of these terms, misuse, or fraudulent behavior."
+		},
+		"userRoles": {
+			"title": "User Roles and Contextual Use",
+			"legalText": "The platform operates with a single account per individual. User roles such as buyer, seller, landlord, or tenant are contextual and determined by user actions. The platform does not assign permanent status, certification, or professional recognition to any user."
+		},
+		"userContent": {
+			"title": "Listings and User-Generated Content",
+			"legalText": "Users are solely responsible for the content they publish, including listings, descriptions, images, and documents. The platform does not guarantee the accuracy, legality, existence, ownership, or condition of any listed property. Any document uploaded is provided strictly as an indicative signal and does not constitute legal verification or certification."
+		},
+		"moderationAndVisibility": {
+			"title": "Moderation, Visibility, and Content Management",
+			"legalText": "The platform may use automated or human moderation mechanisms to detect inconsistencies, misleading content, or abusive behavior. Such actions may affect the visibility of listings without constituting legal validation. The platform reserves the right to request corrections, reduce visibility, or remove content in cases of manifest fraud, abuse, or violation of these terms."
+		},
+		"reservations": {
+			"title": "Reservations and User Engagements",
+			"legalText": "The reservation of a visit represents an engagement between users but does not create any contractual obligation enforced by the platform. The platform does not verify whether visits occur or whether transactions are completed. All negotiations, agreements, payments, leases, or sales occur strictly outside the platform and under the sole responsibility of the involved parties."
+		},
+		"paymentsAndCredits": {
+			"title": "Payments and Credits",
+			"legalText": "Certain actions on the platform may require the use of credits. Credits correspond to unit actions within the platform and are non-refundable. The platform does not guarantee any result, visibility level, or transaction success in exchange for credits."
+		},
+		"noTransactionalResponsibility": {
+			"title": "No Legal or Transactional Responsibility",
+			"legalText": "The platform does not participate in, supervise, guarantee, or validate any transaction. It does not verify ownership documents, land titles, prices, legal compliance, or contractual obligations. Users acknowledge that any transaction carried out as a result of platform usage is done at their own risk."
+		},
+		"intellectualProperty": {
+			"title": "Intellectual Property",
+			"legalText": "All content and materials provided by the platform, including software, design, logos, and text, are the exclusive property of the platform. Users retain ownership of their content but grant the platform a non-exclusive, worldwide, royalty-free license to use, display, and distribute such content for the operation of the service."
+		},
+		"serviceAvailability": {
+			"title": "Service Availability and Modifications",
+			"legalText": "The platform is provided on an \"as is\" and \"as available\" basis. The platform does not guarantee uninterrupted access, error-free operation, or permanent availability of features. The platform may modify, suspend, or discontinue any part of the service at any time without liability."
+		},
+		"limitationOfLiability": {
+			"title": "Limitation of Liability",
+			"legalText": "To the maximum extent permitted by applicable law, the platform shall not be liable for any indirect, incidental, consequential, or financial damages resulting from the use or inability to use the service, including disputes between users or fraudulent listings."
+		},
+		"termination": {
+			"title": "Termination",
+			"legalText": "Users may cease using the platform at any time. The platform reserves the right to suspend or terminate access to the service in case of violation of these terms, abuse, or legal risk. Termination does not affect obligations incurred prior to termination."
+		},
+		"governingLaw": {
+			"title": "Governing Law and Jurisdiction",
+			"legalText": "These Terms of Service are governed by the laws applicable in Madagascar. Any dispute arising from or related to the use of the platform shall fall under the exclusive jurisdiction of the competent courts."
+		},
+		"changesToTerms": {
+			"title": "Changes to the Terms",
+			"legalText": "The platform reserves the right to modify these Terms of Service at any time. Continued use of the platform after any modification constitutes acceptance of the updated terms."
+		},
+		"contactInformation": {
+			"title": "Contact Information",
+			"legalText": "For any questions or concerns regarding these Terms of Service, users may contact the platform using the official contact information provided on the website."
+		}
+	}
+}

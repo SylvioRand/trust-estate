@@ -24,6 +24,8 @@ import SettingsPage from './pages/settings.tsx';
 import ProfilePage from './pages/profile.tsx';
 import AIPage from './pages/ai.tsx';
 import BuyerSlotsPage from './pages/buyer_slots.tsx';
+import TermOfServicePage from './pages/term_of_service.tsx';
+import PrivacyPolicyPage from './pages/privacy_policy.tsx';
 
 const router = createBrowserRouter([
 	{
@@ -97,6 +99,14 @@ const router = createBrowserRouter([
 			{
 				path: "/property/listings/buyer-slots",
 				element: <BuyerSlotsPage />
+			},
+			{
+				path: "/term-of-services",
+				element: <TermOfServicePage />
+			},
+			{
+				path: "/privacy-policy",
+				element: <PrivacyPolicyPage />
 			},
 			{
 				path: "/",
