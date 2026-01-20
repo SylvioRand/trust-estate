@@ -114,6 +114,8 @@ model ListingAvailability {
   startTime String // "09:00"
   endTime   String // "18:00"
 
+  @@index([listingId])
+  @@index([dayOfWeek])
   @@map("ListingAvailability")
 }
 

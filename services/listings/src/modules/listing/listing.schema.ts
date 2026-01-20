@@ -107,3 +107,30 @@ export const GetOneParamsSchema = z.object({
   id: z.string().uuid()
 }).strict();
 
+
+const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+
+export const UpdateAvailabilitySchema = z.object({
+  weeklySchedule: z.array(
+    z.object({
+      dayOfWeek: z.number().int().min(0).max(6),
+      startTime: z.string().regex(timeRegex, "Format invalide (HH:mm)"),
+      endTime: z.string().regex(timeRegex, "Format invalide (HH:mm)"),
+    })
+  ).min(1, "Au moins un créneau est requis")
+    .refine((data) => {
+      return data.every(slot => {
+        const [startH, startM] = slot.startTime.split(':').map(Number);
+        const [endH, endM] = slot.endTime.split(':').map(Number);
+
+        const startMinutes = startH * 60 + startM;
+        const endMinutes = endH * 60 + endM;
+
+        return startMinutes < endMinutes;
+      });
+    }, {
+      message: "L'heure de début doit être antérieure à l'heure de fin",
+      path: ["weeklySchedule"]
+    })
+});
+export type UpdateavailabilityType = z.infer<typeof UpdateAvailabilitySchema>;

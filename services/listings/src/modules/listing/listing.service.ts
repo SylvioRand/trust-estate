@@ -1,5 +1,5 @@
 import { prisma } from '../../config/prisma';
-import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing } from "./listing.schema";
+import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing, UpdateavailabilityType } from "./listing.schema";
 import path from 'path';
 
 export class ListingService {
@@ -256,5 +256,9 @@ export class ListingService {
         where: { userId }
       });
     });
+  }
+
+  static async updateAvailability(listingId: string, schedule: UpdateavailabilityType) {
+
   }
 }
