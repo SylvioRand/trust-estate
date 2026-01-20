@@ -117,3 +117,6 @@ certs:
 	else \
 		echo "✅ Certificates already exist."; \
 	fi
+
+run-no-ai:
+	DOCKER_BUILDKIT=0 docker compose up -d --build nginx auth-service db listings-service
