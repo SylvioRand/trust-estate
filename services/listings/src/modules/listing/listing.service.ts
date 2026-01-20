@@ -137,30 +137,30 @@ export class ListingService {
     if (!listing) throw new Error('listing.not_found');
     if (listing.sellerId !== sellerId) throw new Error('forbidden');
 
-    return await prisma.$transaction(async (tx) => {
-      const updated = await tx.listing.update({
-        where: { id },
-        data: {
-          type: data.type,
-          propertyType: data.propertyType,
-          title: data.title,
-          description: data.description,
-          price: data.price,
-          surface: data.surface,
-          zone: data.zone,
-          tags: data.tags
-        }
-      });
-
-      if (data.features) {
-        await tx.listingFeatures.update({
-          where: { listingId: id },
-          data: data.features
-        });
+    const result = await prisma.listing.update({
+      where: { id },
+      data: {
+        type: data.type,
+        propertyType: data.propertyType,
+        title: data.title,
+        description: data.description,
+        price: data.price,
+        surface: data.surface,
+        zone: data.zone,
+        tags: data.tags,
+        features: data.features ? {
+          update: data.features
+        } : undefined
+      },
+      include: {
+        features: true
       }
-
-      return updated;
     });
+
+    const { features, ...listings } = result;
+    console.log("features = ", features);
+    console.log("listings = ", listings);
+    return { listing, features };
   }
 
   static async archiveListing(id: string, sellerId: string, data: ArchiveListingData) {
