@@ -49,8 +49,11 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 
 	app.decorate("internalAuthentication", async function (request: FastifyRequest, reply: FastifyReply) {
 		const internalToken = (request as any).headers['x-internal-key'];
-		const userId = (request as any).headers['x-user-id'];
+		let userId = (request as any).headers['x-user-id'];
 
+		if (!userId)
+			userId = (request.query as any).userId;
+	
 		if (!internalToken || !userId) {
 			return reply.code(401).send({
 				error: 'unauthorized',
