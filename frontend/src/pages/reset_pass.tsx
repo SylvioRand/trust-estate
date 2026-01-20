@@ -1,21 +1,72 @@
-import React from "react";
-import SimpleInput, { PasswordInput } from "../components/Input";
+import React, { useState } from "react";
+import { PasswordInput } from "../components/Input";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const	ResetPassPage: React.FC = () => {
-	const { t } = useTranslation("resetPass");
+	const	{ t } = useTranslation("resetPass");
+	const	navigate = useNavigate();
+	const	[errorPassword, setErrorPassword] = useState<string[]>([]);
+	const	[processingSubmit, setProcessingSubmit] = useState<boolean>(false);
+	const	[searchParams] = useSearchParams();
+	const	token = searchParams.get("token");
 
-	const	handleOnSubmit = (e:React.FormEvent<HTMLFormElement>) => {
+	const	handleOnSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
+		// NOTE: If there is no token in the query, just redirect to sign-in
+		if (token === null)
+		{
+			console.error("No token found");
+			navigate("/sign-in");
+			return ;
+		}
+
 		e.preventDefault();
-
+		setProcessingSubmit(true);
+		setErrorPassword([]);
 		const	formData = new FormData(e.currentTarget);
-
 		const	data = Object.fromEntries(formData.entries());
+		
+		data.token = token ?? "";
+		if (data.password !== data.confirmPassword)
+		{
+			setErrorPassword([t("auth.passwordAndConfirmationIsDifferent")]);
+			setProcessingSubmit(false);
+			return ;
+		}
 
-		console.log(data);
+		delete data.confirmPassword;
+
+		try {
+			const	response = await fetch("/api/auth/reset-password", {
+				method: "POST",
+				headers: {
+					"Content-type": "application/json"
+				},
+				body: JSON.stringify(data)
+			})
+
+			const	responseData = await response.json();
+
+			if (response.status === 401)
+			{
+				toast.error(t(`error:${responseData?.message ?? "invalid token"}`));
+				navigate("/sign-in");
+				throw new Error(responseData.message);
+			}
+			toast.success(t(`error:${responseData?.message ?? "success"}`));
+			navigate("/sign-in");
+		} catch (error) {
+			if (error instanceof Error)
+			{
+				console.error(t(`error:${error.message}`));
+				toast.error(t(`error:${error.message}`));
+			}
+		} finally {
+			setProcessingSubmit(false);
+		}
 	}
 
 	return (
@@ -31,11 +82,11 @@ const	ResetPassPage: React.FC = () => {
 					xl:items-end
 					w-full max-w-100"
 				>
-					<div className="font-bold text-2xl">
+					<div className="font-higuen font-bold text-2xl">
 						{t("header.title")}
 					</div>
 
-					<div className="font-thin text-md opacity-75 xl:text-right">
+					<div className="text-md opacity-75 xl:text-right">
 						{t("header.subtitle", { brand: t("brand.name") })}
 					</div>
 				</div>
@@ -63,14 +114,15 @@ const	ResetPassPage: React.FC = () => {
 						title={t("form.password.label")}
 						name="password"
 						placeholder={t("form.password.placeholder")}
-						error={[]}
+						error={ errorPassword }
+						pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
 					/>
 
 					<PasswordInput
 						title={t("form.confirm.label")}
 						name="confirmPassword"
 						placeholder={t("form.password.placeholder")}
-						error={[]}
+						error={ errorPassword }
 					/>
 
 					<div className="mt-2 w-full">
@@ -79,6 +131,7 @@ const	ResetPassPage: React.FC = () => {
 							icon=""
 							icon_place="right"
 							type="submit"
+							processing_action={ processingSubmit }
 						/>
 					</div>
 				</form>
