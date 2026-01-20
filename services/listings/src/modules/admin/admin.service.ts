@@ -3,8 +3,6 @@ import { FlaggedListingsQuery } from './admin.schema';
 import { ReportReason } from '@prisma/client';
 import { AuthClient } from '../../infrastructure/auth.client';
 
-
-
 export class AdminServices {
   static async getFlagged(query: FlaggedListingsQuery) {
     const { page, limit, reportReason } = query;
@@ -34,7 +32,6 @@ export class AdminServices {
         take: limit,
       })
     ]);
-
 
     const totalPages = Math.ceil(totalMatching / limit);
 
@@ -83,7 +80,7 @@ export class AdminServices {
       }
     });
     if (!listing) {
-      throw new Error('Listing not found');
+      throw new Error('listing.not_found');
     }
     const sellerDetails = await AuthClient.getUserDetails(null as any, listing.sellerId);
     return {
