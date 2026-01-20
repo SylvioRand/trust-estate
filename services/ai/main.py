@@ -59,7 +59,7 @@ async def check_keys(x_internal_key: str = Header(None)):
     except jwt.PyJWTError:
         raise HTTPException(
             status_code = 401,
-            details = "Invalide token"
+            details = "Invalid token"
         )
 
 # ====================== Init connection to service chromadb ==================
