@@ -93,10 +93,16 @@ reload-listings:
 	@echo "🔄 Reloading listings service..."
 	$(DOCKER_COMPOSE) up -d --build listings-service
 
-# Fast reload for listings service only
+# Fast reload for nginx service only
 reload-nginx:
 	@echo "🔄 Reloading nginx service..."
 	$(DOCKER_COMPOSE) up -d --build nginx
+
+# Fast reload for reservation service only
+reload-reservation:
+	@echo "🔄 Reloading reservation service..."
+	$(DOCKER_COMPOSE) up -d --build reservation
+
 
 # Show which docker compose command is being used
 check:

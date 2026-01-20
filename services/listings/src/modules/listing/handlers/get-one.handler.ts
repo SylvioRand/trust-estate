@@ -3,7 +3,7 @@ import { GetOneParamsSchema } from "../listing.schema";
 import { ZodError } from "zod";
 import { ListingService } from "../listing.service";
 import { AuthClient } from "../../../infrastructure/auth.client";
-import { ReservationClienr } from "../../../infrastructure/reservation.client";
+import { ReservationClient } from "../../../infrastructure/reservation.client";
 
 export async function handleGetOne(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -12,6 +12,30 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
 
     const currentUser = (request as any).user;
     const isMine = currentUser?.id === listing.sellerId;
+    let confirmedReservation = false;
+
+    if (currentUser?.id && !isMine) {
+      const status = await ReservationClient.getReservationStatus(listing.id, currentUser.id);
+      confirmedReservation = status.confirmed;
+    }
+
+    const sellerVisible = isMine || confirmedReservation;
+    let sellerData = undefined;
+
+    if (sellerVisible) {
+      try {
+        const user = await AuthClient.getUserDetails(reply, listing.sellerId);
+        sellerData = {
+          id: user.id,
+          name: `${user.firstName} ${user.lastName}`,
+          phone: user.phone,
+          email: user.email,
+          memberSince: user.createdAt
+        };
+      } catch (error) {
+        console.error('Failed to fetch seller details:', error);
+      }
+    }
 
     const response: any = {
       id: listing.id,
@@ -20,12 +44,14 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
       description: listing.description,
       price: listing.price,
       type: listing.type,
+      propertyType: listing.propertyType,
       surface: listing.surface,
       zone: listing.zone,
       photos: listing.photos,
       features: listing.features ? {
         bedrooms: listing.features.bedrooms,
         bathrooms: listing.features.bathrooms,
+        wc: listing.features.wc,
         wc_separate: listing.features.wc_separate,
         parking_type: listing.features.parking_type,
         garden_private: listing.features.garden_private,
@@ -34,7 +60,8 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
         pool: listing.features.pool,
       } : {},
       status: listing.status,
-      sellerVisible: isMine,
+      sellerVisible: sellerVisible,
+      seller: sellerData,
       sellerStats: {
         totalListings: sellerStats?.totalListings || 0,
         successfulSales: sellerStats?.successfulSales || 0,
@@ -43,26 +70,6 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
       createdAt: listing.createdAt.toISOString(),
       updatedAt: listing.updatedAt.toISOString()
     };
-
-    if (currentUser?.id) {
-      const result = await AuthClient.getUserDetails(reply, listing.sellerId);
-      ReservationClienr.getReservationStatus(listing.id, currentUser.id);
-      response.seller = {
-        id: result?.id,
-        name: `${result?.firstName} ${result?.lastName}`,
-        phone: result?.phone,
-        email: result?.email,
-        memberSince: result?.createdAt
-      };
-    }
-
-
-
-    // TODO
-    // If reservation confirmed logic existed:
-    // if (confirmedReservation) {
-    //   response.seller = { ... }; 
-    // }
 
     reply.status(200).send(response);
 
