@@ -12,19 +12,14 @@ const	Section: React.FC<SectionProps> = ({
 }) => {
 	return (
 		<div
-		className="flex flex-col items-center justify-center
+		className="flex flex-col items-start justify-center
 		gap-2
 		w-full"
 		>
 			<div
-			className="flex items-center justify-start
-			w-full"
+			className="font-bold text-lg"
 			>
-				<div
-				className="font-bold text-lg"
-				>
-					{ title }
-				</div>
+				{ title }
 			</div>
 
 			<div
@@ -90,7 +85,8 @@ const	TermOfServicePage: React.FC = () => {
 
 					return (
 						<div
-						className="animate-from-bottom"
+						className="animate-from-bottom
+						w-full"
 						style={{
 							animationDelay: delay
 						}}
