@@ -13,6 +13,10 @@ export async function creditRoutes(app: FastifyInstance) {
 		{
 			preHandler: app.authentication
 		}, creditController.getBalance);
+	app.get("/credits/health", async (req, reply) => {
+		return reply.status(200).send({ status: "ok", service: "credits", version: "1.0.1" });
+	});
+	app.get("/credits/history", { preHandler: app.authentication }, creditController.history);
 };
 
 export async function InternalRoutes(app: FastifyInstance) {
@@ -33,9 +37,4 @@ export async function deleteData(app: FastifyInstance) {
 		{
 			preHandler: app.internalAuthentication
 		}, creditController.requestDeleteData);
-}
-
-
-export async function historyRoutes(app: FastifyInstance) {
-	app.get("credits/history", { preHandler: app.internalAuthentication }, creditController.history);
 }
