@@ -71,7 +71,8 @@ const	TermOfServicePage: React.FC = () => {
 			className="flex items-center justify-start
 			animate-from-top
 			w-full
-			font-bold text-xl"
+			font-higuen
+			font-bold text-2xl"
 			>
 				<div>
 					{ t("title") }
