@@ -91,6 +91,8 @@ const	SettingsPage: React.FC = () => {
 		const	formData = new FormData(e.currentTarget);
 		const	data = Object.fromEntries(formData.entries()) as Record<string, string>;
 
+		data.phone = data.phoneCountryCode + data.phone;
+
 		try {
 			const	response = await fetch("/api/users/me", {
 				method: "PUT",
@@ -108,13 +110,19 @@ const	SettingsPage: React.FC = () => {
 				const	errorData = responseData as APIResponse;
 
 				if (response.status === 400)
+				{
 					setErrorPhone([errorData.message]);
+					throw new Error(errorData.message);
+				}
 			}
 
-			toast.success("error:auth.info_update_success");
+			toast.success(t("error:auth.info_update_success"));
 		} catch (error) {
-			toast.error(t(`error:${error}`))
-			console.error(error);
+			if (error instanceof Error)
+			{
+				toast.error(t(`error:${error.message}`))
+				console.error(t(`error:${error.message}`));
+			}
 		} finally {
 			setIsProcessingSavingInfo(false);
 		}
@@ -153,9 +161,12 @@ const	SettingsPage: React.FC = () => {
 				throw new Error(errorData.message);
 			}
 			toast.success(t(`error:${responseData?.message ?? "success"}`));
-		} catch (e) {
-			toast.error(t(`error:${e}`));
-			console.error("SettingsPage: handleChangePassword: ", t(`error:${e}`));
+		} catch (error) {
+			if (error instanceof Error)
+			{
+				toast.error(t(`error:${error.message}`))
+				console.error("SettingsPage: handleChangePassword: ", t(`error:${error.message}`));
+			}
 		} finally {
 			setIsProcessingPasswordChange(false);
 		}
@@ -177,8 +188,9 @@ const	SettingsPage: React.FC = () => {
 			if (!response.ok)
 				throw new Error(t("error:auth.not_authenticated_user}"))
 
-		} catch (e) {
-			console.error("SettingsPage: handleLogOut: ", e);
+		} catch (error) {
+			if (error instanceof Error)
+				console.error("SettingsPage: handleLogOut: ", error.message);
 		} finally {
 			navigate("/home");
 			setIsConnected(false);
@@ -217,9 +229,12 @@ const	SettingsPage: React.FC = () => {
 			refPopUpDeleteAccount.current?.close();
 			setIsConnected(false);
 			navigate("/sign-in");
-		} catch (e) {
-			toast.error(t(`error:${e}`));
-			console.error("SettingsPage: handleAccountDeletion: ", t(`error:${e}`));
+		} catch (error) {
+			if (error instanceof Error)
+			{
+				toast.error(t(`error:${error.message}`))
+				console.error("SettingsPage: handleAccountDeletion: ", t(`error:${error.message}`));
+			}
 		} finally {
 			setProcessingAccountDeletion(false);
 		}
@@ -263,9 +278,12 @@ const	SettingsPage: React.FC = () => {
 				prev ? { ...prev, hasPassword: true } : prev
 			);
 
-		} catch (e) {
-			toast.error(t(`error:${e}`));
-			console.error("SettingsPage: handleAddPassword: ", t(`error:${e}`));
+		} catch (error) {
+			if (error instanceof Error)
+			{
+				toast.error(t(`error:${error.message}`))
+				console.error("SettingsPage: handleAddPassword: ", t(`error:${error.message}`));
+			}
 		} finally {
 			setProcessingAddPassword(false);
 		}
