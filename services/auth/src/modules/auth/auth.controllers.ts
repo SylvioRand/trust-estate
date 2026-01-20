@@ -192,8 +192,8 @@ export async function forgotPassword(request: FastifyRequest<{ Body: { email: st
 	} catch (error: any) {
 		if (error.message === "User not found")
 			return reply.status(404).send({
-				"error": "email_not_verified",
-				"message": "auth.email_verification_required"
+				"error": "forgot_pass_user_not_found",
+				"message": "auth.forgot_pass_user_not_found"
 			});
 		else
 			return reply.status(500).send({

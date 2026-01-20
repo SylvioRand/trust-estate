@@ -349,7 +349,7 @@ export async function sendTokenForgotPassword(app: FastifyInstance, email: strin
 	});
 
 	const baseUrl = app.config.FRONTEND_URL;
-	const resetPasswordUrl = `${baseUrl}/reset-password?token=${hash}`;
+	const resetPasswordUrl = `${baseUrl}/sign-in/reset-password?token=${hash}`;
 	const { text, html } = generateForgotPasswordMail(resetPasswordUrl);
 	await (app as any).mailer.sendMail({
 		from: 'dinandrianom@gmail.com',
