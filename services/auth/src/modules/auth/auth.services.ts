@@ -340,16 +340,21 @@ export async function sendTokenForgotPassword(app: FastifyInstance, email: strin
 	const tokenHash = createHash('sha256').update(hash).digest('hex');
 	const expiresAt = new Date(Date.now() + 1000 * 60 * 24).toISOString();
 
-	await app.prisma.forgot_password_token.create({
-		data: {
+	await app.prisma.forgot_password_token.upsert({
+		where: {userId: user.id},
+		create:{
 			userId: user.id,
+			tokenHash,
+			expiresAt
+		},
+		update: {
 			tokenHash,
 			expiresAt
 		}
 	});
 
 	const baseUrl = app.config.FRONTEND_URL;
-	const resetPasswordUrl = `${baseUrl}/reset-password?token=${hash}`;
+	const resetPasswordUrl = `${baseUrl}/sign-in/reset-password?token=${hash}`;
 	const { text, html } = generateForgotPasswordMail(resetPasswordUrl);
 	await (app as any).mailer.sendMail({
 		from: 'dinandrianom@gmail.com',
@@ -416,6 +421,6 @@ export async function crediter(app: FastifyInstance, userId: string) {
 	} catch (error: any) {
 		console.log("ERROR", error);
 		app.log.error({ error }, 'Failed to credit user');
-		throw error;
+		// throw error;
 	}
 }
