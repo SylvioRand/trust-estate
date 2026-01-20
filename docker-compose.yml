@@ -60,6 +60,8 @@ services:
       NODE_OPTIONS: "--dns-result-order=ipv4first"
       AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
       RESERVATION_SERVICE_URL: ${RESERVATION_SERVICE_URL}
+      CREDITS_SERVICE_URL: ${CREDITS_SERVICE_URL}
+      LISTINGS_SERVICE_URL: ${LISTINGS_SERVICE_URL}
       AI_SERVICE_URL: ${AI_SERVICE_URL}
       CREDITS_SERVICE_URL: ${CREDITS_SERVICE_URL}
       LISTINGS_SERVICE_URL: ${LISTINGS_SERVICE_URL}
@@ -139,6 +141,41 @@ services:
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3003/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==============================================
+  # CREDITS SERVICE - Fastify
+  # ==============================================
+  credits-service:
+    build:
+      context: ./services/credits
+      dockerfile: Dockerfile
+    container_name: trust-estate-credits
+    expose:
+      - "3004"
+    ports:
+      - "3004:3004"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}?schema=credits
+      PORT_CREDITS_SERVICE: 3004
+      # Internal key
+      INTERNAL_KEY_SECRET: ${INTERNAL_KEY_SECRET}
+      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
+      LISTINGS_SERVICE_URL: ${LISTINGS_SERVICE_URL}
+      RESERVATION_SERVICE_URL: ${RESERVATION_SERVICE_URL}
+      JWT_SECRET_PUBLIC_KEY: /app/secret/jwt_auth_public.pem
+      GMAIL_USER: ${GMAIL_USER}
+      GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
+    volumes:
+      - ./secret/jwtTokenService:/app/secret:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3004/credits/health" ]
       interval: 30s
       timeout: 10s
       retries: 3

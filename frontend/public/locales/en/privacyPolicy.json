@@ -1,0 +1,50 @@
+{
+	"title": "Privacy Policy",
+
+	"section": {
+		"introduction": {
+			"title": "Introduction",
+			"legalText": "We place great importance on protecting your personal data. This Privacy Policy explains what data we collect, how we use it, and the rights you have as a user of our digital real estate platform in Madagascar. By using our service, you agree to the collection and use of information in accordance with this policy."
+		},
+		"dataCollected": {
+			"title": "Data Collected",
+			"legalText": "We only collect information necessary for the proper functioning of the platform and the protection of our users. Types of data: Personal information (name, email address, phone number), account information (credentials, password, activity history), user-generated content (listings, descriptions, photos, private documents), technical data (IP address, browser, device, connection logs), and payment information (credits and transaction history)."
+		},
+		"purposeOfData": {
+			"title": "Purpose of Data Collection",
+			"legalText": "We use your data to create and manage your user account, allow the publication and consultation of listings, facilitate visit reservations and notify users by email, prevent and detect fraud or misleading content, improve our services, and communicate with you regarding your account or platform updates."
+		},
+		"legalBasis": {
+			"title": "Legal Basis",
+			"legalText": "We process your personal data for the performance of a contract (account creation and management, visit reservations), to comply with legal and regulatory obligations, and to protect our legitimate interests (security, fraud prevention, service improvement)."
+		},
+		"dataSharing": {
+			"title": "Data Sharing",
+			"legalText": "We do not sell or rent your personal data. Your information may be shared with third-party service providers (hosting, emails, technical analysis, payment processing) and with legal authorities if required. No private documents are shared publicly or with third parties."
+		},
+		"dataStorageAndSecurity": {
+			"title": "Data Storage and Security",
+			"legalText": "Your data is stored securely and accessible only to authorized personnel. Uploaded documents and photos are protected by standard security measures (encryption, restricted access). We retain your data as long as your account exists or as required by law."
+		},
+		"userRights": {
+			"title": "User Rights",
+			"legalText": "You have the following rights: access your data, correct inaccurate information, request deletion of personal data, object to certain processing, and data portability. To exercise your rights, contact us using the information provided in the Contact section."
+		},
+		"cookies": {
+			"title": "Cookies and Similar Technologies",
+			"legalText": "We use cookies to remember your language preferences, analyze platform usage, and ensure security and fraud prevention. You can configure your browser to reject cookies, but some platform features may become limited."
+		},
+		"dataRetention": {
+			"title": "Data Retention",
+			"legalText": "Account and reservation information is retained as long as the account exists or as required by law. Uploaded listings and documents remain stored to allow historical consultation and platform management."
+		},
+		"policyChanges": {
+			"title": "Policy Changes",
+			"legalText": "We reserve the right to modify this Privacy Policy at any time. Changes will be posted on this page with the update date. Continued use of the platform after changes constitutes your acceptance of the updated version."
+		},
+		"contact": {
+			"title": "Contact",
+			"legalText": "For any questions regarding your personal data or the application of this Privacy Policy, you may contact us via the official contact information provided on the website."
+		}
+	}
+}

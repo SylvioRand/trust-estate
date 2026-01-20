@@ -4,7 +4,7 @@ import { DebitCreditSchema, InternalCreditSchema, RechargerSchema } from "./cred
 import { creditBalanceInterface, RechargeInterface } from "./credit.interface";
 
 export async function creditRoutes(app: FastifyInstance) {
-	app.post<{Body: RechargeInterface}>("/credits/recharge",
+	app.post<{ Body: RechargeInterface }>("/credits/recharge",
 		{
 			schema: RechargerSchema,
 			preHandler: app.internalAuthentication
@@ -13,15 +13,19 @@ export async function creditRoutes(app: FastifyInstance) {
 		{
 			preHandler: app.authentication
 		}, creditController.getBalance);
+	app.get("/credits/health", async (req, reply) => {
+		return reply.status(200).send({ status: "ok", service: "credits", version: "1.0.1" });
+	});
+	app.get("/credits/history", { preHandler: app.authentication }, creditController.history);
 };
 
 export async function InternalRoutes(app: FastifyInstance) {
-	app.post<{Body: any}>("/internal/credits/debit",
+	app.post<{ Body: any }>("/internal/credits/debit",
 		{
 			schema: DebitCreditSchema,
 			preHandler: app.internalAuthentication
 		}, creditController.debitBalance);
-	app.post<{Body: creditBalanceInterface}>("/internal/credits/credit",
+	app.post<{ Body: creditBalanceInterface }>("/internal/credits/credit",
 		{
 			schema: InternalCreditSchema,
 			preHandler: app.internalAuthentication
