@@ -30,6 +30,29 @@ export async function listReservation(request: FastifyRequest, reply: FastifyRep
 	}
 }
 
+export async function requestDeleteData(request: FastifyRequest, reply: FastifyReply) {
+	const user = (request as any).user as UserInterface;
+
+	if (!user)
+		return reply.status(401).send({
+			"error": "unauthorized",
+			"message": "common.unauthorized"
+		});
+
+	try {
+		await resaServices.deleteUserData(request.server, user.id);
+		return reply.status(200).send({
+			"deleted": true,
+			"message": "User data deleted successfully"
+		});
+	} catch (error: any) {
+		return reply.status(500).send({
+			"error": "internal_server_error",
+			"message": "common.internal_server_error"
+		});
+	}
+}
+
 export async function createSlot(request: FastifyRequest<{Body: ReservationInterface}>, reply: FastifyReply) {
 	const {slot, sellerId, listingId} = request.body;
 	const user = (request as any).user as UserInterface;

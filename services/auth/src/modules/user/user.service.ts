@@ -183,6 +183,42 @@ export async function DeleteUser(app: FastifyInstance, userId: string, password:
 	if (!isValid)
 		throw new Error("Invalid password");
 
+	try {
+		const jwt = await import('jsonwebtoken');
+		const internalToken = jwt.default.sign(
+			{ service: 'auth-service', userId },
+			process.env.INTERNAL_KEY_SECRET || "INTERNAL_KEY",
+			{ algorithm: 'HS256', expiresIn: '30s' }
+		);
+
+		await Promise.allSettled([
+			fetch(process.env.CREDITS_SERVICE_URL + '/internal/delete/data', {
+				method: 'DELETE',
+				headers: {
+					'x-internal-key': internalToken,
+					'x-user-id': userId
+				}
+			}),
+			fetch(process.env.LISTINGS_SERVICE_URL + '/listings/internal/user/data', {
+				method: 'DELETE',
+				headers: {
+					'x-internal-key': internalToken,
+					'x-user-id': userId
+				}
+			}),
+			fetch(process.env.RESERVATION_SERVICE_URL + '/internal/delete/data', {
+				method: 'DELETE',
+				headers: {
+					'x-internal-key': internalToken,
+					'x-user-id': userId
+				}
+			})
+		]);
+	} catch (error: any) {
+		console.log("ERRROR ==========================");
+		app.log.error({ error, userId }, 'Failed to delete user data from other services');
+	}
+
 	await app.prisma.user.delete({
 		where: {id: userId}
 	});
