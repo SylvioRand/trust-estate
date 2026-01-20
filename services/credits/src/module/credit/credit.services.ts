@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { TransactionReason, TransactionType } from "@prisma/client";
 
-export async function rechargeUserCredit(app: FastifyInstance, userId: string, amount: number) {
+export async function rechargeUserCredit(app: FastifyInstance, userId: string, amount: number, reason: TransactionReason, type: TransactionType) {
 	return await app.prisma.$transaction(async (tx) => {
 
 		let creditBalance = await tx.creditBalance.findUnique({
@@ -37,8 +37,8 @@ export async function rechargeUserCredit(app: FastifyInstance, userId: string, a
 			data: {
 				userId,
 				amount: amount,
-				type: "recharge",
-				reason: "recharge_pack",
+				type,
+				reason,
 				balanceAfter: previousBalance + amount,
 			}
 		});
@@ -114,7 +114,7 @@ export async function refundUsercredit(app: FastifyInstance, userId: string, typ
 			throw new Error("insufficient_credits");
 
 		let amount : number = 0;
-		console.log(type);
+
 		if (type === "bonus")
 			amount = 5;
 		else if (type === "refund")
@@ -141,6 +141,23 @@ export async function refundUsercredit(app: FastifyInstance, userId: string, typ
 		return {
 			transactionId: transaction.id,
 			newBalance: creditBalances.balance,
+		};
+	});
+};
+
+export async function deleteUserData(app: FastifyInstance, userId: string) {
+	return await app.prisma.$transaction(async (tx) => {
+		const deletedTransactions = await tx.creditTransaction.deleteMany({
+			where: {userId}
+		});
+
+		const deletedBalance = await tx.creditBalance.deleteMany({
+			where: {userId}
+		});
+
+		return {
+			deletedTransactions: deletedTransactions.count,
+			deletedBalance: deletedBalance.count
 		};
 	});
 }
