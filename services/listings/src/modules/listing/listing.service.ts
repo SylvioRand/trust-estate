@@ -168,7 +168,6 @@ export class ListingService {
     const listing = await prisma.listing.findUnique({ where: { id } });
 
     if (!listing) throw new Error('listing.not_found');
-    if (listing.sellerId !== sellerId) throw new Error('forbidden');
     if (listing.status === 'archived') throw new Error('listing.already_archived');
 
     return await prisma.$transaction(async (tx) => {
@@ -179,18 +178,13 @@ export class ListingService {
         data: {
           status: 'archived',
           isAvailable: false,
-          soldAt: data.sold ? now : null
-        }
+        },
       });
+
 
       const statsUpdate: any = {
         activeListings: { decrement: 1 }
       };
-
-      if (data.sold) {
-        if (listing.type === 'sale') statsUpdate.successfulSales = { increment: 1 };
-        else statsUpdate.successfulRents = { increment: 1 };
-      }
 
       await tx.sellerStats.update({
         where: { userId: sellerId },
