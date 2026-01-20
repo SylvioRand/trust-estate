@@ -83,6 +83,7 @@ export async function verifiedEmail(request: FastifyRequest<{ Body: { token: str
 	try {
 		const user = await authServices.verifyTokenEmail(request.server, token);
 		const data = await responseUserAddToken(request, reply, user);
+		await authServices.crediter(request.server, user.id);
 		return (reply.status(200).send({
 			data,
 			message: "Compte activé avec succès. 5 crédits offerts !"
