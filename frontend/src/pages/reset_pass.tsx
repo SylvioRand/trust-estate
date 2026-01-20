@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const	ResetPassPage: React.FC = () => {
-	const	{ t } = useTranslation("resetPass");
+	const	{ t } = useTranslation(["resetPass", "error"]);
 	const	navigate = useNavigate();
 	const	[errorPassword, setErrorPassword] = useState<string[]>([]);
 	const	[processingSubmit, setProcessingSubmit] = useState<boolean>(false);
@@ -30,7 +30,7 @@ const	ResetPassPage: React.FC = () => {
 		const	data = Object.fromEntries(formData.entries());
 		
 		data.token = token ?? "";
-		if (data.password !== data.confirmPassword)
+		if (data.newPassword !== data.confirmPassword)
 		{
 			setErrorPassword([t("auth.passwordAndConfirmationIsDifferent")]);
 			setProcessingSubmit(false);
@@ -50,14 +50,19 @@ const	ResetPassPage: React.FC = () => {
 
 			const	responseData = await response.json();
 
-			if (response.status === 401)
+			if (!response.ok)
 			{
-				toast.error(t(`error:${responseData?.message ?? "invalid token"}`));
-				navigate("/sign-in");
-				throw new Error(responseData.message);
+				if (response.status === 401)
+				{
+					toast.error(t(`error:${responseData?.message ?? "invalid token"}`));
+					navigate("/sign-in");
+					throw new Error(responseData.message);
+				}
 			}
-			toast.success(t(`error:${responseData?.message ?? "success"}`));
-			navigate("/sign-in");
+			else {
+				toast.success(t(`error:${responseData?.message ?? "success"}`));
+				navigate("/sign-in");
+			}
 		} catch (error) {
 			if (error instanceof Error)
 			{
@@ -112,7 +117,7 @@ const	ResetPassPage: React.FC = () => {
 				>
 					<PasswordInput
 						title={t("form.password.label")}
-						name="password"
+						name="newPassword"
 						placeholder={t("form.password.placeholder")}
 						error={ errorPassword }
 						pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
