@@ -39,8 +39,9 @@ export async function reservationRoutes(app: FastifyInstance, options: FastifyPl
 	app.get<{Querystring: StatusInterface}>("/reservations/internal/status", 
 		{
 			schema: StatusListingSchema,
-			preHandler: app.authentication
+			preHandler: app.internalAuthentication
 		}, resaControllers.statusListing);
+
 	app.get<{Querystring: CheckSlotInterface}>("/reservations/check-slot",
 		{
 			schema: CheckSlotSchema,
