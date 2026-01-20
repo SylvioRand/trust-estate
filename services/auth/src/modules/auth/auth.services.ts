@@ -284,7 +284,7 @@ export async function createOrUpdateUserAccount(app: FastifyInstance, userData: 
 
 
 	if (!user) {
-		return await app.prisma.user.create({
+		const newUser =  await app.prisma.user.create({
 			data: {
 				email: userData.email,
 				firstName: userData.given_name,
@@ -294,7 +294,12 @@ export async function createOrUpdateUserAccount(app: FastifyInstance, userData: 
 				phoneVerified: false
 			},
 		});
-
+		try {
+			await crediter(app, newUser.id);
+		} catch (error: any) {
+			app.log.error(error);
+		}
+		return (newUser);
 	}
 	if (user.sub && user.sub !== userData.id) {
 		throw new Error("Ce compte est déjà lié à un autre compte Google");
@@ -379,4 +384,38 @@ export async function changePassword(app: FastifyInstance, token: string, passwo
 	await app.prisma.forgot_password_token.delete({
 		where: { userId: tokenExist.userId }
 	})
+};
+
+export async function crediter(app: FastifyInstance, userId: string) {
+	const jwt = await import('jsonwebtoken');
+	const internalToken = jwt.default.sign(
+		{ service: 'reservation-service', userId },
+		app.config.INTERNAL_KEY_SECRET,
+		{ algorithm: 'HS256', expiresIn: '30s' }
+	);
+
+	try {
+		const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/credits/recharge`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'x-internal-key': internalToken,
+				'x-user-id': userId
+			},
+			body: JSON.stringify({
+				amount: 5,
+				reason: "initial_bonus",
+				type: 'bonus'
+			})
+		});
+
+		if (!response.ok) {
+			const error = await response.json() as any;
+			throw new Error('credit_service_error');
+		}
+	} catch (error: any) {
+		console.log("ERROR", error);
+		app.log.error({ error }, 'Failed to credit user');
+		throw error;
+	}
 }

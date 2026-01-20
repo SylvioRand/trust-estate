@@ -347,35 +347,48 @@ async function debiter(app: FastifyInstance, buyerId: string) {
         throw error;
     }
 }
+export async function deleteUserData(app: FastifyInstance, userId: string) {
+    return await app.prisma.$transaction(async (tx: TransactionClient) => {
+        await tx.reservation.deleteMany({
+            where: {
+                OR: [
+                    { buyerId: userId },
+                    { sellerId: userId }
+                ]
+            }
+        });
+		console.log("DELETE RESERVATION")
+    });
+}
 
 async function crediter(app: FastifyInstance, userId: string) {
-    const jwt = await import('jsonwebtoken');
-    const internalToken = jwt.default.sign(
-        { service: 'reservation-service', userId },
-        app.config.INTERNAL_KEY_SECRET,
-        { algorithm: 'HS256', expiresIn: '30s' }
-    );
+	const jwt = await import('jsonwebtoken');
+	const internalToken = jwt.default.sign(
+		{ service: 'reservation-service', userId },
+		app.config.INTERNAL_KEY_SECRET,
+		{ algorithm: 'HS256', expiresIn: '30s' }
+	);
 
-    try {
-        const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/internal/credits/credit`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-internal-key': internalToken,
-                'x-user-id': userId
-            },
-            body: JSON.stringify({
-                reason: "refund_cancelled",
-                type: 'refund'
-            })
-        });
+	try {
+		const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/internal/credits/credit`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'x-internal-key': internalToken,
+				'x-user-id': userId
+			},
+			body: JSON.stringify({
+				reason: "refund_cancelled",
+				type: 'refund'
+			})
+		});
 
-        if (!response.ok) {
-            const error = await response.json() as any;
-            throw new Error('credit_service_error');
-        }
-    } catch (error: any) {
-        app.log.error({ error }, 'Failed to credit user');
-        throw error;
-    }
+		if (!response.ok) {
+			const error = await response.json() as any;
+			throw new Error('credit_service_error');
+		}
+	} catch (error: any) {
+		app.log.error({ error }, 'Failed to credit user');
+		throw error;
+	}
 }

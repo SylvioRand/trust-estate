@@ -47,3 +47,8 @@ export async function reservationRoutes(app: FastifyInstance, options: FastifyPl
 			preHandler: app.authentication
 		}, resaControllers.checkSlot);
 }
+
+export async function deleteData(app: FastifyInstance, options: FastifyPluginOptions) {
+	app.delete("/internal/delete/data",
+		{preHandler: app.internalAuthentication}, resaControllers.requestDeleteData);
+}

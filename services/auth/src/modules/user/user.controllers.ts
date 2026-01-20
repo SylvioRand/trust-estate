@@ -3,7 +3,6 @@ import * as userServices from './user.service'
 import type { UserInterface } from "../auth/auth.interface";
 import { generateAccessToken, responseUser } from "../../utils/auth.utils";
 import type { UpdateInfoUserInterface, UpdatePasswordInterface } from "./user.interface";
-import { deleteRefreshToken } from "../../utils/token.utils";
 import { logoutUser } from "../auth/auth.controllers";
 
 export async function getUser(request: FastifyRequest, reply: FastifyReply) {
@@ -32,7 +31,6 @@ export async function updatePhoneNumber(request: FastifyRequest <{Body: {phoneNu
 
 	try {
 		const updatedUser = await userServices.updatePhoneNumberUser(request.server, userId, phoneNumber);
-
 		await generateAccessToken(request, reply, updatedUser);
 		return reply.status(200).send({
 			"user": {
@@ -173,12 +171,7 @@ export async function requestDeleteAccompte(request: FastifyRequest<{Body: {pass
 
 	try {
 		await userServices.DeleteUser(request.server, userId, password);
-		
 		await logoutUser(request, reply);
-		return reply.status(200).send({
-			"deleted": true,
-			"message": "auth.account_deleted_success"
-		});
 	} catch (error: any) {
 		if (error.message === "User not found")
 			return reply.code(404).send({

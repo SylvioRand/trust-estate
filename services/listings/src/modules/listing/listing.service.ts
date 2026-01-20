@@ -247,4 +247,20 @@ export class ListingService {
 
     return { listing, sellerStats };
   }
+
+  static async deleteUserData(userId: string) {
+    return await prisma.$transaction(async (tx) => {
+      await tx.report.deleteMany({
+        where: { reporterId: userId }
+      });
+
+      await tx.listing.deleteMany({
+        where: { sellerId: userId }
+      });
+
+      await tx.sellerStats.deleteMany({
+        where: { userId }
+      });
+    });
+  }
 }

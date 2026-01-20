@@ -7,6 +7,7 @@ import { handleArchive } from "./handlers/archive.handler";
 import { handleReport } from "./handlers/report.handler";
 import { handleGetOne } from "./handlers/get-one.handler";
 import { handleGetSellerStats } from "./handlers/get-seller-stats.handler";
+import { handleDeleteUserData } from "./handlers/delete-user-data.handler";
 
 export async function listingRoutes(app: FastifyInstance) {
   app.get("/health", async (req, reply) => reply.status(200).send({ status: "ok" }));
@@ -20,4 +21,5 @@ export async function listingRoutes(app: FastifyInstance) {
   app.get('/:id', { preHandler: (app as any).optionalAuthenticate }, handleGetOne);
   app.post('/:id/availability', { preHandler: (app as any).authenticate }, (req, reply) => { reply.status(200).send({ message: 'ok' }) });
   app.get('/:id/slots', { preHandler: (app as any).optionalAuthenticate }, (req, reply) => { reply.status(200).send({ message: 'ok' }) });
+  app.delete('/internal/user/data', { preHandler: (app as any).internalAuthenticate }, handleDeleteUserData);
 }

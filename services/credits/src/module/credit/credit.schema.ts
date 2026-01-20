@@ -1,12 +1,17 @@
+const RechargeTypesCredit = ['recharge', 'bonus']
+const RechargeReasonCredit = ['recharge_pack', 'initial_bonus']
+
 export const RechargerSchema = {
 	body: {
 		type: 'object',
-		required: ["amount"],
+		required: ["amount", "reason", "type"],
 		properties: {
 			amount: {
 				type: "number",
 				minimum: 0,
-			}
+			},
+			reason: {type:"string", enum: RechargeReasonCredit},
+			type: {type:"string", enum: RechargeTypesCredit}
 		},
 		additionalProperties: false
 	}
