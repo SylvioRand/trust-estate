@@ -47,7 +47,30 @@ export class AIClient {
     });
 
     if (!result.ok) {
-      console.log("internal server error detected broooooooooo");
+      console.log("internal_server_error");
     };
+  }
+
+  static async deleteIndexLinsting(listingId: string,) {
+    const internaltoken = jwt.sign(
+      { service: "listings" }
+      , this.AI_SERVICE_URL,
+      { algorithm: "HS256" }
+    );
+
+    try {
+      const result = await fetch(`${this.AI_SERVICE_URL}/ai/${listingId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-internal-key': internaltoken
+        }
+      })
+
+      if (!result.ok) {
+        console.log()
+      }
+    } catch (error) {
+      console.log("internal_server_error");
+    }
   }
 }

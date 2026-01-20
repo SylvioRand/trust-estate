@@ -17,6 +17,7 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
     if (currentUser?.id && !isMine) {
       const status = await ReservationClient.getReservationStatus(listing.id, currentUser.id);
       confirmedReservation = status.confirmed;
+      console.log("confirmedReservation: ", confirmedReservation);
     }
 
     const sellerVisible = isMine || confirmedReservation;
