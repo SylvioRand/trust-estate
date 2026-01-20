@@ -38,11 +38,11 @@ const router = createBrowserRouter([
 				element: <SignUpPage />
 			},
 			{
-				path: "/forgot-pass",
+				path: "/sign-in/forgot-pass",
 				element: <ForgotPassPage />
 			},
 			{
-				path: "/reset-pass",
+				path: "/sign-in/reset-password",
 				element: <ResetPassPage />
 			},
 			{

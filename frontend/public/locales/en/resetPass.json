@@ -10,12 +10,12 @@
 
 	"form": {
 		"password": {
-			"label": "Password",
-			"placeholder": "************"
+			"label": "New Password",
+			"placeholder": "Type your new password"
 		},
 		"confirm": {
 			"label": "Confirm Password",
-			"placeholder": "************"
+			"placeholder": "Retype your new password"
 		}
 	},
 
