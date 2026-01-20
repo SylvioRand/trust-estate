@@ -8,24 +8,24 @@ export async function rechargeUserCredit(app: FastifyInstance, userId: string, a
 			where: { userId },
 		});
 
-		const previousBalance = creditBalance?.balance ??  0;
+		const previousBalance = creditBalance?.balance ?? 0;
 
-		if (! creditBalance) {
+		if (!creditBalance) {
 			creditBalance = await tx.creditBalance.create({
 				data: {
 					userId,
-					balance:  0,
+					balance: 0,
 					totalEarned: 0,
 					totalSpent: 0,
 				},
 			});
 		}
-	
+
 		const creditBalances = await tx.creditBalance.upsert({
-			where: {userId},
+			where: { userId },
 			update: {
-				balance: {increment: amount},
-				totalEarned: { increment:  amount },
+				balance: { increment: amount },
+				totalEarned: { increment: amount },
 				lastRechargeAt: new Date(),
 			},
 			create: {
@@ -52,7 +52,7 @@ export async function rechargeUserCredit(app: FastifyInstance, userId: string, a
 
 export async function getUserBalance(app: FastifyInstance, userId: string) {
 	const balance = await app.prisma.creditBalance.findFirst({
-		where: {userId}
+		where: { userId }
 	});
 
 	if (!balance)
@@ -68,7 +68,7 @@ export async function debitUserBalance(app: FastifyInstance, userId: string, rea
 			where: { userId },
 		});
 
-		const previousBalance = creditBalance?.balance ??  0;
+		const previousBalance = creditBalance?.balance ?? 0;
 
 		if (!creditBalance)
 			throw new Error("insufficient_credits");
@@ -77,10 +77,10 @@ export async function debitUserBalance(app: FastifyInstance, userId: string, rea
 			throw new Error("insufficient_credits");
 
 		const creditBalances = await tx.creditBalance.update({
-			where: {userId},
+			where: { userId },
 			data: {
-				balance: {decrement: 1},
-				totalEarned: {decrement:  1 }
+				balance: { decrement: 1 },
+				totalEarned: { decrement: 1 }
 			}
 		});
 
@@ -101,19 +101,19 @@ export async function debitUserBalance(app: FastifyInstance, userId: string, rea
 	});
 };
 
-export async function refundUsercredit(app: FastifyInstance, userId: string, type: TransactionType, reason : TransactionReason) {
+export async function refundUsercredit(app: FastifyInstance, userId: string, type: TransactionType, reason: TransactionReason) {
 	return await app.prisma.$transaction(async (tx) => {
 
 		let creditBalance = await tx.creditBalance.findUnique({
 			where: { userId },
 		});
 
-		const previousBalance = creditBalance?.balance ??  0;
+		const previousBalance = creditBalance?.balance ?? 0;
 
 		if (!creditBalance)
 			throw new Error("insufficient_credits");
 
-		let amount : number = 0;
+		let amount: number = 0;
 
 		if (type === "bonus")
 			amount = 5;
@@ -121,10 +121,10 @@ export async function refundUsercredit(app: FastifyInstance, userId: string, typ
 			amount = 1;
 
 		const creditBalances = await tx.creditBalance.update({
-			where: {userId},
+			where: { userId },
 			data: {
-				balance: {increment: amount},
-				totalEarned: {increment:  amount }
+				balance: { increment: amount },
+				totalEarned: { increment: amount }
 			}
 		});
 
@@ -148,11 +148,11 @@ export async function refundUsercredit(app: FastifyInstance, userId: string, typ
 export async function deleteUserData(app: FastifyInstance, userId: string) {
 	return await app.prisma.$transaction(async (tx) => {
 		const deletedTransactions = await tx.creditTransaction.deleteMany({
-			where: {userId}
+			where: { userId }
 		});
 
 		const deletedBalance = await tx.creditBalance.deleteMany({
-			where: {userId}
+			where: { userId }
 		});
 
 		return {
@@ -161,3 +161,18 @@ export async function deleteUserData(app: FastifyInstance, userId: string) {
 		};
 	});
 }
+
+export async function getUserHistory(app: FastifyInstance, userId: string) {
+	const history = await app.prisma.creditTransaction.findMany({
+		where: { userId }
+	});
+	return {
+		data: {
+			id: history.id,
+			type: history.type,
+			amount: history.amount,
+			balanceAfter: history.balanceAfter,
+			createdAt: history.createdAt,
+		}
+	}
+};

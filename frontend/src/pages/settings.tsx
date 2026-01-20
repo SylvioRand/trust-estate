@@ -70,8 +70,12 @@ const	SettingsPage: React.FC = () => {
 	VerifyUsersState();
 
 	const	{ t } = useTranslation(["settings", "error"]);
+
+	// NOTE: May remove those error check since the back-end looks like
 	const	[errorFirstName, setErrorFirstName] = useState<string[]>([]);
 	const	[errorLastName, setErrorLastName] = useState<string[]>([]);
+	// end
+
 	const	[errorPhone, setErrorPhone] = useState<string[]>([]);
 	const	refFirstNameInput = useRef<HTMLInputElement | null>(null);
 	const	refLastNameInput = useRef<HTMLInputElement | null>(null);
@@ -80,8 +84,48 @@ const	SettingsPage: React.FC = () => {
 	const	[isProcessingSavingInfo, setIsProcessingSavingInfo] = useState<boolean>(false);
 	const	handleSavingInfo = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log("Saving Info!");
-		// NOTE: handle all possible error here.
+
+		setIsProcessingSavingInfo(true);
+		setErrorPhone([]);
+
+		const	formData = new FormData(e.currentTarget);
+		const	data = Object.fromEntries(formData.entries()) as Record<string, string>;
+
+		data.phone = data.phoneCountryCode + data.phone;
+
+		try {
+			const	response = await fetch("/api/users/me", {
+				method: "PUT",
+				headers: {
+					"Content-type": "application/json"
+				},
+				credentials: "include",
+				body: JSON.stringify(data)
+			})
+
+			const	responseData = await response.json();
+
+			if (!response.ok)
+			{
+				const	errorData = responseData as APIResponse;
+
+				if (response.status === 400)
+				{
+					setErrorPhone([errorData.message]);
+					throw new Error(errorData.message);
+				}
+			}
+
+			toast.success(t("error:auth.info_update_success"));
+		} catch (error) {
+			if (error instanceof Error)
+			{
+				toast.error(t(`error:${error.message}`))
+				console.error(t(`error:${error.message}`));
+			}
+		} finally {
+			setIsProcessingSavingInfo(false);
+		}
 	}
 
 	const	[errorCurrentPassword, setErrorCurrentPassword] = useState<string[]>([]);
@@ -117,9 +161,12 @@ const	SettingsPage: React.FC = () => {
 				throw new Error(errorData.message);
 			}
 			toast.success(t(`error:${responseData?.message ?? "success"}`));
-		} catch (e) {
-			toast.error(t(`error:${e}`));
-			console.error("SettingsPage: handleChangePassword: ", t(`error:${e}`));
+		} catch (error) {
+			if (error instanceof Error)
+			{
+				toast.error(t(`error:${error.message}`))
+				console.error("SettingsPage: handleChangePassword: ", t(`error:${error.message}`));
+			}
 		} finally {
 			setIsProcessingPasswordChange(false);
 		}
@@ -138,10 +185,12 @@ const	SettingsPage: React.FC = () => {
 				credentials: "include"
 			});
 
-			// TODO: handle gracefully if there is an error while logging out
+			if (!response.ok)
+				throw new Error(t("error:auth.not_authenticated_user}"))
 
-		} catch (e) {
-			console.error("SettingsPage: handleLogOut: error logging out.");
+		} catch (error) {
+			if (error instanceof Error)
+				console.error("SettingsPage: handleLogOut: ", error.message);
 		} finally {
 			navigate("/home");
 			setIsConnected(false);
@@ -180,9 +229,12 @@ const	SettingsPage: React.FC = () => {
 			refPopUpDeleteAccount.current?.close();
 			setIsConnected(false);
 			navigate("/sign-in");
-		} catch (e) {
-			toast.error(t(`error:${e}`));
-			console.error("SettingsPage: handleAccountDeletion: ", t(`error:${e}`));
+		} catch (error) {
+			if (error instanceof Error)
+			{
+				toast.error(t(`error:${error.message}`))
+				console.error("SettingsPage: handleAccountDeletion: ", t(`error:${error.message}`));
+			}
 		} finally {
 			setProcessingAccountDeletion(false);
 		}
@@ -226,9 +278,12 @@ const	SettingsPage: React.FC = () => {
 				prev ? { ...prev, hasPassword: true } : prev
 			);
 
-		} catch (e) {
-			toast.error(t(`error:${e}`));
-			console.error("SettingsPage: handleAddPassword: ", t(`error:${e}`));
+		} catch (error) {
+			if (error instanceof Error)
+			{
+				toast.error(t(`error:${error.message}`))
+				console.error("SettingsPage: handleAddPassword: ", t(`error:${error.message}`));
+			}
 		} finally {
 			setProcessingAddPassword(false);
 		}
@@ -297,6 +352,7 @@ const	SettingsPage: React.FC = () => {
 								title={t("section.profileSettings.form.firstName.label")}
 								name="firstName"
 								placeholder={t("section.profileSettings.form.firstName.placeholder")}
+								minLength={2}
 								error={errorFirstName}
 								ref={ refFirstNameInput }
 							/>
@@ -305,6 +361,7 @@ const	SettingsPage: React.FC = () => {
 								title={t("section.profileSettings.form.lastName.label")}
 								name="lastName"
 								placeholder={t("section.profileSettings.form.lastName.placeholder")}
+								minLength={2}
 								error={errorLastName}
 								ref={ refLastNameInput }
 							/>

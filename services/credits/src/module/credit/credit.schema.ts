@@ -1,5 +1,6 @@
 const RechargeTypesCredit = ['recharge', 'bonus']
 const RechargeReasonCredit = ['recharge_pack', 'initial_bonus']
+import { z } from 'zod';
 
 export const RechargerSchema = {
 	body: {
@@ -10,8 +11,8 @@ export const RechargerSchema = {
 				type: "number",
 				minimum: 0,
 			},
-			reason: {type:"string", enum: RechargeReasonCredit},
-			type: {type:"string", enum: RechargeTypesCredit}
+			reason: { type: "string", enum: RechargeReasonCredit },
+			type: { type: "string", enum: RechargeTypesCredit }
 		},
 		additionalProperties: false
 	}
@@ -24,7 +25,7 @@ export const DebitCreditSchema = {
 		type: 'object',
 		required: ["reason"],
 		properties: {
-			reason: {type:"string", enum: StatusTypes}
+			reason: { type: "string", enum: StatusTypes }
 		},
 		additionalProperties: false
 	}
@@ -38,9 +39,14 @@ export const InternalCreditSchema = {
 		type: 'object',
 		required: ["reason", "type"],
 		properties: {
-			reason: {type:"string", enum: StatusReasonCredit},
-			type: {type:"string", enum: StatusTypesCredit}
+			reason: { type: "string", enum: StatusReasonCredit },
+			type: { type: "string", enum: StatusTypesCredit }
 		},
 		additionalProperties: false
 	}
 }
+
+export const HistoryQuerrySchema = z.object({
+	page: z.coerce.number().int().min(1).default(1),
+	limit: z.coerce.number().int().default(20),
+}).strict();
