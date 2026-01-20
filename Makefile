@@ -98,6 +98,7 @@ reload-nginx:
 	@echo "🔄 Reloading nginx service..."
 	$(DOCKER_COMPOSE) up -d --build nginx
 
+
 # Show which docker compose command is being used
 check:
 	@echo "🐳 Docker Compose command: $(DOCKER_COMPOSE)"
