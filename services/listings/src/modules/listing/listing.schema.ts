@@ -70,9 +70,10 @@ export const UpdateListingSchema = PublishListingSchema.pick({
   price: true,
   surface: true,
   zone: true,
-  features: true,
   tags: true
-}).partial().strict();
+}).partial().extend({
+  features: PublishListingSchema.shape.features.partial().optional()
+}).strict();
 export type UpdateListingData = z.infer<typeof UpdateListingSchema>;
 
 
