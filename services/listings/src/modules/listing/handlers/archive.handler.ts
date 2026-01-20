@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { ArchiveListingSchema } from "../listing.schema";
 import { ListingService } from "../listing.service";
 import { ZodError } from "zod";
+import { AIClient } from "../../../infrastructure/ai.client";
 
 export async function handleArchive(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -10,12 +11,12 @@ export async function handleArchive(request: FastifyRequest, reply: FastifyReply
 
     const validatedData = ArchiveListingSchema.parse(request.body || {});
 
-    const result = await ListingService.archiveListing(id, user.id, validatedData);
+    const listing = await ListingService.archiveListing(id, user.id, validatedData);
+    AIClient.deleteIndexLinsting(listing.id)
 
     return reply.status(200).send({
       archived: true,
-      finalStatus: result.status,
-      archivedAt: result.soldAt
+      finalStatus: listing.status,
     });
 
   } catch (error: any) {

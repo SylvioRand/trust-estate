@@ -1,5 +1,6 @@
 import { uuid, z } from 'zod';
 import zonesData from '../../shared/zones.json';
+import { ReportReason } from '@prisma/client';
 
 const validZone = zonesData.zones.map(z => z.displayName) as [string, ...string[]];
 const ZoneSchema = z.enum(validZone);
@@ -79,13 +80,11 @@ export type UpdateListingData = z.infer<typeof UpdateListingSchema>;
 
 
 export const ArchiveListingSchema = z.object({
-  sold: z.boolean().default(false)
+  action: z.literal("archive")
 }).strict();
 export type ArchiveListingData = z.infer<typeof ArchiveListingSchema>;
 
 
-
-import { ReportReason } from '@prisma/client';
 
 export const ReportListingSchema = z.object({
   reason: z.nativeEnum(ReportReason, {
