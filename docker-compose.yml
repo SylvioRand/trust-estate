@@ -63,8 +63,7 @@ services:
       CREDITS_SERVICE_URL: ${CREDITS_SERVICE_URL}
       LISTINGS_SERVICE_URL: ${LISTINGS_SERVICE_URL}
       AI_SERVICE_URL: ${AI_SERVICE_URL}
-      CREDITS_SERVICE_URL: ${CREDITS_SERVICE_URL}
-      LISTINGS_SERVICE_URL: ${LISTINGS_SERVICE_URL}
+
     volumes:
       - ./secret/jwtTokenService:/app/secret:ro
     depends_on:
@@ -181,11 +180,11 @@ services:
       retries: 3
 
   # Backend AI Service
-  ft_ai: 
+  ft_ai:
     container_name: ft_ai
     image: ft_ai:bibidi
     build: ./services/ai
-    ports: 
+    ports:
       - "3005:3005"
     env_file:
       - .env
@@ -193,7 +192,7 @@ services:
       - ft_chromadb
     volumes:
       - ./services/ai/:/app
-    restart:  unless-stopped
+    restart: unless-stopped
 
   # ChromaDB- Vector Database
   ft_chromadb:

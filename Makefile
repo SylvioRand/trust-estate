@@ -128,4 +128,4 @@ certs:
 	fi
 
 run-no-ai:
-	DOCKER_BUILDKIT=0 docker compose up -d --build nginx auth-service listings-service reservations-service db
+	DOCKER_BUILDKIT=0 docker compose up -d --build nginx auth-service listings-service reservations-service db credits-service
