@@ -102,6 +102,7 @@ services:
 
   # Backend AI Service
   ft_ai: 
+    pull_policy: never
     container_name: ft_ai
     image: ft_ai:bibidi
     build: ./services/ai
@@ -116,7 +117,7 @@ services:
     restart:  unless-stopped
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:3005/ai/health" ]
-      interval: 2s
+      interval: 5s
       timeout: 10s
       retries: 3
 
