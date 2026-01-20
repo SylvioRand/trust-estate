@@ -49,6 +49,15 @@
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
+    location /api/credits/ {
+        proxy_pass http://credits_service/credits/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
 #    location /api/ai/ {
 #        client_max_body_size 5M;
 #        proxy_pass http://ai_service/ai/;
