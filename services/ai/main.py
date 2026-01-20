@@ -87,27 +87,22 @@ async def lifespan(_: FastAPI):
         post1 = PostModel(
             id = "moi",
             title = "White house",
-            post_type = "sale",
-            property_type = "apartment",
+            type = "sale",
+            propertyType = "apartment",
             description = "President House, beautiful, smell money",
             price = 80000000,
             zone = "Ivandry",
             surface = 35,
-            photos = [],
-            features = [],
-            tags = ["exclusive", "sold"]
         )
         post2 = PostModel(
             id = "momo",
             title = "Haunted house",
-            post_type = "sale",
-            property_type = "apartment",
+            type = "sale",
+            propertyType = "apartment",
             description = "Horror house, there is ghost here",
             price = 200000000,
             zone = "Ivandry",
             surface = 200,
-            photos = [],
-            features = ["toilet", "bathroom", "parking", "kitcken"],
             tags = ["urgent"]
         )
 
@@ -167,15 +162,6 @@ async def check_health():
 @app.post("/ai/chat")
 async def chatbot(text: RequestChat):
     prompt.add(text.message)
-    print("======================================================================")
-    print(f"Current: {prompt.get_current()}")
-    print(f"history: {prompt.get_history()}")
-
-    print("======================================================================")
-
-
-
-
     user_mssg = text.message
     sys_prompt = chromadb_service.get_parse_prompt()
     context = None
@@ -191,6 +177,7 @@ async def chatbot(text: RequestChat):
         chroma_reply = await chromadb_service.get_post_in_collection("posts", context)
     formated = format_chroma_response(user_mssg, chroma_reply, prompt.get_history())
 
+    print(f"Formated is ============================>\n {formated}")
     id_found = chromadb_service.get_ids_from_query(chroma_reply)
     llm_response = llm_service.generate_response(formated, llm_service.generate_rules())
 

@@ -49,9 +49,6 @@ dev: build
 	@echo "🔧 Starting in development mode..."
 	DOCKER_BUILDKIT=0 docker-compose up
 
-moi:
-	DOCKER_BUILDKIT=0 docker compose build --force-rm ft_ai ft_chromadb
-
-test: moi
+test:
 	DOCKER_BUILDKIT=0 docker compose up -d ft_ai ft_chromadb
 
