@@ -1,4 +1,4 @@
-import React, { useRef, useState, type RefObject } from "react";
+import React, { useEffect, useRef, useState, type RefObject } from "react";
 import SimpleInput from "../components/Input";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
@@ -42,6 +42,7 @@ const	PicturePreviewer: React.FC<PicturePreviewerProps> = ({
 				bg-foreground
 				w-8 h-8
 				rounded-full
+				cursor-pointer
 				transition-colors duration-200"
 				onPointerEnter={ () => setHovered(true) }
 				onPointerLeave={ () => setHovered(false) }
@@ -72,6 +73,7 @@ const	PublishPage: React.FC = () => {
 	const	[errorBedrooms, setErrorBedrooms] = useState<string[]>([]);
 	const	[errorBathrooms, setErrorBathrooms] = useState<string[]>([]);
 	const	[uploadButtonProcessing, setUploadButtonProcessing] = useState<boolean>(false);
+	const	[isUploadDisabled, setIsUploadDisabled] = useState<boolean>(false);
 
 	const	[activeTags, setActiveTags] = useState<ListingsTags[]>(["urgent", "exclusive", "discount"]);
 	const	[openPopupAddTags, setOpenPopupAddTags] = useState<boolean>(false);
@@ -167,14 +169,27 @@ const	PublishPage: React.FC = () => {
 			}
 			else
 			{
-				console.error(`error:${responseData?.message ?? "failure"}`)
+				toast.error(t(`error:${responseData.message ?? "ERROR"}`));
+				if (responseData.details)
+				{
+					const	details: Record<string, string[]> = responseData.details as Record<string, string[]>;
+
+					for (const [key, value] of Object.entries(details)) {
+						for (let i = 0; i < value.length; i++)
+							toast.error(t(`error:${value[i]}`));
+					}
+				}
 				throw new Error(responseData?.message);
 			}
 
 		} catch (error) {
 			if (error instanceof Error)
 			{
-				console.error(t(`error:${error.message}`))
+				if (error.message !== "")
+				{
+					console.error(t(`error:${error.message}`));
+					toast.error(t(`error:${error.message}`));
+				}
 			}
 		} finally {
 			setUploadButtonProcessing(false);
@@ -219,6 +234,10 @@ const	PublishPage: React.FC = () => {
 	const	refToDescription: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement | null>(null);
 	const	[processingDescriptionEnhancement, setProcessingDescriptionEnhancement] = useState<boolean>(false);
 	const	inputRef: RefObject<HTMLInputElement | null> = useRef<HTMLInputElement | null>(null);
+
+	useEffect(() => {
+		setIsUploadDisabled(dataToPreview.length < 3);
+	}, [dataToPreview]);
 
 	return (
 		<div className="flex flex-col items-center justify-start
@@ -537,6 +556,7 @@ const	PublishPage: React.FC = () => {
 							icon_place="right"
 							title={ uploadButtonProcessing ? t("section.main.buttons.upload.processing") : t("section.main.buttons.upload.title") }
 							processing_action={ uploadButtonProcessing }
+							disabled={ isUploadDisabled }
 							type="submit"
 						/>
 					</div>
