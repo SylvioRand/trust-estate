@@ -258,7 +258,23 @@ export class ListingService {
     });
   }
 
-  static async updateAvailability(listingId: string, schedule: UpdateavailabilityType) {
+  static async updateAvailability(listingId: string, user: string, schedule: UpdateavailabilityType) {
+    const { sellerId } = await prisma.listing.findUnique({ where: { id: listingId } }) || {};
+    if (sellerId != user)
+      throw new Error('forbidden');
 
+    return await prisma.listing.update({
+      where: { id: listingId },
+      data: {
+        availability: {
+          deleteMany: {},
+          create: schedule.weeklySchedule.map(slot => ({
+            dayOfWeek: slot.dayOfWeek,
+            startTime: slot.startTime,
+            endTime: slot.endTime
+          }))
+        }
+      }
+    });
   }
 }
