@@ -145,9 +145,10 @@ async def chatbot(text: RequestChat):
 
 @app.delete("/ai/index/{listingId}")
 async def deletePost(listingId: str, _: dict = Depends(check_keys)):
-    result = await chromadb_service.remove_data_from_collection("posts", listingId)
+    await chromadb_service.remove_data_from_collection("posts", listingId)
+
     return {
-            "success": result
+            "listingId": listingId
     }
 
 @app.post("/ai/index")
