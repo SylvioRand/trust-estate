@@ -28,6 +28,7 @@ export async function handlePublish(request: FastifyRequest, reply: FastifyReply
 
     return reply.status(201).send({
       listingId: listing.id,
+      photos: listing.photos.map((p: string) => `/uploads/${p}`),
     });
 
   } catch (error) {

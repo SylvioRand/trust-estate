@@ -84,8 +84,8 @@
     # ==============================================
     # STATIC FILES (UPLOADS)
     # ==============================================
-    location /uploads/ {
-        alias /var/www/uploads/;
+    location ^~ /uploads/ {
+        root /var/www;
         expires 1y;
         add_header Cache-Control "public, immutable";
         try_files $uri =404;
