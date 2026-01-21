@@ -9,6 +9,8 @@ import { handleGetOne } from "./handlers/get-one.handler";
 import { handleGetSellerStats } from "./handlers/get-seller-stats.handler";
 import { handleDeleteUserData } from "./handlers/delete-user-data.handler";
 import { handleUpdateAvailability } from "./handlers/update-availability.handler";
+import { handleMarkAsRealized } from "./handlers/mark-unvailable.handler";
+import { handleMakeAvailable } from "./handlers/make-available.handler";
 
 export async function listingRoutes(app: FastifyInstance) {
   app.get("/health", async (req, reply) => reply.status(200).send({ status: "ok" }));
@@ -23,4 +25,6 @@ export async function listingRoutes(app: FastifyInstance) {
   app.post('/:id/availability', { preHandler: (app as any).authenticate }, handleUpdateAvailability);
   app.get('/:id/slots', { preHandler: (app as any).optionalAuthenticate }, (req, reply) => { reply.status(200).send({ message: 'ok' }) });
   app.delete('/internal/user/data', { preHandler: (app as any).internalAuthenticate }, handleDeleteUserData);
+  app.put('/:id/mark-realized', { preHandler: (app as any).authenticate }, handleMarkAsRealized);
+  app.put('/:id/make-available', { preHandler: (app as any).authenticate }, handleMakeAvailable);
 }

@@ -157,10 +157,8 @@ export class ListingService {
       }
     });
 
-    const { features, ...listings } = result;
-    console.log("features = ", features);
-    console.log("listings = ", listings);
-    return { listing, features };
+    const { features, ...updatedListing } = result;
+    return { listing: updatedListing, features };
   }
 
   static async archiveListing(id: string, sellerId: string, data: ArchiveListingData) {
@@ -258,10 +256,11 @@ export class ListingService {
     });
   }
 
-  static async updateAvailability(listingId: string, user: string, schedule: UpdateavailabilityType) {
-    const { sellerId } = await prisma.listing.findUnique({ where: { id: listingId } }) || {};
-    if (sellerId != user)
-      throw new Error('forbidden');
+  static async updateAvailability(listingId: string, sellerId: string, schedule: UpdateavailabilityType) {
+    await prisma.listing.findUnique({ where: { id: listingId } }).then(listing => {
+      if (!listing) throw new Error('listing.not_found');
+      if (listing.sellerId !== sellerId) throw new Error('forbidden');
+    });
 
     return await prisma.listing.update({
       where: { id: listingId },
@@ -275,6 +274,69 @@ export class ListingService {
           }))
         }
       }
+    });
+  }
+
+  static async makeAvailable(listingId: string, sellerId: string) {
+    await prisma.listing.findUnique({ where: { id: listingId } }).then(listing => {
+      if (!listing) throw new Error('listing.not_found');
+      if (listing.sellerId !== sellerId) throw new Error('forbidden');
+    });
+
+    return await prisma.$transaction(async (tx) => {
+      const updated = await tx.listing.update({
+        where: { id: listingId },
+        data: {
+          isAvailable: true,
+          status: 'active',
+          soldAt: null
+        },
+        include: {
+          features: true
+        }
+      });
+
+      await tx.sellerStats.update({
+        where: { userId: sellerId },
+        data: {
+          activeListings: { increment: 1 }
+        }
+      });
+
+      const { features, ...updatedListing } = updated;
+      return { listing: updatedListing, features };
+    });
+  }
+
+  static async markAsRealized(listingId: string, sellerId: string) {
+    const listing = await prisma.listing.findUnique({ where: { id: listingId } });
+
+    if (!listing) throw new Error('listing.not_found');
+    if (listing.sellerId !== sellerId) throw new Error('forbidden');
+    if (listing.status === 'archived' || !listing.isAvailable) throw new Error('listing.already_completed');
+
+    return await prisma.$transaction(async (tx) => {
+      // 1. Marquer l'annonce comme vendue/louée et non disponible
+      const updated = await tx.listing.update({
+        where: { id: listingId },
+        data: {
+          isAvailable: false,
+          status: 'archived',
+          soldAt: new Date(),
+        }
+      });
+
+      // 2. Mettre à jour les compteurs du vendeur
+      await tx.sellerStats.update({
+        where: { userId: sellerId },
+        data: {
+          activeListings: { decrement: 1 },
+          successfulSales: listing.type === 'sale' ? { increment: 1 } : undefined,
+          successfulRents: listing.type === 'rent' ? { increment: 1 } : undefined,
+        }
+      });
+
+      return (updated);
     });
   }
 }
