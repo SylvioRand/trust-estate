@@ -7,3 +7,13 @@ export interface ReservationInterface {
 export interface ReservationIdInterface {
 	id: string
 }
+
+export interface StatusInterface {
+	listingId: string
+	userId: string
+};
+
+export interface CheckSlotInterface {
+	listingId: string
+	slot: Date
+}

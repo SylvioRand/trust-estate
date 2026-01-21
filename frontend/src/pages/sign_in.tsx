@@ -138,7 +138,7 @@ const SignInPage: React.FC = () => {
 							error={ errorPassword }
 						/>
 
-						<Link className="mr-auto" to="/forgot-pass">
+						<Link className="mr-auto" to="/sign-in/forgot-pass">
 							<span className="hover:underline cursor-pointer font-bold text-[12px]">
 								{ t("form.forgotPassword") }
 							</span>

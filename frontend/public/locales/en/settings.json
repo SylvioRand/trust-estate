@@ -44,6 +44,15 @@
 					"buttons": {
 						"change": "Change Password"
 					}
+				},
+				"addPassword": {
+					"input": {
+						"label": "Password",
+						"placeholder": "Enter your new password"
+					},
+					"buttons": {
+						"save": "Save"
+					}
 				}
 			}
 		},
@@ -52,7 +61,22 @@
 			"title": "Settings",
 			"downloadGDPR": "Download GDPR",
 			"deleteAccount": "Delete your account",
-			"logout": "Log out"
+			"logout": "Log out",
+
+			"popup": {
+				"deleteAccount": {
+					"title": "Delete my account",
+					"subTitle": "Deleting your account is a permanent action. Once your account is deleted, all associated data, settings, and content will be permanently removed and cannot be recovered. You will lose access immediately, and this action cannot be undone. Enter your password to confirm.",
+					"input": {
+						"title": "Password",
+						"placeholder": "Enter your password"
+					},
+					"buttons": {
+						"confirm": "Delete my account",
+						"cancel": "Cancel"
+					}
+				}
+			}
 		}
 	}
 }

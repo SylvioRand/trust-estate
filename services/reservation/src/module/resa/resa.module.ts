@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import jwtPlugin from "../../plugin/jwt.plugin";
 import prismaPlugin from "../../plugin/prisma.plugin";
-import { reservationRoutes } from "./resa.routes";
+import { reservationRoutes, deleteData } from "./resa.routes";
 
 export async function pluginRegister(app: FastifyInstance) {
 	await app.register(prismaPlugin);
@@ -10,4 +10,5 @@ export async function pluginRegister(app: FastifyInstance) {
 
 export async function resaRoutes(app: FastifyInstance) {
 	await app.register(reservationRoutes);
+	await app.register(deleteData);
 }

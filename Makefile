@@ -30,7 +30,8 @@ down:
 # Clean everything (containers, images, volumes)
 clean:
 	@echo "🧹 Cleaning up..."
-	DOCKER_BUILDKIT=0 docker-compose down -v --rmi local
+# 	$(DOCKER_COMPOSE) down -v --rmi local
+	$(DOCKER_COMPOSE) down -v local
 	@echo "✅ Cleanup complete"
 
 # View logs

@@ -15,9 +15,14 @@
 		}
 	},
 
+	"notification": {
+		"emailSent": "Un lien à été envoyée a votre email."
+	},
+
+	"countdownMessage": "Vous pourrez renvoyer un lien après: ",
+
 	"actions": {
 		"send": "Envoyer le lien",
 		"cancel": "Retour à la connexion"
 	}
 }
-

@@ -15,8 +15,14 @@
 		}
 	},
 
+	"notification": {
+		"emailSent": "A link was send to your email"
+	},
+
+	"countdownMessage": "You will be able to resend a link after the countdown: ",
+
 	"actions": {
 		"send": "Send Link",
-	"cancel": "Back to Sign In"
+		"cancel": "Back to Sign In"
 	}
 }

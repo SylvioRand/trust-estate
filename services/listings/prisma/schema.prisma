@@ -95,6 +95,7 @@ model ListingFeatures {
 
   bedrooms           Int?
   bathrooms          Int?
+  wc                 Boolean?
   wc_separate        Boolean?
   water_access       Boolean?
   electricity_access Boolean?
@@ -113,6 +114,8 @@ model ListingAvailability {
   startTime String // "09:00"
   endTime   String // "18:00"
 
+  @@index([listingId])
+  @@index([dayOfWeek])
   @@map("ListingAvailability")
 }
 

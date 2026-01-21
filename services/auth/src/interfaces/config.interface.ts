@@ -14,4 +14,7 @@ export interface EnvConfigInterface {
 	JWT_SECRET_PRIVATE_KEY: string
 	JWT_SECRET_PUBLIC_KEY: string
 	INTERNAL_KEY_SECRET: string
+	CREDITS_SERVICE_URL: string
+	LISTINGS_SERVICE_URL: string
+	RESERVATION_SERVICE_URL: string
 }

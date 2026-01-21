@@ -3,6 +3,7 @@ import * as userServices from './user.service'
 import type { UserInterface } from "../auth/auth.interface";
 import { generateAccessToken, responseUser } from "../../utils/auth.utils";
 import type { UpdateInfoUserInterface, UpdatePasswordInterface } from "./user.interface";
+import { logoutUser } from "../auth/auth.controllers";
 
 export async function getUser(request: FastifyRequest, reply: FastifyReply) {
 	const user = request.user as UserInterface;
@@ -30,7 +31,6 @@ export async function updatePhoneNumber(request: FastifyRequest <{Body: {phoneNu
 
 	try {
 		const updatedUser = await userServices.updatePhoneNumberUser(request.server, userId, phoneNumber);
-
 		await generateAccessToken(request, reply, updatedUser);
 		return reply.status(200).send({
 			"user": {
@@ -47,7 +47,7 @@ export async function updatePhoneNumber(request: FastifyRequest <{Body: {phoneNu
 					"message": "Ce numéro de téléphone est déjà utilisé par un autre compte"
 				});
 		else if (error.message === "User not found")
-			return reply.code(400).send({
+			return reply.code(404).send({
 					"error": "invalid_credentials",
 					"message": "auth.invalid_credentials"
 				});
@@ -128,15 +128,61 @@ export async function updateInfoUser(request: FastifyRequest<{Body: UpdateInfoUs
 		})
 	} catch (error : any) {
 		if (error.message === "User not found")
-			return reply.code(400).send({
-				"error": "invalid_credentials",
-				"message": "auth.invalid_credentials"
+			return reply.code(404).send({
+				"error": "user_not_found",
+				"message": "User not found"
 			});
 		else if (error.message === "phone_exists")
 			return reply.code(400).send({
 				"error": "phone_exists",
 				"message": "auth.phone_already_exists"
 			})
+		else
+			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
+};
+
+export async function userDetails(request: FastifyRequest<{Params: {id: string}}>, reply: FastifyReply) {
+	const userId = request.params.id;
+
+	try {
+		const response = await userServices.getUserDetails(request.server, userId);
+		return reply.status(200).send(response);
+	} catch (error: any) {
+		if (error.message === "User not found")
+			return reply.code(404).send({
+					"error": "user_not_found",
+					"message": "User not found"
+				});
+		else
+			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
+};
+
+export async function requestDeleteAccompte(request: FastifyRequest<{Body: {password: string}}>, reply: FastifyReply) {
+	const password = request.body.password;
+	const userId = (request.user as UserInterface).id;
+
+	try {
+		await userServices.DeleteUser(request.server, userId, password);
+		await logoutUser(request, reply);
+	} catch (error: any) {
+		if (error.message === "User not found")
+			return reply.code(404).send({
+					"error": "user_not_found",
+					"message": "User not found"
+				});
+		else if (error.message === "Invalid password")
+			return reply.code(400).send({
+					"error": "invalid_credentials",
+					"message": "auth.invalid_credentials"
+				});
 		else
 			return reply.status(500).send({
 				"error": "internal_server_error",
