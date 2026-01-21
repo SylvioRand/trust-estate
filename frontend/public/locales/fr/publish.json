@@ -3,6 +3,8 @@
 		"goBackToProfile": "Retour au profil"
 	},
 
+	"uploadSuccess": "L’annonce a été soumise et publiée avec succès. Vous serez redirigé vers la page correspondante dans quelques instants.",
+
 	"section": {
 		"main": {
 			"title": "Publier une annonce",
@@ -39,6 +41,9 @@
 				"area": {
 					"title": "Surface",
 					"placeholder": "Surface en m2"
+				},
+				"wc": {
+					"title": "Toilette"
 				},
 				"propertyType": {
 					"title": "Type de propriété",
@@ -101,9 +106,8 @@
 					"clear": "Effacer tout"
 				},
 				"upload": {
-					"idleState": "Poster Annonce",
-					"uploadingImages": "Téléversement des photos",
-					"uploadingListing": "Publication de l'annonce"
+					"title": "Publier",
+					"processing": "Publication"
 				}
 			}
 		}

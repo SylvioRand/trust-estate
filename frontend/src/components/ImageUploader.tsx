@@ -1,9 +1,10 @@
-import { useState, useRef, useImperativeHandle, forwardRef, type Dispatch, type SetStateAction } from "react";
+import { useState, useRef, useImperativeHandle, forwardRef, type Dispatch, type SetStateAction, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 
 interface ImageUploaderProps {
 	dataToPreview: string[];
 	setDataToPreview: Dispatch<SetStateAction<string[]>>;
+	inputRef: RefObject<HTMLInputElement | null>;
 }
 
 export interface ImageUploaderHandle {
@@ -12,10 +13,9 @@ export interface ImageUploaderHandle {
 }
 
 const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
-	({ dataToPreview = [], setDataToPreview }, ref) => {
+	({ dataToPreview = [], setDataToPreview, inputRef = null }, ref) => {
 		const { t } = useTranslation("publish");
 		const [files, setFiles] = useState<File[]>([]);
-		const inputRef = useRef<HTMLInputElement | null>(null);
 
 		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 			const selectedFiles = e.target.files ? Array.from(e.target.files) : [];
@@ -42,7 +42,7 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 			})
 
 			setFiles(newFiles);
-			if (inputRef.current)
+			if (inputRef?.current)
 				inputRef.current.files = newFileList.files;
 
 			const newPreview = dataToPreview.filter((_, i) => i !== index);
@@ -55,7 +55,7 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 				files.forEach((_, i) => URL.revokeObjectURL(dataToPreview[i]));
 				setFiles([]);
 				setDataToPreview([]);
-				if (inputRef.current) inputRef.current.value = "";
+				if (inputRef?.current) inputRef.current.value = "";
 			},
 		}));
 
