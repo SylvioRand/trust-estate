@@ -10,8 +10,6 @@
 #                                                                              #
 #******************************************************************************#
 
-# from os import stat
-# from typing import Optional
 from app.config import config
 from app.services.llm import LLMService
 from app.models import Description, RequestChat, ResponseChat, PostModel
@@ -110,10 +108,15 @@ async def check_health():
     try:
         await chromadb_service.initRequest()
         return {
-            "status": "success"
+            "status": "healthy"
         }
     except Exception:
-        return Response(status_code = status.HTTP_503_SERVICE_UNAVAILABLE)
+        return JSONResponse(
+                status_code = status.HTTP_503_SERVICE_UNAVAILABLE,
+                content = {
+                    "status": "degraded"
+                    },
+        )
 
 
 @app.post("/ai/chat")
