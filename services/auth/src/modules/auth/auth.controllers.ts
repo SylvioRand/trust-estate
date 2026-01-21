@@ -164,6 +164,7 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 
 		return (reply.redirect(`${request.server.config.FRONTEND_URL}/home?auth_google=success`));
 	} catch (error: any) {
+		console.error("❌ Google Auth Callback Error:", error);
 		if (error.message === "Invalid credential")
 			return reply.status(400).send({
 				"error": "invalid_google_token",
@@ -192,8 +193,8 @@ export async function forgotPassword(request: FastifyRequest<{ Body: { email: st
 	} catch (error: any) {
 		if (error.message === "User not found")
 			return reply.status(404).send({
-				"error": "email_not_verified",
-				"message": "auth.email_verification_required"
+				"error": "forgot_pass_user_not_found",
+				"message": "auth.forgot_pass_user_not_found"
 			});
 		else
 			return reply.status(500).send({

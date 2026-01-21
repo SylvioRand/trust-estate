@@ -1,21 +1,68 @@
-import React from "react";
+import React, { useState } from "react";
 import SimpleInput from "../components/Input";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import useCountdown from "../components/Countdown";
+import type { APIResponse } from "./sign_up";
+import { toast } from "react-toastify";
 
 const	ForgotPassPage: React.FC = () => {
-	const { t } = useTranslation("forgotPass");
+	const	navigate = useNavigate();
+	const	{ t } = useTranslation(["forgotPass", "error"]);
+	const	[timeLeft, setTimeLeft, controls] = useCountdown();
+	const	[processingSubmit, setProcessingSubmit] = useState<boolean>(false);
+	const	[buttonSendDisabled, setButtonSendDisabled] = useState<boolean>(false);
+	const	[errorEmail, setErrorEmail] = useState<string[]>([]);
 
-	const	handleOnSubmit = (e:React.FormEvent<HTMLFormElement>) => {
+	const	handleOnSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
+		setProcessingSubmit(true);
 		const	formData = new FormData(e.currentTarget);
-
 		const	data = Object.fromEntries(formData.entries());
+		
+		try {
+			const	response = await fetch("/api/auth/forgot-password", {
+				method: "POST",
+				headers: {
+					"Content-type": "application/json"
+				},
+				body: JSON.stringify(data)
+			});
 
-		console.log(data);
+			const	responseData = await response.json();
+
+			if (!response.ok)
+			{
+				const	errorData = responseData as APIResponse;
+				
+				if (response.status === 400)
+				{
+					setErrorEmail([errorData.message]);
+					throw new Error(errorData.message);
+				}
+			}
+			toast.success(t("notification.emailSent"));
+		} catch (error) {
+			if (error instanceof Error)
+			{
+				toast.error(t(`error:${error.message}`));
+				console.error(error.message);
+			}
+		} finally {
+			setProcessingSubmit(false);
+			setTimeLeft(60);
+			controls.start();
+			setButtonSendDisabled(true);
+
+			setTimeout(() => {
+				setButtonSendDisabled(false);
+				setTimeLeft(0);
+				controls.stop();
+			}, 60000);
+		}
 	}
 
 	return (
@@ -65,7 +112,7 @@ const	ForgotPassPage: React.FC = () => {
 						name="email"
 						type="email"
 						placeholder={t("form.email.placeholder")}
-						error={[]}
+						error={ errorEmail }
 					/>
 
 					<div className="mt-2 w-full">
@@ -74,8 +121,19 @@ const	ForgotPassPage: React.FC = () => {
 							icon=""
 							icon_place="right"
 							type="submit"
+							processing_action={ processingSubmit }
+							disabled={ buttonSendDisabled }
 						/>
 					</div>
+
+					{
+						timeLeft > 0 &&
+						<div
+						className="text-sm"
+						>
+							{ t("countdownMessage") + timeLeft }
+						</div>
+					}
 
 					<Link to="/sign_in">
 						<span className="text-[12px] font-bold

@@ -22,7 +22,12 @@
 		"phone_update_success": "The phone number has been successfully updated.",
 		"invalid_or_expired_token": "The token is invalid or has expired.",
 		"password_add_success": "Your password was added successfully.",
-		"password_update_success": "Your password was updated successfully."
+		"password_update_success": "Your password was updated successfully.",
+		"info_update_success": "Your information was successfully updated.",
+		"not_authenticated_user": "User are not authenticated.",
+		"forgot_pass_user_not_found": "No user is associated with this email address.",
+		"passwordAndConfirmationIsDifferent": "The two password doesn't match."
+
 	},
 	"validation": {
 		"email": {
