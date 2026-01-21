@@ -31,10 +31,9 @@ export async function handleUpdateAvailability(request: FastifyRequest, reply: F
     if (error.message === 'forbidden') {
       reply.status(403).send({
         error: error.message,
-        message: "listing.permission_denie"
+        message: "listing.permission_denied"
       })
     }
-
 
     console.error(error);
     return reply.status(500).send({ error: "internal_server_error" });
