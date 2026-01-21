@@ -340,9 +340,14 @@ export async function sendTokenForgotPassword(app: FastifyInstance, email: strin
 	const tokenHash = createHash('sha256').update(hash).digest('hex');
 	const expiresAt = new Date(Date.now() + 1000 * 60 * 24).toISOString();
 
-	await app.prisma.forgot_password_token.create({
-		data: {
+	await app.prisma.forgot_password_token.upsert({
+		where: {userId: user.id},
+		create:{
 			userId: user.id,
+			tokenHash,
+			expiresAt
+		},
+		update: {
 			tokenHash,
 			expiresAt
 		}

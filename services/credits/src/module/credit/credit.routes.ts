@@ -9,6 +9,11 @@ export async function creditRoutes(app: FastifyInstance) {
 			schema: RechargerSchema,
 			preHandler: app.internalAuthentication
 		}, creditController.rechargeCredit);
+	app.post<{Body: RechargeInterface}>("/credits/recharge/me",
+		{
+			schema: RechargerSchema,
+			preHandler: app.authentication
+		}, creditController.rechargeCredit);
 	app.get("/credits/balance",
 		{
 			preHandler: app.authentication
