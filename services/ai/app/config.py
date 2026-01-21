@@ -16,7 +16,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class ft_config:
-    #========================= ENV ELEMENTS =================
+    #API key for all routes
+    INTERNAL_KEY = os.getenv("INTERNAL_KEY_SECRET", "")
     #LLM config
     LLM_API_URL=os.getenv("LLM_API_URL", "https://api.routeway.ai/v1/chat/completions")
     LLM_API_KEY=os.getenv("LLM_API_KEY", "")

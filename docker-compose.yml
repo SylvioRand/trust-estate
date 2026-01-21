@@ -180,7 +180,8 @@ services:
       retries: 3
 
   # Backend AI Service
-  ft_ai:
+  ft_ai: 
+    pull_policy: never
     container_name: ft_ai
     image: ft_ai:bibidi
     build: ./services/ai
@@ -192,7 +193,13 @@ services:
       - ft_chromadb
     volumes:
       - ./services/ai/:/app
-    restart: unless-stopped
+    restart:  unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3005/ai/health" ]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
 
   # ChromaDB- Vector Database
   ft_chromadb:
@@ -200,13 +207,14 @@ services:
     image: chromadb/chroma:0.6.3
     ports:
       - "8001:8000"
-    volumes:
-      - chromadb_data:/chroma/chroma
-    environment:
-      - IS_PERSISTENT=TRUE
-      - CHROMA_TELEMETRY_ENABLED=False
-      - ANONYMIZED_TELEMETRY=False
+    env_file:
+      - .env
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat" ]
+      interval: 2s
+      timeout: 10s
+      retries: 3
 
   # ==============================================
   # POSTGRESQL - Database
@@ -232,5 +240,3 @@ services:
 volumes:
   postgres_data:
   uploads_data: # Volume persistant pour les images
-  chromadb_data:
-    driver: local
