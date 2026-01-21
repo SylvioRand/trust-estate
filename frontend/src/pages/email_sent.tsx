@@ -34,8 +34,9 @@ const EmailSentPage: React.FC = () => {
 
 			toast.success(t("buttons.resendEmail.success"));
 
-		} catch (e) {
-			console.error("EmailSentPage: ", e);
+		} catch (error) {
+			if (error instanceof Error)
+				console.error("EmailSentPage: ", error.message);
 		} finally {
 			setProcessResend(false);
 			setTimeLeft(60);

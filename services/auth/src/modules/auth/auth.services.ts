@@ -246,12 +246,12 @@ export async function getUserInfo(app: FastifyInstance, code: string): Promise<U
 
 	const tokens = await tokentResponse.json();
 	if (!tokentResponse.ok) {
-		console.error("Google Token Exchange Error:", tokens);
+		console.error("❌ Google Token Exchange Error:", tokens);
 		throw new Error("Invalid credentials");
 	}
 
 	if (!tokens || !(tokens as any).access_token) {
-		console.error("Google Token Response missing access_token:", tokens);
+		console.error("❌ Google Token Response missing access_token:", tokens);
 		throw new Error("Invalid credentials");
 	}
 
@@ -261,17 +261,19 @@ export async function getUserInfo(app: FastifyInstance, code: string): Promise<U
 
 	if (!userResponse.ok) {
 		const errorData = await userResponse.json();
-		console.error("Google User Info Error:", errorData);
+		console.error("❌ Google User Info Error:", errorData);
 		throw new Error("Something went wrong");
 	}
 	const userData: any = await userResponse.json();
+	console.log("👤 Google User Data Received:", userData);
+
 	const userInfo: UserGoogleInterface = {
-		id: userData.id,
+		id: userData.id || userData.sub, // Google uses 'sub' as primary ID
 		email: userData.email,
 		verified_email: userData.verified_email,
 		name: userData.name,
-		given_name: userData.given_name,
-		family_name: userData.family_name,
+		given_name: userData.given_name || userData.name || 'User', // Fallback for required field
+		family_name: userData.family_name || '',
 		picture: userData.picture
 	};
 	return (userInfo);
@@ -284,7 +286,7 @@ export async function createOrUpdateUserAccount(app: FastifyInstance, userData: 
 
 
 	if (!user) {
-		return await app.prisma.user.create({
+		const newUser = await app.prisma.user.create({
 			data: {
 				email: userData.email,
 				firstName: userData.given_name,
@@ -294,7 +296,12 @@ export async function createOrUpdateUserAccount(app: FastifyInstance, userData: 
 				phoneVerified: false
 			},
 		});
-
+		try {
+			await crediter(app, newUser.id);
+		} catch (error: any) {
+			app.log.error(error);
+		}
+		return (newUser);
 	}
 	if (user.sub && user.sub !== userData.id) {
 		throw new Error("Ce compte est déjà lié à un autre compte Google");
@@ -335,16 +342,21 @@ export async function sendTokenForgotPassword(app: FastifyInstance, email: strin
 	const tokenHash = createHash('sha256').update(hash).digest('hex');
 	const expiresAt = new Date(Date.now() + 1000 * 60 * 24).toISOString();
 
-	await app.prisma.forgot_password_token.create({
-		data: {
+	await app.prisma.forgot_password_token.upsert({
+		where: { userId: user.id },
+		create: {
 			userId: user.id,
+			tokenHash,
+			expiresAt
+		},
+		update: {
 			tokenHash,
 			expiresAt
 		}
 	});
 
 	const baseUrl = app.config.FRONTEND_URL;
-	const resetPasswordUrl = `${baseUrl}/reset-password?token=${hash}`;
+	const resetPasswordUrl = `${baseUrl}/sign-in/reset-password?token=${hash}`;
 	const { text, html } = generateForgotPasswordMail(resetPasswordUrl);
 	await (app as any).mailer.sendMail({
 		from: 'dinandrianom@gmail.com',
@@ -379,4 +391,38 @@ export async function changePassword(app: FastifyInstance, token: string, passwo
 	await app.prisma.forgot_password_token.delete({
 		where: { userId: tokenExist.userId }
 	})
+};
+
+export async function crediter(app: FastifyInstance, userId: string) {
+	const jwt = await import('jsonwebtoken');
+	const internalToken = jwt.default.sign(
+		{ service: 'reservation-service', userId },
+		app.config.INTERNAL_KEY_SECRET,
+		{ algorithm: 'HS256', expiresIn: '30s' }
+	);
+
+	try {
+		const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/credits/recharge`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'x-internal-key': internalToken,
+				'x-user-id': userId
+			},
+			body: JSON.stringify({
+				amount: 5,
+				reason: "initial_bonus",
+				type: 'bonus'
+			})
+		});
+
+		if (!response.ok) {
+			const error = await response.json() as any;
+			throw new Error('credit_service_error');
+		}
+	} catch (error: any) {
+		console.log("ERROR", error);
+		app.log.error({ error }, 'Failed to credit user');
+		// throw error;
+	}
 }

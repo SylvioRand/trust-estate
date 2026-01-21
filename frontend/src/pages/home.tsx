@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import house0 from "../../src/images/house0.webp";
 import house1 from "../../src/images/house1.webp";
@@ -11,9 +11,10 @@ import bentoAccurateValuation from "../../src/images/bento_accurate_valuation.pn
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import ActionButton from "../components/ActionButton";
 import SimpleInput from "../components/Input";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ZONE_ENUM } from "../dataModel/dataZone";
 import type { InputEnumData } from "../components/InputEnum";
+import useDataProvider from "../provider/useDataProvider";
 
 interface	BentoProps {
 	title: string;
@@ -125,6 +126,15 @@ const	HomePage: React.FC = () => {
 		console.log(data);
 	};
 
+	const	[searchParams] = useSearchParams();
+	const	{ setIsConnected } = useDataProvider();
+
+	useEffect(() => {
+		const	value: string | null = searchParams.get("auth_google");
+		
+		if (value && value === "success")
+			setIsConnected(true);
+	}, []);
 	return (
 		<div className="flex flex-col items-center justify-start gap-4
 			overflow-y-scroll

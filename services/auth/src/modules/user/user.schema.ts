@@ -58,4 +58,33 @@ export const UpdateInfoUserSchema = {
 		},
 		additionalProperties: false
 	}
-}
+};
+
+export const UserDetailsSchema = {
+	params: {
+		type: 'object',
+		required: ['id'],
+		properties: {
+			id: {
+				type: 'string',
+				format: 'uuid'
+			}
+		},
+		additionalProperties: false
+	}
+};
+
+export const DeleteAccompte = {
+	body: {
+		type: 'object',
+		required: ['password'],
+		properties: {
+			password: {
+				type: 'string',
+				minLength: 12,
+				pattern: '(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}'
+			}
+		},
+		additionalProperties: false
+	}
+};
