@@ -218,7 +218,6 @@ class ChromadbService:
         filters = datas.get("filters", None)
         result = await self.query_in_collection("posts", search_text, 5, filters)
 
-        print("======================= Hola =========================")
         relevant_data = [
                 (id, doc, meta, score)
                 for id, doc, meta, score in zip(
@@ -235,9 +234,6 @@ class ChromadbService:
                 "metadatas": [[meta for _, _, meta, _ in relevant_data]],
                 "distances": [[score for _, _, _, score in relevant_data]],
         }
-        print(f"query_result: {result}")
-        print(f"result: {new_result}")
-        print("======================= Hola =========================")
         return new_result
 
     async def is_post_in_collection(self, collection_name, specific_ids):
