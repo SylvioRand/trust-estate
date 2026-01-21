@@ -176,7 +176,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 					pb-4"
 				>
 					{
-						isConnected === false && dataUser.map((value: NavButtonProps, index: number) => {
+						(isConnected === false || isConnected === null) && dataUser.map((value: NavButtonProps, index: number) => {
 							return (
 								<MobileNavButton
 									key={index}
@@ -403,7 +403,7 @@ const	NavBar: React.FC = () => {
 						hidden"
 					>
 						{
-							isConnected === false && userNavButton.map((value: NavButtonProps, index: number) => {
+							(isConnected === false || isConnected === null) && userNavButton.map((value: NavButtonProps, index: number) => {
 								return (
 									<NavigationButton
 										key={index}

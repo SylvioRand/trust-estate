@@ -7,7 +7,7 @@
 	"form": {
 		"phone": {
 			"label": "Phone Number",
-			"placeholder": "+261 XX XX XXX XX"
+			"placeholder": "XX XX XXX XX"
 		}
 	},
 

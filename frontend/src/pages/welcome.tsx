@@ -2,7 +2,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
 import { Link } from "react-router-dom";
-import ContentDivider from "../components/ContentDivider";
 import WaveCanvas from "../components/WavyLines";
 
 const	WelcomePage: React.FC = () => {

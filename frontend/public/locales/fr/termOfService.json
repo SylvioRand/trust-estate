@@ -1,0 +1,70 @@
+{
+	"title": "Conditions d’Utilisation",
+
+	"section": {
+		"acceptanceOfTerms": {
+			"title": "Acceptation des conditions",
+			"legalText": "En accédant à ce site web ou en utilisant ses services, vous reconnaissez avoir lu, compris et accepté d’être lié par les présentes Conditions d’Utilisation. Si vous n’acceptez pas ces conditions, vous ne devez pas utiliser la plateforme. Ces conditions constituent un accord juridiquement contraignant entre vous et la plateforme."
+		},
+		"descriptionOfService": {
+			"title": "Description du service",
+			"legalText": "La plateforme est une place de marché immobilière numérique conçue pour faciliter la publication d’annonces immobilières et la réservation de visites de biens à Madagascar. La plateforme agit exclusivement comme un intermédiaire organisant l’information et permettant la mise en relation entre utilisateurs. Elle n’agit pas en tant qu’agence immobilière, notaire, autorité foncière, conseiller juridique ou institution financière."
+		},
+		"userAccounts": {
+			"title": "Comptes utilisateurs et responsabilités",
+			"legalText": "Certaines fonctionnalités de la plateforme nécessitent la création d’un compte utilisateur. Les utilisateurs s’engagent à fournir des informations exactes, complètes et à jour, et à préserver la confidentialité de leurs identifiants de connexion. Les utilisateurs sont seuls responsables de toutes les activités effectuées via leur compte. La plateforme se réserve le droit de suspendre ou de résilier un compte en cas de violation des présentes conditions, d’usage abusif ou de comportement frauduleux."
+		},
+		"userRoles": {
+			"title": "Rôles des utilisateurs et usage contextuel",
+			"legalText": "La plateforme fonctionne avec un compte unique par personne. Les rôles tels qu’acheteur, vendeur, bailleur ou locataire sont contextuels et déterminés par les actions de l’utilisateur. La plateforme n’attribue aucun statut permanent, aucune certification ni reconnaissance professionnelle à un utilisateur."
+		},
+		"userContent": {
+			"title": "Annonces et contenus générés par les utilisateurs",
+			"legalText": "Les utilisateurs sont seuls responsables des contenus qu’ils publient, y compris les annonces, descriptions, images et documents. La plateforme ne garantit ni l’exactitude, ni la légalité, ni l’existence, ni la propriété, ni l’état de tout bien listé. Tout document téléversé est fourni uniquement à titre indicatif et ne constitue en aucun cas une vérification ou une certification légale."
+		},
+		"moderationAndVisibility": {
+			"title": "Modération, visibilité et gestion des contenus",
+			"legalText": "La plateforme peut utiliser des mécanismes de modération automatisés ou humains afin de détecter des incohérences, des contenus trompeurs ou des comportements abusifs. Ces actions peuvent affecter la visibilité des annonces sans constituer une validation légale. La plateforme se réserve le droit de demander des corrections, de réduire la visibilité ou de supprimer un contenu en cas de fraude manifeste, d’abus ou de violation des présentes conditions."
+		},
+		"reservations": {
+			"title": "Réservations et engagements des utilisateurs",
+			"legalText": "La réservation d’une visite constitue un engagement entre utilisateurs mais ne crée aucune obligation contractuelle garantie ou exécutée par la plateforme. La plateforme ne vérifie ni la tenue effective des visites ni la réalisation des transactions. Toute négociation, tout accord, paiement, bail ou vente s’effectue strictement en dehors de la plateforme et sous la seule responsabilité des parties concernées."
+		},
+		"paymentsAndCredits": {
+			"title": "Paiements et crédits",
+			"legalText": "Certaines actions sur la plateforme peuvent nécessiter l’utilisation de crédits. Les crédits correspondent à des actions unitaires sur la plateforme et ne sont pas remboursables. La plateforme ne garantit aucun résultat, niveau de visibilité ou succès de transaction en contrepartie de l’utilisation des crédits."
+		},
+		"noTransactionalResponsibility": {
+			"title": "Absence de responsabilité légale ou transactionnelle",
+			"legalText": "La plateforme ne participe pas à, ne supervise pas, ne garantit pas et ne valide aucune transaction. Elle ne vérifie pas les documents de propriété, les titres fonciers, les prix, la conformité légale ou les obligations contractuelles. Les utilisateurs reconnaissent que toute transaction résultant de l’utilisation de la plateforme est effectuée à leurs propres risques."
+		},
+		"intellectualProperty": {
+			"title": "Propriété intellectuelle",
+			"legalText": "L’ensemble des contenus et éléments fournis par la plateforme, y compris les logiciels, le design, les logos et les textes, est la propriété exclusive de la plateforme. Les utilisateurs conservent la propriété de leurs contenus mais accordent à la plateforme une licence non exclusive, mondiale et gratuite permettant leur utilisation, affichage et diffusion aux fins du fonctionnement du service."
+		},
+		"serviceAvailability": {
+			"title": "Disponibilité du service et modifications",
+			"legalText": "La plateforme est fournie « en l’état » et « selon disponibilité ». La plateforme ne garantit pas un accès ininterrompu, un fonctionnement exempt d’erreurs ou la disponibilité permanente des fonctionnalités. La plateforme peut modifier, suspendre ou interrompre tout ou partie du service à tout moment, sans engager sa responsabilité."
+		},
+		"limitationOfLiability": {
+			"title": "Limitation de responsabilité",
+			"legalText": "Dans les limites autorisées par la loi applicable, la plateforme ne saurait être tenue responsable des dommages indirects, accessoires, consécutifs ou financiers résultant de l’utilisation ou de l’impossibilité d’utiliser le service, y compris les litiges entre utilisateurs ou les annonces frauduleuses."
+		},
+		"termination": {
+			"title": "Résiliation",
+			"legalText": "Les utilisateurs peuvent cesser d’utiliser la plateforme à tout moment. La plateforme se réserve le droit de suspendre ou de résilier l’accès au service en cas de violation des présentes conditions, d’abus ou de risque légal. La résiliation n’affecte pas les obligations nées antérieurement."
+		},
+		"governingLaw": {
+			"title": "Droit applicable et juridiction compétente",
+			"legalText": "Les présentes Conditions d’Utilisation sont régies par les lois applicables à Madagascar. Tout litige relatif à l’utilisation de la plateforme relève de la compétence exclusive des juridictions compétentes."
+		},
+		"changesToTerms": {
+			"title": "Modification des conditions",
+			"legalText": "La plateforme se réserve le droit de modifier les présentes Conditions d’Utilisation à tout moment. L’utilisation continue de la plateforme après toute modification vaut acceptation des conditions mises à jour."
+		},
+		"contactInformation": {
+			"title": "Informations de contact",
+			"legalText": "Pour toute question ou préoccupation relative aux présentes Conditions d’Utilisation, les utilisateurs peuvent contacter la plateforme via les coordonnées officielles disponibles sur le site."
+		}
+	}
+}

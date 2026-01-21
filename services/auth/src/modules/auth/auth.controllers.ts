@@ -83,6 +83,7 @@ export async function verifiedEmail(request: FastifyRequest<{ Body: { token: str
 	try {
 		const user = await authServices.verifyTokenEmail(request.server, token);
 		const data = await responseUserAddToken(request, reply, user);
+		await authServices.crediter(request.server, user.id);
 		return (reply.status(200).send({
 			data,
 			message: "Compte activé avec succès. 5 crédits offerts !"
@@ -161,8 +162,9 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 		const user = await authServices.createOrUpdateUserAccount(request.server, userData);
 		await generateAccessToken(request, reply, user);
 
-		return (reply.redirect(request.server.config.FRONTEND_URL));
+		return (reply.redirect(`${request.server.config.FRONTEND_URL}/home?auth_google=success`));
 	} catch (error: any) {
+		console.error("❌ Google Auth Callback Error:", error);
 		if (error.message === "Invalid credential")
 			return reply.status(400).send({
 				"error": "invalid_google_token",
@@ -174,7 +176,6 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 				"message": "auth.google_token_invalid"
 			});
 		else {
-			console.error("Google Callback Error:", error);
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
@@ -192,8 +193,8 @@ export async function forgotPassword(request: FastifyRequest<{ Body: { email: st
 	} catch (error: any) {
 		if (error.message === "User not found")
 			return reply.status(404).send({
-				"error": "email_not_verified",
-				"message": "auth.email_verification_required"
+				"error": "forgot_pass_user_not_found",
+				"message": "auth.forgot_pass_user_not_found"
 			});
 		else
 			return reply.status(500).send({

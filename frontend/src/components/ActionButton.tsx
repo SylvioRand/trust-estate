@@ -79,9 +79,24 @@ const	ActionButton: React.FC<ActionButtonProps> = ({
 					</div>
 				</div>
 			}
-			<div className="pt-[0.1rem] z-1">
-				{ title }
-			</div>
+			{
+				icon && 
+				<div className="pt-[0.1rem] z-1">
+					{ title }
+				</div>
+			}
+			{
+				!icon && 
+				<div className="pt-[0.1rem] z-1"
+				style={{
+					fontFamily: processing_action ? "var(--font-icon)" : "inherit",
+					fontSize: processing_action ? icon_size : "16px",
+					animation: processing_action ? "var(--animate-spin)" : "none"
+				}}
+				>
+					{ processing_action ? "󱥸" : title }
+				</div>
+			}
 		</button>
 	)
 }

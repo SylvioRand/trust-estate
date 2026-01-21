@@ -1,5 +1,5 @@
 import { prisma } from '../../config/prisma';
-import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing } from "./listing.schema";
+import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing, UpdateavailabilityType } from "./listing.schema";
 import path from 'path';
 
 export class ListingService {
@@ -20,11 +20,12 @@ export class ListingService {
         }
       });
 
-      await tx.listingFeatures.create({
+      const listingFeatures = await tx.listingFeatures.create({
         data: {
           listingId: listing.id,
           bedrooms: validatedData.features.bedrooms,
           bathrooms: validatedData.features.bathrooms,
+          wc: validatedData.features.wc,
           wc_separate: validatedData.features.wc_separate,
           parking_type: validatedData.features.parking_type,
           garden_private: validatedData.features.garden_private,
@@ -56,7 +57,7 @@ export class ListingService {
         }
       });
 
-      return listing;
+      return { listing, listingFeatures };
     });
   }
 
@@ -136,30 +137,30 @@ export class ListingService {
     if (!listing) throw new Error('listing.not_found');
     if (listing.sellerId !== sellerId) throw new Error('forbidden');
 
-    return await prisma.$transaction(async (tx) => {
-      const updated = await tx.listing.update({
-        where: { id },
-        data: {
-          type: data.type,
-          propertyType: data.propertyType,
-          title: data.title,
-          description: data.description,
-          price: data.price,
-          surface: data.surface,
-          zone: data.zone,
-          tags: data.tags
-        }
-      });
-
-      if (data.features) {
-        await tx.listingFeatures.update({
-          where: { listingId: id },
-          data: data.features
-        });
+    const result = await prisma.listing.update({
+      where: { id },
+      data: {
+        type: data.type,
+        propertyType: data.propertyType,
+        title: data.title,
+        description: data.description,
+        price: data.price,
+        surface: data.surface,
+        zone: data.zone,
+        tags: data.tags,
+        features: data.features ? {
+          update: data.features
+        } : undefined
+      },
+      include: {
+        features: true
       }
-
-      return updated;
     });
+
+    const { features, ...listings } = result;
+    console.log("features = ", features);
+    console.log("listings = ", listings);
+    return { listing, features };
   }
 
   static async archiveListing(id: string, sellerId: string, data: ArchiveListingData) {
@@ -167,7 +168,6 @@ export class ListingService {
     const listing = await prisma.listing.findUnique({ where: { id } });
 
     if (!listing) throw new Error('listing.not_found');
-    if (listing.sellerId !== sellerId) throw new Error('forbidden');
     if (listing.status === 'archived') throw new Error('listing.already_archived');
 
     return await prisma.$transaction(async (tx) => {
@@ -178,18 +178,13 @@ export class ListingService {
         data: {
           status: 'archived',
           isAvailable: false,
-          soldAt: data.sold ? now : null
-        }
+        },
       });
+
 
       const statsUpdate: any = {
         activeListings: { decrement: 1 }
       };
-
-      if (data.sold) {
-        if (listing.type === 'sale') statsUpdate.successfulSales = { increment: 1 };
-        else statsUpdate.successfulRents = { increment: 1 };
-      }
 
       await tx.sellerStats.update({
         where: { userId: sellerId },
@@ -245,5 +240,25 @@ export class ListingService {
     });
 
     return { listing, sellerStats };
+  }
+
+  static async deleteUserData(userId: string) {
+    return await prisma.$transaction(async (tx) => {
+      await tx.report.deleteMany({
+        where: { reporterId: userId }
+      });
+
+      await tx.listing.deleteMany({
+        where: { sellerId: userId }
+      });
+
+      await tx.sellerStats.deleteMany({
+        where: { userId }
+      });
+    });
+  }
+
+  static async updateAvailability(listingId: string, schedule: UpdateavailabilityType) {
+
   }
 }
