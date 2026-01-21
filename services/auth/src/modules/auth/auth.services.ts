@@ -229,8 +229,51 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 	return (user.id);
 };
 
+/**
+ * Fetch with retry logic to handle intermittent network issues (ETIMEDOUT) in Docker
+ */
+async function fetchWithRetry(
+	url: string,
+	options: RequestInit,
+	maxRetries: number = 3,
+	timeoutMs: number = 10000
+): Promise<Response> {
+	let lastError: Error | null = null;
+
+	for (let attempt = 1; attempt <= maxRetries; attempt++) {
+		try {
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+			const response = await fetch(url, {
+				...options,
+				signal: controller.signal
+			});
+
+			clearTimeout(timeoutId);
+			return response;
+		} catch (error: any) {
+			lastError = error;
+			const isRetryableError =
+				error.cause?.code === 'ETIMEDOUT' ||
+				error.cause?.code === 'ECONNRESET' ||
+				error.cause?.code === 'ECONNREFUSED' ||
+				error.name === 'AbortError';
+
+			if (isRetryableError && attempt < maxRetries) {
+				console.warn(`⚠️ Fetch attempt ${attempt}/${maxRetries} failed (${error.cause?.code || error.name}), retrying in ${attempt * 500}ms...`);
+				await new Promise(resolve => setTimeout(resolve, attempt * 500));
+			} else {
+				throw error;
+			}
+		}
+	}
+
+	throw lastError;
+}
+
 export async function getUserInfo(app: FastifyInstance, code: string): Promise<UserGoogleInterface> {
-	const tokentResponse = await fetch(app.config.TOKEN_URL, {
+	const tokentResponse = await fetchWithRetry(app.config.TOKEN_URL, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded",
@@ -255,7 +298,7 @@ export async function getUserInfo(app: FastifyInstance, code: string): Promise<U
 		throw new Error("Invalid credentials");
 	}
 
-	const userResponse = await fetch(app.config.USER_INFO_URL, {
+	const userResponse = await fetchWithRetry(app.config.USER_INFO_URL, {
 		headers: { Authorization: `Bearer ${(tokens as any).access_token}` }
 	});
 
