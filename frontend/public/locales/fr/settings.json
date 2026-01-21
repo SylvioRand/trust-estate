@@ -44,6 +44,15 @@
 					"buttons": {
 						"change": "Changer"
 					}
+				},
+				"addPassword": {
+					"input": {
+						"label": "Mot de passe",
+						"placeholder": "Entrer votre nouveau mot de passe"
+					},
+					"buttons": {
+						"save": "Enregistrer"
+					}
 				}
 			}
 		},
@@ -52,7 +61,21 @@
 			"title": "Paramètres",
 			"downloadGDPR": "Télécharger mes informations GDPR",
 			"deleteAccount": "Supprimer mon compte",
-			"logout": "Se déconnecter"
+			"logout": "Se déconnecter",
+			"popup": {
+				"deleteAccount": {
+					"title": "Supprimer mon compte",
+					"subTitle": "Supprimer votre compte est une action permanente. Une fois votre compte supprimé, toutes les données, paramètres et contenus associés seront définitivement effacés et ne pourront pas être récupérés. Vous perdrez l’accès immédiatement, et cette action ne peut pas être annulée. Entrer votre mot de passe pour continuer.",
+					"input": {
+						"title": "Mot de passe",
+						"placeholder": "Entrer votre mot de passe"
+					},
+					"buttons": {
+						"confirm": "Supprimer mon compte",
+						"cancel": "Annuler"
+					}
+				}
+			}
 		}
 
 	}

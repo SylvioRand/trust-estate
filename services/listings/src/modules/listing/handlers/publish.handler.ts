@@ -5,6 +5,7 @@ import path from 'path';
 import fs from 'fs';
 import { pipeline } from 'stream/promises';
 import { ListingService } from "../listing.service";
+import { AIClient } from "../../../infrastructure/ai.client";
 
 const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp"];
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
@@ -21,13 +22,13 @@ export async function handlePublish(request: FastifyRequest, reply: FastifyReply
     const validatedData = PublishListingSchema.parse(listingData);
     console.log("validatedData", validatedData);
 
-    const result = await ListingService.createListing(validatedData, photos, user.id);
+    const { listing, listingFeatures } = await ListingService.createListing(validatedData, photos, user.id);
+
+    AIClient.upsertIndexListing(listing, "POST", listingFeatures);
 
     return reply.status(201).send({
-      listingId: result.id,
-      status: result.status,
-      message: 'listing.publish_success',
-      data: result
+      listingId: listing.id,
+      photos: listing.photos.map((p: string) => `/uploads/${p}`),
     });
 
   } catch (error) {

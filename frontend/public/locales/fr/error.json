@@ -20,7 +20,13 @@
 		"login_max_attempts_exceeded": "Trop de tentatives de connexion. Le compte a été temporairement bloqué.",
 		"logout_success": "Vous avez été déconnecté avec succès.",
 		"phone_update_success": "Le numéro de téléphone a été mis à jour avec succès.",
-		"invalid_or_expired_token": "Le jeton est invalide ou a expiré."
+		"invalid_or_expired_token": "Le jeton est invalide ou a expiré.",
+		"password_add_success": "Le mot de passe a été ajouté avec succès.",
+		"password_update_success": "Le mot de passe a été mis à jour avec succès.",
+		"info_update_success": "Vos informations ont été mises à jour avec succès.",
+		"not_authenticated_user": "Utilisateur non authentifié.",
+		"forgot_pass_user_not_found": "Aucun utilisateur n’est associé à cette adresse e-mail.",
+		"passwordAndConfirmationIsDifferent": "Les deux mot de passes ne correspondent pas."
 	},
 	"validation": {
 		"email": {

@@ -7,7 +7,8 @@ export const envSchema = {
 		'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GMAIL_USER', 'GMAIL_APP_PASSWORD',
 		'COOKIE_SECRET', 'FRONTEND_URL',
 		'REDIRECT_URI', 'AUTH_URL', 'TOKEN_URL', 'USER_INFO_URL',
-		'INTERNAL_KEY_SECRET' // add by srandria
+		'INTERNAL_KEY_SECRET',
+		'CREDITS_SERVICE_URL', 'LISTINGS_SERVICE_URL', 'RESERVATION_SERVICE_URL'
 	],
 	properties: {
 		INTERNAL_KEY_SECRET: { type: 'string' }, // added by srandria
@@ -34,5 +35,8 @@ export const envSchema = {
 		AUTH_URL: { type: 'string' },
 		TOKEN_URL: { type: 'string' },
 		USER_INFO_URL: { type: 'string' },
+		CREDITS_SERVICE_URL: { type: 'string', default:"http://credits-service:3004" },
+		LISTINGS_SERVICE_URL: { type: 'string', default: "http://listings-service:3002" },
+		RESERVATION_SERVICE_URL: { type: 'string' },
 	}
 };

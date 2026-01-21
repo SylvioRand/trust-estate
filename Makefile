@@ -68,7 +68,8 @@ down:
 # Clean everything (containers, images, volumes)
 clean:
 	@echo "🧹 Cleaning up..."
-	$(DOCKER_COMPOSE) down -v --rmi local
+# 	$(DOCKER_COMPOSE) down -v --rmi local
+	$(DOCKER_COMPOSE) down -v local
 	@echo "✅ Cleanup complete"
 
 # View logs
@@ -92,6 +93,20 @@ reload-listings:
 	@echo "🔄 Reloading listings service..."
 	$(DOCKER_COMPOSE) up -d --build listings-service
 
+# Fast reload for nginx service only
+reload-nginx:
+	@echo "🔄 Reloading nginx service..."
+	$(DOCKER_COMPOSE) up -d --build nginx
+
+reload-reservation:
+	@echo "🔄 Reloading reservation service..."
+	$(DOCKER_COMPOSE) up -d --build reservation
+
+reload-credits:
+	@echo "🔄 Reloading credits service..."
+	$(DOCKER_COMPOSE) up -d --build credits-service
+
+
 # Show which docker compose command is being used
 check:
 	@echo "🐳 Docker Compose command: $(DOCKER_COMPOSE)"
@@ -111,3 +126,6 @@ certs:
 	else \
 		echo "✅ Certificates already exist."; \
 	fi
+
+run-no-ai:
+	DOCKER_BUILDKIT=0 docker compose up -d --build nginx auth-service listings-service reservations-service db credits-service
