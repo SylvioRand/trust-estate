@@ -141,7 +141,7 @@ const	PublishPage: React.FC = () => {
 		uploadFormData.append("data", JSON.stringify(dataObj));
 
 
-		if (inputRef.current?.files?.length > 0)
+		if (inputRef && inputRef.current && inputRef.current.files && inputRef.current?.files?.length > 0)
 		{
 			for (let i = 0; i < inputRef.current?.files?.length; i++)
 				uploadFormData.append("files", inputRef.current?.files[i]);
@@ -160,6 +160,7 @@ const	PublishPage: React.FC = () => {
 			if (response.ok)
 			{
 				toast.success(t("uploadSuccess"));
+				console.log(responseData);
 				setTimeout(() => {
 					navigate(`/property/listings?id=${responseData?.listingId}`)
 				}, 3000);
