@@ -9,7 +9,7 @@ export async function handleMarkAsRealized(request: FastifyRequest, reply: Fasti
 
     const result = await ListingService.markAsRealized(id, user.id);
 
-    AIClient.deleteIndexLinsting(result.id);
+    AIClient.deleteIndexListing(result.id);
 
     return reply.status(200).send({
       success: true,

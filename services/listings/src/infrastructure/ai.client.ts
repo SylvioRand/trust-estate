@@ -5,7 +5,6 @@ export class AIClient {
   private static AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://ai-service:3005';
   private static INTERNAL_KEY_SECRET = process.env.INTERNAL_KEY_SECRET || "INTERNAL_KEY";
 
-  // TODO test after post /ai/index is done and put /ai/index is done
   static async upsertIndexListing(listing: any, method: "POST" | "PUT", listingFeatures: any) {
     const body = {
       id: listing.id,
@@ -36,7 +35,7 @@ export class AIClient {
       { algorithm: "HS256" }
     );
 
-    console.log("body value -> ", body);
+    console.log("body value my cabron-> ", body);
     const result = await fetch(`${this.AI_SERVICE_URL}/ai/index`, {
       method: method,
       headers: {
@@ -46,25 +45,31 @@ export class AIClient {
       body: JSON.stringify(body)
     });
 
+    const resultBody = await result.json();
+    console.log("Response from AI SERVICE:", resultBody);
+
     if (!result.ok) {
-      console.log("internal_server_error");
+      console.error("AI Service Error:", result.status, resultBody);
     };
   }
 
-  static async deleteIndexLinsting(listingId: string,) {
+  static async deleteIndexListing(listingId: string) {
     const internaltoken = jwt.sign(
-      { service: "listings" }
-      , this.AI_SERVICE_URL,
+      { service: "listings" },
+      this.INTERNAL_KEY_SECRET,
       { algorithm: "HS256" }
     );
 
     try {
-      const result = await fetch(`${this.AI_SERVICE_URL}/ai/${listingId}`, {
+      const result = await fetch(`${this.AI_SERVICE_URL}/ai/index/${listingId}`, {
         method: 'DELETE',
         headers: {
           'x-internal-key': internaltoken
         }
       })
+
+      const resultBody = await result.json();
+      console.log("Response from AI SERVICE:", resultBody);
 
       if (!result.ok) {
         console.log()
