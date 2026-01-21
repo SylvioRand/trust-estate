@@ -1,5 +1,6 @@
-import { useState, useRef, useImperativeHandle, forwardRef, type Dispatch, type SetStateAction, type RefObject } from "react";
+import { useState, useImperativeHandle, forwardRef, type Dispatch, type SetStateAction, type RefObject, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 interface ImageUploaderProps {
 	dataToPreview: string[];
@@ -12,21 +13,56 @@ export interface ImageUploaderHandle {
 	resetFiles: () => void;
 }
 
-const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
+export const	MAX_IMG = 10;
+
+const	ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 	({ dataToPreview = [], setDataToPreview, inputRef = null }, ref) => {
-		const { t } = useTranslation("publish");
-		const [files, setFiles] = useState<File[]>([]);
+		const	{ t } = useTranslation(["publish", "error"]);
+		const	[files, setFiles] = useState<File[]>([]);
+		const	[isDisabled, setIsDisabled] = useState<boolean>(false);
+		const	handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+			const	allowedTypes: string[] = ["image/jpeg", "image/png", "image/webp"]
+			const	validFiles: File[] = [...files];
+			const	tmp: string[] = [...dataToPreview];
+			
+			if (e.target.files)
+			{
+				for (let i = 0; i < e.target.files.length; i++)
+				{
+					const	file: File = e.target.files[i];
 
-		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-			const selectedFiles = e.target.files ? Array.from(e.target.files) : [];
-			let tmp: string[] = [...dataToPreview];
+					if (validFiles.length >= MAX_IMG)
+					{
+						toast.error(t("error:validation.listing.photos.max_count"));
+						break ;
+					}
 
-			selectedFiles.forEach((file) => {
-				tmp.push(URL.createObjectURL(file));
-			});
+					if (file.size > (5 * 1024 * 1024))
+					{
+						toast.error(file.name + ": " + t( "error:validation.file.too_large"));
+						continue ;
+					}
+					if (!allowedTypes.includes(file.type))
+					{
+						toast.error(file.name + ": " + t("error:validation.file.invalid_format"));
+						continue ;
+					}
+					validFiles.push(file);
+					tmp.push(URL.createObjectURL(file));
+				}
+			}
 
-			setFiles(selectedFiles);
+			setFiles(validFiles);
 			setDataToPreview(tmp);
+			if (inputRef?.current)
+			{
+				const	dataTransfer = new DataTransfer();
+
+				validFiles.forEach((file: File) => {
+					dataTransfer.items.add(file);
+				});
+				inputRef.current.files = dataTransfer.files;
+			}
 		};
 
 		const handleRemoveFiles = (index: number) => {
@@ -58,7 +94,10 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 				if (inputRef?.current) inputRef.current.value = "";
 			},
 		}));
-
+		
+		useEffect(() => {
+			setIsDisabled(files.length >= MAX_IMG);
+		}, [files, setIsDisabled]);
 		return (
 			<div
 				className="flex items-center justify-center
@@ -74,6 +113,9 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 					className="flex items-center justify-center gap-3
 						absolute
 						w-full h-full"
+						style={{
+							opacity: isDisabled ? "25%" : "100%",
+						}}
 				>
 					<div className="font-icon text-2xl">󰐕</div>
 					<div className="font-light text-sm">
@@ -85,12 +127,15 @@ const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 					className="p-2
 						absolute top-0 left-0
 						text-transparent
-						cursor-pointer
 						w-full h-full"
 					type="file"
 					accept="image/*"
 					multiple
-					onChange={handleChange}
+					onChange={ handleChange }
+					style={{
+						cursor: isDisabled ? "not-allowed" : "pointer"
+					}}
+					disabled={ isDisabled }
 				/>
 			</div>
 		);
