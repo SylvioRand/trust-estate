@@ -37,7 +37,7 @@ def format_chroma_response(user_mssg, chroma_text, history: list[str]):
         formated += context
     else:
         formated += "None"
-    if len(history) > 0:
+    if len(history) > 1:
         formated += "USER HISTORY (Previous user messages):\n" 
         for elem in history:
             formated += f"{line}. {elem}\n"
@@ -82,61 +82,18 @@ async def lifespan(_: FastAPI):
             await asyncio.sleep(interval)
     if not is_connected:
         print("Failed to init with server chromadb")
+        exit(1)
     else:
         await chromadb_service.create_collection("posts")
-        post1 = PostModel(
-            id = "moi",
-            title = "White house",
-            type = "sale",
-            propertyType = "apartment",
-            description = "President House, beautiful, smell money",
-            price = 80000000,
-            zone = "Ivandry",
-            surface = 35,
-        )
-        post2 = PostModel(
-            id = "momo",
-            title = "Haunted house",
-            type = "sale",
-            propertyType = "apartment",
-            description = "Horror house, there is ghost here",
-            price = 200000000,
-            zone = "Ivandry",
-            surface = 200,
-            tags = ["urgent"]
-        )
-
-        post3 = PostModel(
-            id = "koko",
-            title = "Haunted house",
-            post_type = "sale",
-            property_type = "apartment",
-            description = "Horror house, there is ghost here",
-            price = 100000000,
-            zone = "Ivandry",
-            surface = 400,
-            photos = [],
-            tags = ["urgent"]
-        )
-
-        await chromadb_service.add_to_collection("posts", post1)
-        await chromadb_service.add_to_collection("posts", post2)
-        await chromadb_service.add_to_collection("posts", post3)
     yield
     
 app = FastAPI(lifespan=lifespan)
 
-# ====================== Default route ================
-# @app.get("/")
-# def default_root():
-#     print("Hello there !")
-
-# ===================== Test LLM messages ===============================
-
+# ====================== LLM cases ==================
 
 llm_service = LLMService()
 
-# Catch errors of models, type need to be str, or field name incorrect, ...
+# Catch errors of models, type need to be str, or field name incorrect, value not correct, ...
 @app.exception_handler(RequestValidationError)
 async def exception_handler(_: Request, exception_error: RequestValidationError):
     return JSONResponse(
@@ -167,6 +124,8 @@ async def chatbot(text: RequestChat):
     context = None
     chroma_reply = None
 
+    await chromadb_service.list_collections()
+
     await chromadb_service.get_all_in_collection("posts")
     if text.context and len(text.context) > 0:
         context = text.context
@@ -176,12 +135,9 @@ async def chatbot(text: RequestChat):
     else:
         chroma_reply = await chromadb_service.get_post_in_collection("posts", context)
     formated = format_chroma_response(user_mssg, chroma_reply, prompt.get_history())
-
-    print(f"Formated is ============================>\n {formated}")
     id_found = chromadb_service.get_ids_from_query(chroma_reply)
     llm_response = llm_service.generate_response(formated, llm_service.generate_rules())
 
-    print(id_found)
     return ResponseChat(
         reply = llm_response,
         links = id_found
