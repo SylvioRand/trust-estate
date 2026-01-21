@@ -128,12 +128,10 @@ services:
     image: chromadb/chroma:0.6.3
     ports:
       - "8001:8000"
-    volumes:
-      - chromadb_data:/chroma/chroma
-    environment:
-      - IS_PERSISTENT=TRUE
-      - CHROMA_TELEMETRY_ENABLED=False
-      - ANONYMIZED_TELEMETRY=False
+    env_file:
+      - .env
+    # volumes:
+    #   - chromadb_data:/chroma/chroma
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat" ]
@@ -165,5 +163,5 @@ services:
 volumes:
   postgres_data:
   uploads_data: # Volume persistant pour les images
-  chromadb_data:
-    driver: local
+  # chromadb_data:
+  #   driver: local

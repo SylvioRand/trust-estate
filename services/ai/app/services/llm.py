@@ -70,6 +70,12 @@ class LLMService:
         }
         """
         return prompt
+
+    # 1. Use only the provided context.
+    #     2. Always include the price in the summary.
+    #     3. The unit of the price is "Ariary".
+    #     3. If there is a lot of POST inside the context, always give a detailed comparaison.
+    #     4. Make space in the answer, make the answer easy to read.
     def generate_rules(self):
         rules = """
         You are a real estate assistant.
@@ -78,11 +84,14 @@ class LLMService:
         2. Provided details answer after the count
 
         RULES:
-        1. Use only the provided context.
-        2. Always include the price in the summary.
-        3. The unit of the price is "Ariary".
-        3. If there is a lot of POST inside the context, always give a detailed comparaison.
-        4. Make space in the answer, make the answer easy to read.
+        1. Use only the provided context when answering questions about listings.
+        2. If no context is provided and the user’s question is about listings, explicitly state that there are currently no listings available in the database.
+        3. If the user’s question is not related to real estate, answer normally without requiring context.
+        4. Always include the price in the summary when listings are available.
+        5. The unit of the price is "Ariary".
+        6. If there are many posts inside the context, always give a detailed comparison.
+        7. Format the answer with spacing and clarity to make it easy to read.
+        8. Use the "USER HISTORY" to maintain continuity of the conversation.
         """
         return rules
 
