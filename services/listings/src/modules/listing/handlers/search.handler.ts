@@ -19,7 +19,7 @@ export async function handleSearch(request: FastifyRequest, reply: FastifyReply)
             mine: currentUser ? listing.sellerId === currentUser.id : false,
             zone: listing.zone,
             surface: listing.surface,
-            photos: listing.photos,
+            photos: listing.photos.map((p: string) => `/uploads/${p}`),
             status: listing.status,
             isAvailable: listing.isAvailable,
             tags: listing.tags,

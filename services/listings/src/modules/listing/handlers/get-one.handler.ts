@@ -48,7 +48,7 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
       propertyType: listing.propertyType,
       surface: listing.surface,
       zone: listing.zone,
-      photos: listing.photos,
+      photos: listing.photos.map((p: string) => `/uploads/${p}`),
       features: listing.features ? {
         bedrooms: listing.features.bedrooms,
         bathrooms: listing.features.bathrooms,

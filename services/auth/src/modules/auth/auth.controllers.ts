@@ -164,6 +164,7 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 
 		return (reply.redirect(`${request.server.config.FRONTEND_URL}/home?auth_google=success`));
 	} catch (error: any) {
+		console.error("❌ Google Auth Callback Error:", error);
 		if (error.message === "Invalid credential")
 			return reply.status(400).send({
 				"error": "invalid_google_token",
