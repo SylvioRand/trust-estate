@@ -40,14 +40,12 @@ await setupErrorHandler(server);
 await pluginRegister(server);
 await creditRoutesRegister(server);
 
-server.get("/api/auth", async (req: FastifyRequest, reply: FastifyReply) => {
-	return reply.status(200).send("Bonjour depuis auth");
-});
+
 
 const start = async () => {
 	try {
 		await server.listen({
-			port: parseInt(server.config.PORT_AUTH_CREDIT || '3003'),
+			port: parseInt(server.config.PORT_CREDITS_SERVICE || '3004'),
 			host: '0.0.0.0'
 		});
 

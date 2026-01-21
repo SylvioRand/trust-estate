@@ -21,6 +21,7 @@ export async function handleGetMine(request: FastifyRequest, reply: FastifyReply
             tags: listing.tags,
             views: listing.stats?.views || 0,
             reservations: listing.stats?.reservations || 0,
+            photos: listing.photos.map((p: string) => `/uploads/${p}`),
             createdAt: listing.createdAt
         }));
 

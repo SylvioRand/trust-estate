@@ -222,11 +222,18 @@ const SignUpPage: React.FC = () => {
 
 					<div className="text-[12px]">
 						{t("legal.accept")}{" "}
-						<span className="underline cursor-pointer font-bold">
+						<span
+						className="underline cursor-pointer font-bold"
+						onClick={ () => navigate("/term-of-services") }
+						>
 							{t("legal.terms")}
 						</span>{" "}
 						{t("legal.and")}{" "}
-						<span className="underline cursor-pointer font-bold">
+						<span
+						className="underline cursor-pointer font-bold"
+						onClick={ () => navigate("/privacy-policy") }
+						>
+							
 							{t("legal.privacy")}
 						</span>
 					</div>

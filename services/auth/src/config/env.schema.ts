@@ -35,8 +35,8 @@ export const envSchema = {
 		AUTH_URL: { type: 'string' },
 		TOKEN_URL: { type: 'string' },
 		USER_INFO_URL: { type: 'string' },
-		CREDITS_SERVICE_URL: { type: 'string' },
-		LISTINGS_SERVICE_URL: { type: 'string' },
+		CREDITS_SERVICE_URL: { type: 'string', default:"http://credits-service:3004" },
+		LISTINGS_SERVICE_URL: { type: 'string', default: "http://listings-service:3002" },
 		RESERVATION_SERVICE_URL: { type: 'string' },
 	}
 };

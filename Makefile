@@ -93,10 +93,19 @@ reload-listings:
 	@echo "🔄 Reloading listings service..."
 	$(DOCKER_COMPOSE) up -d --build listings-service
 
-# Fast reload for listings service only
+# Fast reload for nginx service only
 reload-nginx:
 	@echo "🔄 Reloading nginx service..."
 	$(DOCKER_COMPOSE) up -d --build nginx
+
+reload-reservation:
+	@echo "🔄 Reloading reservation service..."
+	$(DOCKER_COMPOSE) up -d --build reservation
+
+reload-credits:
+	@echo "🔄 Reloading credits service..."
+	$(DOCKER_COMPOSE) up -d --build credits-service
+
 
 # Show which docker compose command is being used
 check:
@@ -117,3 +126,6 @@ certs:
 	else \
 		echo "✅ Certificates already exist."; \
 	fi
+
+run-no-ai:
+	DOCKER_BUILDKIT=0 docker compose up -d --build nginx auth-service listings-service reservations-service db credits-service
