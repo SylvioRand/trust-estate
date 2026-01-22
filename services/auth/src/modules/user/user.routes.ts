@@ -30,7 +30,7 @@ export async function userRoutes(app: FastifyInstance, options: FastifyPluginOpt
 		}, userControllers.updateInfoUser);
 	app.get<{Params: {id: string}}>("/users/:id/details",
 		{
-			preHandler: app.authentication
+			preHandler: app.authValidations
 		}, userControllers.userDetails);
 }
 
