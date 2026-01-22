@@ -106,6 +106,15 @@ reload-credits:
 	@echo "🔄 Reloading credits service..."
 	$(DOCKER_COMPOSE) up -d --build credits-service
 
+reload-ai:
+	@echo "🔄 Reloading ai service..."
+	$(DOCKER_COMPOSE) up -d --build ai-service
+
+reload-chromadb:
+	@echo "🔄 Reloading chromadb service..."
+	$(DOCKER_COMPOSE) up -d --build chromadb-service
+
+
 
 # Show which docker compose command is being used
 check:

@@ -12,7 +12,7 @@ export async function handleArchive(request: FastifyRequest, reply: FastifyReply
     const validatedData = ArchiveListingSchema.parse(request.body || {});
 
     const listing = await ListingService.archiveListing(id, user.id, validatedData);
-    AIClient.deleteIndexLinsting(listing.id)
+    AIClient.deleteIndexListing(listing.id);
 
     return reply.status(200).send({
       archived: true,
