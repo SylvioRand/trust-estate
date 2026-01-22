@@ -233,3 +233,35 @@ export async function resetPassword(request: FastifyRequest<{
 export async function authValidate(request: FastifyRequest, reply: FastifyReply) {
 	return (request.user);
 }
+
+export async function verificationUserRole(request: FastifyRequest, reply: FastifyReply) {
+	const user = request.user as UserInterface;
+
+	if (!user) {
+		return reply.status(401).send({
+			"error": "invalid_credentials",
+			"message": "auth.invalid_credentials"
+		});
+	}
+
+	try {
+		const userId = await authServices.isModerator(request.server, user.id);
+		return reply.status(200).send({
+			"id": userId,
+			"role": "moderator",
+			"phoneVerified": true,
+			"emailVerified": true
+		})
+	} catch (error: any) {
+		if (error.message === "admin_required")
+			return reply.status(403).send({
+				"error": "forbidden",
+				"message": "auth.admin_required"
+			})
+		else
+			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
+}

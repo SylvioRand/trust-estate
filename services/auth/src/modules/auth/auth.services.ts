@@ -468,4 +468,18 @@ export async function crediter(app: FastifyInstance, userId: string) {
 		app.log.error({ error }, 'Failed to credit user');
 		// throw error;
 	}
+};
+
+export async function isModerator(app: FastifyInstance, userId: string) {
+	const user = await app.prisma.user.findUnique({
+		where: {id : userId},
+	});
+
+	if (!user)
+		throw new Error("User not found");
+
+	if (user.role != "MODERATOR")
+		throw new Error("admin_required");
+
+	return (user.id);
 }
