@@ -25,7 +25,7 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
 
     if (sellerVisible) {
       try {
-        const user = await AuthClient.getUserDetails(reply, listing.sellerId);
+        const user = await AuthClient.getUserDetails(listing.sellerId);
         sellerData = {
           id: user.id,
           name: `${user.firstName} ${user.lastName}`,

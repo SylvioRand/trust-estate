@@ -3,9 +3,9 @@ import * as authControllers from "../auth/auth.controllers"
 import { ForgotPasswordSchema, LoginUserSchema, ResendEmailSchema, ResetPasswordSchema, SignUpUserSchema, UpdatePhoneNumberSchema, VerificationTokenSchema } from "./auth.schema";
 
 export async function authRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
-	app.post("/login", {schema: LoginUserSchema}, authControllers.loginUser);
-	app.post("/register", {schema: SignUpUserSchema}, authControllers.signUpUser);
-	app.post("/logout",{preHandler: app.partialAuthentication }, authControllers.logoutUser);
+	app.post("/login", { schema: LoginUserSchema }, authControllers.loginUser);
+	app.post("/register", { schema: SignUpUserSchema }, authControllers.signUpUser);
+	app.post("/logout", { preHandler: app.partialAuthentication }, authControllers.logoutUser);
 	app.post("/forgot-password", {
 		config: {
 			rateLimit: {
@@ -21,12 +21,13 @@ export async function authRoutes(app: FastifyInstance, options: FastifyPluginOpt
 				}
 			}
 		},
-		schema: ForgotPasswordSchema}, authControllers.forgotPassword);
-	app.post("/reset-password", {schema: ResetPasswordSchema}, authControllers.resetPassword)
+		schema: ForgotPasswordSchema
+	}, authControllers.forgotPassword);
+	app.post("/reset-password", { schema: ResetPasswordSchema }, authControllers.resetPassword)
 }
 
 export async function emailAuthRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
-	app.post("/verify-email", {schema: VerificationTokenSchema }, authControllers.verifiedEmail);
+	app.post("/verify-email", { schema: VerificationTokenSchema }, authControllers.verifiedEmail);
 	app.post("/resend-email", {
 		config: {
 			rateLimit: {
@@ -53,5 +54,5 @@ export async function oathAuthRoutes(app: FastifyInstance, options: FastifyPlugi
 }
 
 export async function authenticationInterne(app: FastifyInstance, options: FastifyPluginOptions) {
-	app.post("/verify-token", {preHandler: app.authValidations}, authControllers.authValidate)
+	app.post("/verify-token", { preHandler: app.authValidations }, authControllers.authValidate)
 }
