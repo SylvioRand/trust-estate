@@ -12,11 +12,11 @@
 
 from app.config import config
 from app.services.llm import LLMService
-from app.models import Description, RequestChat, ResponseChat, PostModel
+from app.models import Description, RequestChat, PostModel
 
 from fastapi import FastAPI, status, Request, Response, Header, HTTPException, Depends
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from contextlib import asynccontextmanager
 from app.services.chromadb import chromadb_service
@@ -136,13 +136,10 @@ async def chatbot(text: RequestChat):
     else:
         chroma_reply = await chromadb_service.get_post_in_collection("posts", context)
     formated = format_chroma_response(user_mssg, chroma_reply, prompt.get_history())
-    id_found = chromadb_service.get_ids_from_query(chroma_reply)
-    llm_response = llm_service.generate_response(formated, llm_service.generate_rules())
+    # id_found = chromadb_service.get_ids_from_query(chroma_reply)
+    llm_response = llm_service.generate_stream_response(formated, llm_service.generate_rules())
 
-    return ResponseChat(
-        reply = llm_response,
-        links = id_found
-    )
+    return StreamingResponse(llm_response, media_type="text/plain")
 
 @app.delete("/ai/index/{listingId}")
 async def deletePost(listingId: str, _: dict = Depends(check_keys)):
@@ -182,7 +179,7 @@ async def isListIndexed(listingId: str):
 async def generate_better_description(text: Description):
 
     try:
-        llm_response = llm_service.generate_response(text.description, llm_service.generate_description())
+        llm_response = llm_service.generate_bloc_response(text.description, llm_service.generate_description())
 
         return {
             "reply": llm_response
