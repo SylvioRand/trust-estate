@@ -258,6 +258,11 @@ export async function verificationUserRole(request: FastifyRequest, reply: Fasti
 				"error": "forbidden",
 				"message": "auth.admin_required"
 			})
+		else if (error.message === "User not found")
+			return reply.status(404).send({
+				"error": "forgot_pass_user_not_found",
+				"message": "auth.forgot_pass_user_not_found"
+			});
 		else
 			return reply.status(500).send({
 				"error": "internal_server_error",
