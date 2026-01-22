@@ -1,4 +1,6 @@
 {
+	"ERROR": "Une erreur a malheureusement été rencontrée.",
+
 	"common": {
 		"validation_failed": "Les données fournies sont invalides.",
 		"rate_limited": "Trop de requêtes. Veuillez réessayer plus tard.",
@@ -58,7 +60,11 @@
 			"invalid_format": "Le format du fichier n’est pas pris en charge."
 		},
 		"listing": {
+			"zone": {
+				"invalid_value": "Une zone invalide a été passée au back-end."
+			},
 			"photos": {
+				"min_count": "Un minimum de 3 images est requis.",
 				"max_count": "Un maximum de 10 images est autorisé."
 			},
 			"price": {

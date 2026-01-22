@@ -14,6 +14,7 @@ import chromadb
 import json
 import re
 
+from chromadb.config import Settings
 from app.models import PostModel
 from app.services.embedding import embeddingService
 
@@ -39,7 +40,11 @@ class ChromadbService:
         return None
         
     async def initRequest(self):
-        self.client = await chromadb.AsyncHttpClient(host='ft_chromadb', port=8000)
+        self.client = await chromadb.AsyncHttpClient(
+                host='chromadb-service',
+                port=8000,
+                settings=Settings(anonymized_telemetry=False)
+        )
 
     async def create_collection(self, collection_name="posts"):
         try:
@@ -62,8 +67,8 @@ class ChromadbService:
         embedding_result = embeddingService.generate_embedding(text)
         metadata = {
             "title": data.title,
-            "post_type": data.post_type,
-            "property_type": data.property_type,
+            "post_type": data.type,
+            "property_type": data.propertyType,
             "price": data.price,
             "zone": data.zone,
         }
@@ -92,8 +97,8 @@ class ChromadbService:
         embedding_result = embeddingService.generate_embedding(text)
         metadata = {
             "title": data.title,
-            "post_type": data.post_type,
-            "property_type": data.property_type,
+            "post_type": data.type,
+            "property_type": data.propertyType,
             "price": data.price,
             "zone": data.zone,
         }
@@ -159,7 +164,6 @@ class ChromadbService:
             n_results=nb_result,
             where=parse_filters
         )
-
         return result
 
     def get_parse_prompt(self):
@@ -213,7 +217,24 @@ class ChromadbService:
         search_text = datas.get("search_text", user_mssg)
         filters = datas.get("filters", None)
         result = await self.query_in_collection("posts", search_text, 5, filters)
-        return result
+
+        relevant_data = [
+                (id, doc, meta, score)
+                for id, doc, meta, score in zip(
+                    result['ids'][0],
+                    result['documents'][0],
+                    result['metadatas'][0],
+                    result['distances'][0]
+                )
+                if score < 0.8
+        ]
+        new_result = {
+                "ids": [[id for id, _, _, _ in relevant_data]],
+                "documents": [[doc for _, doc, _, _ in relevant_data]],
+                "metadatas": [[meta for _, _, meta, _ in relevant_data]],
+                "distances": [[score for _, _, _, score in relevant_data]],
+        }
+        return new_result
 
     async def is_post_in_collection(self, collection_name, specific_ids):
         target_collection = self.collections.get(collection_name)
@@ -257,6 +278,12 @@ class ChromadbService:
         if 'distances' in query and query['distances']:
             query['distances'][0].append(0.0)
         return query
+    
+    def get_ids_from_query(self, query_result):
+
+        if query_result.get('ids') and len(query_result['ids']) > 0:
+            return query_result['ids'][0]
+        return []
 
     #================= DEBUG Methods =========================
     async def list_collections(self):

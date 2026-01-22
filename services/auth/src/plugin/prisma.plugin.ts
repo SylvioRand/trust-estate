@@ -8,6 +8,8 @@ async function prismaPlugin(fastify: FastifyInstance, options: FastifyPluginOpti
 	});
 
 	await prisma.$connect();
+
+	await prisma
 	fastify.decorate('prisma', prisma);
 	fastify.addHook('onClose', async (fastify: FastifyInstance) => {
 		await prisma.$disconnect();
