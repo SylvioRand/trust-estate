@@ -1,6 +1,12 @@
 {
 	"ERROR": "Une erreur a malheureusement été rencontrée.",
 
+	"ai": {
+		"rate_limited_generate": "Vous avez atteint la limite de requêtes. Veuillez patienter un moment avant de réessayer.",
+		"success_generate": "Votre description a été améliorée avec succès.",
+		"not_enough_data": "La description fournie ne contient pas suffisamment d’informations pour être améliorée. Veuillez ajouter plus de détails et réessayer."
+	},
+
 	"common": {
 		"validation_failed": "Les données fournies sont invalides.",
 		"rate_limited": "Trop de requêtes. Veuillez réessayer plus tard.",
