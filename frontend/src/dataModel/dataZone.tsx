@@ -7,6 +7,6 @@ interface Zone {
 }
 
 export const ZONE_ENUM: InputEnumData[] = (zoneObject.zones as Zone[]).map((zone: Zone) => ({
-    value: zone.id,
+    value: zone.displayName,
     title: zone.displayName
 }));
