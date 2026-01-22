@@ -25,7 +25,7 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
 
     if (sellerVisible) {
       try {
-        const user = await AuthClient.getUserDetails(reply, listing.sellerId);
+        const user = await AuthClient.getUserDetails(listing.sellerId);
         sellerData = {
           id: user.id,
           name: `${user.firstName} ${user.lastName}`,
@@ -72,27 +72,25 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
       updatedAt: listing.updatedAt.toISOString()
     };
 
-    reply.status(200).send(response);
+    return reply.status(200).send(response);
 
   } catch (error: any) {
     if (error instanceof ZodError) {
-      reply.status(400).send({
+      return reply.status(400).send({
         "error": "validation_error",
         "message": error.issues
       });
-      return;
     }
 
     if (error.message === 'listing.not_found') {
-      reply.status(404).send({
+      return reply.status(404).send({
         "error": "listing_not_found",
         "message": "listing.not_found"
       });
-      return;
     }
 
     // Default error
-    reply.status(500).send({
+    return reply.status(500).send({
       "error": "internal_server_error",
       "message": "An unexpected error occurred"
     });

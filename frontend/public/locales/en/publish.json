@@ -2,6 +2,8 @@
 	"buttons": {
 		"goBackToProfile": "Back to profile"
 	},
+	
+	"uploadSuccess": "The listing has been successfully submitted and published. You will be redirected to the corresponding page shortly.",
 
 	"section": {
 		"main": {
@@ -39,6 +41,9 @@
 				"area": {
 					"title": "Area",
 					"placeholder": "Area in foot square(M2)"
+				},
+				"wc": {
+					"title": "Toilet"
 				},
 				"propertyType": {
 					"title": "Type of property",
@@ -101,9 +106,8 @@
 					"clear": "Clear all"
 				},
 				"upload": {
-					"idleState": "Post Listing",
-					"uploadingImages": "Uploading Images",
-					"uploadingListing": "Uploading Listing"
+					"title": "Upload",
+					"processing": "Uploading"
 				}
 			}
 		}

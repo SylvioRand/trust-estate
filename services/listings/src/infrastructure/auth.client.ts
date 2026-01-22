@@ -37,7 +37,10 @@ export class AuthClient {
     }
   }
 
-  static async getUserDetails(reply: FastifyReply, sellerId: string) { // TODO test after GET /users/:id/details is done
+  static async isModerator(rawCookie: string | undefined) {
+    if (!this.INTERNAL_KEY_SECRET) {
+      throw new Error('INTERNAL_KEY_SECRET is not defined');
+    }
 
     const internalToken = jwt.sign(
       { service: 'listings' },
@@ -46,26 +49,55 @@ export class AuthClient {
     );
 
     try {
-      const response = await fetch(`${this.AUTH_SERVICE_URL}/auth/users/${sellerId}/details`, {
+      const response = await fetch(`${this.AUTH_SERVICE_URL}/auth/is-moderator`, {
+        method: 'GET',
+        headers: {
+          'x-internal-key': internalToken,
+          'Cookie': rawCookie || '',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('auth.unauthorized');
+      }
+
+      return await response.json() as { id: string; role: string; emailVerified: boolean; phoneVerified: boolean };
+    } catch (error) {
+      console.error('❌ Auth verification failed:', error);
+      throw new Error('auth.verification_failed');
+    }
+  }
+
+  static async getUserDetails(sellerId: string) {
+    const internalToken = jwt.sign(
+      { service: 'listings' },
+      this.INTERNAL_KEY_SECRET,
+      { algorithm: 'HS256' }
+    );
+
+    try {
+      const response = await fetch(`${this.AUTH_SERVICE_URL}/users/${sellerId}/details`, {
         method: 'GET',
         headers: {
           'x-internal-key': internalToken,
         }
       });
 
-      return ({ // TODO remove this mock after auth endrpoint ready
-        id: sellerId,
-        firstName: "John",
-        lastName: "Doe",
-        email: "steinleisilva2.0@gmail.com",
-        phone: "0386060430",
-        createdAt: "2025-01-10T08:00:00Z"
-      });
-
       if (!response.ok) {
-        throw new Error('internal server error')
+        if (response.status === 404) throw new Error('user_not_found');
+        throw new Error('internal_server_error');
       }
+
+      return await response.json() as {
+        id: string;
+        firstName: string;
+        lastName?: string;
+        email: string;
+        phone?: string;
+        createdAt: string;
+      };
     } catch (error) {
+      console.error('❌ Failed to fetch user details:', error);
       throw error;
     }
   }

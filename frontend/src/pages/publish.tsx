@@ -1,4 +1,4 @@
-import React, { useRef, useState, type RefObject } from "react";
+import React, { useEffect, useRef, useState, type RefObject } from "react";
 import SimpleInput from "../components/Input";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
@@ -10,7 +10,8 @@ import type { ListingsTags } from "../dataModel/modelListings";
 import { TagsComponents } from "./listings";
 import PopUp, { type PopUpAPI } from "../components/PopUp";
 import { ZONE_ENUM } from "../dataModel/dataZone";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface	PicturePreviewerProps {
 	src: string;
@@ -41,6 +42,7 @@ const	PicturePreviewer: React.FC<PicturePreviewerProps> = ({
 				bg-foreground
 				w-8 h-8
 				rounded-full
+				cursor-pointer
 				transition-colors duration-200"
 				onPointerEnter={ () => setHovered(true) }
 				onPointerLeave={ () => setHovered(false) }
@@ -71,10 +73,7 @@ const	PublishPage: React.FC = () => {
 	const	[errorBedrooms, setErrorBedrooms] = useState<string[]>([]);
 	const	[errorBathrooms, setErrorBathrooms] = useState<string[]>([]);
 	const	[uploadButtonProcessing, setUploadButtonProcessing] = useState<boolean>(false);
-	const	[uploadButtonState, setUploadButtonState] = useState<"idle" | "uploadingImages" | "uploadingListing">("idle");
-	const	[uploadButtonDisabled, setUploadButtonDisabled] = useState<boolean>(false);
-	const	titleUploadButton: string = uploadButtonState === "idle" ? t("section.main.buttons.upload.idleState")
-		: (uploadButtonState === "uploadingImages" ? t("section.main.buttons.upload.uploadingImages") : t("section.main.buttons.upload.uploadingListing"));
+	const	[isUploadDisabled, setIsUploadDisabled] = useState<boolean>(false);
 
 	const	[activeTags, setActiveTags] = useState<ListingsTags[]>(["urgent", "exclusive", "discount"]);
 	const	[openPopupAddTags, setOpenPopupAddTags] = useState<boolean>(false);
@@ -85,13 +84,118 @@ const	PublishPage: React.FC = () => {
 		{ value: "false", title: t("common:false") }
 	]
 
+	type	UploadDataType = {
+		"type": "sale" | "rent",
+		"propertyType": "apartment" | "house" | "loft" | "land" | "commercial",
+		"title": string,
+		"description": string,
+		"price": number,
+		"surface": number,
+		"zone": string,
+		"features": {
+			"bedrooms": number,
+			"bathrooms": number,
+			"wc": boolean,
+			"wc_separate": boolean,
+			"parking_type": "garage" | "box" | "parking" | "none",
+			"garden_private": boolean,
+			"pool": boolean,
+			"water_access": boolean,
+			"electricity_access": boolean
+		},
+		"tags": ListingsTags[]
+	};
+
+	const	navigate = useNavigate();
+
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		const formData = new FormData(e.currentTarget);
-		const data = Object.fromEntries(formData.entries());
+		setUploadButtonProcessing(true);
 
-		console.log(data);
+		const	formData = new FormData(e.currentTarget);
+		const	data = Object.fromEntries(formData.entries());
+
+		const	dataObj: UploadDataType = {
+			"type": data.type as ("sale" | "rent"),
+			"propertyType": data.propertyType as ("apartment" | "house" | "loft" | "land" | "commercial"),
+			"title": data.title as string,
+			"description": data.description as string,
+			"price": Number(data.price) as number,
+			"surface": Number(data.area) as number,
+			"zone": data.zone as string,
+			"features": {
+				"bedrooms": Number(data.bedrooms) as number,
+				"bathrooms": Number(data.bathrooms) as number,
+				"wc": data.wc === "true",
+				"wc_separate": data.wc_separate === "true",
+				"parking_type": data.parking_type as ("garage" | "box" | "parking" | "none"),
+				"garden_private": data.garden_private === "true",
+				"pool": data.pool === "true",
+				"water_access": data.water_access === "true",
+				"electricity_access": data.electricity_access === "true"
+			},
+			"tags": activeTags
+		}
+
+		const	uploadFormData = new FormData();
+
+		uploadFormData.append("data", JSON.stringify(dataObj));
+
+
+		if (inputRef && inputRef.current && inputRef.current.files && inputRef.current?.files?.length > 0)
+		{
+			for (let i = 0; i < inputRef.current?.files?.length; i++)
+				uploadFormData.append("files", inputRef.current?.files[i]);
+		}
+
+		try {
+			const	response = await fetch("/api/listings/publish", {
+				method: "POST",
+				body: uploadFormData,
+				redirect: "follow",
+				credentials: "include"
+			})
+
+			const	responseData = await response.json();
+
+			if (response.ok)
+			{
+				toast.success(t("uploadSuccess"));
+				console.log(responseData);
+				setTimeout(() => {
+					navigate(`/property/listings?id=${responseData?.listingId}`)
+				}, 3000);
+			}
+			else
+			{
+				toast.error(t(`error:${responseData.message ?? "ERROR"}`));
+				if (responseData.details)
+				{
+					const	details: Record<string, string[]> = responseData.details as Record<string, string[]>;
+
+					for (const [key, value] of Object.entries(details)) {
+						for (let i = 0; i < value.length; i++)
+							toast.error(t(`error:${value[i]}`));
+					}
+				}
+				throw new Error(responseData?.message);
+			}
+
+		} catch (error) {
+			if (error instanceof Error)
+			{
+				if (error.message !== "")
+				{
+					console.error(t(`error:${error.message}`));
+					toast.error(t(`error:${error.message}`));
+				}
+			}
+		} finally {
+			setUploadButtonProcessing(false);
+		}
+
+		console.log(uploadFormData);
 	};
 
 	function	AddTagsButton({ tags = "urgent", title = "Title" } : { tags: ListingsTags, title: string }){
@@ -129,6 +233,11 @@ const	PublishPage: React.FC = () => {
 
 	const	refToDescription: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement | null>(null);
 	const	[processingDescriptionEnhancement, setProcessingDescriptionEnhancement] = useState<boolean>(false);
+	const	inputRef: RefObject<HTMLInputElement | null> = useRef<HTMLInputElement | null>(null);
+
+	useEffect(() => {
+		setIsUploadDisabled(dataToPreview.length < 3);
+	}, [dataToPreview]);
 
 	return (
 		<div className="flex flex-col items-center justify-start
@@ -232,6 +341,11 @@ const	PublishPage: React.FC = () => {
 					maxLength={24}
 					placeholder={ t("section.main.form.area.placeholder") }
 					error={ errorArea }
+				/>
+				<InputEnum
+					title={ t("section.main.form.wc.title") }
+					name="wc"
+					dataEnum={ InputEnumDataBoolean }
 				/>
 
 				<InputEnum
@@ -430,6 +544,7 @@ const	PublishPage: React.FC = () => {
 					w-full"
 				>
 					<ImageUploader
+						inputRef={ inputRef }
 						ref={ uploaderRef }
 						dataToPreview={ dataToPreview }
 						setDataToPreview={ setDataToPreview }
@@ -439,9 +554,9 @@ const	PublishPage: React.FC = () => {
 						<ActionButton
 							icon=""
 							icon_place="right"
-							title={ titleUploadButton }
+							title={ uploadButtonProcessing ? t("section.main.buttons.upload.processing") : t("section.main.buttons.upload.title") }
 							processing_action={ uploadButtonProcessing }
-							disabled={ uploadButtonDisabled }
+							disabled={ isUploadDisabled }
 							type="submit"
 						/>
 					</div>

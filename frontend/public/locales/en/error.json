@@ -1,4 +1,6 @@
 {
+	"ERROR": "An error was unfortunately encountered.",
+
 	"common": {
 		"validation_failed": "The provided data is invalid.",
 		"rate_limited": "Too many requests. Please try again later.",
@@ -59,7 +61,11 @@
 			"invalid_format": "The file format is not supported."
 		},
 		"listing": {
+			"zone": {
+				"invalid_value": "An invalid zone was passed to the back-end."
+			},
 			"photos": {
+				"min_count": "A minimum of 3 images is required.",
 				"max_count": "A maximum of 10 images is allowed."
 			},
 			"price": {
