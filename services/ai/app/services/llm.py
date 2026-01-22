@@ -127,7 +127,6 @@ class LLMService:
 
     def generate_stream_response(self, text, links, system_prompt=""):
 
-        # yield json.dumps({"type": "metadata", "links": links})
 
         try:
             with httpx.stream(
@@ -161,6 +160,7 @@ class LLMService:
 
         except Exception:
             yield "Error: sorry i couldn't process your question"
+            # yield json.dumps({"type": "metadata", "links": links})
 
     def generate_bloc_response(self, text, system_prompt=""):
         try:
