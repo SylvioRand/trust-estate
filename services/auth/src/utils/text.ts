@@ -1,212 +1,126 @@
-export function generateMail(lastname: string, verificationUrl: string)
-{
-	const nom = 'e-varotra';
-	return(
-	{
-	text: `
-		Bonjour ${lastname},
+export function generateMail(lastname: string, verificationUrl: string) {
+    const nom = 'CASA';
+    const year = new Date().getFullYear();
 
-		Bienvenue sur ${nom} !
+    return {
+        text: `
+            Bonjour ${lastname},
+            Bienvenue sur ${nom} !
+            Pour finaliser votre inscription, veuillez confirmer votre adresse email : ${verificationUrl}
+            Ce lien est valide pendant 24 heures.
+            Cordialement, L'équipe ${nom}
+        `,
+        html: `
+        <!DOCTYPE html>
+        <html lang="fr">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #121212; color: #ffffff;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #121212; padding: 40px 20px;">
+                <tr>
+                    <td align="center">
+                        <table width="100%" style="max-width: 600px; background-color: #1e1e1e; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333333;">
+                            <tr>
+                                <td style="padding: 40px 0; text-align: center; background: linear-gradient(135deg, #1e1e1e 0%, #252525 100%);">
+                                    <h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -1px; color: #ffffff;">
+                                        <span style="color: #8b5cf6;">C</span>ASA
+                                    </h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 40px;">
+                                    <h2 style="margin: 0 0 20px 0; font-size: 24px; font-weight: 700; color: #ffffff;">Vérifiez votre email 👋</h2>
+                                    <p style="color: #a1a1aa; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                                        Bonjour <strong>${lastname}</strong>,
+                                    </p>
+                                    <p style="color: #a1a1aa; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
+                                        Bienvenue sur <strong>${nom}</strong>. Cliquez sur le bouton ci-dessous pour sécuriser votre compte.
+                                    </p>
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td align="center" style="padding-bottom: 40px;">
+                                                <a href="${verificationUrl}" style="display: inline-block; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: #ffffff; text-decoration: none; padding: 16px 45px; border-radius: 12px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
+                                                    Confirmer mon email
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <div style="padding: 20px; background-color: #27272a; border-radius: 10px; border: 1px dashed #3f3f46;">
+                                        <p style="color: #71717a; font-size: 13px; margin: 0; line-height: 1.5; word-break: break-all;">
+                                            <strong>Lien direct :</strong><br>
+                                            <a href="${verificationUrl}" style="color: #8b5cf6; text-decoration: none;">${verificationUrl}</a>
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 30px; text-align: center; border-top: 1px solid #333333; background-color: #1a1a1a;">
+                                    <p style="color: #a1a1aa; font-size: 12px; font-weight: 600; margin: 0;">
+                                        © ${year} ${nom.toUpperCase()}
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        `
+    };
+}
 
-		Pour finaliser votre inscription et sécuriser votre compte, veuillez confirmer votre adresse email en cliquant sur le lien ci-dessous :
+export function generateForgotPasswordMail(lastname: string, resetPasswordUrl: string) {
+    const nom = 'CASA';
+    const year = new Date().getFullYear();
 
-		${verificationUrl}
-
-		Ce lien est valide pendant 24 heures.
-
-		Si vous n'avez pas créé de compte sur notre plateforme, vous pouvez ignorer cet email en toute sécurité.
-
-		Cordialement,
-		L'équipe ${nom}
-		`,
-	html: `
-	<!DOCTYPE html>
-	<html>
-		<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		</head>
-		<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
-		<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
-			<tr>
-			<td align="center">
-				<table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-				
-				<!-- Header -->
-				<tr>
-					<td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
-					<h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">
-						Bienvenue ! 👋
-					</h1>
-					</td>
-				</tr>
-				
-				<!-- Content -->
-				<tr>
-					<td style="padding: 40px 30px;">
-					<p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
-						Bonjour <strong>${lastname}</strong>,
-					</p>
-					
-					<p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
-						Merci de vous être inscrit sur <strong>${nom}</strong> ! Nous sommes ravis de vous compter parmi nous.
-					</p>
-					
-					<p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
-						Pour finaliser votre inscription et sécuriser votre compte, veuillez confirmer votre adresse email en cliquant sur le bouton ci-dessous :
-					</p>
-					
-					<!-- CTA Button -->
-					<table width="100%" cellpadding="0" cellspacing="0">
-						<tr>
-						<td align="center" style="padding: 20px 0;">
-							<a href="${verificationUrl}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 6px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);">
-							Confirmer mon email
-							</a>
-						</td>
-						</tr>
-					</table>
-					
-					<p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 30px 0 0 0; padding-top: 20px; border-top: 1px solid #eeeeee;">
-						<strong>Le bouton ne fonctionne pas ?</strong><br>
-						Copiez et collez ce lien dans votre navigateur :<br>
-						<a href="${verificationUrl}" style="color: #667eea; word-break: break-all;">${verificationUrl}</a>
-					</p>
-					
-					<p style="color: #999999; font-size: 13px; line-height: 1.6; margin: 20px 0 0 0;">
-						⏱️ Ce lien est valide pendant <strong>24 heures</strong>.
-					</p>
-					</td>
-				</tr>
-				
-				<!-- Footer -->
-				<tr>
-					<td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
-					<p style="color: #999999; font-size: 13px; line-height: 1.6; margin: 0 0 10px 0;">
-						Si vous n'avez pas créé de compte sur notre plateforme, vous pouvez ignorer cet email en toute sécurité.
-					</p>
-					<p style="color: #999999; font-size: 13px; margin: 0;">
-						© ${new Date().getFullYear()} ${nom}. Tous droits réservés.
-					</p>
-					</td>
-				</tr>
-				
-				</table>
-			</td>
-			</tr>
-		</table>
-		</body>
-	</html>
-  `});
-};
-
-export function generateForgotPasswordMail(
-	resetPasswordUrl: string
-) {
-	const nom = 'e-varotra';
-
-	return {
-		text: `
-			Bonjour ,
-
-			Une demande de réinitialisation de mot de passe a été effectuée pour votre compte ${nom}.
-
-			Pour définir un nouveau mot de passe, veuillez cliquer sur le lien ci-dessous :
-
-			${resetPasswordUrl}
-
-			Ce lien est valide pendant 24 heures.
-
-			Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email. Votre mot de passe actuel restera inchangé.
-
-			Cordialement,
-			L'équipe ${nom}
-					`,
-		html: `
-			<!DOCTYPE html>
-			<html>
-				<head>
-					<meta charset="utf-8">
-					<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				</head>
-				<body style="margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color:#f4f4f4;">
-					<table width="100%" cellpadding="0" cellspacing="0" style="padding:20px; background-color:#f4f4f4;">
-						<tr>
-							<td align="center">
-								<table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-									
-									<!-- Header -->
-									<tr>
-										<td style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); padding:40px 30px; text-align:center;">
-											<h1 style="color:#ffffff; margin:0; font-size:26px; font-weight:600;">
-												Réinitialisation du mot de passe
-											</h1>
-										</td>
-									</tr>
-
-									<!-- Content -->
-									<tr>
-										<td style="padding:40px 30px;">
-											<p style="color:#333333; font-size:16px; line-height:1.6; margin:0 0 20px;">
-												Bonjour ,
-											</p>
-
-											<p style="color:#333333; font-size:16px; line-height:1.6; margin:0 0 20px;">
-												Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte
-												<strong>${nom}</strong>.
-											</p>
-
-											<p style="color:#333333; font-size:16px; line-height:1.6; margin:0 0 30px;">
-												Pour définir un nouveau mot de passe, cliquez sur le bouton ci-dessous :
-											</p>
-
-											<!-- CTA -->
-											<table width="100%" cellpadding="0" cellspacing="0">
-												<tr>
-													<td align="center" style="padding:20px 0;">
-														<a href="${resetPasswordUrl}"
-															style="display:inline-block; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-															color:#ffffff; text-decoration:none; padding:16px 40px; border-radius:6px;
-															font-size:16px; font-weight:600; box-shadow:0 4px 6px rgba(102,126,234,0.3);">
-															Réinitialiser mon mot de passe
-														</a>
-													</td>
-												</tr>
-											</table>
-
-											<p style="color:#666666; font-size:14px; line-height:1.6; margin:30px 0 0; padding-top:20px; border-top:1px solid #eeeeee;">
-												<strong>Le bouton ne fonctionne pas ?</strong><br>
-												Copiez et collez ce lien dans votre navigateur :<br>
-												<a href="${resetPasswordUrl}" style="color:#667eea; word-break:break-all;">
-													${resetPasswordUrl}
-												</a>
-											</p>
-
-											<p style="color:#999999; font-size:13px; margin:20px 0 0;">
-												⏱️ Ce lien est valide pendant <strong>24 heures</strong>.
-											</p>
-										</td>
-									</tr>
-
-									<!-- Footer -->
-									<tr>
-										<td style="background-color:#f8f9fa; padding:30px; text-align:center; border-top:1px solid #eeeeee;">
-											<p style="color:#999999; font-size:13px; line-height:1.6; margin:0 0 10px;">
-												Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute sécurité.
-												Aucune modification ne sera effectuée.
-											</p>
-											<p style="color:#999999; font-size:13px; margin:0;">
-												© ${new Date().getFullYear()} ${nom}. Tous droits réservés.
-											</p>
-										</td>
-									</tr>
-
-								</table>
-							</td>
-						</tr>
-					</table>
-				</body>
-			</html>
-		`
-	};
+    return {
+        text: `Bonjour ${lastname}, réinitialisez votre mot de passe ici : ${resetPasswordUrl}`,
+        html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="margin: 0; padding: 0; font-family: sans-serif; background-color: #121212; color: #ffffff;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 20px; background-color: #121212;">
+                <tr>
+                    <td align="center">
+                        <table width="100%" style="max-width: 600px; background-color: #1e1e1e; border-radius: 16px; overflow: hidden; border: 1px solid #333333;">
+                            <tr>
+                                <td style="padding: 40px; text-align: center;">
+                                    <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Mot de passe oublié ?</h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0 40px 40px 40px;">
+                                    <p style="color: #a1a1aa; font-size: 16px;">Bonjour <strong>${lastname}</strong>,</p>
+                                    <p style="color: #a1a1aa; font-size: 16px;">Cliquez ci-dessous pour définir un nouveau mot de passe pour votre compte <strong>${nom}</strong>.</p>
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td align="center" style="padding: 30px 0;">
+                                                <a href="${resetPasswordUrl}" style="background: #ffffff; color: #000000; text-decoration: none; padding: 15px 35px; border-radius: 8px; font-weight: 700;">
+                                                    Réinitialiser le mot de passe
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 20px; text-align: center; background-color: #1a1a1a;">
+                                    <p style="color: #52525b; font-size: 12px; margin: 0;">© ${year} ${nom}</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        `
+    };
 }
