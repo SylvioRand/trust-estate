@@ -55,3 +55,9 @@ export async function oathAuthRoutes(app: FastifyInstance, options: FastifyPlugi
 export async function authenticationInterne(app: FastifyInstance, options: FastifyPluginOptions) {
 	app.post("/verify-token", {preHandler: app.authValidations}, authControllers.authValidate)
 }
+
+export async function spaceModerator(app: FastifyInstance, options: FastifyPluginOptions) {
+	app.post("/auth/is-moderator",
+		{preHandler: app.authValidations}
+	, authControllers.verificationUserRole);
+}
