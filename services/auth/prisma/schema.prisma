@@ -48,7 +48,6 @@ model User {
 	phoneVerified	Boolean		@default(false)
 	role			Role		@default(USER)
 	trustScore		Int			@default(0)
-	creditBalance	Int			@default(10)
 	createAt		DateTime	@default(now())
 	updateAt		DateTime	@updatedAt
 	refreshToken	refresh_token?

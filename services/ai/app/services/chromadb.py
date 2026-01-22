@@ -41,7 +41,7 @@ class ChromadbService:
         
     async def initRequest(self):
         self.client = await chromadb.AsyncHttpClient(
-                host='ft_chromadb',
+                host='chromadb-service',
                 port=8000,
                 settings=Settings(anonymized_telemetry=False)
         )
