@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client"
+
 export interface LoginUserInterface {
   email: string,
   password: string
@@ -48,4 +50,8 @@ export interface UserGoogleInterface {
   given_name: string
   family_name: string
   picture: string
+}
+
+export interface changePermissionInterface {
+	role: Role
 }

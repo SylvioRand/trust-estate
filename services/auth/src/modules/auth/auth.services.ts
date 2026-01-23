@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import { createHash } from 'node:crypto';
 import { generateForgotPasswordMail, generateMail } from "../../utils/text";
 import type { UserGoogleInterface } from "./auth.interface";
+import { Role } from "@prisma/client";
 
 export async function findUserByEmail(app: FastifyInstance, email: string, password: string) {
 	const user = await app.prisma.user.findUnique({
@@ -464,9 +465,7 @@ export async function crediter(app: FastifyInstance, userId: string) {
 			throw new Error('credit_service_error');
 		}
 	} catch (error: any) {
-		console.log("ERROR", error);
 		app.log.error({ error }, 'Failed to credit user');
-		// throw error;
 	}
 };
 
@@ -478,8 +477,37 @@ export async function isModerator(app: FastifyInstance, userId: string) {
 	if (!user)
 		throw new Error("User not found");
 
-	if (user.role != "MODERATOR")
+	if (user.role != "ADMIN")
 		throw new Error("admin_required");
 
 	return (user.id);
+}
+
+export async function changeRole(app: FastifyInstance, amdinUserid:string, userId: string, role: Role) {
+	const adminUser = await app.prisma.user.findUnique({
+		where: {id: amdinUserid}
+	});
+
+	if (!adminUser)
+		throw new Error("User not found");
+
+	if (adminUser.role != "ADMIN")
+		throw new Error("admin_required");
+
+	if (amdinUserid === userId)
+		throw new Error("Can't assign this role");
+
+	const user = await app.prisma.user.findUnique({
+		where: {id: userId}
+	});
+
+	if (!user)
+		throw new Error("User not found");
+
+	await app.prisma.user.update({
+		where: {id: userId},
+		data:{
+			role
+		}
+	});
 }
