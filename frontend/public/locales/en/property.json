@@ -1,7 +1,9 @@
 {
+	"no_result": "No Result",
 	"buttons": {
 		"filter": {
 			"title": "Filter",
+			"apply": "Apply Filter",
 			"contract": {
 				"title": "Contract",
 				"none": "None",
