@@ -1,7 +1,9 @@
 {
+	"no_result": "Aucun Résultat",
 	"buttons": {
 		"filter": {
 			"title": "Filtres",
+			"apply": "Appliquer Filtres",
 			"contract": {
 				"title": "Contrat",
 				"none": "Aucun",
