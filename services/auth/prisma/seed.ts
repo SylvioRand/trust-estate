@@ -14,7 +14,7 @@ async function main() {
 	const salt = await bcrypt.genSalt(12);
 	const passwordHash = await bcrypt.hash(PASSWORD, salt);
 	const adminCount = await prisma.user.count({
-		where: { role: "MODERATOR" }
+		where: { role: "ADMIN" }
 	});
 
 	if (adminCount > 1)
@@ -22,7 +22,7 @@ async function main() {
 	 await prisma.user.upsert({
 		where: {email: EMAIL},
 		update : {
-			role: "MODERATOR"
+			role: "ADMIN"
 		},
 		create: {
 			email: EMAIL,
@@ -32,7 +32,7 @@ async function main() {
 			password: passwordHash,
 			phone: PHONE,
 			phoneVerified: true,
-			role: "MODERATOR"
+			role: "ADMIN"
 		}
 	});
 }

@@ -72,12 +72,12 @@ export function generateMail(lastname: string, verificationUrl: string) {
     };
 }
 
-export function generateForgotPasswordMail(lastname: string, resetPasswordUrl: string) {
+export function generateForgotPasswordMail(resetPasswordUrl: string) {
     const nom = 'CASA';
     const year = new Date().getFullYear();
 
     return {
-        text: `Bonjour ${lastname}, réinitialisez votre mot de passe ici : ${resetPasswordUrl}`,
+        text: `Bonjour, réinitialisez votre mot de passe ici : ${resetPasswordUrl}`,
         html: `
         <!DOCTYPE html>
         <html>
@@ -97,7 +97,6 @@ export function generateForgotPasswordMail(lastname: string, resetPasswordUrl: s
                             </tr>
                             <tr>
                                 <td style="padding: 0 40px 40px 40px;">
-                                    <p style="color: #a1a1aa; font-size: 16px;">Bonjour <strong>${lastname}</strong>,</p>
                                     <p style="color: #a1a1aa; font-size: 16px;">Cliquez ci-dessous pour définir un nouveau mot de passe pour votre compte <strong>${nom}</strong>.</p>
                                     <table width="100%" cellpadding="0" cellspacing="0">
                                         <tr>
