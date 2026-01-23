@@ -159,8 +159,16 @@ async def chatbot(text: RequestChat):
 
 @app.delete("/ai/index/{listingId}")
 async def deletePost(listingId: str, _: dict = Depends(check_keys)):
-    await chromadb_service.remove_data_from_collection("posts", listingId)
+    result = await chromadb_service.remove_data_from_collection("posts", listingId)
 
+    if not result:
+        return JSONResponse(
+                status_code = 404,
+                content = {
+                    "error": "index_not_found",
+                    "message": "ai.listing_not_indexed"
+                }
+        )
     return {
             "listingId": listingId
     }
