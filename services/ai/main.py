@@ -24,24 +24,23 @@ from fastapi.responses import JSONResponse, StreamingResponse
 
 from contextlib import asynccontextmanager
 from app.services.chromadb import chromadb_service
-from app.user_prompt import prompt
 
 from httpx import HTTPStatusError, RequestError, TimeoutException
 
 # ====================== Utils ==================
-def format_chroma_response(user_mssg, chroma_text, history: list[str]):
+def format_chroma_response(user_mssg, chroma_text):
     context = llm_service.format_for_llm(chroma_text)
     formated = "CONTEXT:\n"
-    line = 1
+    # line = 1
     if context:
         formated += context
     else:
         formated += "None"
-    if len(history) > 1:
-        formated += "USER HISTORY (Previous user messages):\n" 
-        for elem in history:
-            formated += f"{line}. {elem}\n"
-            line += 1
+    # if len(history) > 1:
+    #     formated += "USER HISTORY (Previous user messages):\n" 
+    #     for elem in history:
+    #         formated += f"{line}. {elem}\n"
+    #         line += 1
     formated += "USER INPUT:\n" + user_mssg
     return formated
 
@@ -104,6 +103,7 @@ async def exception_handler(_: Request):
                 },
             )
 
+# check if chromadb is ready to get data, query data, delete data, .... 
 @app.get("/ai/health")
 async def check_health():
     try:
@@ -119,10 +119,9 @@ async def check_health():
                 },
         )
 
-
 @app.post("/ai/chat")
 async def chatbot(text: RequestChat):
-    prompt.add(text.message)
+    # prompt.add(text.message)
     user_mssg = text.message
     sys_prompt = chromadb_service.get_parse_prompt()
     context = None
@@ -136,7 +135,7 @@ async def chatbot(text: RequestChat):
         chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt)
     else:
         chroma_reply = await chromadb_service.get_post_in_collection("posts", context)
-    formated = format_chroma_response(user_mssg, chroma_reply, prompt.get_history())
+    formated = format_chroma_response(user_mssg, chroma_reply)
     id_found = chromadb_service.get_ids_from_query(chroma_reply)
     try:
         llm_response = llm_service.generate_stream_response(formated, id_found, llm_service.generate_rules())
@@ -157,7 +156,6 @@ async def chatbot(text: RequestChat):
                     "message": "ai.llm_service_unavailable"
                 }
         )
-    # return StreamingResponse(llm_response, media_type="text/plain")
 
 @app.delete("/ai/index/{listingId}")
 async def deletePost(listingId: str, _: dict = Depends(check_keys)):
