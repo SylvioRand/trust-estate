@@ -25,7 +25,7 @@ class ResponseSource(BaseModel):
 
 #=========== Collection models ============
 class Description(BaseModel):
-    description: str = "Beautiful description"
+    description: str = "I have a beautiful house to sell, please buy it"
 
 class PostModel(BaseModel):
     id: str
