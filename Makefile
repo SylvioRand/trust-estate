@@ -140,5 +140,5 @@ run-no-ai:
 	DOCKER_BUILDKIT=0 docker compose up -d --build nginx auth-service listings-service reservations-service db credits-service
 
 only-ai:
-	DOCKER_BUILDKIT=0 docker compose up -d --build chromadb-service ai-service
+	DOCKER_BUILDKIT=0 docker compose up -d chromadb-service ai-service
 	@docker image prune -f
