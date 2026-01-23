@@ -10,21 +10,23 @@
 #                                                                              #
 #******************************************************************************#
 
+import asyncio
+import httpx
+import jwt
+
 from app.config import config
 from app.services.llm import LLMService
-from app.models import Description, RequestChat, ResponseChat, PostModel
+from app.models import Description, RequestChat, PostModel
 
-from fastapi import FastAPI, status, Request, Response, Header, HTTPException, Depends
+from fastapi import FastAPI, status, Request, Header, HTTPException, Depends
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from contextlib import asynccontextmanager
 from app.services.chromadb import chromadb_service
 from app.user_prompt import prompt
 
-import asyncio
-import httpx
-import jwt
+from httpx import HTTPStatusError, RequestError, TimeoutException
 
 # ====================== Utils ==================
 def format_chroma_response(user_mssg, chroma_text, history: list[str]):
@@ -93,13 +95,12 @@ llm_service = LLMService()
 
 # Catch errors of models, type need to be str, or field name incorrect, value not correct, ...
 @app.exception_handler(RequestValidationError)
-async def exception_handler(_: Request, exception_error: RequestValidationError):
+async def exception_handler(_: Request):
     return JSONResponse(
             status_code = status.HTTP_400_BAD_REQUEST,
             content = {
                 "status": "failure",
                 "reason": "invalid format provided",
-                "missing_fields": [err["loc"] for err in exception_error.errors()]
                 },
             )
 
@@ -115,7 +116,7 @@ async def check_health():
                 status_code = status.HTTP_503_SERVICE_UNAVAILABLE,
                 content = {
                     "status": "degraded"
-                    },
+                },
         )
 
 
@@ -137,12 +138,26 @@ async def chatbot(text: RequestChat):
         chroma_reply = await chromadb_service.get_post_in_collection("posts", context)
     formated = format_chroma_response(user_mssg, chroma_reply, prompt.get_history())
     id_found = chromadb_service.get_ids_from_query(chroma_reply)
-    llm_response = llm_service.generate_response(formated, llm_service.generate_rules())
+    try:
+        llm_response = llm_service.generate_stream_response(formated, id_found, llm_service.generate_rules())
 
-    return ResponseChat(
-        reply = llm_response,
-        links = id_found
-    )
+        frag = next(llm_response)
+
+        def wrapper():
+            yield frag
+            yield from llm_response
+
+        return StreamingResponse(wrapper(), media_type="text/plain")
+
+    except Exception:
+        return JSONResponse(
+                status_code = 503,
+                content = {
+                    "error": "llm_unavailable",
+                    "message": "ai.llm_service_unavailable"
+                }
+        )
+    # return StreamingResponse(llm_response, media_type="text/plain")
 
 @app.delete("/ai/index/{listingId}")
 async def deletePost(listingId: str, _: dict = Depends(check_keys)):
@@ -182,15 +197,32 @@ async def isListIndexed(listingId: str):
 async def generate_better_description(text: Description):
 
     try:
-        llm_response = llm_service.generate_response(text.description, llm_service.generate_description())
+        llm_response = llm_service.generate_bloc_response(text.description, llm_service.generate_description())
 
         return {
             "reply": llm_response
         }
 
+    except HTTPStatusError as e:
+        return JSONResponse(
+                status_code = 503,
+                content = {
+                    "error": "llm_unavailable",
+                    "message": "ai.llm_service_unavailable"
+                }
+        )
+    except (RequestError, TimeoutException) as e:
+        return JSONResponse(
+                status_code = 503,
+                content = {
+                    "error": "llm_unavailable",
+                    "message": "ai.llm_service_unavailable"
+                }
+        )
+
     except Exception as e:
         return JSONResponse(
-                status_code = status.HTTP_400_BAD_REQUEST,
+                status_code = 400,
                 content = {
                     "status": "failure",
                     "reason": e

@@ -183,14 +183,8 @@ const	PublishPage: React.FC = () => {
 			}
 
 		} catch (error) {
-			if (error instanceof Error)
-			{
-				if (error.message !== "")
-				{
-					console.error(t(`error:${error.message}`));
-					toast.error(t(`error:${error.message}`));
-				}
-			}
+			if (error instanceof Error && error.message !== "")
+				toast.error(t(`error:${error.message}`));
 		} finally {
 			setUploadButtonProcessing(false);
 		}
@@ -235,10 +229,49 @@ const	PublishPage: React.FC = () => {
 	const	[processingDescriptionEnhancement, setProcessingDescriptionEnhancement] = useState<boolean>(false);
 	const	inputRef: RefObject<HTMLInputElement | null> = useRef<HTMLInputElement | null>(null);
 
-	useEffect(() => {
-		setIsUploadDisabled(dataToPreview.length < 3);
-	}, [dataToPreview]);
+	const	enhanceDescription = async () => {
+		if (refToDescription.current)
+		{
+			// NOTE: We need at least 200 characters in the description to give a more concise information for the LLM
+			if (refToDescription.current.value.length < 200)
+			{
+				toast.error(t("error:ai.not_enough_data"));
+				return ;
+			}
 
+			setProcessingDescriptionEnhancement(true);
+			try {
+				const	dataToSend = {
+					"description": refToDescription.current.value
+				}
+				const	response = await fetch("/api/ai/generate", {
+					method: "POST",
+					headers: {
+						"Content-type": "application/json"
+					},
+					body: JSON.stringify(dataToSend)
+			})
+
+			const	responseData = await response.json();
+
+			if (response.ok && responseData.reply !== "")
+				refToDescription.current!.value = responseData.reply;
+			else
+				throw new Error(responseData?.message);
+			toast.success(t("error:ai.success_generate"));
+			} catch (error) {
+				if (error instanceof Error && error.message !== "")
+					toast.error(t(`error:${error.message}`));
+			} finally {
+				setProcessingDescriptionEnhancement(false);
+			}
+		}
+	}
+
+	useEffect(() => {
+		setIsUploadDisabled(dataToPreview.length < 3 || processingDescriptionEnhancement);
+	}, [dataToPreview, processingDescriptionEnhancement]);
+		
 	return (
 		<div className="flex flex-col items-center justify-start
 			px-4 md:px-7 xl:px-64
@@ -311,13 +344,15 @@ const	PublishPage: React.FC = () => {
 						>
 							{ processingDescriptionEnhancement ? "󱥸" : ""  }
 						</div>
-						<div className="font-light text-sm
+						<button className="font-light text-sm
 							transition-colors duration-200
 							cursor-pointer
 							hover:underline hover:text-accent"
+							type="button"
+							onClick={ enhanceDescription }
 						>
 							{ t("section.main.form.description.buttons.enhance") }
-						</div>
+						</button>
 					</div>
 				</div>
 

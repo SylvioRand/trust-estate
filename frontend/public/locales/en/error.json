@@ -1,6 +1,12 @@
 {
 	"ERROR": "An error was unfortunately encountered.",
 
+	"ai": {
+		"rate_limited_generate": "You’ve reached the rate limit. Please wait a moment before trying again.",
+		"success_generate": "Your description was successfully enhanced.",
+		"not_enough_data": "The provided description does not contain enough information to be enhanced. Please add more details and try again."
+	},
+
 	"common": {
 		"validation_failed": "The provided data is invalid.",
 		"rate_limited": "Too many requests. Please try again later.",
