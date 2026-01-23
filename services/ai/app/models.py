@@ -31,10 +31,10 @@ class PostModel(BaseModel):
     id: str
     title: str = "Hello world"
     description: str = "Beautiful property"
-    price: float = Field(default=100000)
+    price: float = Field(default=100000, gt=0)
     type: Literal["sale", "rent"] = "sale"
     propertyType: Literal['apartment', 'house', 'loft', 'land', 'commercial'] = "apartment"
-    surface: Optional[float] = Field(default=45)
+    surface: Optional[float] = Field(default=45, gt=0)
     zone: str = "Ivandry"
     features: Optional[dict[str, Any]] = None
     tags: Optional[list[Literal["urgent", "exclusive", "discount"]]] = None
