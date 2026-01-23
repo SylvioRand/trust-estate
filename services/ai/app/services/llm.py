@@ -12,6 +12,7 @@
 
 from app.config import config
 import httpx
+import json
 
 class LLMService:
     def __init__(self):
@@ -111,7 +112,7 @@ class LLMService:
         }
         return headers
 
-    def generate_json(self, text, system_prompt=""):
+    def generate_json(self, text, streaming, system_prompt=""):
         mssg = []
 
         if system_prompt:
@@ -119,21 +120,55 @@ class LLMService:
         mssg.append({"role": "user", "content": text})
         data = {
             "model": self.model,
-            "messages": mssg 
+            "messages": mssg ,
+            "stream": streaming
         }
         return data
 
-    def generate_response(self, text, system_prompt=""):
-        try:
-            response = httpx.post(
+    def generate_stream_response(self, text, links, system_prompt=""):
+        with httpx.stream(
+                "POST",
                 url = self.url,
                 headers = self.generate_header(),
-                json = self.generate_json(text, system_prompt),
-                timeout = 120.0
-            )
-            data = response.json()
-            llm_response = data["choices"][0]["message"]["content"]
-            return llm_response
-        except Exception as e:
-            print(f"Error: {e}")
-            return "Error: sorry i couldn't process your question"
+                json = self.generate_json(text, True, system_prompt),
+                timeout = 130.0
+        ) as response:
+            response.raise_for_status()
+            for word in response.iter_lines():
+                if not word:
+                    continue
+                parse_line = word.strip()
+
+                if parse_line == "data: [DONE]":
+                    break
+                if parse_line.startswith("data: "):
+                    parse_line = parse_line[6:]
+
+                try:
+                    result = json.loads(parse_line)
+                    content = result["choices"][0].get("delta", {}).get("content", "")
+
+                    yield content
+
+                    if content:
+                        yield json.dumps({"type": "content", "reply": content})
+
+                except json.JSONDecodeError:
+                    continue
+
+        yield json.dumps({"type": "metadata", "links": links})
+        
+
+    def generate_bloc_response(self, text, system_prompt=""):
+        response = httpx.post(
+            url = self.url,
+            headers = self.generate_header(),
+            json = self.generate_json(text, False, system_prompt),
+            timeout = 120.0
+        )
+
+        response.raise_for_status()
+        data = response.json()
+        llm_response = data["choices"][0]["message"]["content"]
+        return llm_response
+

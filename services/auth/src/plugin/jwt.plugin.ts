@@ -254,6 +254,12 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 		}
 	});
 
+	app.decorate("internalAuthOnly", async function (request: FastifyRequest, reply: FastifyReply) {
+		const payload = await validateToken(request, reply);
+		if (!payload)
+			return;
+	});
+
 };
 
 export default fastifyPlugin(jwtPlugin);

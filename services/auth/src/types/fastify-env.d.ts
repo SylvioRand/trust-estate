@@ -13,5 +13,6 @@ declare module 'fastify' {
     emailVerifiedAuthentication: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
     phoneVerifiedAuthentication: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
     authValidations: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
+    internalAuthOnly: (request: FastifyRequest, reply: FastifyReply) => Promise<void>,
   }
 }
