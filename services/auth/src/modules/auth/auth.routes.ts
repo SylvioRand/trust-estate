@@ -62,7 +62,7 @@ export async function spaceModerator(app: FastifyInstance, options: FastifyPlugi
 	app.post("/auth/is-moderator",
 		{ preHandler: app.authValidations }
 		, authControllers.verificationUserRole);
-	app.patch<{Body: changePermissionInterface, Params: {id: string}}>("/auth/change-permission/:id", {
+	app.patch<{Body: changePermissionInterface}>("/auth/change-permission/:id", {
 		schema: ChangeRoleSchema,
 		preHandler: app.authentication
 	}, authControllers.changeUserPermission);
