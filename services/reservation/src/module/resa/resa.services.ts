@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { responseReservation } from "../../utils/utils";
 import { Prisma, PrismaClient, $Enums } from "@prisma/client";
+import { error } from "console";
 
 type TransactionClient = Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>;
 
@@ -50,7 +51,7 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
         });
 
         if (sellerSlotTaken) {
-            throw new Error("seller_slot_unavailable");
+            throw new Error("slot_unavailable");
         }
 
         const buyerSlotTaken = await tx.reservation.findFirst({
@@ -206,7 +207,7 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
             throw new Error("seller_slot_unavailable");
         }
 
-        await debiter(app, reservation.buyerId);
+		await debiter(app, reservation.buyerId);
 
         await tx.reservation.updateMany({
             where: {
@@ -389,6 +390,39 @@ async function crediter(app: FastifyInstance, userId: string) {
 		}
 	} catch (error: any) {
 		app.log.error({ error }, 'Failed to credit user');
-		throw error;
 	}
+};
+
+export async function getAvailableSlotsByUserId(app: FastifyInstance, userId: string, day: Date) {
+	const dayDate = new Date(day);
+	const slots: Date[] = [];
+	const startHour = 8;
+	const endHour = 17;
+	for (let hour = startHour; hour <= endHour; hour++) {
+		const slot = new Date(dayDate);
+		slot.setHours(hour, 0, 0, 0);
+		slots.push(new Date(slot));
+	}
+
+	const startOfDay = new Date(dayDate);
+	startOfDay.setHours(0, 0, 0, 0);
+	const endOfDay = new Date(dayDate);
+	endOfDay.setHours(23, 59, 59, 999);
+
+	const reservedSlots = await app.prisma.reservation.findMany({
+		where: {
+			sellerId: userId,
+			status: { in: ['pending', 'confirmed'] },
+			slot: {
+				gte: startOfDay,
+				lt: endOfDay
+			}
+		},
+		select: { slot: true }
+	});
+
+	const reservedDates = reservedSlots.map(r => r.slot.getTime());
+	const availableSlots = slots.filter(slot => !reservedDates.includes(slot.getTime()));
+
+	return availableSlots;
 }
