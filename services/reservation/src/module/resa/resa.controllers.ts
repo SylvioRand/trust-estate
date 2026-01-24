@@ -324,18 +324,11 @@ export async function getSlots(request: FastifyRequest<{Querystring: {id: string
 	
 	try {
 		const availability = await resaServices.getAvailableSlotsByUserId(request.server, userId, date);
-		return reply.status(200).send(availability);
+		return reply.status(200).send({availability});
 	} catch (error: any) {
-		console.log(error);
-		if (error.message === "reservation_not_found")
-		return reply.status(404).send({
-			"error": "reservation_not_found",
-			"message": "reservation.not_found"
-		})
-		else
-			return reply.status(500).send({
-				"error": "internal_server_error",
-				"message": "common.internal_server_error"
-			});
+		return reply.status(500).send({
+			"error": "internal_server_error",
+			"message": "common.internal_server_error"
+		});
 	}
 }
