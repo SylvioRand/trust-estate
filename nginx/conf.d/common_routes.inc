@@ -39,9 +39,9 @@
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    location /api/admin/ {
+    location /api/moderator/ {
         client_max_body_size 5M;
-        proxy_pass http://listings_service/admin/;
+        proxy_pass http://listings_service/moderator/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
