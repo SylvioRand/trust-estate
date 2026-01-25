@@ -7,10 +7,10 @@ import { UpdateAvailabilitySchema } from "../listing.schema";
 export async function handleUpdateAvailability(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { id } = request.params as { id: string };
-    const user = (request as any).id;
+    const userId = (request as any).user.id;
     const schedule = UpdateAvailabilitySchema.parse(request.body);
 
-    await ListingService.updateAvailability(id, user, schedule);
+    await ListingService.updateAvailability(id, userId, schedule);
 
     return reply.status(200).send({
       success: true,
@@ -29,7 +29,7 @@ export async function handleUpdateAvailability(request: FastifyRequest, reply: F
     }
 
     if (error.message === 'forbidden') {
-      reply.status(403).send({
+      return reply.status(403).send({
         error: error.message,
         message: "listing.permission_denied"
       })

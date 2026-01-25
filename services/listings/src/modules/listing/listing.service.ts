@@ -1,5 +1,6 @@
+import { ListingAvailability } from '@prisma/client';
 import { prisma } from '../../config/prisma';
-import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing, UpdateavailabilityType } from "./listing.schema";
+import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing, UpdateavailabilityType, getAvailabilityParams } from "./listing.schema";
 import path from 'path';
 
 export class ListingService {
@@ -338,5 +339,21 @@ export class ListingService {
 
       return (updated);
     });
+  }
+
+
+  static async getAvailability(listingId: getAvailabilityParams) {
+    const listing = await prisma.listing.findUnique({
+      where: listingId,
+      include: {
+        availability: true
+      }
+    });
+
+    if (!listing) {
+      throw new Error('listing.not_found');
+    }
+
+    return listing;
   }
 }

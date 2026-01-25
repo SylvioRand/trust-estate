@@ -471,21 +471,21 @@ export async function crediter(app: FastifyInstance, userId: string) {
 
 export async function isModerator(app: FastifyInstance, userId: string) {
 	const user = await app.prisma.user.findUnique({
-		where: {id : userId},
+		where: { id: userId },
 	});
 
 	if (!user)
 		throw new Error("User not found");
 
-	if (user.role != "ADMIN")
-		throw new Error("admin_required");
+	if (user.role != "MODERATOR")
+		throw new Error("moderator_required");
 
 	return (user.id);
 }
 
-export async function changeRole(app: FastifyInstance, amdinUserid:string, userId: string, role: Role) {
+export async function changeRole(app: FastifyInstance, amdinUserid: string, userId: string, role: Role) {
 	const adminUser = await app.prisma.user.findUnique({
-		where: {id: amdinUserid}
+		where: { id: amdinUserid }
 	});
 
 	if (!adminUser)
@@ -498,15 +498,15 @@ export async function changeRole(app: FastifyInstance, amdinUserid:string, userI
 		throw new Error("Can't assign this role");
 
 	const user = await app.prisma.user.findUnique({
-		where: {id: userId}
+		where: { id: userId }
 	});
 
 	if (!user)
 		throw new Error("User not found");
 
 	await app.prisma.user.update({
-		where: {id: userId},
-		data:{
+		where: { id: userId },
+		data: {
 			role
 		}
 	});
