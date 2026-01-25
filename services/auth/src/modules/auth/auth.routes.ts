@@ -9,18 +9,18 @@ export async function authRoutes(app: FastifyInstance, options: FastifyPluginOpt
 	app.post("/logout", { preHandler: app.partialAuthentication }, authControllers.logoutUser);
 	app.post("/forgot-password", {
 		config: {
-		rateLimit: {
-			max: 1,
-			timeWindow: "1 minutes",
-			hook: "preHandler",
-			keyGenerator: (req: any) => {
-			const email = req.body?.email || "";
-			const ip = req.ip;
-			const ua = req.headers["user-agent"] || "";
+			rateLimit: {
+				max: 1,
+				timeWindow: "1 minutes",
+				hook: "preHandler",
+				keyGenerator: (req: any) => {
+					const email = req.body?.email || "";
+					const ip = req.ip;
+					const ua = req.headers["user-agent"] || "";
 
-			return `${email}:${ip}:${ua}`;
+					return `${email}:${ip}:${ua}`;
+				}
 			}
-		}
 		},
 		schema: ForgotPasswordSchema
 	}, authControllers.forgotPassword);
@@ -31,19 +31,19 @@ export async function emailAuthRoutes(app: FastifyInstance, options: FastifyPlug
 	app.post("/verify-email", { schema: VerificationTokenSchema }, authControllers.verifiedEmail);
 	app.post("/resend-email", {
 		config: {
-		rateLimit: {
-			max: 1,
-			timeWindow: "1 minutes",
-			hook: "preHandler",
-			keyGenerator: (req: any) => {
-			const user = (req as any).user;
-			const email = user?.email || "";
-			const ip = req.ip;
-			const ua = req.headers["user-agent"] || "";
+			rateLimit: {
+				max: 1,
+				timeWindow: "1 minutes",
+				hook: "preHandler",
+				keyGenerator: (req: any) => {
+					const user = (req as any).user;
+					const email = user?.email || "";
+					const ip = req.ip;
+					const ua = req.headers["user-agent"] || "";
 
-			return `${email}:${ip}:${ua}`;
+					return `${email}:${ip}:${ua}`;
+				}
 			}
-		}
 		},
 		preHandler: app.partialAuthentication
 	}, authControllers.resendEmailVerification)
@@ -59,10 +59,10 @@ export async function authenticationInterne(app: FastifyInstance, options: Fasti
 }
 
 export async function spaceModerator(app: FastifyInstance, options: FastifyPluginOptions) {
-	app.post("/auth/is-moderator",
+	app.get("/auth/is-moderator",
 		{ preHandler: app.authValidations }
 		, authControllers.verificationUserRole);
-	app.patch<{Body: changePermissionInterface, Params: {id: string}}>("/auth/change-permission/:id", {
+	app.patch<{ Body: changePermissionInterface, Params: { id: string } }>("/auth/change-permission/:id", {
 		preHandler: app.authentication
 	}, authControllers.changeUserPermission);
 }

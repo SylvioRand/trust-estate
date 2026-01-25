@@ -150,3 +150,9 @@ export const GetSlotsResponseSchema = z.object({
   }))
 });
 export type GetSlotsResponse = z.infer<typeof GetSlotsResponseSchema>;
+
+export const GetAvailabilityParamsSchema = z.object({
+  id: z.string().uuid()
+}).strict();
+
+export type getAvailabilityParams = z.infer<typeof GetAvailabilityParamsSchema>
