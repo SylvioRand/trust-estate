@@ -82,7 +82,7 @@ Le modérateur intervient **uniquement sur signalement** (pas de validation IA a
 | Élément          | Utilisateur      | Modérateur     |
 |------------------|------------------|----------------|
 | `role`           | `user`           | `moderator`    |
-| Accès `/admin/*` | ❌ 403 Forbidden | ✅ Autorisé    |
+| Accès `/moderator/*` | ❌ 403 Forbidden | ✅ Autorisé    |
 | Publier annonces | ✅               | ❌ (pas prévu) |
 | Crédits          | ✅               | ❌             |
 
@@ -92,7 +92,7 @@ Le modérateur intervient **uniquement sur signalement** (pas de validation IA a
 1. Dashboard (/admin)
    └── Liste des annonces signalées par les utilisateurs
 
-2. Détail annonce (/admin/listings/:id)
+2. Détail annonce (/moderator/listings/:id)
    ├── Voir l'annonce complète
    ├── Infos vendeur
    └── Actions possibles

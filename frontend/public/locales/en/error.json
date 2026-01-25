@@ -1,12 +1,10 @@
 {
 	"ERROR": "An error was unfortunately encountered.",
-
 	"ai": {
 		"rate_limited_generate": "You’ve reached the rate limit. Please wait a moment before trying again.",
 		"success_generate": "Your description was successfully enhanced.",
 		"not_enough_data": "The provided description does not contain enough information to be enhanced. Please add more details and try again."
 	},
-
 	"common": {
 		"validation_failed": "The provided data is invalid.",
 		"rate_limited": "Too many requests. Please try again later.",
@@ -35,7 +33,6 @@
 		"not_authenticated_user": "User are not authenticated.",
 		"forgot_pass_user_not_found": "No user is associated with this email address.",
 		"passwordAndConfirmationIsDifferent": "The two password doesn't match."
-
 	},
 	"validation": {
 		"email": {
@@ -125,7 +122,7 @@
 				"invalid": "The payment provider is invalid."
 			}
 		},
-		"admin": {
+		"moderator": {
 			"action": {
 				"invalid": "The requested action is invalid."
 			},
@@ -170,14 +167,13 @@
 		"transaction_failed": "The payment failed. Please verify your Mobile Money balance.",
 		"rate_limited_recharge": "Too many recharge attempts. A maximum of three per hour is allowed."
 	},
-	"admin": {
+	"moderator": {
 		"forbidden": {
 			"moderator_only": "Access is restricted to moderators."
 		},
 		"action_applied_successfully": "The action has been successfully applied and the seller has been notified."
 	},
-	"global":
-	{
+	"global": {
 		"500": "An internal server error occurred. Retry after a moment."
 	}
 }

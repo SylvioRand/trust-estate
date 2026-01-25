@@ -24,7 +24,7 @@ Ces endpoints sont répartis entre 4 services Fastify derrière un Nginx gateway
 | Service                  | Port | Endpoints                             |
 |--------------------------|------|---------------------------------------|
 | **auth-service**         | 3001 | `/auth/*`, `/users/*`                 |
-| **listings-service**     | 3002 | `/listings/*`, `/admin/*` |
+| **listings-service**     | 3002 | `/listings/*`, `/moderator/*` |
 | **reservations-service** | 3003 | `/reservations/*`, `/feedback/*`      |
 | **credits-service**      | 3004 | `/credits/*`                          |
 | **ai-service**           | 3005 | `/ai/*`                               |
@@ -2467,7 +2467,7 @@ GET /credits/history
 ### 6.1 Liste annonces signalées
 
 ```http
-GET /admin/listings/flagged
+GET /moderator/listings/flagged
 ```
 
 **Description :** Tableau de bord pour les modérateurs affichant toutes les annonces ayant reçu au moins un signalement utilisateur. Les annonces sont triées par date de signalement (le plus récent en premier).
@@ -2517,7 +2517,7 @@ GET /admin/listings/flagged
 ```json
 {
   "error": "forbidden",
-  "message": "admin.forbidden.moderator_only",
+  "message": "moderator.forbidden.moderator_only",
   "requiredRole": "moderator"
 }
 ```
@@ -2527,7 +2527,7 @@ GET /admin/listings/flagged
 ### 6.2 Consulter détail annonce (Admin)
 
 ```http
-GET /admin/listings/:id
+GET /moderator/listings/:id
 ```
 
 **Description :** Vue complète et sans restriction d'une annonce spécifique pour investigation. Contrairement à la vue publique, cette version révèle toutes les données privées (contacts du vendeur, notes internes, signalements détaillés).
@@ -2600,7 +2600,7 @@ GET /admin/listings/:id
 ```json
 {
   "error": "forbidden",
-  "message": "admin.forbidden.moderator_only",
+  "message": "moderator.forbidden.moderator_only",
   "requiredRole": "moderator"
 }
 ```
@@ -2610,7 +2610,7 @@ GET /admin/listings/:id
 ### 6.3 Appliquer une action (Modération)
 
 ```http
-POST /admin/listings/:id/action
+POST /moderator/listings/:id/action
 ```
 
 **Description :** Point d'entrée unique pour toutes les décisions de modération. L'action choisie impacte directement le statut de l'annonce et peut déclencher des notifications au vendeur. Fusionne les anciennes actions séparées pour une meilleure centralisation.
@@ -2639,7 +2639,7 @@ POST /admin/listings/:id/action
   "success": true,
   "actionId": "ma2",
   "newStatus": "blocked",
-  "message": "admin.action_applied_successfully"
+  "message": "moderator.action_applied_successfully"
 }
 ```
 
@@ -2649,8 +2649,8 @@ POST /admin/listings/:id/action
   "error": "validation_failed",
   "message": "common.validation_failed",
   "details": {
-    "action": ["validation.admin.action.invalid"],
-    "reason": ["validation.admin.reason.too_short"]
+    "action": ["validation.moderator.action.invalid"],
+    "reason": ["validation.moderator.reason.too_short"]
   }
 }
 ```
@@ -2667,7 +2667,7 @@ POST /admin/listings/:id/action
 ```json
 {
   "error": "forbidden",
-  "message": "admin.forbidden.moderator_only",
+  "message": "moderator.forbidden.moderator_only",
   "requiredRole": "moderator"
 }
 ```
@@ -2677,7 +2677,7 @@ POST /admin/listings/:id/action
 ### 6.4 Historique Modération (Admin)
 
 ```http
-GET /admin/actions
+GET /moderator/actions
 ```
 
 **Description :** Journal global de toutes les actions effectuées par l'équipe de modération pour permettre le suivi, l'audit et la cohérence des décisions.
@@ -2724,7 +2724,7 @@ GET /admin/actions
 ```json
 {
   "error": "forbidden",
-  "message": "admin.forbidden.moderator_only",
+  "message": "moderator.forbidden.moderator_only",
   "requiredRole": "moderator"
 }
 ```
@@ -3262,10 +3262,10 @@ GET /ai/health
 | **Crédits**          | `GET`    | `/credits/balance`                          |
 |                      | `POST`   | `/credits/recharge`                         |
 |                      | `GET`    | `/credits/history`                          |
-| **Modération**       | `GET`    | `/admin/listings/flagged`                   |
-|                      | `GET`    | `/admin/listings/:id`                       |
-|                      | `POST`   | `/admin/listings/:id/action`                |
-|                      | `GET`    | `/admin/actions`                            |
+| **Modération**       | `GET`    | `/moderator/listings/flagged`                   |
+|                      | `GET`    | `/moderator/listings/:id`                       |
+|                      | `POST`   | `/moderator/listings/:id/action`                |
+|                      | `GET`    | `/moderator/actions`                            |
 | **AI (Assistant)**   | `POST`   | `/ai/chat`                                  |
 | **AI (Outils)**      | `POST`   | `/ai/generate`                              |
 |                      | `GET`    | `/ai/market-data`                           |

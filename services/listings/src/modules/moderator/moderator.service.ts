@@ -1,9 +1,9 @@
 import { prisma } from '../../config/prisma';
-import { FlaggedListingsQuery, ModerationActionData, ModerationActionsQuery } from './admin.schema';
+import { FlaggedListingsQuery, ModerationActionData, ModerationActionsQuery } from './moderator.schema';
 import { ReportReason } from '@prisma/client';
 import { AuthClient } from '../../infrastructure/auth.client';
 
-export class AdminServices {
+export class ModeratorServices {
   static async getFlagged(query: FlaggedListingsQuery) {
     const { page, limit, reportReason } = query;
     const skip = (page - 1) * limit;
@@ -170,7 +170,7 @@ export class AdminServices {
         success: true,
         actionId: moderation.id,
         newStatus,
-        message: "admin.action_applied_successfully"
+        message: "moderator.action_applied_successfully"
       };
     });
 

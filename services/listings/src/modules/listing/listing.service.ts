@@ -1,4 +1,3 @@
-import { ListingAvailability } from '@prisma/client';
 import { prisma } from '../../config/prisma';
 import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing, UpdateavailabilityType, getAvailabilityParams } from "./listing.schema";
 import path from 'path';
