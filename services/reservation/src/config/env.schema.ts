@@ -7,7 +7,7 @@ export const envSchema = {
 		'JWT_SECRET_PUBLIC_KEY',
 		'GMAIL_USER', 'GMAIL_APP_PASSWORD',
 		'COOKIE_SECRET', 'FRONTEND_URL',
-		'INTERNAL_KEY_SECRET'
+		'INTERNAL_KEY_SECRET', 'LISTINGS_SERVICE_URL'
 	],
 	properties: {
 		INTERNAL_KEY_SECRET: { type: 'string' },
@@ -15,6 +15,7 @@ export const envSchema = {
 			type: 'number',
 			default: 3003
 		},
+		LISTINGS_SERVICE_URL: {type: 'string'},
 		AUTH_SERVICE_URL: { type: 'string' },
 		CREDITS_SERVICE_URL: { type: 'string' },
 		JWT_SECRET_PUBLIC_KEY: { type: 'string' },

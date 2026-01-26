@@ -60,6 +60,11 @@
 
     location /api/ai/ {
         client_max_body_size 5M;
+        
+        # Apply rate limiting
+        limit_req zone=chatbot_limit burst=5 nodelay;
+        limit_req_status 429;
+
         proxy_pass http://ai_service/ai/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
