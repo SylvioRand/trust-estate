@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { LoginUserInterface, SignUpUserInterface, UserInterface } from "./auth.interface";
+import type { changePermissionInterface, LoginUserInterface, SignUpUserInterface, UserInterface } from "./auth.interface";
 import * as authServices from './auth.services'
 import { cookieOptions, generateAccessToken, responseUserAddToken } from "../../utils/auth.utils";
 import { deleteRefreshToken } from "../../utils/token.utils";
@@ -268,5 +268,47 @@ export async function verificationUserRole(request: FastifyRequest, reply: Fasti
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
 			});
+	}
+};
+
+export async function changeUserPermission(request: FastifyRequest<{Body: changePermissionInterface}>, reply: FastifyReply) {
+	const user = request.user as UserInterface;
+	const userId = request.body.id;
+	const permission = request.body.role;
+
+	if (!user) {
+		return reply.status(401).send({
+			"error": "invalid_credentials",
+			"message": "auth.invalid_credentials"
+		});
+	}
+
+	try {
+		await authServices.changeRole(request.server, user.id, userId, permission);
+		return reply.status(200).send({
+			"userId": userId,
+			"success": true,
+			"message": "User permission updated successfully"
+		});
+	} catch (error: any) {
+		if (error.message === "User not found")
+			return reply.status(404).send({
+				"error":"user_not_found",
+				"message": "auth.user_not_found"
+			});
+		else if (error.message === "admin_required")
+			return reply.status(401).send({
+				"error":"permission_denied",
+				"message": "auth.permission_denied"
+			});
+		else if (error.message === "Can't assign this role")
+			return reply.status(401).send({
+				"error":"permission_denied",
+				"message": "auth.can_t_assign_this_role"
+			})
+		return reply.status(500).send({
+			"error": "internal_server_error",
+			"message": "common.internal_server_error"
+		});
 	}
 }

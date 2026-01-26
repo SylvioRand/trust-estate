@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { responseReservation } from "../../utils/utils";
 import { Prisma, PrismaClient, $Enums } from "@prisma/client";
+import { error } from "console";
 
 type TransactionClient = Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>;
 
@@ -24,17 +25,17 @@ export async function getAllUserReservation(app: FastifyInstance, userId: string
 export async function addSlot(app: FastifyInstance, userId: string, slot: Date, sellerId: string, listingId: string) {
 
     return await app.prisma.$transaction(async (tx: TransactionClient) => {
-        const slotDate = slot instanceof Date ? slot : new Date(slot);
+		const slotDate = slot instanceof Date ? slot : new Date(slot);
 
-        const now = new Date();
-        const minAdvanceTime = new Date(now.getTime() + 60 * 60 * 1000);
+		const now = new Date();
+		const minAdvanceTime = new Date(now.getTime() + 30 * 60 * 1000); // 30 minutes
 
-        if (slotDate < minAdvanceTime) {
-            throw new Error("slot_unavailable");
-        }
+		if (slotDate < minAdvanceTime) {
+			throw new Error("slot_unavailable");
+		}
 
-        const slotStart = new Date(slotDate.getTime() - 60 * 60 * 1000);
-        const slotEnd = new Date(slotDate.getTime() + 60 * 60 * 1000);
+		const slotStart = new Date(slotDate.getTime() - 30 * 60 * 1000); // 30 minutes avant
+		const slotEnd = new Date(slotDate.getTime() + 30 * 60 * 1000); // 30 minutes après
 
         const sellerSlotTaken = await tx.reservation.findFirst({
             where: {
@@ -50,7 +51,7 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
         });
 
         if (sellerSlotTaken) {
-            throw new Error("seller_slot_unavailable");
+            throw new Error("slot_unavailable");
         }
 
         const buyerSlotTaken = await tx.reservation.findFirst({
@@ -106,10 +107,9 @@ export async function deleteReservation(app: FastifyInstance, userId: string, re
         const time = new Date();
         const total = reservation.slot.getTime() - time.getTime();
 
-        const twoHours = 1 * 60 * 60 * 1000;
+        const minCancelTime = 30 * 60 * 1000; // 30 minutes
         if (total > 0) {
-            console.log(total, "  ", twoHours);
-            if (total <= twoHours)
+            if (total <= minCancelTime)
                 throw new Error("cancellation_too_late");
         }
 
@@ -140,8 +140,8 @@ export async function changeStatusReservation(app: FastifyInstance, userId: stri
         const time = new Date();
         const total = reservation.slot.getTime() - time.getTime();
 
-        const twoHours = 2 * 60 * 60 * 1000;
-        if (total < twoHours)
+        const minCancelTime = 30 * 60 * 1000; // 30 minutes
+        if (total < minCancelTime)
             throw new Error("cancellation_too_late");
 
         let cancel: $Enums.CancelledBy;
@@ -206,7 +206,7 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
             throw new Error("seller_slot_unavailable");
         }
 
-        await debiter(app, reservation.buyerId);
+		await debiter(app, reservation.buyerId);
 
         await tx.reservation.updateMany({
             where: {
@@ -389,6 +389,41 @@ async function crediter(app: FastifyInstance, userId: string) {
 		}
 	} catch (error: any) {
 		app.log.error({ error }, 'Failed to credit user');
-		throw error;
 	}
+};
+
+export async function getAvailableSlotsByUserId(app: FastifyInstance, userId: string, day: Date) {
+	const dayDate = new Date(day);
+	const slots: Date[] = [];
+	const startHour = 8;
+	const endHour = 17;
+	for (let hour = startHour; hour <= endHour; hour++) {
+		for (let minute = 0; minute < 60; minute += 30) {
+			const slot = new Date(dayDate);
+			slot.setHours(hour, minute, 0, 0);
+			slots.push(new Date(slot));
+		}
+	}
+
+	const startOfDay = new Date(dayDate);
+	startOfDay.setHours(0, 0, 0, 0);
+	const endOfDay = new Date(dayDate);
+	endOfDay.setHours(23, 59, 59, 999);
+
+	const reservedSlots = await app.prisma.reservation.findMany({
+		where: {
+			sellerId: userId,
+			status: { in: ['pending', 'confirmed'] },
+			slot: {
+				gte: startOfDay,
+				lt: endOfDay
+			}
+		},
+		select: { slot: true }
+	});
+
+	const reservedDates = reservedSlots.map(r => r.slot.getTime());
+	const availableSlots = slots.filter(slot => !reservedDates.includes(slot.getTime()));
+
+	return availableSlots;
 }

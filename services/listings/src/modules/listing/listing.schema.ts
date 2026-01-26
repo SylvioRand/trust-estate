@@ -113,11 +113,11 @@ const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
 export const UpdateAvailabilitySchema = z.object({
   weeklySchedule: z.array(
     z.object({
-      dayOfWeek: z.number().int().min(0).max(6),
-      startTime: z.string().regex(timeRegex, "Format invalide (HH:mm)"),
-      endTime: z.string().regex(timeRegex, "Format invalide (HH:mm)"),
+      dayOfWeek: z.number().int().min(0, 'validation.listing.schedule.invalid_day').max(6, 'validation.listing.schedule.invalid_day'),
+      startTime: z.string().regex(timeRegex, "validation.listing.schedule.invalid_time"),
+      endTime: z.string().regex(timeRegex, "validation.listing.schedule.invalid_time"),
     })
-  ).min(1, "Au moins un créneau est requis")
+  ).min(1, "validation.listing.schedule.required")
     .refine((data) => {
       return data.every(slot => {
         const [startH, startM] = slot.startTime.split(':').map(Number);
@@ -129,8 +129,30 @@ export const UpdateAvailabilitySchema = z.object({
         return startMinutes < endMinutes;
       });
     }, {
-      message: "L'heure de début doit être antérieure à l'heure de fin",
+      message: "validation.listing.schedule.invalid_range",
       path: ["weeklySchedule"]
     })
 });
 export type UpdateavailabilityType = z.infer<typeof UpdateAvailabilitySchema>;
+
+
+export const GetSlotsQuerySchema = z.object({
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "validation.invalid_date_format"),
+  days: z.coerce.number().int().min(1).max(14).default(7) // On limite à 14 jours par exemple
+});
+export type GetSlotsQuery = z.infer<typeof GetSlotsQuerySchema>;
+
+export const GetSlotsResponseSchema = z.object({
+  slots: z.array(z.object({
+    start: z.string(),
+    end: z.string(),
+    available: z.boolean()
+  }))
+});
+export type GetSlotsResponse = z.infer<typeof GetSlotsResponseSchema>;
+
+export const GetAvailabilityParamsSchema = z.object({
+  id: z.string().uuid()
+}).strict();
+
+export type getAvailabilityParams = z.infer<typeof GetAvailabilityParamsSchema>
