@@ -1,3 +1,15 @@
+// ************************************************************************** //
+//                                                                            //
+//                                                        :::      ::::::::   //
+//   ai_copy.tsx                                        :+:      :+:    :+:   //
+//                                                    +:+ +:+         +:+     //
+//   By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+        //
+//                                                +#+#+#+#+#+   +#+           //
+//   Created: 2026/01/26 14:15:16 by aelison           #+#    #+#             //
+//   Updated: 2026/01/26 15:37:54 by aelison          ###   ########.fr       //
+//                                                                            //
+// ************************************************************************** //
+
 import React, { useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
 import { useTranslation } from "react-i18next";
@@ -47,7 +59,7 @@ type	MessageType = {
 	side: "left" | "right";
 }
 
-const	AIPage: React.FC = () => {
+const	AICopyPage: React.FC = () => {
 	const	[chatValue, setChatValue] = useState<string>("");
 	// const	messageRef: RefObject<MessageType[]> = useRef<MessageType[]>([]);
 	const	[messageData, setMessageData] = useState<MessageType[]>([
@@ -70,32 +82,36 @@ const	AIPage: React.FC = () => {
 		])
 
 		try {
-			const response = await fetch("/ai/chat", {
+			const response = await fetch("/api/ai/chat", {
 				method: "POST",
 				body: JSON.stringify({message: userQuery}),
 				headers: { "Content-type": "application/json"}
 			});
-
 			if (!response.ok) {
 				const errorMessage = await response.json();
 				throw new Error(errorMessage);
 			}
 
+			console.log("Yees, you made it !");
 			const reader = response.body?.getReader();
 			const decoder = new TextDecoder();
 			let remains = "";
 
-			while (reader) {
+			while (true) {
 				const { value, done } = await reader.read();
 
-				if (done)
+				if (done) {
+					console.log("End receiving llm response")
 					break ;
+				}
 
 				const current_text = decoder.decode(value, { stream: true });
 				const current_line = (remains + current_text).split('\n');
 				remains = current_line.pop() || ""
 
+				console.log("let's enter the loop !")
 				for (const line of current_line) {
+				console.log("inside the loop hehehehehehe ", line);
 					if (!line.trim())
 						continue;
 
@@ -110,6 +126,7 @@ const	AIPage: React.FC = () => {
 								...new_text[0],
 								value: new_text[0].value + llm_reply
 						};
+						console.log("Hello there: ", new_text);
 						return new_text;
 						});
 					}
@@ -197,4 +214,4 @@ const	AIPage: React.FC = () => {
 	);
 }
 
-export default AIPage;
+export default AICopyPage;
