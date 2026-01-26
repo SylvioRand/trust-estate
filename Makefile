@@ -117,7 +117,9 @@ reload-chromadb:
 	@echo "🔄 Reloading chromadb service..."
 	$(DOCKER_COMPOSE) up -d --build chromadb-service
 
-
+reload-auth:
+	@echo "🔄 Reloading chromadb service..."
+	$(DOCKER_COMPOSE) up -d --build auth-service
 
 # Show which docker compose command is being used
 check:

@@ -393,17 +393,17 @@ async function crediter(app: FastifyInstance, userId: string) {
 };
 
 export async function getAvailableSlotsByUserId(app: FastifyInstance, userId: string, day: Date) {
-        const dayDate = new Date(day);
-        const slots: Date[] = [];
-        const startHour = 8;
-        const endHour = 17;
-        for (let hour = startHour; hour <= endHour; hour++) {
-            for (let minute = 0; minute < 60; minute += 30) {
-                const slot = new Date(dayDate);
-                slot.setHours(hour, minute, 0, 0);
-                slots.push(new Date(slot));
-            }
-        }
+	const dayDate = new Date(day);
+	const slots: Date[] = [];
+	const startHour = 8;
+	const endHour = 17;
+	for (let hour = startHour; hour <= endHour; hour++) {
+		for (let minute = 0; minute < 60; minute += 30) {
+			const slot = new Date(dayDate);
+			slot.setHours(hour, minute, 0, 0);
+			slots.push(new Date(slot));
+		}
+	}
 
 	const startOfDay = new Date(dayDate);
 	startOfDay.setHours(0, 0, 0, 0);
