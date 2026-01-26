@@ -103,7 +103,7 @@ reload-nginx:
 
 reload-reservation:
 	@echo "🔄 Reloading reservation service..."
-	$(DOCKER_COMPOSE) up -d --build reservation
+	$(DOCKER_COMPOSE) up -d --build reservations-service
 
 reload-credits:
 	@echo "🔄 Reloading credits service..."
