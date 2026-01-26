@@ -271,9 +271,9 @@ export async function verificationUserRole(request: FastifyRequest, reply: Fasti
 	}
 };
 
-export async function changeUserPermission(request: FastifyRequest<{Body: changePermissionInterface, Params: {id: string}}>, reply: FastifyReply) {
+export async function changeUserPermission(request: FastifyRequest<{Body: changePermissionInterface}>, reply: FastifyReply) {
 	const user = request.user as UserInterface;
-	const userId = request.params.id;
+	const userId = request.body.id;
 	const permission = request.body.role;
 
 	if (!user) {

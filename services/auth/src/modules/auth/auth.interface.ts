@@ -53,5 +53,6 @@ export interface UserGoogleInterface {
 }
 
 export interface changePermissionInterface {
+	id: string
 	role: Role
 }
