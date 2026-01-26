@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { UserInterface } from "../../interfaces/config.interface";
 import * as resaServices from "./resa.services"
-import type { CheckSlotInterface, ReservationIdInterface, ReservationInterface, StatusInterface } from "./resa.interface";
+import type { CheckSlotInterface, ListingInterface, ReservationIdInterface, ReservationInterface, StatusInterface } from "./resa.interface";
 
 export async function listReservation(request: FastifyRequest, reply: FastifyReply) {
 	const user = (request as any).user as UserInterface;
@@ -64,6 +64,16 @@ export async function createSlot(request: FastifyRequest<{Body: ReservationInter
 		});
 
 	try {
+		const slotDate = new Date(slot);
+		const hour = slotDate.getHours();
+		if (hour < 8 || hour > 17) {
+			return reply.status(409).send({
+				"error": "slot_unavailable",
+				"message": "reservation.slot_unavailable",
+				"availableSlots": []
+			});
+		}
+
 		const reservation = await resaServices.addSlot(request.server, user.id, slot, sellerId, listingId);
 		return reply.status(201).send(reservation);
 	} catch (error: any) {
@@ -296,6 +306,34 @@ export async function checkSlot(request: FastifyRequest<{Querystring: CheckSlotI
 			})
 		else
 			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
+}
+
+export async function getSlots(request: FastifyRequest<{Querystring: {id: string}}>, reply: FastifyReply) {
+	const user = (request as any).user as UserInterface;
+	const userId = request.query.id;
+
+	if (!user)
+		return reply.status(401).send({
+			"error": "unauthorized",
+			"message": "common.unauthorized"
+		});
+
+	try {
+		const data = await resaServices.getAvailability(request.server, userId) as ListingInterface;
+		const availability = await resaServices.getAvailableSlotsByUserId(request.server, userId, data.weeklySchedule);
+		return reply.status(200).send({ availability });
+	} catch (error: any) {
+		console.log(error);
+		if (error.message === "listing_server_error")
+			return reply.status(503).send({
+				"error": "internal_server_error",
+				"message": "common.listing_server_error"
+			})
+		return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
 			});
