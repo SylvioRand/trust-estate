@@ -24,7 +24,7 @@ export async function getAllUserReservation(app: FastifyInstance, userId: string
 
 export async function addSlot(app: FastifyInstance, userId: string, slot: Date, sellerId: string, listingId: string) {
 
-    return await app.prisma.$transaction(async (tx: TransactionClient) => {
+	return await app.prisma.$transaction(async (tx: TransactionClient) => {
 		const slotDate = slot instanceof Date ? slot : new Date(slot);
 
 		const now = new Date();
@@ -37,51 +37,51 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 		const slotStart = new Date(slotDate.getTime() - 30 * 60 * 1000); // 30 minutes avant
 		const slotEnd = new Date(slotDate.getTime() + 30 * 60 * 1000); // 30 minutes après
 
-        const sellerSlotTaken = await tx.reservation.findFirst({
-            where: {
-                sellerId,
-                slot: {
-                    gte: slotStart,
-                    lte: slotEnd
-                },
-                status: {
-                    in: ['confirmed']
-                }
-            }
-        });
+		const sellerSlotTaken = await tx.reservation.findFirst({
+			where: {
+				sellerId,
+				slot: {
+					gte: slotStart,
+					lte: slotEnd
+				},
+				status: {
+					in: ['confirmed']
+				}
+			}
+		});
 
-        if (sellerSlotTaken) {
-            throw new Error("slot_unavailable");
-        }
+		if (sellerSlotTaken) {
+			throw new Error("slot_unavailable");
+		}
 
-        const buyerSlotTaken = await tx.reservation.findFirst({
-            where: {
-                buyerId: userId,
-                slot: {
-                    gte: slotStart,
-                    lte: slotEnd
-                },
-                status: {
-                    in: ['pending', 'confirmed']
-                }
-            }
-        });
+		const buyerSlotTaken = await tx.reservation.findFirst({
+			where: {
+				buyerId: userId,
+				slot: {
+					gte: slotStart,
+					lte: slotEnd
+				},
+				status: {
+					in: ['pending', 'confirmed']
+				}
+			}
+		});
 
-        if (buyerSlotTaken) {
-            throw new Error("cannot_reserve_own_listing");
-        }
+		if (buyerSlotTaken) {
+			throw new Error("cannot_reserve_own_listing");
+		}
 
-        const reservation = await tx.reservation.create({
-            data: {
-                listingId,
-                buyerId: userId,
-                sellerId,
-                slot: slot
-            }
-        });
+		const reservation = await tx.reservation.create({
+			data: {
+				listingId,
+				buyerId: userId,
+				sellerId,
+				slot: slot
+			}
+		});
 
-        return (responseReservation(reservation));
-    });
+		return (responseReservation(reservation));
+	});
 };
 
 export async function deleteReservation(app: FastifyInstance, userId: string, reservationId: string) {
@@ -392,38 +392,116 @@ async function crediter(app: FastifyInstance, userId: string) {
 	}
 };
 
-export async function getAvailableSlotsByUserId(app: FastifyInstance, userId: string, day: Date) {
-	const dayDate = new Date(day);
-	const slots: Date[] = [];
-	const startHour = 8;
-	const endHour = 17;
-	for (let hour = startHour; hour <= endHour; hour++) {
-		for (let minute = 0; minute < 60; minute += 30) {
-			const slot = new Date(dayDate);
-			slot.setHours(hour, minute, 0, 0);
-			slots.push(new Date(slot));
+export async function getAvailability(app: FastifyInstance, userId: string) {
+	const jwt = await import('jsonwebtoken');
+	const internalToken = jwt.default.sign(
+		{ service: 'reservation-service', userId },
+		app.config.INTERNAL_KEY_SECRET,
+		{ algorithm: 'HS256', expiresIn: '30s' }
+	);
+
+	try {
+		const response = await fetch(`${app.config.LISTINGS_SERVICE_URL}/listings/${userId}/availability`, {
+			method: 'GET',
+			headers: {
+				'x-internal-key': internalToken,
+				'x-user-id': userId
+			}
+		});
+
+		if (!response.ok) {
+			const error = await response.json() as any;
+			throw new Error('listing_server_error');
 		}
+		const data = await response.json();
+		return (data);
+	} catch (error: any) {
+		console.log(error);
+		app.log.error({ error }, 'listing_server_error');
+		throw new Error("listing_server_error");
+	}
+}
+
+export async function getAvailableSlotsByUserId(app: FastifyInstance, userId: string, days: { dayOfWeek: number, startTime: number|string, endTime: number|string }[]) {
+    let allAvailableSlots: { day: Date, slots: Date[] }[] = [];
+    const now = new Date();
+    const GMT_OFFSET = 3;
+    const today = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        0 - GMT_OFFSET, 0, 0, 0
+    ));
+	function parseHourMinute(val: number|string): { hour: number, minute: number } {
+		if (typeof val === 'number') return { hour: val, minute: 0 };
+		if (typeof val === 'string') {
+			const [h, m] = val.split(':').map(Number);
+			return { hour: h, minute: m || 0 };
+		}
+		return { hour: 0, minute: 0 };
 	}
 
-	const startOfDay = new Date(dayDate);
-	startOfDay.setHours(0, 0, 0, 0);
-	const endOfDay = new Date(dayDate);
-	endOfDay.setHours(23, 59, 59, 999);
+	for (const dayObj of days) {
+		const jsDay = (dayObj.dayOfWeek % 7); // 1=lundi -> 1, 7=dimanche -> 0
+		const todayJsDay = today.getDay();
+		let daysToAdd = jsDay - todayJsDay;
+		if (daysToAdd < 0) daysToAdd += 7;
+		const dayDate = new Date(today);
+		dayDate.setDate(today.getDate() + daysToAdd);
 
-	const reservedSlots = await app.prisma.reservation.findMany({
-		where: {
-			sellerId: userId,
-			status: { in: ['pending', 'confirmed'] },
-			slot: {
-				gte: startOfDay,
-				lt: endOfDay
+		const GMT_OFFSET = 3;
+
+		const { hour: startTime, minute: startMinute } = parseHourMinute(dayObj.startTime);
+		const { hour: endTime, minute: endMinute } = parseHourMinute(dayObj.endTime);
+
+		const slots: Date[] = [];
+		for (let hour = startTime; hour <= endTime; hour++) {
+			for (let minute = (hour === startTime ? startMinute : 0); minute < 60; minute += 30) {
+				if (hour === endTime && minute > endMinute) break;
+				const slot = new Date(Date.UTC(
+					dayDate.getUTCFullYear(),
+					dayDate.getUTCMonth(),
+					dayDate.getUTCDate(),
+					hour - GMT_OFFSET,
+					minute,
+					0,
+					0
+				));
+				const slotGmt3 = new Date(slot.getTime() + GMT_OFFSET * 60 * 60 * 1000);
+				slots.push(slotGmt3);
 			}
-		},
-		select: { slot: true }
-	});
+		}
 
-	const reservedDates = reservedSlots.map(r => r.slot.getTime());
-	const availableSlots = slots.filter(slot => !reservedDates.includes(slot.getTime()));
+		const startOfDay = new Date(Date.UTC(
+			dayDate.getUTCFullYear(),
+			dayDate.getUTCMonth(),
+			dayDate.getUTCDate(),
+			0 - GMT_OFFSET, 0, 0, 0
+		));
+		const endOfDay = new Date(Date.UTC(
+			dayDate.getUTCFullYear(),
+			dayDate.getUTCMonth(),
+			dayDate.getUTCDate(),
+			23 - GMT_OFFSET, 59, 59, 999
+		));
 
-	return availableSlots;
+		const reservedSlots = await app.prisma.reservation.findMany({
+			where: {
+				sellerId: userId,
+				status: { in: ['pending', 'confirmed'] },
+				slot: {
+					gte: startOfDay,
+					lt: endOfDay
+				}
+			},
+			select: { slot: true }
+		});
+
+		const reservedDates = reservedSlots.map(r => r.slot.getTime());
+		const availableSlots = slots.filter(slot => !reservedDates.includes(slot.getTime()));
+
+		allAvailableSlots.push({ day: new Date(dayDate), slots: availableSlots });
+	}
+
+	return allAvailableSlots;
 }

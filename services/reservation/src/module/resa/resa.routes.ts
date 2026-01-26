@@ -13,7 +13,7 @@ export async function reservationRoutes(app: FastifyInstance, options: FastifyPl
 			preHandler: app.authentication
 		}, resaControllers.createSlot);
 
-	app.get<{Querystring: {id: string, slot: Date}}>("/reservations/get-slot",
+	app.get<{Querystring: {id: string}}>("/reservations/get-slot",
 		{
 			schema: GetReservationSchema,
 			preHandler: app.authentication
