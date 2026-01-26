@@ -15,12 +15,10 @@ export async function handlePublish(request: FastifyRequest, reply: FastifyReply
 
   try {
     const user = (request as any).user;
-    console.log(" User from hook:", user.id);
 
     const { listingData, files: photos } = await processMultipart(request, uploadedFiles);
 
     const validatedData = PublishListingSchema.parse(listingData);
-    console.log("validatedData", validatedData);
 
     const { listing, listingFeatures } = await ListingService.createListing(validatedData, photos, user.id);
 
