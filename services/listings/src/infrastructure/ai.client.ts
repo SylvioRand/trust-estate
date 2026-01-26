@@ -35,7 +35,6 @@ export class AIClient {
       { algorithm: "HS256" }
     );
 
-    console.log("body value my cabron-> ", body);
     const result = await fetch(`${this.AI_SERVICE_URL}/ai/index`, {
       method: method,
       headers: {
@@ -46,7 +45,6 @@ export class AIClient {
     });
 
     const resultBody = await result.json();
-    console.log("Response from AI SERVICE:", resultBody);
 
     if (!result.ok) {
       console.error("AI Service Error:", result.status, resultBody);
