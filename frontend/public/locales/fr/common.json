@@ -3,5 +3,6 @@
 		"name": "CASA"
 	},
 	"true": "Oui",
-	"false": "Non"
+	"false": "Non",
+	"noLimit": "Aucun"
 }

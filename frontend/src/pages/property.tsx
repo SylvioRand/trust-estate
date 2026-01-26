@@ -9,6 +9,7 @@ import InputEnum from "../components/InputEnum";
 import type { TFunction } from "i18next";
 import { ZONE_ENUM } from "../dataModel/dataZone";
 import { toast } from "react-toastify";
+import InputRange from "../components/InputRange";
 
 interface PublicationCardProps {
 	propertyData: PropertyDataType;
@@ -150,40 +151,41 @@ const	Filter: React.FC<FilterProps> = ({
 		e.preventDefault();
 		const	formData: FormData = new FormData(e.currentTarget);
 		const	data: Record<string, FormDataEntryValue> = Object.fromEntries(formData.entries());
-		let		url: string = `/api/listings`;
+		let		url: string = `/api/listings/`;
 		let		i: number = 0;
 
 		// NOTE: I construct the filter dynamically based on the key and the value,
-		// if the value is none, I will just ignore it
+		// if the value is none or empty, I will just ignore it
 		for (const [key, value] of Object.entries(data))
 		{
-			if (value === "none")
+			if (value === "none" || value === "")
 			{
-				i++;
+				if (i > 0)
+					i++;
 				continue ;
 			}
 			if (i === 0)
-				url += "&";
+				url += "?";
 			url += `${i++ > 0 ? "&" : ""}${key}=${value}`;
 		}
 		console.log(url);
 
-		// setIsFetchingData(true);
-		// try {
-		// 	const	response = await fetch(url, {
-		// 		method: "GET",
-		// 		credentials: "include"
-		// 	});
-		// 	// const	responseData = await response.json();
+		setIsFetchingData(true);
+		try {
+			const	response = await fetch(url, {
+				method: "GET",
+				credentials: "include"
+			});
+			const	responseData = await response.json();
 
-		// 	// NOTE: Should verify if there is an error or not!
-		// 	setDataToDisplay([]);
-		// } catch (error) {
-		// 	if (error instanceof Error && error.message !== "")
-		// 		toast.error(t(`error:${error.message}`))
-		// } finally {
-		// 	setIsFetchingData(false);
-		// }
+			// NOTE: Should verify if there is an error or not!
+			setDataToDisplay(responseData.data);
+		} catch (error) {
+			if (error instanceof Error && error.message !== "")
+				toast.error(t(`error:${error.message}`))
+		} finally {
+			setIsFetchingData(false);
+		}
 	};
 
 	return (
@@ -201,7 +203,7 @@ const	Filter: React.FC<FilterProps> = ({
 			transition-discrete duration-500
 			w-full"
 			style={{
-				height: isOpen ? "405px" : "55px"
+				height: isOpen ? "600px" : "55px"
 			}}
 		>
 			<button
@@ -261,6 +263,20 @@ const	Filter: React.FC<FilterProps> = ({
 						{ value: "commercial", title: t("buttons.filter.propertyType.commercial") }
 					]}
 				/>
+				<InputRange
+					title={ t("buttons.filter.priceRange.title") }
+					minTitle={ t("buttons.filter.priceRange.min") }
+					minName="minPrice"
+					maxTitle={ t("buttons.filter.priceRange.max") }
+					maxName="maxPrice"
+				/>
+				<InputRange
+					title={ t("buttons.filter.areaRange.title") }
+					minTitle={ t("buttons.filter.areaRange.min") }
+					minName="minSurface"
+					maxTitle={ t("buttons.filter.areaRange.max") }
+					maxName="maxSurface"
+				/>
 				<InputEnum
 					title={ t("buttons.filter.tag.title") }
 					name="tags"
@@ -300,14 +316,14 @@ const	PropertyPage: React.FC = () => {
 		const	getDataFromBackend = async () => {
 			setIsFetchingData(true);
 			try {
-				const	response = await fetch("/api/listings", {
+				const	response = await fetch("/api/listings/", {
 					method: "GET",
 					credentials: "include"
 				});
-				// const	responseData = await response.json();
+				const	responseData = await response.json();
 
 				// NOTE: Should verify if there is an error or not!
-				setDataToDisplay([]);
+				setDataToDisplay(responseData.data);
 			} catch (error) {
 				if (error instanceof Error && error.message !== "")
 					toast.error(t(`error:${error.message}`))

@@ -3,6 +3,16 @@
 	"buttons": {
 		"filter": {
 			"title": "Filter",
+			"priceRange": {
+				"title": "Price range (Ar)",
+				"min": "Minimum",
+				"max": "Maximum"
+			},
+			"areaRange": {
+				"title": "Area range (Sqft)",
+				"min": "Minimum",
+				"max": "Maximum"
+			},
 			"apply": "Apply Filter",
 			"contract": {
 				"title": "Contract",

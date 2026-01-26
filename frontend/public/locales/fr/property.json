@@ -3,6 +3,16 @@
 	"buttons": {
 		"filter": {
 			"title": "Filtres",
+			"priceRange": {
+				"title": "Fourchette de prix (Ar)",
+				"min": "Minimum",
+				"max": "Maximum"
+			},
+			"areaRange": {
+				"title": "Intervalle de surface (m2)",
+				"min": "Minimum",
+				"max": "Maximum"
+			},
 			"apply": "Appliquer Filtres",
 			"contract": {
 				"title": "Contrat",
