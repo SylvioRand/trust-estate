@@ -139,6 +139,7 @@ interface	FilterProps {
 	setDataToDisplay: Dispatch<SetStateAction<PropertyDataType[]>>;
 	setIsFetchingData: Dispatch<SetStateAction<boolean>>;
 	setLastFilter: Dispatch<SetStateAction<string>>;
+	setPage: Dispatch<SetStateAction<number>>;
 	setMaxPage: Dispatch<SetStateAction<number>>;
 	page: number;
 }
@@ -148,6 +149,7 @@ const	Filter: React.FC<FilterProps> = ({
 	setDataToDisplay,
 	setIsFetchingData,
 	setLastFilter,
+	setPage,
 	setMaxPage,
 	page = 1
 }) => {
@@ -162,8 +164,9 @@ const	Filter: React.FC<FilterProps> = ({
 
 	const	applyFilters = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		setIsOpen(false);
 		const	formData: FormData = new FormData(e.currentTarget);
-		let		url: string = `/api/listings/?page=${page}`;
+		let		url: string = `/api/listings/?limit=1&page=${page}`;
 		const	query = new URLSearchParams();
 		const	uniqueKeys = new Set(formData.keys());
 
@@ -224,6 +227,7 @@ const	Filter: React.FC<FilterProps> = ({
 			{
 				setDataToDisplay(responseData.data);
 				setLastFilter(result === "" ? "" : `&${result}`);
+				setPage(1);
 				setMaxPage(responseData.pagination.totalPages);
 			}
 			else
@@ -436,7 +440,7 @@ const	PropertyPage: React.FC = () => {
 	const	getDataFromBackend = async () => {
 		setIsFetchingData(true);
 		try {
-			const	response = await fetch(`/api/listings/?page=${page}${lastFilter}`, {
+			const	response = await fetch(`/api/listings/?limit=1&page=${page}${lastFilter}`, {
 				method: "GET",
 				credentials: "include"
 			});
@@ -463,6 +467,10 @@ const	PropertyPage: React.FC = () => {
 		getDataFromBackend();
 	}, []);
 
+	useEffect(() => {
+		getDataFromBackend();
+	}, [page]);
+
 	return (
 		<div className="flex flex-col items-center justify-start gap-4
 			overflow-y-scroll
@@ -481,6 +489,7 @@ const	PropertyPage: React.FC = () => {
 				setIsFetchingData={setIsFetchingData}
 				setLastFilter={setLastFilter}
 				page={ page }
+				setPage={ setPage }
 				setMaxPage={ setMaxPage }
 			/>
 
@@ -558,7 +567,6 @@ const	PropertyPage: React.FC = () => {
 				<PageButton
 				title={ t("buttons.page.previous") }
 				onClick={ () => {
-					getDataFromBackend();
 					setPage(page > 1 ? page - 1 : 1);
 				}}
 				disabled={ arePreviousDisabled || isFetchingData }
@@ -566,7 +574,6 @@ const	PropertyPage: React.FC = () => {
 				<PageButton
 				title={ t("buttons.page.next") }
 				onClick={ () => {
-					getDataFromBackend();
 					setPage(page + 1);
 				}}
 				disabled={ areNextDisabled || isFetchingData }
