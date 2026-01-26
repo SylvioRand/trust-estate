@@ -47,7 +47,7 @@ type	MessageType = {
 	side: "left" | "right";
 }
 
-const	AIPage: React.FC = () => {
+const	AICopyPage: React.FC = () => {
 	const	[chatValue, setChatValue] = useState<string>("");
 	// const	messageRef: RefObject<MessageType[]> = useRef<MessageType[]>([]);
 	const	[messageData, setMessageData] = useState<MessageType[]>([
@@ -197,4 +197,4 @@ const	AIPage: React.FC = () => {
 	);
 }
 
-export default AIPage;
+export default AICopyPage;

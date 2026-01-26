@@ -22,7 +22,7 @@ import PublishPage from './pages/publish.tsx';
 import SellerSlotsPage from './pages/seller_slots.tsx';
 import SettingsPage from './pages/settings.tsx';
 import ProfilePage from './pages/profile.tsx';
-import AIPage from './pages/ai.tsx';
+import AIPage from './pages/ai_copy.tsx';
 import BuyerSlotsPage from './pages/buyer_slots.tsx';
 import TermOfServicePage from './pages/term_of_service.tsx';
 import PrivacyPolicyPage from './pages/privacy_policy.tsx';
@@ -82,7 +82,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/ai",
-				element: <AIPage />
+				element: <AICopyPage />
 			},
 			{
 				path: "/profile",
