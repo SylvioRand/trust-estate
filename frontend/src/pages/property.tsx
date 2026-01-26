@@ -5,11 +5,12 @@ import { listData, type PropertyDataType, type ListingsProps } from "../dataMode
 import ActionButton from "../components/ActionButton";
 import { TagsComponents } from "./listings";
 import type { ListingsTags } from "../dataModel/modelListings";
-import InputEnum from "../components/InputEnum";
+import InputEnum, { type InputEnumData } from "../components/InputEnum";
 import type { TFunction } from "i18next";
 import { ZONE_ENUM } from "../dataModel/dataZone";
 import { toast } from "react-toastify";
 import InputRange from "../components/InputRange";
+import InputCheckbox from "../components/InputCheckBox";
 
 interface PublicationCardProps {
 	propertyData: PropertyDataType;
@@ -134,40 +135,80 @@ export const	PublicationCard: React.FC<PublicationCardProps> = ({
 }
 
 interface	FilterProps {
-	t: TFunction<"property">;
+	t: TFunction<["property", "error", "common"]>;
 	setDataToDisplay: Dispatch<SetStateAction<PropertyDataType[]>>;
 	setIsFetchingData: Dispatch<SetStateAction<boolean>>;
+	setLastFilter: Dispatch<SetStateAction<string>>;
+	setMaxPage: Dispatch<SetStateAction<number>>;
+	page: number;
 }
 
 const	Filter: React.FC<FilterProps> = ({
 	t,
 	setDataToDisplay,
-	setIsFetchingData
+	setIsFetchingData,
+	setLastFilter,
+	setMaxPage,
+	page = 1
 }) => {
 	const	[isOpen, setIsOpen] = useState<boolean>(false);
 	const	[hovered, setHovered] = useState<boolean>(false);
 
+	const	InputEnumDataBoolean: InputEnumData[] = [
+		{ value: "none", title: t("common:all") },
+		{ value: "true", title: t("common:true") },
+		{ value: "false", title: t("common:false") }
+	]
+
 	const	applyFilters = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		const	formData: FormData = new FormData(e.currentTarget);
-		const	data: Record<string, FormDataEntryValue> = Object.fromEntries(formData.entries());
-		let		url: string = `/api/listings/`;
-		let		i: number = 0;
+		let		url: string = `/api/listings/?page=${page}`;
+		const	query = new URLSearchParams();
+		const	uniqueKeys = new Set(formData.keys());
+
+		let		error: boolean = false;
+		["Price", "Surface", "BedRoom", "BathRoom"].forEach((value: string) => {
+			const min = formData.get(`min${value}`) as string | null;
+			const max = formData.get(`max${value}`) as string | null;
+
+			const minIsValid = min === null || /^\d*$/.test(min); // allow empty
+			const maxIsValid = max === null || /^\d*$/.test(max);
+
+			const minNumber = /^\d+$/.test(min || "") ? Number(min) : undefined;
+			const maxNumber = /^\d+$/.test(max || "") ? Number(max) : undefined;
+
+			const rangeIsValid =
+				minNumber === undefined ||
+				maxNumber === undefined ||
+				minNumber <= maxNumber;
+
+ 			 if (!minIsValid || !maxIsValid || !rangeIsValid) {
+				error = true;
+			}
+		})
+
+		if (error)
+		{
+			toast.error(t("rangeError"));
+			return ;
+		}
 
 		// NOTE: I construct the filter dynamically based on the key and the value,
 		// if the value is none or empty, I will just ignore it
-		for (const [key, value] of Object.entries(data))
+		for (const key of uniqueKeys)
 		{
-			if (value === "none" || value === "")
-			{
-				if (i > 0)
-					i++;
-				continue ;
-			}
-			if (i === 0)
-				url += "?";
-			url += `${i++ > 0 ? "&" : ""}${key}=${value}`;
+			const values = formData.getAll(key);
+			values.forEach((v) => {
+				if (v === "none" || v === "")
+					return ;
+				query.append(key, v.toString())
+			});
 		}
+
+		const	result: string = query.toString();
+		setLastFilter(result);
+		url = `${url}${result === "" ? "" : `&${result}`}`;
 		console.log(url);
 
 		setIsFetchingData(true);
@@ -179,7 +220,14 @@ const	Filter: React.FC<FilterProps> = ({
 			const	responseData = await response.json();
 
 			// NOTE: Should verify if there is an error or not!
-			setDataToDisplay(responseData.data);
+			if (response.ok)
+			{
+				setDataToDisplay(responseData.data);
+				setLastFilter(result === "" ? "" : `&${result}`);
+				setMaxPage(responseData.pagination.totalPages);
+			}
+			else
+				throw new Error(responseData.message);
 		} catch (error) {
 			if (error instanceof Error && error.message !== "")
 				toast.error(t(`error:${error.message}`))
@@ -203,7 +251,7 @@ const	Filter: React.FC<FilterProps> = ({
 			transition-discrete duration-500
 			w-full"
 			style={{
-				height: isOpen ? "600px" : "55px"
+				height: isOpen ? "1245px" : "55px"
 			}}
 		>
 			<button
@@ -277,11 +325,53 @@ const	Filter: React.FC<FilterProps> = ({
 					maxTitle={ t("buttons.filter.areaRange.max") }
 					maxName="maxSurface"
 				/>
+				<InputRange
+					title={ t("buttons.filter.bedroomRange.title") }
+					minTitle={ t("buttons.filter.bedroomRange.min") }
+					minName="minBedRoom"
+					maxTitle={ t("buttons.filter.bedroomRange.max") }
+					maxName="maxBedRoom"
+				/>
+				<InputRange
+					title={ t("buttons.filter.bathroomRange.title") }
+					minTitle={ t("buttons.filter.bathroomRange.min") }
+					minName="minbathRoom"
+					maxTitle={ t("buttons.filter.bathroomRange.max") }
+					maxName="maxbathRoom"
+				/>
 				<InputEnum
+					title={ t("buttons.filter.gardenPrivate.title") }
+					name="gardenPrivate"
+					dataEnum={ InputEnumDataBoolean }
+				/>
+				<InputEnum
+					title={ t("buttons.filter.waterAccess.title") }
+					name="waterAccess"
+					dataEnum={ InputEnumDataBoolean }
+				/>
+				<InputEnum
+					title={ t("buttons.filter.electricityAccess.title") }
+					name="electricityAccess"
+					dataEnum={ InputEnumDataBoolean }
+				/>
+				<InputEnum
+					title={ t("buttons.filter.pool.title") }
+					name="pool"
+					dataEnum={ InputEnumDataBoolean }
+				/>
+				<InputCheckbox
+					title={ t("buttons.filter.parkingType.title") }
+					name="parkingType"
+					value={[
+						{ value: "garage", title: t("buttons.filter.parkingType.garage") },
+						{ value: "box", title: t("buttons.filter.parkingType.box") },
+						{ value: "parking", title: t("buttons.filter.parkingType.parking") }
+					]}
+				/>
+				<InputCheckbox
 					title={ t("buttons.filter.tag.title") }
 					name="tags"
-					dataEnum={[
-						{ value: "none", title: t("buttons.filter.tag.none") },
+					value={[
 						{ value: "urgent", title: t("buttons.filter.tag.urgent") },
 						{ value: "exclusive", title: t("buttons.filter.tag.exclusive") },
 						{ value: "discount", title: t("buttons.filter.tag.discount") }
@@ -304,36 +394,74 @@ const	Filter: React.FC<FilterProps> = ({
 	);
 }
 
+interface	PageButtonProps {
+	title: string;
+	onClick: () => void;
+	disabled: boolean;
+}
+
+const	PageButton: React.FC<PageButtonProps> = ({
+	title = "Title",
+	onClick,
+	disabled = false
+}) => {
+	return (
+		<button
+		className="border border-background/25
+		p-2 rounded-md
+		cursor-pointer
+		shadow-standard"
+		style={{
+			opacity: disabled ? "42%" : "100%",
+			pointerEvents: disabled ? "none" : "auto"
+		}}
+		onClick={ onClick }
+		>
+			{ title }
+		</button>
+	);
+}
+
 const	PropertyPage: React.FC = () => {
-	const	{ t } = useTranslation(["property", "error"]);
+	const	{ t } = useTranslation(["property", "error", "common"]);
 
 	const	[dataToDisplay, setDataToDisplay] = useState<PropertyDataType[]>([]);
-
 	const	[isFetchingData, setIsFetchingData] = useState<boolean>(false);
+	const	[page, setPage] = useState<number>(1);
+	const	[maxPage, setMaxPage] = useState<number>(1);
+	const	[lastFilter, setLastFilter] = useState<string>("");
+	const	arePreviousDisabled = page === 1;
+	const	areNextDisabled = page === maxPage;
 
-	// NOTE: fetch data on component mount
-	useEffect(() => {
-		const	getDataFromBackend = async () => {
-			setIsFetchingData(true);
-			try {
-				const	response = await fetch("/api/listings/", {
-					method: "GET",
-					credentials: "include"
-				});
-				const	responseData = await response.json();
+	const	getDataFromBackend = async () => {
+		setIsFetchingData(true);
+		try {
+			const	response = await fetch(`/api/listings/?page=${page}${lastFilter}`, {
+				method: "GET",
+				credentials: "include"
+			});
+			const	responseData = await response.json();
 
-				// NOTE: Should verify if there is an error or not!
+			// NOTE: Should verify if there is an error or not!
+			if (response.ok)
+			{
 				setDataToDisplay(responseData.data);
-			} catch (error) {
-				if (error instanceof Error && error.message !== "")
-					toast.error(t(`error:${error.message}`))
-			} finally {
-				setIsFetchingData(false);
+				setMaxPage(responseData.pagination.totalPages);
 			}
+			else
+				throw new Error(responseData.message);
+		} catch (error) {
+			if (error instanceof Error && error.message !== "")
+				toast.error(t(`error:${error.message}`))
+		} finally {
+			setIsFetchingData(false);
 		}
+	}
 
+	// NOTE: fetch data once on component mount
+	useEffect(() => {
 		getDataFromBackend();
-	}, [t]);
+	}, []);
 
 	return (
 		<div className="flex flex-col items-center justify-start gap-4
@@ -348,9 +476,12 @@ const	PropertyPage: React.FC = () => {
 			</div>
 
 			<Filter
-				t={ t }
-				setDataToDisplay={ setDataToDisplay }
-				setIsFetchingData={ setIsFetchingData }
+				t={t}
+				setDataToDisplay={setDataToDisplay}
+				setIsFetchingData={setIsFetchingData}
+				setLastFilter={setLastFilter}
+				page={ page }
+				setMaxPage={ setMaxPage }
 			/>
 
 			{
@@ -403,7 +534,6 @@ const	PropertyPage: React.FC = () => {
 				</div>
 			}
 
-
 			{
 				isFetchingData &&
 				<div
@@ -420,6 +550,28 @@ const	PropertyPage: React.FC = () => {
 					</div>
 				</div>
 			}
+
+			<div
+			className="flex items-center justify-center gap-3
+			w-full"
+			>
+				<PageButton
+				title={ t("buttons.page.previous") }
+				onClick={ () => {
+					getDataFromBackend();
+					setPage(page > 1 ? page - 1 : 1);
+				}}
+				disabled={ arePreviousDisabled || isFetchingData }
+				/>
+				<PageButton
+				title={ t("buttons.page.next") }
+				onClick={ () => {
+					getDataFromBackend();
+					setPage(page + 1);
+				}}
+				disabled={ areNextDisabled || isFetchingData }
+				/>
+			</div>
 		</div>
 	);
 }
