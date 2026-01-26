@@ -25,9 +25,7 @@ export async function refreshTokenExists(app: FastifyInstance, userId: string, t
 	const storedToken = await app.prisma.refresh_token.findUnique({
 		where: { userId }
 	});
-
-	if (!storedToken || storedToken.tokenHash !== tokenHash
-		|| storedToken.expiresAt <= new Date()) {
+	if (!storedToken || storedToken.expiresAt <= new Date()) {
 			return (null);
 		}
 	return (tokenHash);

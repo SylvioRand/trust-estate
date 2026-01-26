@@ -114,3 +114,22 @@ export const ResetPasswordSchema = {
 		additionalProperties: false
 	}
 };
+
+const Role = ['USER', 'MODERATOR', 'ADMIN']
+
+export const ChangeRoleSchema = {
+	body: {
+		type: 'object',
+		required: ['id', 'role'],
+		properties: {
+			id: {
+				type: 'string',
+				format: 'uuid'
+			},
+			role: {
+				type: 'string', enum: Role
+			}
+		},
+		additionalProperties: false
+	}
+}
