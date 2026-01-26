@@ -17,3 +17,13 @@ export interface CheckSlotInterface {
 	listingId: string
 	slot: Date
 }
+
+interface DayListingInterface {
+	dayOfWeek: number,
+	startTime: number|string,
+	endTime: number|string
+}
+
+export interface ListingInterface {
+	weeklySchedule: DayListingInterface[]
+}
