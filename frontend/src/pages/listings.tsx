@@ -1,18 +1,18 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import house0 from "../../src/images/house0.webp";
 import house1 from "../../src/images/house1.webp";
 import house2 from "../../src/images/house2.webp";
 import { useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import type { TFunction } from "i18next";
 import ActionButton from "../components/ActionButton";
 import ToggleButton from "../components/ToggleButton";
 import PhotoViewer from "../components/PhotoViewer";
-import { type ListingsTags, type ListingsData, dataExampleListingsData as dataExample } from "../dataModel/modelListings";
+import { type ListingsTags, type ListingsData } from "../dataModel/modelListings";
 import BoxSection from "../components/BoxSection";
-import i18n from "../i18n/i18n";
 import PopUp, { type PopUpAPI } from "../components/PopUp";
 import { CreateDateForMemberSince, CreateDateForPost } from "../utils/Format";
+import { toast } from "react-toastify";
 
 interface	TagsComponentsProps {
 	tags: ListingsTags;
@@ -63,11 +63,13 @@ export const	TagsComponents: React.FC<TagsComponentsProps> = ({
 interface	PicturesLayoutProps {
 	data: string[];
 	translationSingleton: TFunction<"listings">;
+	listingsData: ListingsData | null;
 }
 
 const	PicturesLayoutDesktopAndTablet: React.FC<PicturesLayoutProps> = ({
 	data = [],
-	translationSingleton
+	translationSingleton,
+	listingsData
 }) => {
 	const	[openPhotoViewer, setOpenPhotoViewer] = useState<boolean>(false);
 	const	[photoToOpen, setPhotoToOpen] = useState<number>(0);
@@ -169,9 +171,10 @@ const	PicturesLayoutDesktopAndTablet: React.FC<PicturesLayoutProps> = ({
 					flex items-center justify-center gap-2"
 				>
 					{
-						dataExample.tags.length > 0 && dataExample.tags.map((value: ListingsTags, index: number) => {
+						listingsData?.tags && listingsData?.tags.length > 0 && listingsData?.tags.map((value: ListingsTags, index: number) => {
 							return (
 								<TagsComponents
+									key={ index }
 									tags={ value }
 								/>
 							)
@@ -251,7 +254,7 @@ const	PicturesLayoutDesktopAndTablet: React.FC<PicturesLayoutProps> = ({
 			}
 
 			{
-				dataExample.mine === false &&
+				listingsData?.mine === false &&
 					<div className="absolute top-2 right-2">
 						<ReportButton/>
 					</div>
@@ -427,7 +430,7 @@ const	ReportButton: React.FC = () => {
 
 interface	StatsProps {
 	title: string;
-	value: any;
+	value: string;
 }
 
 const	Stats: React.FC<StatsProps> = ({
@@ -452,6 +455,9 @@ const	Stats: React.FC<StatsProps> = ({
 const	ListingsPage: React.FC = () => {
 	const	{ t } = useTranslation("listings");
 	const	formatter = new Intl.NumberFormat("de-DE");
+
+	const	[listingsData, setListingsData] = useState<ListingsData | null>(null);
+	const	navigate = useNavigate();
 
 	const	[searchParams] = useSearchParams();
 	const	listingsID = searchParams.get("id"); // retrieve the value of the listings here
@@ -478,7 +484,8 @@ const	ListingsPage: React.FC = () => {
 		parking_type: "󰄋",
 		garden_private: "󰉊",
 		water_access: "󰖌",
-		electricity_access: ""
+		electricity_access: "",
+		pool: "󰘆"
 	}
 
 	// NOTE: need to fetch first to see if it's favorite or not, or maybe just send it through query
@@ -488,14 +495,43 @@ const	ListingsPage: React.FC = () => {
 	// NOTE: I invert the value of isAvailable to get the correct UI representation
 	const	[openPopupAvailability, setOpenPopupAvailability] = useState<boolean>(false);
 	const	availabilityPopupRef = useRef<PopUpAPI>(null);
-	const	[isAvailable, setIsAvailable] = useState<boolean>(dataExample.isAvailable);
+	const	[isAvailable, setIsAvailable] = useState<boolean>(true);
 	const	availabilityActiveSection = 
-		(dataExample.type === "sale" ? "markSold"
+		(listingsData?.type === "sale" ? "markSold"
 			: (isAvailable ? "markRented" : "unmarkRented"));
 
 	const	[openPopupArchive, setOpenPopupArchive] = useState<boolean>(false);
 	const	archivePopupRef = useRef<PopUpAPI>(null);
-	const	[isArchiveDisabled, setIsArchiveDisabled] = useState<boolean>(dataExample.status === "archived" || dataExample.status === "blocked");
+	const	[isArchiveDisabled, setIsArchiveDisabled] = useState<boolean>(false);
+
+	useEffect(() => {
+		const	fetchListings = async () => {
+			try {
+				const	response = await fetch(`/api/listings/${listingsID}`, {
+					method: "GET",
+					credentials: "include"
+				});
+
+				console.log("BEFORE FETCHING");
+				const	responseData = await response.json();
+				console.log("AFTER FETCHING");
+
+				if (response.ok)
+				{
+					setListingsData(responseData);
+					setIsAvailable(responseData?.isAvailable ?? true);
+					setIsArchiveDisabled(responseData?.status === "archived" || responseData?.status === "blocked");
+				}
+				else
+					throw new Error(responseData.message);
+			} catch (error) {
+				if (error instanceof Error && error.message !== "")
+					toast.error(`error:${error.message}`);
+				navigate("/home");
+			}
+		}
+		fetchListings();
+	}, [])
 
 	return (
 		<div className="flex flex-col items-center justify-start gap-7
@@ -516,11 +552,13 @@ const	ListingsPage: React.FC = () => {
 			<PicturesLayoutMobile
 				data={ pictures } // NOTE: should send the pictures of the listings here
 				translationSingleton={ t }
+				listingsData={ listingsData }
 			/>
 
 			<PicturesLayoutDesktopAndTablet
 				data={ pictures } // NOTE: should send the pictures of the listings here
 				translationSingleton={ t }
+				listingsData={ listingsData }
 			/>
 
 			<div className="grid grid-cols-1 grid-rows-2 gap-7
@@ -540,9 +578,10 @@ const	ListingsPage: React.FC = () => {
 							w-full"
 						>
 							{
-								dataExample.tags.length > 0 && dataExample.tags.map((value: ListingsTags, index: number) => {
+								listingsData?.tags && listingsData?.tags.length > 0 && listingsData?.tags.map((value: ListingsTags, index: number) => {
 									return (
 										<TagsComponents
+											key={ index }
 											tags={ value }
 										/>
 									)
@@ -551,7 +590,7 @@ const	ListingsPage: React.FC = () => {
 						</div>
 
 						{
-							dataExample.mine === false && <ReportButton/>
+							listingsData?.mine === false && <ReportButton/>
 						}
 
 					</div>
@@ -567,7 +606,7 @@ const	ListingsPage: React.FC = () => {
 							<div className="flex flex-col items-start justify-center w-full">
 								<div className="flex items-center justify-center gap-2">
 									<div className="font-inter font-bold text-2xl">
-										{ dataExample.title }
+										{ listingsData?.title }
 									</div>
 									<div className="rounded-full
 										shadow-standard
@@ -576,7 +615,7 @@ const	ListingsPage: React.FC = () => {
 										text-sm
 										border border-background/25"
 									>
-										{ dataExample.type === "sale" ? t("section.listingType.sale") : t("section.listingType.rent") }
+										{ listingsData?.type === "sale" ? t("section.listingType.sale") : t("section.listingType.rent") }
 									</div>
 								</div>
 								<div className="flex items-center justify-center gap-1
@@ -584,12 +623,12 @@ const	ListingsPage: React.FC = () => {
 									text-md
 									opacity-80"
 								>
-									<div className="font-icon"></div>{ dataExample.zone}
+									<div className="font-icon"></div>{ listingsData?.zone}
 								</div>
 							</div>
 
 							<div className="font-inter font-bold text-3xl">
-								{ formatter.format(dataExample.price) } Ariary
+								{ formatter.format(listingsData?.price ?? 1) } Ariary
 							</div>
 						</div>
 
@@ -597,7 +636,7 @@ const	ListingsPage: React.FC = () => {
 							w-full"
 						>
 							{
-								dataExample.mine === false &&
+								listingsData?.mine === false &&
 								<>
 									<ToggleButton
 										title={ t("section.quickButtons.favorites") }
@@ -610,7 +649,7 @@ const	ListingsPage: React.FC = () => {
 									/>
 
 									<Link
-									to={`/property/listings/buyer-slots?id=${dataExample.id}`}
+									to={`/property/listings/buyer-slots?id=${listingsData?.id}`}
 									>
 										<ActionButton
 											title={ t("section.quickButtons.visit") }
@@ -621,7 +660,7 @@ const	ListingsPage: React.FC = () => {
 							}
 
 							{
-								dataExample.mine === true &&
+								listingsData?.mine === true &&
 								<>
 									<ActionButton
 										title={ t("section.quickButtons.editPost") } // NOTE: Should redirect to the edit post page
@@ -629,7 +668,7 @@ const	ListingsPage: React.FC = () => {
 									/>
 
 									<Link
-									to={`/property/listings/seller-slots?id=${dataExample.id}`}
+									to={`/property/listings/seller-slots?id=${listingsData?.id}`}
 									>
 										<ActionButton
 											title={ t("section.quickButtons.visitSlot") } // NOTE: Should redirect to the Reservation Page
@@ -649,10 +688,10 @@ const	ListingsPage: React.FC = () => {
 						<FeaturesCard
 							title={ t("section.features.area") }
 							icon="󰳂"
-							value={ dataExample.surface.toString() + " " + t("areaUnit") }
+							value={ listingsData?.surface.toString() + " " + t("areaUnit") }
 						/>
 						{
-							Object.entries(dataExample.features).map(([key, value]) => {
+							listingsData?.features && Object.entries(listingsData?.features).map(([key, value]) => {
 								const	data: string = value.toString();
 
 								return (
@@ -671,7 +710,7 @@ const	ListingsPage: React.FC = () => {
 						title={ t("section.description.title") }
 					>
 						<div className="font-light">
-							{ dataExample.description }
+							{ listingsData?.description }
 						</div>
 					</BoxSection>
 				</div>
@@ -682,33 +721,33 @@ const	ListingsPage: React.FC = () => {
 						title={ t("section.post.title") }
 					>
 						<div className="font-light">
-							{ t("section.post.publicationDate") + " " + CreateDateForPost(dataExample.createdAt) }
+							{ t("section.post.publicationDate") + " " + CreateDateForPost(listingsData?.createdAt ?? "2025-01-10T08:00:00Z") }
 						</div>
 
 						{
-							dataExample.updatedAt && 
+							listingsData?.updatedAt && 
 								<div className="font-light text-sm">
-									{ t("section.post.updateDate") + " " + CreateDateForPost(dataExample.updatedAt) }
+									{ t("section.post.updateDate") + " " + CreateDateForPost(listingsData?.updatedAt) }
 								</div>
 						}
 						{
-							dataExample.mine === true &&
+							listingsData?.mine === true &&
 								<>
 									{
 										<ToggleButton
 											icon=""
 											icon_toggled="󰄬"
 											title={
-												dataExample.type === "rent" ? (!isAvailable ? t("section.post.availability.buttons.rented") : t("section.post.availability.buttons.markRented"))
+												listingsData?.type === "rent" ? (!isAvailable ? t("section.post.availability.buttons.rented") : t("section.post.availability.buttons.markRented"))
 													: (!isAvailable ? t("section.post.availability.buttons.sold") : t("section.post.availability.buttons.markSold"))
 											}
 											accent_color="var(--color-green-500)"
 											toggled={ !isAvailable }
 											customStyle={{
-												cursor: (dataExample.type === "sale" && !isAvailable ? "not-allowed" : "pointer")
+												cursor: (listingsData?.type === "sale" && !isAvailable ? "not-allowed" : "pointer")
 											}}
 											onClick={ () => {
-												if (dataExample.type === "sale" && !isAvailable)
+												if (listingsData?.type === "sale" && !isAvailable)
 													return ;
 												setOpenPopupAvailability(true);
 											}}
@@ -716,7 +755,7 @@ const	ListingsPage: React.FC = () => {
 									}
 
 									<ActionButton
-										title={ dataExample.status === "archived" ? t("section.post.archive.buttons.disabled") : t("section.post.archive.buttons.title") }
+										title={ listingsData?.status === "archived" ? t("section.post.archive.buttons.disabled") : t("section.post.archive.buttons.title") }
 										icon="󰀼"
 										onClick={ () => setOpenPopupArchive(true) }
 										disabled={ isArchiveDisabled }
@@ -724,7 +763,7 @@ const	ListingsPage: React.FC = () => {
 								</>
 						}
 						{
-							dataExample.mine === false &&
+							listingsData?.mine === false &&
 								<ToggleButton
 									title={ isAvailable ? t("section.post.availability.status.available") : t("section.post.availability.status.not_available") }
 									toggled={ true }
@@ -737,7 +776,7 @@ const	ListingsPage: React.FC = () => {
 					</BoxSection>
 
 					{
-						dataExample.mine === false && dataExample.sellerVisible === true &&
+						listingsData?.mine === false && listingsData?.sellerVisible === true &&
 						<BoxSection
 							title={ t("section.contact.title") }
 						>
@@ -745,25 +784,25 @@ const	ListingsPage: React.FC = () => {
 								w-full"
 							>
 								<div className="text-md">
-									{ dataExample.seller?.name }
+									{ listingsData?.seller?.name }
 								</div>
 								<div className="font-extralight text-md">
-									{ dataExample.seller?.email }
+									{ listingsData?.seller?.email }
 								</div>
 								<div className="font-extralight text-md">
-									{ dataExample.seller?.phone }
+									{ listingsData?.seller?.phone }
 								</div>
 								<div className="font-extralight text-md mt-4"
 								>
 									{
-										t("section.contact.memberSince") + " " + CreateDateForMemberSince(dataExample.seller?.memberSince ?? "2100-02-10T23:00:00Z")
+										t("section.contact.memberSince") + " " + CreateDateForMemberSince(listingsData?.seller?.memberSince ?? "2025-02-10T23:00:00Z")
 									}
 								</div>
 							</div>
 						</BoxSection>
 					}
 					{
-						dataExample.mine === false &&
+						listingsData?.mine === false &&
 							<BoxSection
 								title={ t("section.stats.title") }
 							>
@@ -773,11 +812,11 @@ const	ListingsPage: React.FC = () => {
 									w-full"
 								>
 									{
-										Object.entries(dataExample.sellerStats).map(([key, value]) => {
+										Object.entries(listingsData?.sellerStats).map(([key, value]) => {
 											return (
 												<Stats
 													title={ t(`section.stats.sellerStats.${key}`) }
-													value={ value }
+													value={ value.toString() }
 												/>
 											);
 										})
@@ -786,7 +825,7 @@ const	ListingsPage: React.FC = () => {
 							</BoxSection>
 					}
 					{
-						dataExample.mine === true &&
+						listingsData?.mine === true &&
 							<BoxSection
 								title={ t("section.postStats.title") }
 							>
@@ -796,11 +835,11 @@ const	ListingsPage: React.FC = () => {
 									w-full"
 								>
 									{
-										Object.entries(dataExample.stats).map(([key, value]) => {
+										Object.entries(listingsData?.stats).map(([key, value]) => {
 											return (
 												<Stats
 													title={ t(`section.postStats.${key}`) }
-													value={ value }
+													value={ value.toString() }
 												/>
 											);
 										})
@@ -862,11 +901,11 @@ const	ListingsPage: React.FC = () => {
 								title={ t(`section.post.availability.popup.${ availabilityActiveSection }.accept`) }
 								accent_color="var(--color-red-500)"
 								onClick={ () => {
-									if (dataExample.type === "sale")
+									if (listingsData?.type === "sale")
 									{
 										setIsAvailable(false);
 									}
-									else if (dataExample.type === "rent")
+									else if (listingsData?.type === "rent")
 									{
 										if (isAvailable)
 										{
