@@ -1,6 +1,11 @@
 {
 	"no_result": "Aucun Résultat",
+	"rangeError": "Il y a une erreur dans vos valeurs, veuillez les corriger et réessayer.",
 	"buttons": {
+		"page": {
+			"previous": "Page précédente",
+			"next": "Page suivante"
+		},
 		"filter": {
 			"title": "Filtres",
 			"priceRange": {
@@ -12,6 +17,34 @@
 				"title": "Intervalle de surface (m2)",
 				"min": "Minimum",
 				"max": "Maximum"
+			},
+			"bedroomRange": {
+				"title": "Nombre de chambre",
+				"min": "Minimum",
+				"max": "Maximum"
+			},
+			"bathroomRange": {
+				"title": "Nombre de salle de bain",
+				"min": "Minimum",
+				"max": "Maximum"
+			},
+			"parkingType": {
+				"title": "Type de parking",
+				"garage": "Garage",
+				"box": "Box",
+				"parking": "Parking"
+			},
+			"gardenPrivate": {
+				"title": "Jardin"
+			},
+			"waterAccess": {
+				"title": "Eau"
+			},
+			"pool": {
+				"title": "Piscine"
+			},
+			"electricityAccess": {
+				"title": "Courant"
 			},
 			"apply": "Appliquer Filtres",
 			"contract": {
@@ -33,17 +66,8 @@
 				"land": "Terrain",
 				"commercial": "Commerce"
 			},
-			"price": {
-				"title": "Prix",
-				"none": "Pas de budget"
-			},
-			"room": {
-				"none": "Tout",
-				"title": "Pièces"
-			},
 			"tag": {
 				"title": "Tag",
-				"none": "Tout",
 				"urgent": "Urgent",
 				"exclusive": "Exclusif",
 				"discount": "Promotion"
