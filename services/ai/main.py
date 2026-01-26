@@ -26,6 +26,7 @@ from contextlib import asynccontextmanager
 from app.services.chromadb import chromadb_service
 
 from httpx import HTTPStatusError, RequestError, TimeoutException
+from fastapi.middleware.cors import CORSMiddleware
 
 # ====================== Utils ==================
 def format_chroma_response(user_mssg, chroma_text):
@@ -88,6 +89,13 @@ async def lifespan(_: FastAPI):
     
 app = FastAPI(lifespan=lifespan)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Content-Type", "Authorization"],
+)
 # ====================== LLM cases ==================
 
 llm_service = LLMService()
@@ -121,7 +129,6 @@ async def check_health():
 
 @app.post("/ai/chat")
 async def chatbot(text: RequestChat):
-    # prompt.add(text.message)
     user_mssg = text.message
     sys_prompt = chromadb_service.get_parse_prompt()
     context = None
