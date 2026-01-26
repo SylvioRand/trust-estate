@@ -69,3 +69,17 @@ export const CheckSlotSchema = {
 		additionalProperties: false
 	}
 }
+
+export const GetReservationSchema = {
+	querystring: {
+		type: 'object',
+		required: ['id'],
+		properties: {
+			id: {
+				type: 'string',
+				format: 'uuid'
+			}
+		},
+		additionalProperties: false
+	}
+}

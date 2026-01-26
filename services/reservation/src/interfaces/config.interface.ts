@@ -8,6 +8,7 @@ export interface EnvConfigInterface {
 	COOKIE_SECRET: string
 	FRONTEND_URL: string
 	INTERNAL_KEY_SECRET: string
+	LISTINGS_SERVICE_URL: string
 }
 
 export interface UserInterface {

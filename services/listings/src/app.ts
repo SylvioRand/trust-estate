@@ -11,6 +11,19 @@ const app = fastify();
 
 app.register(fastifyCookie);
 
+app.decorate('moderatorAuthentificate', async (request: any, reply: any) => {
+  try {
+    const user = await AuthClient.isModerator(request.headers.cookie);
+    request.user = user;
+  } catch (error) {
+    reply.status(401).send({
+      error: 'unauthorized',
+      message: 'auth.unauthorized'
+    });
+  }
+});
+
+
 app.decorate('authenticate', async (request: any, reply: any) => {
   try {
     const user = await AuthClient.verifyToken(request.headers.cookie);
