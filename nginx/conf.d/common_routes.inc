@@ -58,6 +58,40 @@
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
+    location /api/ai/chat/ {
+        client_max_body_size 5M;
+        
+        # Apply rate limiting
+        limit_req zone=chatbot_limit burst=5 nodelay;
+        limit_req_status 429;
+
+        proxy_pass http://ai_service/ai/chat/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+				#========================================
+				#           Config for the streaming
+				#========================================
+				proxy_buffering off;
+				proxy_cache off;
+				chunked_transfer_encoding on;
+				proxy_read_timeout 180s;
+    }
+
+    location /api/reservations/ {
+        client_max_body_size 5M;
+        proxy_pass http://reservations_service/reservations/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+		
     location /api/ai/ {
         client_max_body_size 5M;
         
@@ -72,20 +106,7 @@
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 
-				proxy_buffering off;
-				chunked_transfer_encoding on;
-				proxy_read_timeout 180s;
-    }
-
-    location /api/reservations/ {
-        client_max_body_size 5M;
-        proxy_pass http://reservations_service/reservations/;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+		}
 
 
 

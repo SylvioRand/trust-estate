@@ -82,7 +82,7 @@ const	AICopyPage: React.FC = () => {
 		])
 
 		try {
-			const response = await fetch("/api/ai/chat", {
+			const response = await fetch("/api/ai/chat/", {
 				method: "POST",
 				body: JSON.stringify({message: userQuery}),
 				headers: { "Content-type": "application/json"}
@@ -92,7 +92,6 @@ const	AICopyPage: React.FC = () => {
 				throw new Error(errorMessage);
 			}
 
-			console.log("Yees, you made it !");
 			const reader = response.body?.getReader();
 			const decoder = new TextDecoder();
 			let remains = "";
