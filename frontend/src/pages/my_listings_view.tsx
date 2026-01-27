@@ -375,7 +375,7 @@ const	MyListingsView: React.FC<ListingsViewProps> = ({
 			fetchedData={ fetchedData }
 			t={ t }
 			/>
-			<div
+			{/* <div
 			className="flex flex-col items-start justify-center
 			gap-1
 			w-full
@@ -418,7 +418,7 @@ const	MyListingsView: React.FC<ListingsViewProps> = ({
 				</div>
 				
 				<div className="w-full h-10 flex-none"></div>
-			</div>
+			</div> */}
 		</div>
 	)
 }

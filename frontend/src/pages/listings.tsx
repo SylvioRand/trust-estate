@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type CSSProperties } from "react";
+import React, { useEffect, useState, type CSSProperties, type Dispatch, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { type ListingsData, dataExampleListingsData } from "../dataModel/modelListings";
@@ -6,13 +6,54 @@ import { toast } from "react-toastify";
 import MyListingsView from "./my_listings_view";
 import ClientListingsView from "./client_listings_view";
 
+interface	NavigatePictureButtonProps {
+	icon: string;
+	fetchedData: ListingsData;
+	currentPictures: number;
+	customStyle: CSSProperties;
+	onClick: () => void;
+	disabled: boolean;
+}
+
+const	NavigatePictureButton: React.FC<NavigatePictureButtonProps> = ({
+	icon = "X",
+	fetchedData,
+	currentPictures = 0,
+	customStyle = {},
+	onClick,
+	disabled = false
+}) => {
+	const	buttonStyle: string = "font-icon text-4xl\
+	absolute\
+	z-1\
+	bg-foreground\
+	rounded-full\
+	w-12 h-12\
+	hover:bg-accent\
+	transition-all duration-300\
+	shadow-standard";
+
+	return (
+		<button
+		className={ buttonStyle }
+		style={{
+			pointerEvents: disabled ? "none" : "auto",
+			opacity: disabled ? "0%" : "100%",
+			...customStyle
+		}}
+		onClick={ onClick }
+		>
+			{ icon }
+		</button>
+	)
+}
+
 const	ListingsPage: React.FC = () => {
 	const	{ t } = useTranslation("listings");
 	const	[fetchedData, setFetchedData] = useState<ListingsData | null>(null);
 	const	[ searchParams ] = useSearchParams();
 	const	listingsID = searchParams.get("id");
 	const	[currentPictures, setCurrentPictures] = useState<number>(0);
-	const	buttonStyle: string = "font-icon text-4xl absolute z-1 cursor-pointer bg-foreground rounded-full w-12 h-12 hover:bg-accent transition-colors duration-300 shadow-standard";
 
 	useEffect(() => {
 		const	fetchListingsData = async () => {
@@ -25,6 +66,7 @@ const	ListingsPage: React.FC = () => {
 				const	responseData = await response.json();
 				if (response.ok)
 				{
+					console.log(responseData);
 					// NOTE: Directly swap this one to simulate the data
 					setFetchedData(responseData);
 				}
@@ -36,7 +78,7 @@ const	ListingsPage: React.FC = () => {
 			}
 		}
 
-		//fetchListingsData();
+		// fetchListingsData();
 
 		// NOTE: DEBUG
 		setFetchedData(dataExampleListingsData);
@@ -74,6 +116,7 @@ const	ListingsPage: React.FC = () => {
 				xl:grid xl:grid-cols-[1fr_60%] xl:grid-rows-1
 				overflow-y-scroll
 				w-full
+				p-4
 				xl:h-full"
 				>
 
@@ -81,13 +124,15 @@ const	ListingsPage: React.FC = () => {
 					relative
 					order-1
 					xl:order-2
+					overflow-x-hidden
+					rounded-4xl
 					w-full min-h-75
-					xl:pb-4
 					xl:h-full"
 					>
 						{
 							window.innerWidth >= 1024 && fetchedData.photos.map((value: string, index: number) => {
 								const	active: boolean = currentPictures === index;
+								const	factor: number = index - currentPictures;
 
 								return (
 									<img
@@ -95,11 +140,11 @@ const	ListingsPage: React.FC = () => {
 									className="w-full h-full object-cover
 									absolute
 									rounded-t-4xl
+									xl:rounded-none
 									ease-in-out
-									transition-transform duration-500
-									xl:rounded-t-none xl:rounded-r-4xl"
+									transition-transform duration-500"
 									style={{
-										transform: active ? "none" : "translateX(-200%)"
+										transform: `translateX(${100 * factor}%)`
 									}}
 									src={ value }
 									alt="House Pictures"
@@ -120,6 +165,7 @@ const	ListingsPage: React.FC = () => {
 									rounded-t-4xl
 									ease-in-out
 									transition-transform duration-500
+									shadow-standard
 									xl:rounded-t-none xl:rounded-r-4xl"
 									style={{
 										transform: active ? "none" : "translateY(200%)"
@@ -131,30 +177,27 @@ const	ListingsPage: React.FC = () => {
 							})
 						}
 
-						<button
-						className={ buttonStyle }
-						style={{
+						<NavigatePictureButton
+						fetchedData={ fetchedData }
+						currentPictures={ currentPictures }
+						icon=""
+						customStyle={{
 							left: 16
 						}}
-						onClick={ () => setCurrentPictures(currentPictures > 0 ? currentPictures - 1 : fetchedData.photos.length - 1)}>
-							
-						</button>
+						onClick={ () => setCurrentPictures(currentPictures > 0 ? currentPictures - 1 : fetchedData.photos.length - 1)}
+						disabled={ currentPictures === 0 }
+						/>
 
-						<button
-						className={ buttonStyle }
-						style={{
+						<NavigatePictureButton
+						fetchedData={ fetchedData }
+						currentPictures={ currentPictures }
+						icon=""
+						customStyle={{
 							right: 16
 						}}
-						onClick={ () => setCurrentPictures(currentPictures === fetchedData.photos.length - 1 ? 1 : currentPictures + 1)}>
-							
-						</button>
-						<div
-						className="absolute top-0 left-0
-						bg-[linear-gradient(to_top,var(--color-foreground)_10%,transparent)]
-						xl:bg-[linear-gradient(to_right,var(--color-foreground)_2%,transparent)]
-						w-full h-full"
-						></div>
-
+						disabled={ currentPictures === fetchedData.photos.length - 1 }
+						onClick={ () => setCurrentPictures(currentPictures === fetchedData.photos.length - 1 ? 1 : currentPictures + 1)}
+						/>
 					</div>
 
 					<div
