@@ -2,11 +2,16 @@ import { CreateDateForPost } from "../utils/Format";
 import type { ListingsViewProps } from "./client_listings_view";
 import type { TFunction } from "i18next";
 import type { ListingsData } from "../dataModel/modelListings";
+import ActionButton from "../components/ActionButton";
+import { useNavigate } from "react-router-dom";
 
 export const	ListingsHeader: React.FC<ListingsViewProps> = ({
 	fetchedData,
 	t
 }) => {
+	const	formatter = new Intl.NumberFormat("de-DE");
+	const	navigate = useNavigate();
+
 	return (
 		<div
 		className="flex flex-col items-center justify-center
@@ -55,6 +60,37 @@ export const	ListingsHeader: React.FC<ListingsViewProps> = ({
 						{ `${t("section.post.updateDate")} ${CreateDateForPost(fetchedData.updatedAt)}` }
 					</div>
 				}
+			</div>
+			<div
+			className="grid grid-cols-[auto_1fr] grid-rows-1
+			place-items-center
+			font-bold text-xl
+			mt-7
+			gap-3
+			w-full"
+			>
+				<ActionButton
+				title={ t(`section.quickButtons.${ fetchedData.mine === true ? "visitSlot" : "scheduleVisit" }`) }
+				onClick={ () => {
+					navigate(`/property/listings/${ fetchedData.mine === true ? "seller" : "buyer" }-slots`)
+				}}
+				/>
+				<div
+				className="flex flex-col items-start justify-center
+				justify-self-start"
+				>
+					<div>
+						{ `${formatter.format(fetchedData.price)} Ar` }
+					</div>
+					<div
+					className="font-light text-sm"
+					style={{
+						display: fetchedData.type === "rent" ? "block" : "hidden"
+					}}
+					>
+						{ `${ " / " + t("common:month")}` }
+					</div>
+				</div>
 			</div>
 		</div>
 	);
@@ -233,7 +269,7 @@ export const	ListingsFeaturesAndEquipment: React.FC<ListingsViewProps> = ({
 		<div
 		className="flex flex-col items-center justify-center
 		gap-3
-		w-full mt-7"
+		w-full"
 		>
 			<div
 			className="flex flex-col items-start justify-center

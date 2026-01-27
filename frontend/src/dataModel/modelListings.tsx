@@ -13,12 +13,9 @@ const	house3: string = "https://images.unsplash.com/photo-1698994705178-d244d73e
 const	house4: string = "https://images.unsplash.com/photo-1691425700585-c108acad6467?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
 export type SellerStatsDataType = {
-	totalListings: number,
-	activeListings: number,
 	successfulSales: number,
-	successfulRents: number,
+	successfulRent: number,
 	averageRating: number,
-	responseRate: number
 }
 
 export type	PropertyType = "apartment" | "house" | "loft" | "land" | "commercial";
@@ -106,12 +103,9 @@ export const	dataExampleListingsData: ListingsData = {
 		memberSince: "2024-06-15T00:00:00Z",
 	},
 	sellerStats: {
-		totalListings: 3,
-		activeListings: 1,
 		successfulSales: 2,
-		successfulRents: 0,
-		averageRating: 2.3,
-		responseRate: 3.45
+		successfulRent: 0,
+		averageRating: 2.3
 	},
 	stats: {
 		views: 234,

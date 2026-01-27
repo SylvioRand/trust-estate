@@ -55,7 +55,7 @@
 		"quickButtons": {
 			"favorites": "Favoris",
 			"report": "Signaler",
-			"visit": "Planifier une visite",
+			"scheduleVisit": "Planifier une visite",
 			"visitSlot": "Voir créneaux",
 			"editPost": "Editer la publication"
 		},
@@ -74,46 +74,16 @@
 		"post": {
 			"title": "Publication",
 			"publicationDate": "Publié le",
-			"updateDate": "Mis à jour le",
-
-			"availability": {
-				"status": {
-					"available": "Cette offre est encore disponible.",
-					"not_available": "Cette offre n'est plus disponible."
-				},
-
-				"buttons": {
-					"rented": "Loué",
-					"sold": "Vendue",
-					"markRented": "Marquer comme louer",
-					"markSold": "Marquer comme vendue"
-				}
-			},
-
-			"archive": {
-				"buttons": {
-					"title": "Archiver",
-					"disabled": "Cette publication est archiver"
-				},
-
-				"popup": {
-					"title": "Archiver la publication",
-					"warning": "Les postes archiver ne sont plus visibles par les autres utilisateurs.\nCette action est irréversible.\nEn êtes-vous sure?",
-					"continue": "Continuer"
-				}
-			}
+			"updateDate": "Mis à jour le"
 		},
 
 		"stats": {
 			"title": "Statistiques du vendeur",
 
 			"sellerStats": {
-				"totalListings": "Annonces",
-				"activeListings": "Sur le marché",
 				"successfulSales": "Biens Vendues",
 				"successfulRent": "Biens loués",
-				"averageRating": "Score",
-				"responseRate": "Score de réponse"
+				"averageRating": "Score"
 			}
 		},
 
