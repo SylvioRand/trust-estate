@@ -114,6 +114,7 @@ export const	ListingsHeader: React.FC<ListingsViewProps> = ({
 				isActionPopupOpen && <PopUp
 				title={ t("section.actionButton.popup.title") }
 				onClose={ () => setIsActionPopupOpen(false) }
+				ref={ refActionPopup }
 				>
 					HELLO
 				</PopUp>
