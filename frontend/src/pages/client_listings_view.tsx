@@ -19,7 +19,7 @@ const	SellerStats: React.FC<SellerStatsProps> = ({
 	return (
 		<div
 		className="grid grid-cols-1 grid-rows-[auto_1fr]
-		min-w-40
+		min-w-37
 		rounded-xl
 		p-2
 		border border-background/25
