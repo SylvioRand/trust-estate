@@ -144,9 +144,6 @@ const	AICopyPage: React.FC = () => {
 		}
 	}
 
-    }
-  }
-
   return (
     <div className="flex flex-col-reverse items-center justify-start
 			overflow-y-scroll
