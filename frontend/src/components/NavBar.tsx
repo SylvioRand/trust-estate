@@ -123,7 +123,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 	dataUser = [],
 	onClose = () => console.error("Error: HamburgerMenu doesn't have onClose func!")
 }) => {
-	const	{ isConnected } = useDataProvider();
+	const	{ isConnected, userData } = useDataProvider();
 
 	return (
 		<div className="fixed top-0 right-0
@@ -192,7 +192,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 						isConnected === true &&
 							<MobileNavButton
 								icon=""
-								title="djazejhasi@gmail.com"
+								title={ userData?.email ?? "notDefinedUserdataEmail"}
 								path="/profile"
 							/>
 					}
@@ -340,7 +340,7 @@ const	NavBar: React.FC = () => {
 	const	{ t } = useTranslation("nav");
 	const	[openHamburger, setOpenHamburger] = useState<boolean>(false);
 	const	navigate = useNavigate();
-	const	{ isConnected, setIsConnected } = useDataProvider();
+	const	{ isConnected, setIsConnected, userData } = useDataProvider();
 
 	const	dataNavButton: NavButtonProps[] = [
 		{ icon: "", title: t("button.home"), path: "/home" },
@@ -422,7 +422,7 @@ const	NavBar: React.FC = () => {
 									<NavigationButton
 										icon=""
 										icon_size={ 32 }
-										title="djazejhasi@gmail.com"
+										title={ userData?.email ?? "NotdefinedUserDataEmail" }
 										path="/profile"
 									/>
 								</div>

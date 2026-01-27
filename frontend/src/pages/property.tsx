@@ -166,7 +166,7 @@ const Filter: React.FC<FilterProps> = ({
     e.preventDefault();
     setIsOpen(false);
     const formData: FormData = new FormData(e.currentTarget);
-    let url: string = `/api/listings/?limit=1&page=${page}`;
+    let url: string = `/api/listings/?page=${page}`;
     const query = new URLSearchParams();
     const uniqueKeys = new Set(formData.keys());
 
@@ -437,7 +437,7 @@ const PropertyPage: React.FC = () => {
   const getDataFromBackend = async () => {
     setIsFetchingData(true);
     try {
-      const response = await fetch(`/api/listings/?limit=1&page=${page}${lastFilter}`, {
+      const response = await fetch(`/api/listings/?page=${page}${lastFilter}`, {
         method: "GET",
         credentials: "include"
       });
