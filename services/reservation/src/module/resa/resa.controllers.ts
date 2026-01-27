@@ -124,12 +124,13 @@ export async function deleteReservation(request: FastifyRequest<
 				"error": "reservation_not_found",
 				"message": "reservation.not_found"
 			})
-		else
-			console.log(error)
+		else {
+			request.server.log.error({ error, userId: user?.id, reservationId }, 'DeleteReservation error');
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
 			});
+		}
 	}
 };
 
@@ -161,12 +162,13 @@ export async function cancelReservation(request: FastifyRequest<
 				"error": "reservation_not_found",
 				"message": "reservation.not_found"
 			})
-		else
-			console.log(error)
+		else {
+			request.server.log.error({ error, userId: user?.id, reservationId }, 'CancelReservation error');
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
 			});
+		}
 	}
 }
 
@@ -214,12 +216,13 @@ export async function confirmReservation(request: FastifyRequest<
 				"error": "service_unavailable",
 				"message": "common.service_unavailable"
 			});
-		else
-			console.log(error)
+		else {
+			request.server.log.error({ error, userId: user?.id, reservationId }, 'ConfirmReservation error');
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
 			});
+		}
 	}
 }
 

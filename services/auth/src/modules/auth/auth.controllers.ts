@@ -89,10 +89,20 @@ export async function verifiedEmail(request: FastifyRequest<{ Body: { token: str
 			message: "Compte activé avec succès. 5 crédits offerts !"
 		}));
 	} catch (error: any) {
-		return reply.status(401).send({
-			"error": "invalid_or_expired_token",
-			"message": "auth.verification_token_invalid"
-		});
+		if (error.message === "invalid_or_expired_token")
+			return reply.status(401).send({
+				"error": "invalid_or_expired_token",
+				"message": "auth.verification_token_invalid"
+			});
+		else if (error.message === "credit_service_error")
+			return reply.status(200).send({
+				message: "Failed to credit user"
+			})
+		else
+			return reply.status(500).send({
+				"error": "Internal server error",
+				"message": "Internal server error"
+			});
 	}
 }
 
