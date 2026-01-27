@@ -400,4 +400,19 @@ export class ListingService {
 
     return listing;
   }
+
+
+  static async incrementReservationStat(listingId: string) {
+    const stats = await prisma.listingStats.findUnique({
+      where: { listingId }
+    });
+
+    if (!stats) {
+      throw new Error('listing.stats_not_found');
+    }
+    await prisma.listingStats.update({
+      where: { listingId: listingId },
+      data: { reservations: { increment: 1 } }
+    })
+  }
 }
