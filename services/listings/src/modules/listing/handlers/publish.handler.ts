@@ -6,7 +6,6 @@ import fs from 'fs';
 import { pipeline } from 'stream/promises';
 import { ListingService } from "../listing.service";
 import { AIClient } from "../../../infrastructure/ai.client";
-import { creditClient } from "../../../infrastructure/credit.client";
 
 const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp"];
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
@@ -21,15 +20,14 @@ export async function handlePublish(request: FastifyRequest, reply: FastifyReply
 
     const validatedData = PublishListingSchema.parse(listingData);
 
-    const { listing, listingFeatures } = await ListingService.createListing(validatedData, photos, user.id);
-
     try {
-      await creditClient.debit(user.id, 1, listing.id);
+      //await creditClient.debit(user.id);
     } catch (debitError: any) {
       console.error("❌ Credit debit failed, rolling back listing creation:", debitError);
-      await ListingService.deleteListing(listing.id, user.id);
       throw debitError;
     }
+
+    const { listing, listingFeatures } = await ListingService.createListing(validatedData, photos, user.id);
 
     AIClient.upsertIndexListing(listing, "POST", listingFeatures);
 
