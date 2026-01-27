@@ -21,7 +21,7 @@ export async function handlePublish(request: FastifyRequest, reply: FastifyReply
     const validatedData = PublishListingSchema.parse(listingData);
 
     try {
-      //await creditClient.debit(user.id);
+      //await creditClient.debit(user.id); // uncomment to debit credits
     } catch (debitError: any) {
       console.error("❌ Credit debit failed, rolling back listing creation:", debitError);
       throw debitError;
