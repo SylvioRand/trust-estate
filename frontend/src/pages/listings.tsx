@@ -24,6 +24,7 @@ const	NavigatePictureButton: React.FC<NavigatePictureButtonProps> = ({
 	absolute\
 	z-1\
 	bg-foreground\
+	cursor-pointer\
 	rounded-full\
 	w-12 h-12\
 	hover:bg-accent\
