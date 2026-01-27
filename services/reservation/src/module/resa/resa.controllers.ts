@@ -327,7 +327,6 @@ export async function getSlots(request: FastifyRequest<{Querystring: {id: string
 		const availability = await resaServices.getAvailableSlotsByUserId(request.server, userId, data.weeklySchedule);
 		return reply.status(200).send({ availability });
 	} catch (error: any) {
-		console.log(error);
 		if (error.message === "listing_server_error")
 			return reply.status(503).send({
 				"error": "internal_server_error",

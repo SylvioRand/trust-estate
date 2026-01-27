@@ -20,6 +20,13 @@ export async function handlePublish(request: FastifyRequest, reply: FastifyReply
 
     const validatedData = PublishListingSchema.parse(listingData);
 
+    try {
+      //await creditClient.debit(user.id);
+    } catch (debitError: any) {
+      console.error("❌ Credit debit failed, rolling back listing creation:", debitError);
+      throw debitError;
+    }
+
     const { listing, listingFeatures } = await ListingService.createListing(validatedData, photos, user.id);
 
     AIClient.upsertIndexListing(listing, "POST", listingFeatures);

@@ -3,5 +3,10 @@
 		"name": "CASA"
 	},
 	"true": "Yes",
-	"false": "No"
+	"false": "No",
+	"noLimit": "None",
+	"all": "All",
+	"digitOnly": "Only digit are allowed",
+	"minBiggerMax": "Min can't be bigger than max",
+	"maxSmallerMin": "Max can't be smaller than min"
 }
