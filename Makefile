@@ -67,6 +67,7 @@ up: certs
 down:
 	@echo "🛑 Stopping services..."
 	$(DOCKER_COMPOSE) down
+	docker image prune -f
 
 # Clean everything (containers, images, volumes)
 clean:

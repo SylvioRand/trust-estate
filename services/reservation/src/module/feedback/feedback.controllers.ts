@@ -36,12 +36,25 @@ export async function postFeedback(request: FastifyRequest<{Body: FeedbackInterf
 				"error": "reservation_not_done",
 				"message": "feedback.feedback_not_eligible",
 			});
-		else
-			console.log(error)
+		else if (error.message === "invalid_rating") {
+			return reply.status(400).send({
+				"error": "invalid_rating",
+				"message": "feedback.invalid_rating",
+			});
+		}
+		else if (error.message === "invalid_comment_length") {
+			return reply.status(400).send({
+				"error": "invalid_comment_length",
+				"message": "feedback.invalid_comment_length",
+			});
+		}
+		else {
+			request.server.log.error({ error, userId: user?.id, reservationId }, 'PostFeedback error');
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
 			});
+		}
 	}
 };
 
@@ -63,11 +76,12 @@ export async function getFeedback(request: FastifyRequest, reply: FastifyReply) 
 				"error": "feedback_not_found",
 				"message": "feedback.feedback_not_found",
 			});
-		else
-			console.log(error)
+		else {
+			request.server.log.error({ error, userId: user?.id }, 'GetFeedback error');
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
 			});
+		}
 	}
 }
