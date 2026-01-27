@@ -124,8 +124,10 @@ const	ListingsPage: React.FC = () => {
 					relative
 					order-1
 					xl:order-2
-					overflow-x-hidden
-					rounded-4xl
+					overflow-y-hidden
+					xl:overflow-x-hidden
+					rounded-t-4xl
+					xl:rounded-4xl
 					w-full min-h-75
 					xl:h-full"
 					>
@@ -204,7 +206,7 @@ const	ListingsPage: React.FC = () => {
 					className="flex flex-col items-center justify-start
 					order-2
 					xl:order-1
-					px-4
+					xl:px-4
 					relative
 					xl:p-4
 					xl:overflow-y-scroll
