@@ -97,11 +97,18 @@ const	AICopyPage: React.FC = () => {
 			const decoder = new TextDecoder();
 			let remains = "";
 
+			if (!reader)
+				throw new Error("Failed to get reader");
+
 			while (true) {
 				const { value, done } = await reader.read();
 
 				if (done) {
 					console.log("End receiving llm response")
+					if (remains.length > 0)
+						console.log("Still got some remains !")
+					else
+						console.log("No more remain, all is good !")
 					break ;
 				}
 
@@ -109,9 +116,7 @@ const	AICopyPage: React.FC = () => {
 				const current_line = (remains + current_text).split('\n');
 				remains = current_line.pop() || ""
 
-				console.log("let's enter the loop !")
 				for (const line of current_line) {
-				console.log("inside the loop hehehehehehe ", line);
 					if (!line.trim())
 						continue;
 
@@ -128,12 +133,14 @@ const	AICopyPage: React.FC = () => {
 								value: new_text[0].value + llm_reply
 							};
 						}
-						console.log("Hello there: ", new_text);
 						return new_text;
 						});
 					}
 					else if (data.type === "metadata"){
-						console.log("Founds metadatas: ", data.links);
+						if (data.links.length > 0)
+							console.log("Founds metadatas: ", data.links);
+						else
+							console.log("Nothing inside links !")
 					}
 				}
 			}
