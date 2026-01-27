@@ -1,14 +1,14 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    llm.py                                             :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aelison <aelison@student.42antananarivo    +#+  +:+       +#+         #
+#    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:10 by aelison           #+#    #+#              #
-#    Updated: 2026/01/05 16:02:08 by aelison          ###   ########.fr        #
+#    Updated: 2026/01/27 09:54:46 by aelison          ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 from app.config import config
 import httpx
@@ -72,11 +72,6 @@ class LLMService:
         """
         return prompt
 
-    # 1. Use only the provided context.
-    #     2. Always include the price in the summary.
-    #     3. The unit of the price is "Ariary".
-    #     3. If there is a lot of POST inside the context, always give a detailed comparaison.
-    #     4. Make space in the answer, make the answer easy to read.
     def generate_rules(self):
         rules = """
         You are a real estate assistant.

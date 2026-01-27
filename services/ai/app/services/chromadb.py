@@ -1,14 +1,14 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    chromadb.py                                        :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aelison <aelison@student.42antananarivo    +#+  +:+       +#+         #
+#    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated: 2026/01/05 16:07:30 by aelison          ###   ########.fr        #
+#    Updated: 2026/01/27 09:54:59 by aelison          ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 import chromadb
 import json
@@ -53,7 +53,6 @@ class ChromadbService:
                 metadata={"hnsw:space": "cosine"}
             )
             self.collections[collection_name] = tmp
-            print("Success in create collection !")
             return tmp
         except Exception as e:
             print(f"Error create collection: {e}")
@@ -313,7 +312,5 @@ class ChromadbService:
 
         except Exception as e:
             print(f"Error in getting data inside collection {e}")
-
-        
 
 chromadb_service = ChromadbService()

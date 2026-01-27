@@ -1,14 +1,14 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    main.py                                            :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aelison <aelison@student.42antananarivo    +#+  +:+       +#+         #
+#    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/01/05 15:50:49 by aelison          ###   ########.fr        #
+#    Updated: 2026/01/27 09:51:33 by aelison          ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 import asyncio
 import httpx
@@ -32,16 +32,10 @@ from fastapi.middleware.cors import CORSMiddleware
 def format_chroma_response(user_mssg, chroma_text):
     context = llm_service.format_for_llm(chroma_text)
     formated = "CONTEXT:\n"
-    # line = 1
     if context:
         formated += context
     else:
         formated += "None"
-    # if len(history) > 1:
-    #     formated += "USER HISTORY (Previous user messages):\n" 
-    #     for elem in history:
-    #         formated += f"{line}. {elem}\n"
-    #         line += 1
     formated += "USER INPUT:\n" + user_mssg
     return formated
 
@@ -84,11 +78,61 @@ async def lifespan(_: FastAPI):
         print("Failed to init with server chromadb")
         exit(1)
     else:
+        post1 = PostModel(
+                id="je",
+                title = "White House",
+                description = "President house, with a lot of space",
+                price = 1000000000000000,
+                type = "sale",
+                propertyType = "house",
+                surface = 800.0,
+                zone = "Ivandry",
+                features = {
+                    "toilette": 12,
+                    "garage": True,
+                    "room": 42,
+                }
+        )
+        post2 = PostModel(
+                id="moi",
+                title = "Black House",
+                description = "Dark Vador unique house",
+                price = 1000000000000000,
+                type = "sale",
+                propertyType = "house",
+                surface = 800.0,
+                zone = "Ivato",
+                features = {
+                    "toilette": 3,
+                    "garage": True,
+                    "room": 55,
+                },
+                tags = ["exclusive"]
+        )
+        post3 = PostModel(
+                id="koko",
+                title = "Simple House",
+                description = "Minimum requirement to live alone",
+                price = 400000000,
+                type = "sale",
+                propertyType = "house",
+                surface = 40.0,
+                zone = "Ankadifotsy",
+                features = {
+                    "toilette": 1,
+                    "bedroom": 1,
+                    "kitchen": 1,
+                },
+        )
         await chromadb_service.create_collection("posts")
+        await chromadb_service.add_to_collection("posts", post1)
+        await chromadb_service.add_to_collection("posts", post2)
+        await chromadb_service.add_to_collection("posts", post3)
     yield
     
 app = FastAPI(lifespan=lifespan)
 
+#Enable cross-origin (CORS)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -134,7 +178,8 @@ async def chatbot(text: RequestChat):
     context = None
     chroma_reply = None
 
-    await chromadb_service.get_all_in_collection("posts")
+    #Debug: show all the data inside collection post
+    # await chromadb_service.get_all_in_collection("posts")
     if text.context and len(text.context) > 0:
         context = text.context
 
