@@ -162,17 +162,24 @@ export async function deleteUserData(app: FastifyInstance, userId: string) {
 	});
 }
 
+interface historyInterface {
+	id: string
+	type: string
+	reason: string
+	amount: string
+	balanceAfter: string
+	createdAt: Date
+}
+
 export async function getUserHistory(app: FastifyInstance, userId: string) {
 	const history = await app.prisma.creditTransaction.findMany({
 		where: { userId }
 	});
-	return {
-		data: {
-			id: history.id,
-			type: history.type,
-			amount: history.amount,
-			balanceAfter: history.balanceAfter,
-			createdAt: history.createdAt,
-		}
+
+	if (history.length === 0) {
+		throw new Error("History not found");
 	}
+
+	const data: historyInterface[] = history;
+	return (data);
 };

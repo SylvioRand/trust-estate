@@ -124,12 +124,13 @@ export async function deleteReservation(request: FastifyRequest<
 				"error": "reservation_not_found",
 				"message": "reservation.not_found"
 			})
-		else
-			console.log(error)
+		else {
+			request.server.log.error({ error, userId: user?.id, reservationId }, 'DeleteReservation error');
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
 			});
+		}
 	}
 };
 
@@ -161,12 +162,13 @@ export async function cancelReservation(request: FastifyRequest<
 				"error": "reservation_not_found",
 				"message": "reservation.not_found"
 			})
-		else
-			console.log(error)
+		else {
+			request.server.log.error({ error, userId: user?.id, reservationId }, 'CancelReservation error');
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
 			});
+		}
 	}
 }
 
@@ -214,12 +216,13 @@ export async function confirmReservation(request: FastifyRequest<
 				"error": "service_unavailable",
 				"message": "common.service_unavailable"
 			});
-		else
-			console.log(error)
+		else {
+			request.server.log.error({ error, userId: user?.id, reservationId }, 'ConfirmReservation error');
 			return reply.status(500).send({
 				"error": "internal_server_error",
 				"message": "common.internal_server_error"
 			});
+		}
 	}
 }
 
@@ -323,11 +326,15 @@ export async function getSlots(request: FastifyRequest<{Querystring: {id: string
 		});
 
 	try {
-		const data = await resaServices.getAvailability(request.server, userId) as ListingInterface;
+		// const data = await resaServices.getAvailability(request.server, userId) as ListingInterface;
+		const data: ListingInterface = {
+			weeklySchedule: [
+				{ dayOfWeek: 2, startTime: "08:00", endTime: "17:00" },
+			]
+		};
 		const availability = await resaServices.getAvailableSlotsByUserId(request.server, userId, data.weeklySchedule);
 		return reply.status(200).send({ availability });
 	} catch (error: any) {
-		console.log(error);
 		if (error.message === "listing_server_error")
 			return reply.status(503).send({
 				"error": "internal_server_error",
