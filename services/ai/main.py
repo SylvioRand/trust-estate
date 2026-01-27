@@ -1,14 +1,14 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    main.py                                            :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aelison <aelison@student.42antananarivo    +#+  +:+       +#+         #
+#    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/01/05 15:50:49 by aelison          ###   ########.fr        #
+#    Updated: 2026/01/27 09:51:33 by aelison          ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 import asyncio
 import httpx
@@ -32,16 +32,10 @@ from fastapi.middleware.cors import CORSMiddleware
 def format_chroma_response(user_mssg, chroma_text):
     context = llm_service.format_for_llm(chroma_text)
     formated = "CONTEXT:\n"
-    # line = 1
     if context:
         formated += context
     else:
         formated += "None"
-    # if len(history) > 1:
-    #     formated += "USER HISTORY (Previous user messages):\n" 
-    #     for elem in history:
-    #         formated += f"{line}. {elem}\n"
-    #         line += 1
     formated += "USER INPUT:\n" + user_mssg
     return formated
 
@@ -89,6 +83,7 @@ async def lifespan(_: FastAPI):
     
 app = FastAPI(lifespan=lifespan)
 
+#Enable cross-origin (CORS)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
