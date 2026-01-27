@@ -203,3 +203,4 @@ export const GetAvailabilityParamsSchema = z.object({
 }).strict();
 
 export type getAvailabilityParams = z.infer<typeof GetAvailabilityParamsSchema>
+
