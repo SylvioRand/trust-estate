@@ -326,7 +326,12 @@ export async function getSlots(request: FastifyRequest<{Querystring: {id: string
 		});
 
 	try {
-		const data = await resaServices.getAvailability(request.server, userId) as ListingInterface;
+		// const data = await resaServices.getAvailability(request.server, userId) as ListingInterface;
+		const data: ListingInterface = {
+			weeklySchedule: [
+				{ dayOfWeek: 2, startTime: "08:00", endTime: "17:00" },
+			]
+		};
 		const availability = await resaServices.getAvailableSlotsByUserId(request.server, userId, data.weeklySchedule);
 		return reply.status(200).send({ availability });
 	} catch (error: any) {
