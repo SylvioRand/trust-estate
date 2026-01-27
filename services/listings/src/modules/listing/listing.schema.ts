@@ -204,3 +204,8 @@ export const GetAvailabilityParamsSchema = z.object({
 
 export type getAvailabilityParams = z.infer<typeof GetAvailabilityParamsSchema>
 
+export const ReservationIdSchema = z.object({
+  listingId: z.string().uuid()
+}).strict();
+
+export type ReservationIdParams = z.infer<typeof ReservationIdSchema>
