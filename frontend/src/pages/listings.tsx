@@ -1,15 +1,14 @@
-import React, { useEffect, useState, type CSSProperties, type Dispatch, type SetStateAction } from "react";
+import React, { useEffect, useState, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { type ListingsData, dataExampleListingsData } from "../dataModel/modelListings";
+import { type ListingsData, type ListingsTags, dataExampleListingsData } from "../dataModel/modelListings";
 import { toast } from "react-toastify";
 import MyListingsView from "./my_listings_view";
 import ClientListingsView from "./client_listings_view";
+import { TagsComponents } from "../components/TagsComponents";
 
 interface	NavigatePictureButtonProps {
 	icon: string;
-	fetchedData: ListingsData;
-	currentPictures: number;
 	customStyle: CSSProperties;
 	onClick: () => void;
 	disabled: boolean;
@@ -17,8 +16,6 @@ interface	NavigatePictureButtonProps {
 
 const	NavigatePictureButton: React.FC<NavigatePictureButtonProps> = ({
 	icon = "X",
-	fetchedData,
-	currentPictures = 0,
 	customStyle = {},
 	onClick,
 	disabled = false
@@ -83,10 +80,10 @@ const	ListingsPage: React.FC = () => {
 			}
 		}
 
-		fetchListingsData();
+		// fetchListingsData();
 
 		// NOTE: DEBUG
-		// setFetchedData(dataExampleListingsData);
+		setFetchedData(dataExampleListingsData);
 	}, []);
 
 	return (
@@ -119,6 +116,7 @@ const	ListingsPage: React.FC = () => {
 				<div
 				className="flex flex-col items-center justify-start
 				xl:grid xl:grid-cols-[1fr_50%] xl:grid-rows-1
+				gap-3
 				overflow-y-scroll
 				w-full
 				p-4
@@ -138,7 +136,6 @@ const	ListingsPage: React.FC = () => {
 					>
 						{
 							window.innerWidth >= 1024 && fetchedData.photos.map((value: string, index: number) => {
-								const	active: boolean = currentPictures === index;
 								const	factor: number = index - currentPictures;
 
 								return (
@@ -185,8 +182,6 @@ const	ListingsPage: React.FC = () => {
 						}
 
 						<NavigatePictureButton
-						fetchedData={ fetchedData }
-						currentPictures={ currentPictures }
 						icon=""
 						customStyle={{
 							left: 16
@@ -196,8 +191,6 @@ const	ListingsPage: React.FC = () => {
 						/>
 
 						<NavigatePictureButton
-						fetchedData={ fetchedData }
-						currentPictures={ currentPictures }
 						icon=""
 						customStyle={{
 							right: 16
@@ -205,6 +198,22 @@ const	ListingsPage: React.FC = () => {
 						disabled={ currentPictures === fetchedData.photos.length - 1 }
 						onClick={ () => setCurrentPictures(currentPictures === fetchedData.photos.length - 1 ? 1 : currentPictures + 1)}
 						/>
+
+						<div
+						className="absolute top-4 left-4
+						flex flex-wrap gap-3
+						w-full">
+							{
+								fetchedData.tags.map((value: ListingsTags, index: number) => {
+									return (
+										<TagsComponents
+										key={ index }
+										tags={ value }
+										/>
+									);
+								})
+							}
+						</div>
 					</div>
 
 					<div
