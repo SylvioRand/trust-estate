@@ -1,3 +1,15 @@
+// ************************************************************************** //
+//                                                                            //
+//                                                        :::      ::::::::   //
+//   ai_copy.tsx                                        :+:      :+:    :+:   //
+//                                                    +:+ +:+         +:+     //
+//   By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+        //
+//                                                +#+#+#+#+#+   +#+           //
+//   Created: 2026/01/26 14:15:16 by aelison           #+#    #+#             //
+//   Updated: 2026/01/27 07:00:55 by aelison          ###   ########.fr       //
+//                                                                            //
+// ************************************************************************** //
+
 import React, { useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
 import { useTranslation } from "react-i18next";
@@ -47,7 +59,7 @@ type	MessageType = {
 	side: "left" | "right";
 }
 
-const	AIPage: React.FC = () => {
+const	AICopyPage: React.FC = () => {
 	const	[chatValue, setChatValue] = useState<string>("");
 	// const	messageRef: RefObject<MessageType[]> = useRef<MessageType[]>([]);
 	const	[messageData, setMessageData] = useState<MessageType[]>([
@@ -70,12 +82,11 @@ const	AIPage: React.FC = () => {
 		])
 
 		try {
-			const response = await fetch("/ai/chat", {
+			const response = await fetch("/api/ai/chat/", {
 				method: "POST",
 				body: JSON.stringify({message: userQuery}),
 				headers: { "Content-type": "application/json"}
 			});
-
 			if (!response.ok) {
 				const errorMessage = await response.json();
 				throw new Error(errorMessage);
@@ -85,11 +96,20 @@ const	AIPage: React.FC = () => {
 			const decoder = new TextDecoder();
 			let remains = "";
 
-			while (reader) {
+			if (!reader)
+				throw new Error("Failed to get reader");
+
+			while (true) {
 				const { value, done } = await reader.read();
 
-				if (done)
+				if (done) {
+					console.log("End receiving llm response")
+					if (remains.length > 0)
+						console.log("Still got some remains !")
+					else
+						console.log("No more remain, all is good !")
 					break ;
+				}
 
 				const current_text = decoder.decode(value, { stream: true });
 				const current_line = (remains + current_text).split('\n');
@@ -106,15 +126,20 @@ const	AIPage: React.FC = () => {
 
 						setMessageData((prev) => {
 							const new_text = [...prev];
+							if (new_text.length > 0) {
 							new_text[0] = {
 								...new_text[0],
 								value: new_text[0].value + llm_reply
-						};
+							};
+						}
 						return new_text;
 						});
 					}
 					else if (data.type === "metadata"){
-						console.log("Founds metadatas: ", data.links);
+						if (data.links.length > 0)
+							console.log("Founds metadatas: ", data.links);
+						else
+							console.log("Nothing inside links !")
 					}
 				}
 			}
@@ -197,4 +222,4 @@ const	AIPage: React.FC = () => {
 	);
 }
 
-export default AIPage;
+export default AICopyPage;

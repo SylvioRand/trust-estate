@@ -147,11 +147,8 @@ class LLMService:
                 try:
                     result = json.loads(parse_line)
                     content = result["choices"][0].get("delta", {}).get("content", "")
-
-                    yield content
-
                     if content:
-                        yield json.dumps({"type": "content", "reply": content})
+                        yield json.dumps({"type": "content", "reply": content}) + "\n"
 
                 except json.JSONDecodeError:
                     continue
