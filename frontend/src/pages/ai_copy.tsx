@@ -13,6 +13,7 @@
 import React, { useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
 import { useTranslation } from "react-i18next";
+import Markdown from 'react-markdown';
 
 interface	MessageProps {
 	value: string;
@@ -48,7 +49,9 @@ const	Message: React.FC<MessageProps> = ({
 					justifySelf: side === "right" ? "flex-end" : "flex-start"
 				}}
 			>
+			<Markdown>
 				{ value }
+			</Markdown>
 			</div>
 		</div>
 	);
