@@ -87,6 +87,10 @@ class LLMService:
         5. The unit of the price is "Ariary".
         6. If there are many posts inside the context, always give a detailed comparison.
         7. Format the answer with spacing and clarity to make it easy to read.
+        8. Adopt a conversational and narrative writing style.
+        Avoid all structural formatting such as bullet points, bolded headers, lists, or 'Key: Value' pairings.
+        Write in cohesive, flowing paragraphs as if you are writing a letter or an essay.
+        Do not use colon-based definitions (e.g., 'Topic: Explanation'). Instead, integrate all information into natural sentences. Prioritize a warm, human tone over a clinical or encyclopedic one.
         """
         return rules
 
