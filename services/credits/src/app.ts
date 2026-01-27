@@ -11,8 +11,10 @@ const dir = "../../.env";
 try {
 	dotenv.config({ path: dir });
 } catch (error: any) {
-	console.log(error);
-};
+	const tmpServer = fastify({ logger: true });
+	tmpServer.log.error(error);
+	process.exit(1);
+}
 
 const options = {
 	confKey: 'config',

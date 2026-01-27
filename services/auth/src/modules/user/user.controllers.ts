@@ -18,6 +18,11 @@ export async function getUser(request: FastifyRequest, reply: FastifyReply) {
 	
 		return reply.status(200).send(responseUser(result));
 	} catch (error: any) {
+		if (error.message === "User not found")
+			return reply.status(404).send({
+					"error":"User not found",
+					"message":"user.user_not_found"
+				})
 		return reply.status(500).send({
 				"error": "Internal server error",
 				"message": "Internal server error"
@@ -48,8 +53,8 @@ export async function updatePhoneNumber(request: FastifyRequest <{Body: {phoneNu
 				});
 		else if (error.message === "User not found")
 			return reply.code(404).send({
-					"error": "invalid_credentials",
-					"message": "auth.invalid_credentials"
+					"error": "User not found",
+					"message": "user.user_not_found"
 				});
 		else
 			return reply.status(500).send({

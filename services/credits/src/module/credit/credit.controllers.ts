@@ -26,6 +26,7 @@ export async function rechargeCredit(request: FastifyRequest<{ Body: RechargeInt
 			"transactionId": transactionId
 		})
 	} catch (error: any) {
+		request.server.log.error({ error, userId: user?.id }, 'RechargeCredit error');
 		if (error.message === "payment_failed")
 			return reply.status(400).send({
 				"error": "payment_failed",
@@ -56,6 +57,7 @@ export async function getBalance(request: FastifyRequest, reply: FastifyReply) {
 			"currency": "credits"
 		})
 	} catch (error: any) {
+		request.server.log.error({ error, userId: user?.id }, 'GetBalance error');
 		if (error.message === "balance_not_found")
 			return reply.status(404).send({
 				"error": "balance_not_found",
@@ -88,6 +90,7 @@ export async function debitBalance(request: FastifyRequest<{ Body: { reason: Tra
 			"transactionId": transactionId
 		})
 	} catch (error: any) {
+		request.server.log.error({ error, userId: user?.id }, 'DebitBalance error');
 		if (error.message === "insufficient_credits")
 			return reply.status(402).send({
 				"error": "insufficient_credits",
@@ -123,6 +126,7 @@ export async function creditBalance(request: FastifyRequest<{ Body: creditBalanc
 			"transactionId": transactionId
 		})
 	} catch (error: any) {
+		request.server.log.error({ error, userId: user?.id }, 'CreditBalance error');
 		return reply.status(500).send({
 			"error": "internal_server_error",
 			"message": "common.internal_server_error"
@@ -147,6 +151,7 @@ export async function requestDeleteData(request: FastifyRequest, reply: FastifyR
 			"message": "auth.account_deleted_success"
 		});
 	} catch (error: any) {
+		request.server.log.error({ error, userId: user?.id }, 'RequestDeleteData error');
 		return reply.status(500).send({
 			"error": "internal_server_error",
 			"message": "common.internal_server_error"
@@ -173,7 +178,8 @@ export async function history(request: FastifyRequest<{ Querystring: { page?: st
 
 		return reply.status(200).send(result);
 	}
-	catch (error) {
+	catch (error: any) {
+		request.server.log.error({ error }, 'History error');
 		return reply.status(500).send(error);
 	}
 }
