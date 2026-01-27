@@ -10,6 +10,11 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
     const { id } = GetOneParamsSchema.parse(request.params);
     const { listing, sellerStats } = await ListingService.getOne(id);
 
+    // Increment view count (fire and forget - don't wait for it)
+    ListingService.incrementViews(id).catch(err =>
+      console.error('Failed to increment views:', err)
+    );
+
     const currentUser = (request as any).user;
     const isMine = currentUser?.id === listing.sellerId;
     let confirmedReservation = false;
