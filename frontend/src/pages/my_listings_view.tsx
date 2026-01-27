@@ -72,7 +72,7 @@ export const	ListingsHeader: React.FC<ListingsViewProps> = ({
 				<ActionButton
 				title={ t(`section.quickButtons.${ fetchedData.mine === true ? "visitSlot" : "scheduleVisit" }`) }
 				onClick={ () => {
-					navigate(`/property/listings/${ fetchedData.mine === true ? "seller" : "buyer" }-slots`)
+					navigate(`/property/listings/${ fetchedData.mine === true ? "seller" : "buyer" }-slots?id=${fetchedData.id}`)
 				}}
 				/>
 				<div
