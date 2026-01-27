@@ -6,7 +6,7 @@
 //   By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2026/01/26 14:15:16 by aelison           #+#    #+#             //
-//   Updated: 2026/01/26 15:37:54 by aelison          ###   ########.fr       //
+//   Updated: 2026/01/27 07:00:55 by aelison          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -122,10 +122,12 @@ const	AICopyPage: React.FC = () => {
 
 						setMessageData((prev) => {
 							const new_text = [...prev];
+							if (new_text.length() > 0) {
 							new_text[0] = {
 								...new_text[0],
 								value: new_text[0].value + llm_reply
-						};
+							};
+						}
 						console.log("Hello there: ", new_text);
 						return new_text;
 						});
