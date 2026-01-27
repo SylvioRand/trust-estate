@@ -28,4 +28,6 @@ export async function listingRoutes(app: FastifyInstance) {
   app.post('/:id/report', { preHandler: (app as any).authenticate }, handleReport);
   app.post('/:id/availability', { preHandler: (app as any).authenticate }, handleUpdateAvailability);
   app.delete('/internal/user/data', { preHandler: (app as any).internalAuthenticate }, handleDeleteUserData);
+  //app.post('/listings/:listingId/events/reservation-confirmed', { preHandler: (app as any).internalAuthenticate }, handleConfirmReservation);
+
 }
