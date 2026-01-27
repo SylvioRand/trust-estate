@@ -391,26 +391,4 @@ export class ListingService {
 
     return listing;
   }
-
-  static async deleteListing(id: string, sellerId: string) {
-    return await prisma.$transaction(async (tx) => {
-      await tx.listingFeatures.deleteMany({ where: { listingId: id } });
-      await tx.listingStats.deleteMany({ where: { listingId: id } });
-      await tx.listingAvailability.deleteMany({ where: { listingId: id } });
-
-      const deleted = await tx.listing.delete({
-        where: { id, sellerId }
-      });
-
-      await tx.sellerStats.update({
-        where: { userId: sellerId },
-        data: {
-          totalListings: { decrement: 1 },
-          activeListings: { decrement: 1 }
-        }
-      });
-
-      return deleted;
-    });
-  }
 }

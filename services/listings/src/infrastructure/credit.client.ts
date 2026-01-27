@@ -5,7 +5,7 @@ export class creditClient {
   private static CREDITS_SERVICE_URL = process.env.CREDITS_SERVICE_URL || 'http://credits-service:3004';
   private static INTERNAL_KEY_SECRET = process.env.INTERNAL_KEY_SECRET || "INTERNAL_KEY";
 
-  static async debit(userID: string, amount: number, listingId: string) {
+  static async debit(userID: string) {
     if (!this.INTERNAL_KEY_SECRET) {
       throw new Error('INTERNAL_KEY_SECRET is not defined');
     }
