@@ -23,25 +23,35 @@ export const	TagsComponents: React.FC<TagsComponentsProps> = ({
 	const	{ t } = useTranslation("listings");
 
 	return (
-		<div className="flex items-center justify-center gap-2
+		<div className="grid grid-cols-[auto_1fr] grid-rows-1
+			place-items-center
+			gap-2
 			border border-background/25
 			backdrop-blur-2xl
 			select-none
-			rounded-full
+			rounded-xl
 			shadow-standard
 			text-light-foreground
 			flex-none
-			px-3"
-			style={{
-				backgroundColor: `color-mix(in srgb, ${color[tags]} 75%, transparent)`
-			}}
+			bg-foreground
+			p-1"
 		>
-			<div className="font-light text-sm"
+			<div
+			className="flex items-center justify-center
+			rounded-lg
+			w-6 h-6"
+			style={{
+				backgroundColor: color[tags],
+				boxShadow: "inset 2px 4px 4px color-mix(in srgb, white 25%, transparent), inset -2px -4px 4px color-mix(in srgb, white 25%, transparent)"
+			}}
+			>
+				<div className="font-icon text-lg text-shadow-md">
+					{ icon[tags] }
+				</div>
+			</div>
+			<div className="font-light text-sm text-background mr-1"
 			>
 				{ t(`section.tags.${tags}`) }
-			</div>
-			<div className="font-icon text-xl text-shadow-md">
-				{ icon[tags] }
 			</div>
 		</div>
 	);
