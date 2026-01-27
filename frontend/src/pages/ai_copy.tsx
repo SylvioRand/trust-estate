@@ -103,11 +103,6 @@ const	AICopyPage: React.FC = () => {
 				const { value, done } = await reader.read();
 
 				if (done) {
-					console.log("End receiving llm response")
-					if (remains.length > 0)
-						console.log("Still got some remains !")
-					else
-						console.log("No more remain, all is good !")
 					break ;
 				}
 
