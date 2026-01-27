@@ -38,8 +38,8 @@
 			"pool": "Piscine",
 			"electricity_access": {
 				"title": "Accès electricité",
-				"true": "Cette propriété a accèss a l'electricité.",
-				"false": "Cette propriété n'a pas accèss a l'electricité."
+				"true": "Cette propriété a accèss a l'électricité.",
+				"false": "Cette propriété n'a pas accèss a l'électricité."
 			},
 			"water_access": {
 				"title": "Accès d'eau",
