@@ -43,8 +43,8 @@
 			},
 			"water_access": {
 				"title": "Accès d'eau",
-				"true": "Cette propriété a accèss a l'eau.",
-				"false": "Cette propriété n'a pas accèss a l'eau."
+				"true": "Cette propriété a accès a l'eau.",
+				"false": "Cette propriété n'a pas accès a l'eau."
 			}
 		},
 
