@@ -122,7 +122,7 @@ const	AICopyPage: React.FC = () => {
 
 						setMessageData((prev) => {
 							const new_text = [...prev];
-							if (new_text.length() > 0) {
+							if (new_text.length > 0) {
 							new_text[0] = {
 								...new_text[0],
 								value: new_text[0].value + llm_reply
