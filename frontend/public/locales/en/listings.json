@@ -43,7 +43,7 @@
 			"water_access": {
 				"title": "Water Access",
 				"true": "This property have access to water.",
-				"false": "This property have doesn't access to water."
+				"false": "This property doesn't have access to water."
 			}
 		},
 		"description": {
@@ -127,7 +127,7 @@
 				"totalListings": "Listings",
 				"activeListings": "On Market",
 				"successfulSales": "Sold Property",
-				"successfulRents": "Rented Property",
+				"successfulRent": "Rented Property",
 				"averageRating": "Rating",
 				"responseRate": "Response Rate"
 			}

@@ -47,7 +47,7 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 
 	const	sellerStats: string[] = [
 		"successfulSales",
-		"successfulRents",
+		"successfulRent",
 		"averageRating",
 	];
 
