@@ -49,7 +49,7 @@ const	NavigatePictureButton: React.FC<NavigatePictureButtonProps> = ({
 }
 
 const	ListingsPage: React.FC = () => {
-	const	{ t } = useTranslation("listings");
+	const	{ t } = useTranslation(["listings", "error", "common"]);
 	const	[fetchedData, setFetchedData] = useState<ListingsData | null>(null);
 	const	[ searchParams ] = useSearchParams();
 	const	listingsID = searchParams.get("id");
@@ -78,10 +78,10 @@ const	ListingsPage: React.FC = () => {
 			}
 		}
 
-		fetchListingsData();
+		// fetchListingsData();
 
 		// NOTE: DEBUG
-		// setFetchedData(dataExampleListingsData);
+		setFetchedData(dataExampleListingsData);
 	}, []);
 
 	return (
@@ -113,7 +113,7 @@ const	ListingsPage: React.FC = () => {
 				fetchedData !== null &&
 				<div
 				className="flex flex-col items-center justify-start
-				xl:grid xl:grid-cols-[1fr_60%] xl:grid-rows-1
+				xl:grid xl:grid-cols-[1fr_50%] xl:grid-rows-1
 				overflow-y-scroll
 				w-full
 				p-4
