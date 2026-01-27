@@ -366,7 +366,7 @@ export const	ListingsFeaturesAndEquipment: React.FC<ListingsViewProps> = ({
 						const isEquipmentEnabled = (
 							features: ListingsData["features"],
 							key: FeatureKey
-						) => features[key] === true;
+						) => (features[key] === true || features[key] !== "none");
 
 						return (
 							<>
