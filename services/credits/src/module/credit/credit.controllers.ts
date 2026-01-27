@@ -173,10 +173,10 @@ export async function history(request: FastifyRequest<{ Querystring: { page?: st
 
 		const page = parseInt(request.query.page || "1");
 		const limit = parseInt(request.query.limit || "10");
+		console.log(user);
+		const data = await creditServices.getUserHistory(request.server, user.id);
 
-		const result = await creditServices.getUserHistory(request.server, user.id, page, limit);
-
-		return reply.status(200).send(result);
+		return reply.status(200).send({data});
 	}
 	catch (error: any) {
 		request.server.log.error({ error }, 'History error');
