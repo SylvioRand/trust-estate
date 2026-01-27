@@ -9,13 +9,16 @@ export type SellerStatsDataType = {
 	responseRate: number
 }
 
+export type	PropertyType = "apartment" | "house" | "loft" | "land" | "commercial";
+export type	ParkingType = "garage" | "box" | "parking" | "none";
+
 export type ListingsData = {
 	id: string,
 	title: string,
 	description: string,
 	price: number,
 	type: "sale" | "rent", // Enum: sale, rent
-	propertyType: "apartment" | "house" | "loft" | "land" | "commercial", // Enum: apartment, house, loft, land, commercial
+	propertyType: PropertyType,
 	mine: boolean,
 	surface: number,
 	zone: string,
@@ -24,7 +27,7 @@ export type ListingsData = {
 		bedrooms: number,
 		bathrooms: number,
 		wc_separate: boolean,
-		parking_type: "garage" | "box" | "parking" | "none", // Enum: garage, box, parking, none
+		parking_type: ParkingType, // Enum: garage, box, parking, none
 		garden_private: boolean,
 		water_access: boolean,
 		electricity_access: boolean
