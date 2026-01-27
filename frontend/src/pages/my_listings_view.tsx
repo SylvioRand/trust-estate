@@ -4,6 +4,8 @@ import type { TFunction } from "i18next";
 import type { ListingsData } from "../dataModel/modelListings";
 import ActionButton from "../components/ActionButton";
 import { useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
+import PopUp, { type PopUpAPI } from "../components/PopUp";
 
 export const	ListingsHeader: React.FC<ListingsViewProps> = ({
 	fetchedData,
@@ -11,6 +13,8 @@ export const	ListingsHeader: React.FC<ListingsViewProps> = ({
 }) => {
 	const	formatter = new Intl.NumberFormat("de-DE");
 	const	navigate = useNavigate();
+	const	refActionPopup = useRef<PopUpAPI>(null);
+	const	[isActionPopupOpen, setIsActionPopupOpen] = useState<boolean>(false);
 
 	return (
 		<div
@@ -25,9 +29,22 @@ export const	ListingsHeader: React.FC<ListingsViewProps> = ({
 			
 			>
 				<div
-				className="font-higuen font-bold text-4xl"
+				className="grid grid-cols-[auto_1fr] grid-rows-1
+				place-items-center
+				w-full"
 				>
-					{ fetchedData.title }
+					<div
+					className="font-higuen font-bold text-4xl"
+					>
+						{ fetchedData.title }
+					</div>
+					<button
+					className="font-icon text-2xl justify-self-end
+					cursor-pointer"
+					onClick={ () => setIsActionPopupOpen(true) }
+					>
+						󰇘
+					</button>
 				</div>
 
 				<div
@@ -92,6 +109,15 @@ export const	ListingsHeader: React.FC<ListingsViewProps> = ({
 					</div>
 				</div>
 			</div>
+			
+			{
+				isActionPopupOpen && <PopUp
+				title={ t("section.actionButton.popup.title") }
+				onClose={ () => setIsActionPopupOpen(false) }
+				>
+					HELLO
+				</PopUp>
+			}
 		</div>
 	);
 }
@@ -367,19 +393,17 @@ export const	ListingsFeaturesAndEquipment: React.FC<ListingsViewProps> = ({
 							features: ListingsData["features"],
 							key: FeatureKey
 						) => (features[key] === true || features[key] !== "none");
+						
+						if (!isEquipmentEnabled(fetchedData.features, value.value as keyof ListingsData["features"]))
+							return (null);
 
 						return (
-							<>
-								{
-									isEquipmentEnabled(fetchedData.features, value.value as keyof ListingsData["features"]) && 
-									<EquipmentStats
-									key={ index }
-									value={ value.value }
-									icon={ value.icon }
-									t={ t }
-									/>
-								}
-							</>
+							<EquipmentStats
+							key={ index }
+							value={ value.value }
+							icon={ value.icon }
+							t={ t }
+							/>
 						);
 					})
 				}
