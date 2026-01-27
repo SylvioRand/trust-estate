@@ -9,7 +9,7 @@ export interface	ListingsViewProps {
 
 interface	SellerStatsProps {
 	title: string;
-	value: string;
+	value: any;
 }
 
 const	SellerStats: React.FC<SellerStatsProps> = ({
@@ -46,12 +46,9 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 }) => {
 
 	const	sellerStats: string[] = [
-		"totalListings",
-		"activeListings",
 		"successfulSales",
 		"successfulRents",
 		"averageRating",
-		"responseRate"
 	];
 
 	return (
@@ -96,7 +93,7 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 							<SellerStats
 							key={ index }
 							title={ t(`section.stats.sellerStats.${value}`) }
-							value={ getValue(fetchedData.sellerStats, value as keyof ListingsData["sellerStats"]).toString() }
+							value={ getValue(fetchedData.sellerStats, value as keyof ListingsData["sellerStats"]) }
 							/>
 						);
 					})

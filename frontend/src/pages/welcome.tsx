@@ -3,10 +3,12 @@ import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
 import { Link } from "react-router-dom";
 import WaveCanvas from "../components/WavyLines";
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 const WelcomePage: React.FC = () => {
   const { t } = useTranslation("welcome");
 
+  VerifyUsersState();
   return (
     <div className="flex items-center justify-center
 			relative

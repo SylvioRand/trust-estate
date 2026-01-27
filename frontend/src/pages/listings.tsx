@@ -78,10 +78,10 @@ const	ListingsPage: React.FC = () => {
 			}
 		}
 
-		// fetchListingsData();
+		fetchListingsData();
 
 		// NOTE: DEBUG
-		setFetchedData(dataExampleListingsData);
+		// setFetchedData(dataExampleListingsData);
 	}, []);
 
 	return (
