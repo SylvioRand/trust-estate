@@ -87,7 +87,6 @@ class LLMService:
         5. The unit of the price is "Ariary".
         6. If there are many posts inside the context, always give a detailed comparison.
         7. Format the answer with spacing and clarity to make it easy to read.
-        8. Use the "USER HISTORY" to maintain continuity of the conversation.
         """
         return rules
 
