@@ -47,17 +47,64 @@ export type GetMineListingsQuery = z.infer<typeof GetMineListingsSchema>;
 
 export const SearchListingsSchema = z.object({
   type: z.enum(['sale', 'rent']).optional(),
-  propertyType: z.enum(['apartment', 'house', 'loft', 'land', 'commercial']).optional(), // Add to contract if needed
+  propertyType: z.enum(['apartment', 'house', 'loft', 'land', 'commercial']).optional(),
 
   minPrice: z.coerce.number().optional(),
   maxPrice: z.coerce.number().optional(),
-  minSurface: z.coerce.number().optional(), // Add to contract if needed
-  maxSurface: z.coerce.number().optional(), // Add to contract if needed
-
-  zone: z.string().optional(),
+  minSurface: z.coerce.number().optional(),
+  maxSurface: z.coerce.number().optional(),
+  minBedRoom: z.coerce.number().optional(),
+  maxBedRoom: z.coerce.number().optional(),
+  minBathRoom: z.coerce.number().optional(),
+  maxBathRoom: z.coerce.number().optional(),
+  parkingType: z.preprocess((val) => {
+    if (typeof val === 'string') return [val];
+    return val;
+  }, z.array(z.enum(['none', 'garage', 'box', 'parking'])).optional()),
+  waterAccess: z.preprocess((val) => val === 'true' ? true : val === 'false' ? false : val, z.boolean().optional()),
+  electricityAccess: z.preprocess((val) => val === 'true' ? true : val === 'false' ? false : val, z.boolean().optional()),
+  pool: z.preprocess((val) => val === 'true' ? true : val === 'false' ? false : val, z.boolean().optional()),
+  gardenPrivate: z.preprocess((val) => val === 'true' ? true : val === 'false' ? false : val, z.boolean().optional()),
+  tags: z.preprocess((val) => {
+    if (typeof val === 'string') return [val];
+    return val;
+  }, z.array(z.enum(['urgent', 'exclusive', 'discount'])).optional()),
+  zone: ZoneSchema.optional(),
 
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
+}).refine((data) => {
+  if (data.minPrice !== undefined && data.maxPrice !== undefined) {
+    return data.minPrice <= data.maxPrice;
+  }
+  return true;
+}, {
+  message: "validation.listing.search.price_range_invalid",
+  path: ["minPrice"]
+}).refine((data) => {
+  if (data.minSurface !== undefined && data.maxSurface !== undefined) {
+    return data.minSurface <= data.maxSurface;
+  }
+  return true;
+}, {
+  message: "validation.listing.search.surface_range_invalid",
+  path: ["minSurface"]
+}).refine((data) => {
+  if (data.minBedRoom !== undefined && data.maxBedRoom !== undefined) {
+    return data.minBedRoom <= data.maxBedRoom;
+  }
+  return true;
+}, {
+  message: "validation.listing.search.bedroom_range_invalid",
+  path: ["minBedRoom"]
+}).refine((data) => {
+  if (data.minBathRoom !== undefined && data.maxBathRoom !== undefined) {
+    return data.minBathRoom <= data.maxBathRoom;
+  }
+  return true;
+}, {
+  message: "validation.listing.search.bathroom_range_invalid",
+  path: ["minBathRoom"]
 });
 export type SearchListingsQuery = z.infer<typeof SearchListingsSchema>;
 
