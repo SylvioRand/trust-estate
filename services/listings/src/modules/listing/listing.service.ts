@@ -276,6 +276,15 @@ export class ListingService {
     return { listing, sellerStats };
   }
 
+  static async incrementViews(id: string) {
+    await prisma.listingStats.updateMany({
+      where: { listingId: id },
+      data: {
+        views: { increment: 1 }
+      }
+    });
+  }
+
   static async deleteUserData(userId: string) {
     return await prisma.$transaction(async (tx) => {
       await tx.report.deleteMany({
