@@ -127,7 +127,7 @@ async def check_health():
                 },
         )
 
-@app.post("/ai/chat")
+@app.post("/ai/chat/")
 async def chatbot(text: RequestChat):
     user_mssg = text.message
     sys_prompt = chromadb_service.get_parse_prompt()
