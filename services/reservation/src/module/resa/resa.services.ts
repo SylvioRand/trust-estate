@@ -76,7 +76,7 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 				listingId,
 				buyerId: userId,
 				sellerId,
-				slot: slot
+				slot: slotDate
 			}
 		});
 
@@ -85,86 +85,86 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 };
 
 export async function deleteReservation(app: FastifyInstance, userId: string, reservationId: string) {
-    await app.prisma.$transaction(async (tx: TransactionClient) => {
-        const reservation = await tx.reservation.findFirst({
-            where: {
-                AND: [
-                    { reservationId },
-                    {
-                        OR: [
-                            { buyerId: userId },
-                            { sellerId: userId }
-                        ]
-                    }
-                ]
-            }
-        });
+	await app.prisma.$transaction(async (tx: TransactionClient) => {
+		const reservation = await tx.reservation.findFirst({
+			where: {
+				AND: [
+					{ reservationId },
+					{
+						OR: [
+							{ buyerId: userId },
+							{ sellerId: userId }
+						]
+					}
+				]
+			}
+		});
 
-        if (!reservation)
-            throw new Error("reservation_not_found");
+		if (!reservation)
+			throw new Error("reservation_not_found");
 
 
-        const time = new Date();
-        const total = reservation.slot.getTime() - time.getTime();
+		const time = new Date();
+		const total = reservation.slot.getTime() - time.getTime();
 
-        const minCancelTime = 30 * 60 * 1000; // 30 minutes
-        if (total > 0) {
-            if (total <= minCancelTime)
-                throw new Error("cancellation_too_late");
-        }
+		const minCancelTime = 30 * 60 * 1000; // 30 minutes
+		if (total > 0) {
+			if (total <= minCancelTime)
+				throw new Error("cancellation_too_late");
+		}
 
-        await tx.reservation.delete({
-            where: { reservationId }
-        });
-    })
+		await tx.reservation.delete({
+			where: { reservationId }
+		});
+	})
 };
 
 export async function changeStatusReservation(app: FastifyInstance, userId: string, reservationId: string) {
-    await app.prisma.$transaction(async (tx: TransactionClient) => {
-        const reservation = await tx.reservation.findFirst({
-            where: {
-                AND: [
-                    { reservationId },
-                    {
-                        OR: [
-                            { buyerId: userId },
-                            { sellerId: userId }
-                        ]
-                    }
-                ]
-            }
-        });
-        if (!reservation)
-            throw new Error("reservation_not_found");
+	await app.prisma.$transaction(async (tx: TransactionClient) => {
+		const reservation = await tx.reservation.findFirst({
+			where: {
+				AND: [
+					{ reservationId },
+					{
+						OR: [
+							{ buyerId: userId },
+							{ sellerId: userId }
+						]
+					}
+				]
+			}
+		});
+		if (!reservation)
+			throw new Error("reservation_not_found");
 
-        const time = new Date();
-        const total = reservation.slot.getTime() - time.getTime();
+		const time = new Date();
+		const total = reservation.slot.getTime() - time.getTime();
 
-        const minCancelTime = 30 * 60 * 1000; // 30 minutes
-        if (total < minCancelTime)
-            throw new Error("cancellation_too_late");
+		const minCancelTime = 30 * 60 * 1000; // 30 minutes
+		if (total < minCancelTime)
+			throw new Error("cancellation_too_late");
 
-        let cancel: $Enums.CancelledBy;
-        if (reservation.buyerId === userId)
-            cancel = $Enums.CancelledBy.buyer;
-        else if (reservation.sellerId === userId)
-            cancel = $Enums.CancelledBy.seller;
-        else
-            cancel = $Enums.CancelledBy.system;
+		let cancel: $Enums.CancelledBy;
+		if (reservation.buyerId === userId)
+			cancel = $Enums.CancelledBy.buyer;
+		else if (reservation.sellerId === userId)
+			cancel = $Enums.CancelledBy.seller;
+		else
+			cancel = $Enums.CancelledBy.system;
 
-        if (reservation.status === "confirmed" && cancel === $Enums.CancelledBy.seller) {
-            await crediter(app, reservation.buyerId);
-        }
+		if (reservation.status === "confirmed" && cancel === $Enums.CancelledBy.seller) {
+			await crediter(app, reservation.buyerId);
+		}
 
-        await tx.reservation.update({
-            where: { reservationId },
-            data: {
-                status: "cancelled",
-                cancelledAt: new Date(),
-                cancelledBy: cancel
-            }
-        });
-    })
+		await tx.reservation.update({
+			where: { reservationId },
+			data: {
+				status: "cancelled",
+				cancelledAt: new Date(),
+				cancelledBy: cancel
+			}
+		});
+	})
 };
 
 export async function confirmStatusReservation(app: FastifyInstance, userId: string, reservationId: string) {
@@ -423,85 +423,100 @@ export async function getAvailability(app: FastifyInstance, userId: string) {
 }
 
 export async function getAvailableSlotsByUserId(app: FastifyInstance, userId: string, days: { dayOfWeek: number, startTime: number|string, endTime: number|string }[]) {
-    let allAvailableSlots: { day: Date, slots: Date[] }[] = [];
-    const now = new Date();
-    const GMT_OFFSET = 3;
-    const today = new Date(Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate(),
-        0 - GMT_OFFSET, 0, 0, 0
-    ));
-	function parseHourMinute(val: number|string): { hour: number, minute: number } {
-		if (typeof val === 'number') return { hour: val, minute: 0 };
-		if (typeof val === 'string') {
-			const [h, m] = val.split(':').map(Number);
-			return { hour: h, minute: m || 0 };
-		}
-		return { hour: 0, minute: 0 };
-	}
+		let allAvailableSlots: { day: Date, slots: Date[] }[] = [];
+		const now = new Date();
+		const GMT_OFFSET = 3; // heures
+		// today = date du jour à minuit GMT+3 (en UTC)
+		const todayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
 
-	for (const dayObj of days) {
-		const jsDay = (dayObj.dayOfWeek % 7); // 1=lundi -> 1, 7=dimanche -> 0
-		const todayJsDay = today.getDay();
-		let daysToAdd = jsDay - todayJsDay;
-		if (daysToAdd < 0) daysToAdd += 7;
-		const dayDate = new Date(today);
-		dayDate.setDate(today.getDate() + daysToAdd);
-
-		const GMT_OFFSET = 3;
-
-		const { hour: startTime, minute: startMinute } = parseHourMinute(dayObj.startTime);
-		const { hour: endTime, minute: endMinute } = parseHourMinute(dayObj.endTime);
-
-		const slots: Date[] = [];
-		for (let hour = startTime; hour <= endTime; hour++) {
-			for (let minute = (hour === startTime ? startMinute : 0); minute < 60; minute += 30) {
-				if (hour === endTime && minute > endMinute) break;
-				const slot = new Date(Date.UTC(
-					dayDate.getUTCFullYear(),
-					dayDate.getUTCMonth(),
-					dayDate.getUTCDate(),
-					hour - GMT_OFFSET,
-					minute,
-					0,
-					0
-				));
-				const slotGmt3 = new Date(slot.getTime() + GMT_OFFSET * 60 * 60 * 1000);
-				slots.push(slotGmt3);
+		function parseHourMinute(val: number|string): { hour: number, minute: number } {
+			if (typeof val === 'number') return { hour: val, minute: 0 };
+			if (typeof val === 'string') {
+				const [h, m] = val.split(':').map(Number);
+				return { hour: h, minute: m || 0 };
 			}
+			return { hour: 0, minute: 0 };
 		}
 
-		const startOfDay = new Date(Date.UTC(
-			dayDate.getUTCFullYear(),
-			dayDate.getUTCMonth(),
-			dayDate.getUTCDate(),
-			0 - GMT_OFFSET, 0, 0, 0
-		));
-		const endOfDay = new Date(Date.UTC(
-			dayDate.getUTCFullYear(),
-			dayDate.getUTCMonth(),
-			dayDate.getUTCDate(),
-			23 - GMT_OFFSET, 59, 59, 999
-		));
+		for (const dayObj of days) {
+			// 1=lundi -> 1, 7=dimanche -> 0 (JS Sunday=0)
+			const jsDay = (dayObj.dayOfWeek % 7);
+			const todayJsDay = todayUtc.getUTCDay();
+			let daysToAdd = jsDay - todayJsDay;
+			if (daysToAdd < 0) daysToAdd += 7;
+			// Date du jour cible à minuit GMT+3 (en UTC)
+			const dayDateUtc = new Date(todayUtc);
+			dayDateUtc.setUTCDate(todayUtc.getUTCDate() + daysToAdd);
 
-		const reservedSlots = await app.prisma.reservation.findMany({
-			where: {
-				sellerId: userId,
-				status: { in: ['pending', 'confirmed'] },
-				slot: {
-					gte: startOfDay,
-					lt: endOfDay
+			const { hour: startTime, minute: startMinute } = parseHourMinute(dayObj.startTime);
+			const { hour: endTime, minute: endMinute } = parseHourMinute(dayObj.endTime);
+
+			const slots: Date[] = [];
+			for (let hour = startTime; hour <= endTime; hour++) {
+				for (let minute = (hour === startTime ? startMinute : 0); minute < 60; minute += 30) {
+					if (hour === endTime && minute > endMinute) break;
+					// Crée le slot en UTC correspondant à l'heure GMT+3 demandée
+					const slotUtc = new Date(Date.UTC(
+						dayDateUtc.getUTCFullYear(),
+						dayDateUtc.getUTCMonth(),
+						dayDateUtc.getUTCDate(),
+						hour - GMT_OFFSET,
+						minute,
+						0,
+						0
+					));
+					slots.push(slotUtc);
 				}
-			},
-			select: { slot: true }
-		});
+			}
 
-		const reservedDates = reservedSlots.map(r => r.slot.getTime());
-		const availableSlots = slots.filter(slot => !reservedDates.includes(slot.getTime()));
+			// début et fin de la journée en GMT+3 (en UTC)
+			const startOfDayUtc = new Date(Date.UTC(
+				dayDateUtc.getUTCFullYear(),
+				dayDateUtc.getUTCMonth(),
+				dayDateUtc.getUTCDate(),
+				0 - GMT_OFFSET, 0, 0, 0
+			));
+			const endOfDayUtc = new Date(Date.UTC(
+				dayDateUtc.getUTCFullYear(),
+				dayDateUtc.getUTCMonth(),
+				dayDateUtc.getUTCDate(),
+				23 - GMT_OFFSET, 59, 59, 999
+			));
 
-		allAvailableSlots.push({ day: new Date(dayDate), slots: availableSlots });
-	}
+			const reservedSlots = await app.prisma.reservation.findMany({
+				where: {
+					listingId: userId,
+					status: { in: ['confirmed'] },
+					slot: {
+						gte: startOfDayUtc,
+						lt: endOfDayUtc
+					}
+				},
+				select: { slot: true }
+			});
+			console.log(reservedSlots);
+			const reservedDates = reservedSlots.map(r => r.slot.getTime());
+			const availableSlots = slots.filter(slot => !reservedDates.includes(slot.getTime()));
 
-	return allAvailableSlots;
+			// Formatage explicite en GMT+3 pour l'affichage
+			function toGmt3String(date: Date) {
+				// Décale la date de +3h et retourne sous forme YYYY-MM-DDTHH:mm:ss+03:00
+				const gmt3 = new Date(date.getTime() + 3 * 60 * 60 * 1000);
+				const pad = (n: number) => n.toString().padStart(2, '0');
+				const year = gmt3.getUTCFullYear();
+				const month = pad(gmt3.getUTCMonth() + 1);
+				const day = pad(gmt3.getUTCDate());
+				const hour = pad(gmt3.getUTCHours());
+				const min = pad(gmt3.getUTCMinutes());
+				const sec = pad(gmt3.getUTCSeconds());
+				return `${year}-${month}-${day}T${hour}:${min}:${sec}+03:00`;
+			}
+
+			allAvailableSlots.push({
+				day: toGmt3String(new Date(dayDateUtc)),
+				slots: availableSlots.map(toGmt3String)
+			});
+		}
+
+		return allAvailableSlots;
 }
