@@ -10,26 +10,45 @@
 	"areaUnit": "sqft",
 
 	"section": {
+		"header": {
+			"propertyType": {
+				"apartment": "Apartment",
+				"house": "House",
+				"loft": "Loft",
+				"land": "Land",
+				"commercial": "Commercial"
+			}
+		},
 		"listingType": {
-			"rent": "Rent",
+			"rent": "For rent",
 			"sale": "For sale"
 		},
-
 		"features": {
+			"title": "Features",
 			"bedrooms": "Bedroom",
 			"bathrooms": "Bathroom",
-			"area": "Area",
-			"parking_type": "Parking",
-			"water_access": "Water",
-			"electricity_access": "Electricity",
-			"garden_private": "Garden",
-			"wc_separate": "Toilet Separate"
+			"area": "Sqft"
 		},
-
+		"equipments": {
+			"title": "Amenities",
+			"parking_type": "Parking",
+			"garden_private": "Garden",
+			"wc": "Toilet",
+			"pool": "Pool",
+			"electricity_access": {
+				"title": "Electricity Access",
+				"true": "This property have access to electricity.",
+				"false": "This property doesn't have access to electricity."
+			},
+			"water_access": {
+				"title": "Water Access",
+				"true": "This property have access to water.",
+				"false": "This property have doesn't access to water."
+			}
+		},
 		"description": {
 			"title": "Description"
 		},
-
 		"quickButtons": {
 			"favorites": "Favorites",
 			"report": "Report",

@@ -7,7 +7,7 @@ import TextArea from "../components/TextArea";
 import ImageUploader, { type ImageUploaderHandle } from "../components/ImageUploader";
 import InputEnum, { type InputEnumData } from "../components/InputEnum";
 import type { ListingsTags } from "../dataModel/modelListings";
-import { TagsComponents } from "./listings";
+import { TagsComponents } from "../components/TagsComponents";
 import PopUp, { type PopUpAPI } from "../components/PopUp";
 import { ZONE_ENUM } from "../dataModel/dataZone";
 import { Link, useNavigate } from "react-router-dom";

@@ -1,4 +1,9 @@
 export type ListingsTags = "urgent" | "exclusive" | "discount";
+import house0 from "../images/house0.webp";
+import house1 from "../images/house1.webp";
+import house2 from "../images/house2.webp";
+import house3 from "../images/house3.webp";
+import house4 from "../images/house4.webp";
 
 export type SellerStatsDataType = {
 	totalListings: number,
@@ -27,6 +32,8 @@ export type ListingsData = {
 		bedrooms: number,
 		bathrooms: number,
 		wc_separate: boolean,
+		wc: boolean,
+		pool: boolean,
 		parking_type: ParkingType, // Enum: garage, box, parking, none
 		garden_private: boolean,
 		water_access: boolean,
@@ -56,22 +63,30 @@ export type ListingsData = {
 export const	dataExampleListingsData: ListingsData = {
 	id: "da9sd8d7as9d7b9a9hdw3l14",
 	title: "Maison T2",
-	description: "Beautiful House located at Analakely in the core center of Antananarivo.",
+	description: "Beautiful House located at Analakely in the core center of Antananarivo. And this is a lot of another blabla, and again and again. This is for testing the reaction of the layout with a lot of text, we expect at least 200 characters so ...",
 	price: 4300000,
 	type: "rent",
-	propertyType: "loft",
+	propertyType: "apartment",
 	mine: false,
 	surface: 184,
 	zone: "Antananarivo - Analakely",
-	photos: [],
+	photos: [
+		house0,
+		house1,
+		house2,
+		house3,
+		house4
+	],
 	features: {
 		bedrooms: 3,
 		bathrooms: 1,
 		wc_separate: false,
+		wc: true,
+		pool: true,
 		parking_type: "parking",
-		garden_private: false,
+		garden_private: true,
 		water_access: true,
-		electricity_access: true
+		electricity_access: false
 	},
 	status: "active",
 	isAvailable: false,
@@ -98,5 +113,5 @@ export const	dataExampleListingsData: ListingsData = {
 	},
 	tags: ["urgent", "discount", "exclusive"],
 	createdAt: "2025-01-10T08:00:00Z",
-	updatedAt: "2025-01-12T14:30:00Z"
+	// updatedAt: "2025-01-12T14:30:00Z"
 }

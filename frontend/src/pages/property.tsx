@@ -1,9 +1,9 @@
 import React, { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { listData, type PropertyDataType, type ListingsProps } from "../dataModel/modelPropertyList";
+import { type PropertyDataType } from "../dataModel/modelPropertyList";
 import ActionButton from "../components/ActionButton";
-import { TagsComponents } from "./listings";
+import { TagsComponents } from "../components/TagsComponents";
 import type { ListingsTags } from "../dataModel/modelListings";
 import InputEnum, { type InputEnumData } from "../components/InputEnum";
 import type { TFunction } from "i18next";

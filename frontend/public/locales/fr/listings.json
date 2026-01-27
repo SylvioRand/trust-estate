@@ -10,20 +10,42 @@
 	"areaUnit": "m2",
 
 	"section": {
+		"header": {
+			"propertyType": {
+				"apartment": "Appartement",
+				"house": "Maison",
+				"loft": "Loft",
+				"land": "Terrain",
+				"commercial": "Commercial"
+			}
+		},
 		"listingType": {
 			"rent": "Location",
 			"sale": "Vente"
 		},
-
 		"features": {
+			"title": "Caractéristiques",
 			"bedrooms": "Chambres",
-			"bathrooms": "Salle de bains",
-			"area": "Surface",
-			"parking_type": "Stationnement",
-			"water_access": "Eau",
-			"electricity_access": "Courant",
-			"garden_private": "Jardin",
+			"bathrooms": "Douches",
+			"area": "m2",
 			"wc_separate": "WC exterieur"
+		},
+		"equipments": {
+			"title": "Equipements",
+			"parking_type": "Parking",
+			"garden_private": "Jardin",
+			"wc": "Toilette",
+			"pool": "Piscine",
+			"electricity_access": {
+				"title": "Accès electricité",
+				"true": "Cette propriété a accèss a l'electricité.",
+				"false": "Cette propriété n'a pas accèss a l'electricité."
+			},
+			"water_access": {
+				"title": "Accès d'eau",
+				"true": "Cette propriété a accèss a l'eau.",
+				"false": "Cette propriété n'a pas accèss a l'eau."
+			}
 		},
 
 		"description": {
