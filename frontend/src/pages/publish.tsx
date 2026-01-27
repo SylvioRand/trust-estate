@@ -505,7 +505,7 @@ const PublishPage: React.FC = () => {
               {t("section.main.tags.title")}
             </div>
           </div>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(105px,1fr))] grid-rows-1
+          <div className="flex flex-wrap
 					place-items-center gap-x-3 gap-y-6
 					w-full">
             {
