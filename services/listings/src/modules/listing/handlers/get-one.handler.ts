@@ -70,6 +70,7 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
       seller: sellerData,
       sellerStats: {
         totalListings: sellerStats?.totalListings || 0,
+        successfulRent: sellerStats?.successfulRents || 0,
         successfulSales: sellerStats?.successfulSales || 0,
         averageRating: sellerStats?.averageRating || 0
       },
