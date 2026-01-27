@@ -30,6 +30,12 @@ export async function updatePhoneNumberUser(app: FastifyInstance, userId: string
 		});
 		throw new Error("phone_exists");
 	}
+	const userExist = await app.prisma.user.findUnique({
+		where: {id: userId}
+	})
+
+	if (!userExist)
+		throw new Error("User not found");
 
 	const updatedUser = await app.prisma.user.update({
 		where: { id: userId },
@@ -215,7 +221,6 @@ export async function DeleteUser(app: FastifyInstance, userId: string, password:
 			})
 		]);
 	} catch (error: any) {
-		console.log("ERRROR ==========================");
 		app.log.error({ error, userId }, 'Failed to delete user data from other services');
 	}
 
