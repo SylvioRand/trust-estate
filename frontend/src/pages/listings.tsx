@@ -1,6 +1,6 @@
 import React, { useEffect, useState, type CSSProperties, type Dispatch, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { type ListingsData, dataExampleListingsData } from "../dataModel/modelListings";
 import { toast } from "react-toastify";
 import MyListingsView from "./my_listings_view";
@@ -54,10 +54,14 @@ const	ListingsPage: React.FC = () => {
 	const	[ searchParams ] = useSearchParams();
 	const	listingsID = searchParams.get("id");
 	const	[currentPictures, setCurrentPictures] = useState<number>(0);
+	const	navigate = useNavigate();
 
 	useEffect(() => {
 		const	fetchListingsData = async () => {
 			try {
+				if (listingsID === null)
+					navigate("/property");
+
 				const	response = await fetch(`/api/listings/${listingsID}`, {
 					method: "GET",
 					credentials: "include"
@@ -75,13 +79,14 @@ const	ListingsPage: React.FC = () => {
 			} catch (error) {
 				if (error instanceof Error && error.message !== "")
 					toast.error(`error:${error.message}`);
+				setTimeout(() => navigate("/property"), 1000);
 			}
 		}
 
-		// fetchListingsData();
+		fetchListingsData();
 
 		// NOTE: DEBUG
-		setFetchedData(dataExampleListingsData);
+		// setFetchedData(dataExampleListingsData);
 	}, []);
 
 	return (
