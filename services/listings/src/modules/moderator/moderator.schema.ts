@@ -6,9 +6,9 @@ export const FlaggedListingsQuerySchema = z.object({
   reportReason: z.enum(['fraud', 'duplicate', 'spam', 'incorrect_info', 'inappropriate']).optional()
 }).strict();
 
-export const AdminActionSchema = z.object({
+export const ModeratorActionSchema = z.object({
   action: z.enum(['block_temporary', 'archive_permanent', 'request_clarification', 'reject_reports']),
-  reason: z.string().min(5, { message: 'validation.admin.reason.too_short' }),
+  reason: z.string().min(5, { message: 'validation.moderator.reason.too_short' }),
   messageToSeller: z.string().optional(),
   internalNote: z.string().optional()
 }).strict();
@@ -24,17 +24,17 @@ export const ModerationActionSchema = z.object({
     "request_clarification",
     "reject_reports"
   ], {
-    message: "validation.admin.action.invalid"
+    message: "validation.moderator.action.invalid"
   }),
 
   reason: z.string()
-    .min(10, "validation.admin.reason.too_short")
-    .max(500, "validation.admin.reason.too_long"),
+    .min(10, "validation.moderator.reason.too_short")
+    .max(500, "validation.moderator.reason.too_long"),
   messageToSeller: z.string()
-    .max(1000, "validation.admin.message.too_long")
+    .max(1000, "validation.moderator.message.too_long")
     .optional(),
   internalNote: z.string()
-    .max(1000, "validation.admin.note.too_long")
+    .max(1000, "validation.moderator.note.too_long")
     .optional()
 }).strict();
 
@@ -46,7 +46,7 @@ export const ModerationActionsQuerySchema = z.object({
 }).strict();
 
 export type FlaggedListingsQuery = z.infer<typeof FlaggedListingsQuerySchema>;
-export type AdminAction = z.infer<typeof AdminActionSchema>;
+export type ModeratorAction = z.infer<typeof ModeratorActionSchema>;
 export type ListingPostParams = z.infer<typeof ListingPostParamsSchema>;
 export type ModerationActionData = z.infer<typeof ModerationActionSchema>;
 export type ModerationActionsQuery = z.infer<typeof ModerationActionsQuerySchema>;

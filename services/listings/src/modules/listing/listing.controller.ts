@@ -12,6 +12,7 @@ import { handleUpdateAvailability } from "./handlers/update-availability.handler
 import { handleMarkAsRealized } from "./handlers/mark-unvailable.handler";
 import { handleMakeAvailable } from "./handlers/make-available.handler";
 import { getAvailability } from "./handlers/get-availability.handler";
+import { handleConfirmReservation } from "./handlers/increment-reservation-stat.handler";
 
 export async function listingRoutes(app: FastifyInstance) {
   app.get("/health", async (req, reply) => reply.status(200).send({ status: "ok" }));
@@ -28,6 +29,5 @@ export async function listingRoutes(app: FastifyInstance) {
   app.post('/:id/report', { preHandler: (app as any).authenticate }, handleReport);
   app.post('/:id/availability', { preHandler: (app as any).authenticate }, handleUpdateAvailability);
   app.delete('/internal/user/data', { preHandler: (app as any).internalAuthenticate }, handleDeleteUserData);
-  //app.post('/listings/:listingId/events/reservation-confirmed', { preHandler: (app as any).internalAuthenticate }, handleConfirmReservation);
-
+  app.post('/listings/:listingId/events/reservation-confirmed', { preHandler: (app as any).internalAuthenticate }, handleConfirmReservation);
 }

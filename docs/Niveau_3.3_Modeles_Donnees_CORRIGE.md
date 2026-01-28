@@ -110,7 +110,7 @@ interface User {
 - `emailVerified` doit être `true` pour pouvoir se connecter (vérifié à l'inscription)
 - Réservation = utilisateur connecté (donc email déjà vérifié)
 - Un utilisateur peut être acheteur ET vendeur simultanément
-- `role: 'moderator'` → accès aux endpoints `/admin/*`
+- `role: 'moderator'` → accès aux endpoints `/moderator/*`
 - **Note API :** `creditBalance` injecté par l'API `/users/me` pour simplifier le frontend
 
 **Exemple :**
@@ -711,7 +711,7 @@ Report {
 
 **Règles :**
 - Un utilisateur ne peut signaler une annonce qu'une seule fois
-- Alimente le Dashboard Modérateur (`GET /admin/listings/flagged`)
+- Alimente le Dashboard Modérateur (`GET /moderator/listings/flagged`)
 
 ---
 

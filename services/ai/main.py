@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/01/27 09:51:33 by aelison          ###   ########.fr        #
+#    Updated: 2026/01/28 09:13:16 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -192,11 +192,9 @@ async def chatbot(text: RequestChat):
     try:
         llm_response = llm_service.generate_stream_response(formated, id_found, llm_service.generate_rules())
 
-        frag = next(llm_response)
-
-        def wrapper():
-            yield frag
-            yield from llm_response
+        async def wrapper():
+            async for content in llm_response:
+                yield content
 
         return StreamingResponse(wrapper(), media_type="text/plain")
 
