@@ -189,35 +189,35 @@ const PublishPage: React.FC = () => {
 	};
 
 	function AddTagsButton({ tags = "urgent", title = "Title" }: { tags: ListingsTags, title: string }) {
-	const [hovered, setHovered] = useState<boolean>(false);
+		const [hovered, setHovered] = useState<boolean>(false);
 
-	return (
-		<button
-		className="transition-colors duration-300
-				flex items-center justify-start
-				rounded-md
-				w-full
-				cursor-pointer
-				p-2"
-		type="button"
-		onPointerEnter={() => setHovered(true)}
-		onPointerLeave={() => setHovered(false)}
-		style={{
-			backgroundColor: hovered ? "var(--color-midtone)" : "transparent"
-		}}
-		onClick={() => {
-			if (!activeTags.find((value: ListingsTags) => value === tags, tags)) {
-			const newValue: ListingsTags[] = activeTags;
+		return (
+			<button
+			className="transition-colors duration-300
+					flex items-center justify-start
+					rounded-md
+					w-full
+					cursor-pointer
+					p-2"
+			type="button"
+			onPointerEnter={() => setHovered(true)}
+			onPointerLeave={() => setHovered(false)}
+			style={{
+				backgroundColor: hovered ? "var(--color-midtone)" : "transparent"
+			}}
+			onClick={() => {
+				if (!activeTags.find((value: ListingsTags) => value === tags, tags)) {
+				const newValue: ListingsTags[] = activeTags;
 
-			newValue.push(tags);
-			setActiveTags(newValue);
-			}
-			addTagsPopupRef.current?.close() // request a close call
-		}}
-		>
-		{title}
-		</button>
-	);
+				newValue.push(tags);
+				setActiveTags(newValue);
+				}
+				addTagsPopupRef.current?.close() // request a close call
+			}}
+			>
+			{title}
+			</button>
+		);
 	}
 
 	const refToDescription: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement | null>(null);

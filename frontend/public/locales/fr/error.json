@@ -143,7 +143,8 @@
 		"already_reported": "Cette annonce a déjà été signalée.",
 		"marked_as_sold": "Cette annonce a été marquée comme vendue.",
 		"marked_as_rented": "Cette annonce a été marquée comme louée.",
-		"made_available": "Cette annonce a été marquée comme disponible."
+		"made_available": "Cette annonce a été marquée comme disponible.",
+		"change_saved": "L'annonce a correctement été mis à jour."
 	},
 	"reservation": {
 		"slot_already_reserved": "Le créneau sélectionné est déjà réservé.",
