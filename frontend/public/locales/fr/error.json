@@ -1,12 +1,10 @@
 {
 	"ERROR": "Une erreur a malheureusement été rencontrée.",
-
 	"ai": {
 		"rate_limited_generate": "Vous avez atteint la limite de requêtes. Veuillez patienter un moment avant de réessayer.",
 		"success_generate": "Votre description a été améliorée avec succès.",
 		"not_enough_data": "La description fournie ne contient pas suffisamment d’informations pour être améliorée. Veuillez ajouter plus de détails et réessayer."
 	},
-
 	"common": {
 		"validation_failed": "Les données fournies sont invalides.",
 		"rate_limited": "Trop de requêtes. Veuillez réessayer plus tard.",
@@ -124,7 +122,7 @@
 				"invalid": "Le fournisseur de paiement est invalide."
 			}
 		},
-		"admin": {
+		"moderator": {
 			"action": {
 				"invalid": "L’action demandée est invalide."
 			},
@@ -169,14 +167,13 @@
 		"transaction_failed": "Le paiement a échoué. Veuillez vérifier votre solde Mobile Money.",
 		"rate_limited_recharge": "Trop de tentatives de recharge. Un maximum de trois par heure est autorisé."
 	},
-	"admin": {
+	"moderator": {
 		"forbidden": {
 			"moderator_only": "L’accès est réservé aux modérateurs."
 		},
 		"action_applied_successfully": "L’action a été appliquée avec succès et le vendeur a été notifié."
 	},
-	"global":
-	{
+	"global": {
 		"500": "Une erreur interne du serveur est survenue. Réessayez dans un instant."
 	}
 }
