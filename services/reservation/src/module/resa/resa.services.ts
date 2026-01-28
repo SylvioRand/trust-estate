@@ -352,7 +352,10 @@ export async function getSlot(app: FastifyInstance, listingId: string, slot: Dat
                             gte: slotStart,
                             lte: slotEnd
                         }
-                    }
+                    },
+					{
+						status: { in: ['confirmed'] }
+					}
                 ]
             }
         });
