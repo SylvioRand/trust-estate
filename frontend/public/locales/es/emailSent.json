@@ -1,0 +1,36 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+
+	"header": {
+		"title": "Comprueba tu correo electrónico.",
+		"subtitle": "Se ha enviado un enlace de verificación a su dirección de correo electrónico para proteger y confirmar su cuenta."
+	},
+
+	"steps": {
+		"one": "Acceda a su bandeja de entrada.",
+		"two": "Busque el correo electrónico de CASA que contiene el enlace de verificación.",
+		"three": "Haga clic en el enlace de verificación proporcionado.",
+		"four": "Vuelve aquí e inicia sesión en tu cuenta."
+	},
+
+	"buttons": {
+		"resendEmail": {
+			"title": "Reenviar",
+			"success": "Se ha enviado un enlace de verificación a su dirección de correo electrónico.",
+			"timeLeft": "Podrá reenviar un enlace después de la cuenta atrás: ",
+			"error": {
+				"invalidOrExpiredToken": "Tu ficha no es válida o ha caducado."
+			}
+		},
+
+		"logOut": {
+			"title": "Desconectarse"
+		}
+	},
+
+	"actions": {
+		"back": "Volver a la conexión"
+	}
+}
