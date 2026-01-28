@@ -1,16 +1,16 @@
 export type ListingsTags = "urgent" | "exclusive" | "discount";
 
-// import house0 from "../images/house0.webp";
-// import house1 from "../images/house1.webp";
-// import house2 from "../images/house2.webp";
-// import house3 from "../images/house3.webp";
-// import house4 from "../images/house4.webp";
+import house0 from "../images/house0.webp";
+import house1 from "../images/house1.webp";
+import house2 from "../images/house2.webp";
+import house3 from "../images/house3.webp";
+import house4 from "../images/house4.webp";
 
-const	house0: string = "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?q=80&w=1465&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-const	house1: string = "https://images.unsplash.com/photo-1627141234469-24711efb373c?q=80&w=1469&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-const	house2: string = "https://images.unsplash.com/photo-1543071293-d91175a68672?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-const	house3: string = "https://images.unsplash.com/photo-1698994705178-d244d73ea573?q=80&w=802&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-const	house4: string = "https://images.unsplash.com/photo-1691425700585-c108acad6467?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+// const	house0: string = "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?q=80&w=1465&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+// const	house1: string = "https://images.unsplash.com/photo-1627141234469-24711efb373c?q=80&w=1469&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+// const	house2: string = "https://images.unsplash.com/photo-1543071293-d91175a68672?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+// const	house3: string = "https://images.unsplash.com/photo-1698994705178-d244d73ea573?q=80&w=802&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+// const	house4: string = "https://images.unsplash.com/photo-1691425700585-c108acad6467?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
 export type SellerStatsDataType = {
 	successfulSales: number,
@@ -93,7 +93,7 @@ export const	dataExampleListingsData: ListingsData = {
 		electricity_access: false
 	},
 	status: "active",
-	isAvailable: false,
+	isAvailable: true,
 	sellerVisible: false,
 	seller: {
 		id: "",

@@ -9,6 +9,14 @@
 	"viewDetails": "Voir les détails",
 	"areaUnit": "m2",
 
+	"status": {
+		"active": "Actif",
+		"archived": "Archivée",
+		"blocked": "Bloquée",
+		"available": "Disponible",
+		"unavailable": "Indisponible"
+	},
+
 	"section": {
 		"header": {
 			"propertyType": {
@@ -89,7 +97,58 @@
 		
 		"actionButton": {
 			"popup": {
-				"title": "Action de l'annonce"
+				"title": "Action de l'annonce",
+				"edit": {
+					"title": "Modifier"
+				},
+				"archive": {
+					"title": "Archiver",
+					"popup": {
+						"title": "Archiver annonce",
+						"warning": "L’archivage de cette annonce est définitif et ne peut pas être annulé. Une fois archivée, l’annonce sera retirée de la vue publique et il ne sera pas possible de la restaurer. Veuillez vous assurer que vous souhaitez vraiment archiver cette annonce avant de continuer.",
+						"continue": "Archiver l'annonce",
+						"success": "L'annonce à été placée dans les archives."
+					}
+				},
+				"mark": {
+					"sold": {
+						"title": "Marquer comme vendu",
+						"warning": "Marquer cette propriété comme vendue est définitif et ne peut pas être annulé.",
+						"continue": "Marquer"
+					},
+					"rented": {
+						"title": "Marquer comme louée",
+						"warning": "Marquer cette propriété comme louée peut être annulé ultérieurement si nécessaire.",
+						"continue": "Marquer"
+					}
+				},
+				"unmark": {
+					"title": "Marquer comme disponible",
+					"popup": {
+						"title": "Marquer comme disponible",
+						"warning": "Marquer cette annonce comme disponible à nouveau la rendra visible pour les autres utilisateurs. Une fois réactivée, la propriété apparaîtra dans les résultats de recherche et pourra être consultée et contactée par les utilisateurs intéressés.",
+						"continue": "Continuer"
+					}
+				},
+				"report": {
+					"title": "Signaler",
+					"popup": {
+						"title": "Signaler l'annonce",
+						"reason": {
+							"title": "Raison",
+							"fraud": "Fraude",
+							"spam": "Spam",
+							"incorrect_info": "Information incorrecte",
+							"inappropriate": "Inapproprié"
+						},
+						"comment": {
+							"title": "Commentaire",
+							"placeholder": "Entrer votre commentaire ici."
+						},
+						"warning": "Signaler une annonce vous permet d’alerter notre équipe de modération concernant un contenu qui pourrait être inexact, inapproprié ou ne pas respecter nos règles.",
+						"submit": "Envoyer"
+					}
+				}
 			}
 		},
 

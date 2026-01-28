@@ -1,10 +1,17 @@
 import type { TFunction } from "i18next";
 import type { ListingsData } from "../dataModel/modelListings";
 import { ListingsFeaturesAndEquipment, ListingsHeader } from "./my_listings_view";
+import { useRef, useState, type Dispatch, type FormEvent, type MutableRefObject, type RefObject, type SetStateAction } from "react";
+import PopUp, { type PopUpAPI } from "../components/PopUp";
+import TextArea from "../components/TextArea";
+import ActionButton from "../components/ActionButton";
+import InputEnum from "../components/InputEnum";
+import { toast } from "react-toastify";
 
 export interface	ListingsViewProps {
 	fetchedData: ListingsData;
-	t: TFunction<["listings", "error", "common"]>
+	setFetchedData: Dispatch<SetStateAction<ListingsData | null>>;
+	t: TFunction<["listings", "error", "common"]>;
 }
 
 interface	SellerStatsProps {
@@ -42,14 +49,58 @@ const	SellerStats: React.FC<SellerStatsProps> = ({
 
 const	ClientListingsView: React.FC<ListingsViewProps> = ({
 	fetchedData,
+	setFetchedData,
 	t
 }) => {
-
+	const	refToComment: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement>(null);
+	const	refPopUpReport: RefObject<PopUpAPI | null> = useRef<PopUpAPI>(null);
+	const	[arePopUpReportOpen, setArePopUpReportOpen] = useState<boolean>(false);
+	const	[processingReport, setProcessingReport] = useState<boolean>(false);
 	const	sellerStats: string[] = [
 		"successfulSales",
 		"successfulRent",
 		"averageRating",
 	];
+
+	const	handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		setProcessingReport(true);
+		const	formData = new FormData(e.currentTarget);
+		const	data = Object.fromEntries(formData.entries());
+		
+		try {
+			const	response = await fetch(`/api/listings/${fetchedData.id}/report`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				credentials: "include",
+				body: JSON.stringify(data)
+			})
+
+			const	responseData = await response.json();
+
+			if (response.ok)
+				toast.success(t(`error:${responseData.message}`))
+			else
+			{
+				if (responseData.details) {
+					const details: Record<string, string[]> = responseData.details as Record<string, string[]>;
+					
+					for (const [key, value] of Object.entries(details)) {
+						for (let i = 0; i < value.length; i++)
+							toast.error(t(`error:${value[i]}`));
+					}
+				}
+			}
+		} catch (error) {
+			if (error instanceof Error && error.message !== "")
+				toast.error(t(`error:${error.message}`));
+		} finally {
+			setProcessingReport(false);
+			refPopUpReport.current?.close();
+		}
+	}
 
 	return (
 		<div
@@ -57,11 +108,19 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 		w-full h-full"
 		>
 			<ListingsHeader
+			postMenuContent={[
+				{
+					icon: "",
+					title: t("section.actionButton.popup.report.title"),
+					func: () => setArePopUpReportOpen(true)
+				}
+			]}
 			fetchedData={ fetchedData }
 			t={ t }
 			/>
 			<ListingsFeaturesAndEquipment
 			fetchedData={ fetchedData }
+			setFetchedData={ setFetchedData }
 			t={ t }
 			/>
 			<div
@@ -100,6 +159,59 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 				}
 			</div>
 
+			{
+				arePopUpReportOpen && <PopUp
+				title={ t("section.actionButton.popup.report.popup.title") }
+				onClose={ () => setArePopUpReportOpen(false) }
+				ref={ refPopUpReport }
+				>
+					<div>
+						{ t("section.actionButton.popup.report.popup.warning") }
+					</div>
+
+					<form
+					className="flex flex-col items-center justify-center
+					gap-3
+					w-full"
+					onSubmit={ handleOnSubmit }
+					>
+						<InputEnum
+						title={ t("section.actionButton.popup.report.popup.reason.title") }
+						name="reason"
+						dataEnum={[
+							{ value: "fraud", title: t("section.actionButton.popup.report.popup.reason.fraud") },
+							{ value: "spam", title: t("section.actionButton.popup.report.popup.reason.spam") },
+							{ value: "incorrect_info", title: t("section.actionButton.popup.report.popup.reason.incorrect_info") },
+							{ value: "inappropriate", title: t("section.actionButton.popup.report.popup.reason.inappropriate") }
+						]}
+						/>
+						<TextArea
+						ref={ refToComment }
+						title={t("section.actionButton.popup.report.popup.comment.title")}
+						name="comment"
+						placeholder={t("section.actionButton.popup.report.popup.comment.placeholder")}
+						minLength={50}
+						maxLength={2000}
+						rows={3}
+						/>
+						<div
+						className="grid grid-cols-2 grid-rows-1 gap-3
+						w-full"
+						>
+							<ActionButton
+							title={ t("common:cancel") }
+							onClick={ () => refPopUpReport.current?.close() }
+							/>
+							<ActionButton
+							title={ t("section.actionButton.popup.report.popup.submit") }
+							type="submit"
+							base_color="var(--color-accent)"
+							processing_action={ processingReport }
+							/>
+						</div>
+					</form>
+				</PopUp>
+			}
 			<div className="w-full h-10 flex-none"></div>
 		</div>
 	)

@@ -9,5 +9,6 @@
 	"digitOnly": "Seuls les chiffres sont autorisés",
 	"minBiggerMax": "Min ne peut pas être plus grand que max",
 	"maxSmallerMin": "Max ne peut pas être plus petit que min",
-	"month": "Par Mois"
+	"month": "Par Mois",
+	"cancel": "Annuler"
 }

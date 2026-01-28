@@ -59,6 +59,15 @@
 	--animate-random-translation: random_translation 60s ease-in-out infinite;
 }
 
+/* summary {
+	all: unset;
+}
+
+summary::-webkit-details-marker,
+summary::marker {
+	display: none;
+} */
+
 /* width */
 ::-webkit-scrollbar {
   width: 5px;
