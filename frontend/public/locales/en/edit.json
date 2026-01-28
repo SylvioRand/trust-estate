@@ -1,0 +1,98 @@
+{
+	"tags": {
+		"title": "Tags",
+		"add": {
+			"title": "Add Tag",
+			"popup": {
+				"title": "Add a tag",
+				"value": {
+					"urgent": "Urgent",
+					"exclusive": "Exclusive",
+					"discount": "Discount"
+				}
+			}
+		}
+	},
+	"buttons": {
+		"goBackToListing": "Back to listing",
+		"save": "Save"
+	},
+	"form": {
+		"title": {
+			"title": "Title",
+			"placeholder": "Title of your post"
+		},
+		"description": {
+			"title": "Description",
+			"placeholder": "Leave a description about the house",
+			"buttons": {
+				"enhance": "Enhance with IA"
+			}
+		},
+		"price": {
+			"title": "Price",
+			"placeholder": "Price in Ariary"
+		},
+		"area": {
+			"title": "Area",
+			"placeholder": "Area in foot square(M2)"
+		},
+		"wc": {
+			"title": "Toilet"
+		},
+		"propertyType": {
+			"title": "Type of property",
+			"apartment": "Apartment",
+			"house": "House",
+			"loft": "Loft",
+			"land": "Land",
+			"commercial": "Commercial"
+		},
+		"zone": {
+			"title": "Location"
+		},
+		"type": {
+			"title": "Type of contract",
+			"sale": "Sale",
+			"rent": "Rent"
+		},
+		"bedrooms": {
+			"title": "Bedrooms",
+			"placeholder": "Number of bedroom"
+		},
+		"bathrooms": {
+			"title": "Bathrooms",
+			"placeholder": "Number of bathroom"
+		},
+		"wc_separate": {
+			"title": "Toilet Separate"
+		},
+		"pool": {
+			"title": "Pool"
+		},
+		"parking_type": {
+			"title": "Parking",
+			"none": {
+				"title": "No"
+			},
+			"garage": {
+				"title": "Garage"
+			},
+			"box": {
+				"title": "Box"
+			},
+			"parking": {
+				"title": "Parking"
+			}
+		},
+		"garden_private": {
+			"title": "Garden"
+		},
+		"water_access": {
+			"title": "Water"
+		},
+		"electricity_access": {
+			"title": "Electricity"
+		}
+	}
+}
