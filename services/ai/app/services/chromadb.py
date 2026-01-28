@@ -6,10 +6,11 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated: 2026/01/27 09:54:59 by aelison          ###   ########.fr        #
+#    Updated: 2026/01/28 10:30:55 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+from typing import Collection
 import chromadb
 import json
 import re
@@ -143,25 +144,33 @@ class ChromadbService:
             print(f"Error deleting data in collection {e}")
         return False
 
-    async def query_in_collection(self, collection_name, text, nb_result=10, filters=None):
+    async def query_in_collection(self, collection_name, text, nb_result=10, filters=None, id_ref=None):
         to_find = self.collections.get(collection_name)
         parse_filters = None
 
         if not to_find:
             return False
-        if filters:
+        if filters and not id_ref:
             if len(filters) > 1:
                 parse_filters = {
                     "$and": [{key: value} for key, value in filters.items()]
                 }
             if len(filters) == 1:
                 parse_filters = filters
-
-        embedding_format = embeddingService.generate_embedding(text)
+        embedding_format = ""
+        if id_ref:
+            target_ref = await self.collections[collection_name].get(
+                    ids=[id_ref],
+                    include=['embeddings']
+            )
+            embedding_format = target_ref['embeddings'][0]
+            parse_filters = { "id": {"$ne": id_ref}}
+        else:
+            embedding_format = embeddingService.generate_embedding(text)
         result = await self.collections[collection_name].query(
-            query_embeddings=[embedding_format],
-            n_results=nb_result,
-            where=parse_filters
+        query_embeddings=[embedding_format],
+        n_results=nb_result,
+        where=parse_filters
         )
         return result
 
@@ -208,14 +217,14 @@ class ChromadbService:
         """
         return prompt
 
-    async def get_query(self, user_mssg, llm_service, sys_prompt):
+    async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
         llm_parse_response = llm_service.generate_bloc_response(user_mssg, sys_prompt)
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}
         search_text = datas.get("search_text", user_mssg)
         filters = datas.get("filters", None)
-        result = await self.query_in_collection("posts", search_text, 5, filters)
+        result = await self.query_in_collection("posts", search_text, 3, filters, id_ref)
 
         relevant_data = [
                 (id, doc, meta, score)

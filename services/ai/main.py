@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/01/28 09:13:16 by aelison          ###   ########.fr        #
+#    Updated: 2026/01/28 10:31:04 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -178,15 +178,15 @@ async def chatbot(text: RequestChat):
     context = None
     chroma_reply = None
 
-    #Debug: show all the data inside collection post
-    # await chromadb_service.get_all_in_collection("posts")
     if text.context and len(text.context) > 0:
         context = text.context
 
     if not context:
         chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt)
     else:
-        chroma_reply = await chromadb_service.get_post_in_collection("posts", context)
+        chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt, context)
+        # chroma_reply = await chromadb_service.get_post_in_collection("posts", context)
+    print(f"Here is the chroma replyyyyy = {chroma_reply}")
     formated = format_chroma_response(user_mssg, chroma_reply)
     id_found = chromadb_service.get_ids_from_query(chroma_reply)
     try:
