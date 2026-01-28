@@ -13,35 +13,37 @@ import { userRegister } from "./modules/user/user.module";
 const dir = "../../.env";
 
 try {
-  dotenv.config({ path: dir });
+	dotenv.config({ path: dir });
 } catch (error: any) {
-  console.log(error);
-};
+	const tmpServer = fastify({ logger: true });
+	tmpServer.log.error(error);
+	process.exit(1);
+}
 
 const options = {
-  confKey: 'config',
-  schema: envSchema,
-  dotenv: true,
-  data: process.env
+	confKey: 'config',
+	schema: envSchema,
+	dotenv: true,
+	data: process.env
 };
 
 const server = fastify({
-  logger: true,
-  ajv: {
-    customOptions: {
-      allErrors: true
-    },
-    plugins: [ajvErrors]
-  }
+	logger: true,
+	ajv: {
+		customOptions: {
+		allErrors: true
+		},
+		plugins: [ajvErrors]
+	}
 });
 
 await server.register(fastifyCors, {
-  origin: ['http://127.0.0.1:3001', 'http://127.0.0.1:5500', 'http://localhost:5500'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['X-Total-Count'],
-  credentials: true,
-  maxAge: 600
+	origin: ['http://127.0.0.1:3001', 'http://127.0.0.1:5500', 'http://localhost:5500'],
+	methods: ['GET', 'POST', 'PUT', 'DELETE'],
+	allowedHeaders: ['Content-Type', 'Authorization'],
+	exposedHeaders: ['X-Total-Count'],
+	credentials: true,
+	maxAge: 600
 });
 
 await setErrorHandler(server);
@@ -53,24 +55,24 @@ await authRegister(server);
 await userRegister(server);
 
 server.get("/health", async (req: FastifyRequest, reply: FastifyReply) => {
-  return reply.status(200).send({ status: "ok" });
+	return reply.status(200).send({ status: "ok" });
 });
 
 server.get("/api/auth", async (req: FastifyRequest, reply: FastifyReply) => {
-  return reply.status(200).send("Bonjour depuis auth");
+	return reply.status(200).send("Bonjour depuis auth");
 });
 
 const start = async () => {
-  try {
-    await server.listen({
-      port: parseInt(server.config.PORT_AUTH_SERVICE || '3001'),
-      host: '0.0.0.0'
-    });
+	try {
+		await server.listen({
+		port: parseInt(server.config.PORT_AUTH_SERVICE || '3001'),
+		host: '0.0.0.0'
+		});
 
-  } catch (error: any) {
-    server.log.error(error);
-    process.exit(1);
-  }
+	} catch (error: any) {
+		server.log.error(error);
+		process.exit(1);
+	}
 };
 
 start();

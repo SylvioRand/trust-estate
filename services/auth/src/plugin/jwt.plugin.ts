@@ -93,7 +93,6 @@ export async function verifyAccessToken(
 				privateKey,
 				cookieOptions
 			);
-			console.log(user);
 
 			if (user) {
 				return user;

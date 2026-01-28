@@ -10,6 +10,11 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
     const { id } = GetOneParamsSchema.parse(request.params);
     const { listing, sellerStats } = await ListingService.getOne(id);
 
+    // Increment view count (fire and forget - don't wait for it)
+    ListingService.incrementViews(id).catch(err =>
+      console.error('Failed to increment views:', err)
+    );
+
     const currentUser = (request as any).user;
     const isMine = currentUser?.id === listing.sellerId;
     let confirmedReservation = false;
@@ -65,9 +70,14 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
       seller: sellerData,
       sellerStats: {
         totalListings: sellerStats?.totalListings || 0,
+        successfulRent: sellerStats?.successfulRents || 0,
         successfulSales: sellerStats?.successfulSales || 0,
         averageRating: sellerStats?.averageRating || 0
       },
+      stats: isMine && listing.stats ? {
+        views: listing.stats.views,
+        reservations: listing.stats.reservations,
+      } : {},
       createdAt: listing.createdAt.toISOString(),
       updatedAt: listing.updatedAt.toISOString()
     };

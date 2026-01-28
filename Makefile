@@ -67,6 +67,7 @@ up: certs
 down:
 	@echo "🛑 Stopping services..."
 	$(DOCKER_COMPOSE) down
+	docker image prune -f
 
 # Clean everything (containers, images, volumes)
 clean:
@@ -103,7 +104,7 @@ reload-nginx:
 
 reload-reservation:
 	@echo "🔄 Reloading reservation service..."
-	$(DOCKER_COMPOSE) up -d --build reservation
+	$(DOCKER_COMPOSE) up -d --build reservations-service
 
 reload-credits:
 	@echo "🔄 Reloading credits service..."
@@ -117,7 +118,9 @@ reload-chromadb:
 	@echo "🔄 Reloading chromadb service..."
 	$(DOCKER_COMPOSE) up -d --build chromadb-service
 
-
+reload-auth:
+	@echo "🔄 Reloading chromadb service..."
+	$(DOCKER_COMPOSE) up -d --build auth-service
 
 # Show which docker compose command is being used
 check:

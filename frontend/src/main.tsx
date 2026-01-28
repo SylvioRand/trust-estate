@@ -22,55 +22,55 @@ import PublishPage from './pages/publish.tsx';
 import SellerSlotsPage from './pages/seller_slots.tsx';
 import SettingsPage from './pages/settings.tsx';
 import ProfilePage from './pages/profile.tsx';
-import AIPage from './pages/ai.tsx';
+import AICopyPage from './pages/ai_copy.tsx';
 import BuyerSlotsPage from './pages/buyer_slots.tsx';
 import TermOfServicePage from './pages/term_of_service.tsx';
 import PrivacyPolicyPage from './pages/privacy_policy.tsx';
 
 const router = createBrowserRouter([
-	{
-		element: <MainLayout />,
-		children: [
-			{
-				path: "/sign-in",
-				element: <SignInPage />
-			},
-			{
-				path: "/sign-up",
-				element: <SignUpPage />
-			},
-			{
-				path: "/sign-in/forgot-pass",
-				element: <ForgotPassPage />
-			},
-			{
-				path: "/sign-in/reset-password",
-				element: <ResetPassPage />
-			},
-			{
-				path: "/welcome",
-				element: <WelcomePage />
-			},
-			{
-				path: "/property/listings",
-				element: <ListingsPage />
-			},
-			{
-				path: "/profile/publish",
-				element: <PublishPage/>
-			},
-			{
-				path: "/email-sent",
-				element: <EmailSentPage />
-			},
-			{
-				path: "/verify-email",
-				element: <VerifyEmailPage />
-			},
-			{
-				path: "/add-phone",
-				element: <AddPhonePage />
-			},
+  {
+    element: <MainLayout />,
+    children: [
+      {
+        path: "/sign-in",
+        element: <SignInPage />
+      },
+      {
+        path: "/sign-up",
+        element: <SignUpPage />
+      },
+      {
+        path: "/sign-in/forgot-pass",
+        element: <ForgotPassPage />
+      },
+      {
+        path: "/sign-in/reset-password",
+        element: <ResetPassPage />
+      },
+      {
+        path: "/welcome",
+        element: <WelcomePage />
+      },
+      {
+        path: "/property/listings",
+        element: <ListingsPage />
+      },
+      {
+        path: "/profile/publish",
+        element: <PublishPage />
+      },
+      {
+        path: "/email-sent",
+        element: <EmailSentPage />
+      },
+      {
+        path: "/verify-email",
+        element: <VerifyEmailPage />
+      },
+      {
+        path: "/add-phone",
+        element: <AddPhonePage />
+      },
 
 			{
 				path: "/home",
@@ -82,7 +82,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/ai",
-				element: <AIPage />
+				element: <AICopyPage />
 			},
 			{
 				path: "/profile",
@@ -117,11 +117,11 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-	<React.StrictMode>
-		<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-			<DataProvider>
-				<RouterProvider router={router} />
-			</DataProvider>
-		</GoogleOAuthProvider>
-	</React.StrictMode>,
+  <React.StrictMode>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <DataProvider>
+        <RouterProvider router={router} />
+      </DataProvider>
+    </GoogleOAuthProvider>
+  </React.StrictMode>,
 );

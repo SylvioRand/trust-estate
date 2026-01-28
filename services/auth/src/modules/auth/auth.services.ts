@@ -136,7 +136,7 @@ export async function verifyTokenEmail(app: FastifyInstance, token: string) {
 	});
 
 	if (!verificationToken)
-		throw new Error("Invalid or expired verification token");
+		throw new Error("invalid_or_expired_token");
 
 	const user = await app.prisma.$transaction(async (prisma: any) => {
 		await prisma.user.update({

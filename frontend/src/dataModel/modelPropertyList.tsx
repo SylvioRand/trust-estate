@@ -2,28 +2,28 @@ import house0 from "../../src/images/house0.webp";
 import house1 from "../../src/images/house1.webp";
 import house2 from "../../src/images/house2.webp";
 import house3 from "../../src/images/house3.webp";
-import type { ListingsTags } from "./modelListings";
+import type { ListingsTags, PropertyType } from "./modelListings";
 
 export type ListingType = "sale" | "rent"
 
+export type PropertyDataType = {
+	id: number,
+	title: string,
+	price: number,
+	type: ListingType,
+	propertyType: PropertyType,
+	mine: boolean,
+	zone: string,
+	surface: number,
+	photos: string[],
+	status: boolean,
+	isAvailable: boolean,
+	tags: ListingsTags[],
+	createdAt: string,
+}
+
 export interface ListingsProps {
-	data: [
-		{
-			id: number,
-			title: string,
-			price: number,
-			type: ListingType,
-			zone: string,
-			zoneDisplay: string,
-			surface: number,
-			photos: string[],
-			status: boolean,
-			isAvailable: boolean,
-			tags: ListingsTags[],
-			createdAt: string,
-			expiresAt: string
-		}
-	],
+	data: PropertyDataType[],
 	pagination: {
 		page: number,
 		limit: number,
@@ -32,222 +32,30 @@ export interface ListingsProps {
 	}
 }
 
-export const	listData: ListingsProps[] = [
+export const	listData: ListingsProps = {
+	data: [
 		{
-			data: [
-				{
-					id: 0,
-					title: "Maison T3",
-					price: 50000000,
-					type: "rent",
-					zone: "tana-analakely",
-					zoneDisplay: "Antananarivo - Analakely",
-					surface: 120,
-					photos: [
-						house0
-					],
-					status: true,
-					isAvailable: true,
-					tags: ["urgent"],
-					createdAt: "2025-01-10T08:00:00Z",
-					expiresAt: "2025-02-09T08:00:00Z"
-				}
+			id: 0,
+			title: "Maison T3",
+			price: 50000000,
+			type: "rent",
+			propertyType: "apartment",
+			zone: "Ambalavao-Isotry",
+			surface: 120,
+			mine: true,
+			photos: [
+				house0
 			],
-			pagination: {
-				page: 1,
-				limit: 20,
-				total: 45,
-				totalPages: 3
-			}
-		},
-		{
-			data: [
-				{
-					id: 0,
-					title: "Villa T4",
-					price: 150000000,
-					type: "sale",
-					zone: "tana-analakely",
-					zoneDisplay: "Antananarivo - Analakely",
-					surface: 120,
-					photos: [
-						house1
-					],
-					status: true,
-					isAvailable: true,
-					tags: ["exclusive"],
-					createdAt: "2025-01-10T08:00:00Z",
-					expiresAt: "2025-02-09T08:00:00Z"
-				}
-			],
-			pagination: {
-				page: 1,
-				limit: 20,
-				total: 45,
-				totalPages: 3
-			}
-		},
-		{
-			data: [
-				{
-					id: 0,
-					title: "Appartment T4",
-					price: 150000000,
-					type: "rent",
-					zone: "tana-analakely",
-					zoneDisplay: "Antananarivo - Ambatobe",
-					surface: 120,
-					photos: [
-						house2
-					],
-					status: true,
-					isAvailable: true,
-					tags: ["urgent", "exclusive", "discount"],
-					createdAt: "2025-01-10T08:00:00Z",
-					expiresAt: "2025-02-09T08:00:00Z"
-				}
-			],
-			pagination: {
-				page: 1,
-				limit: 20,
-				total: 45,
-				totalPages: 3
-			}
-		},
-		{
-			data: [
-				{
-					id: 0,
-					title: "Villa T4",
-					price: 100000000,
-					type: "sale",
-					zone: "tana-ivato",
-					zoneDisplay: "Antananarivo - Ivato",
-					surface: 120,
-					photos: [
-						house3
-					],
-					status: true,
-					isAvailable: true,
-					tags: ["urgent", "exclusive", "discount"],
-					createdAt: "2025-01-10T08:00:00Z",
-					expiresAt: "2025-02-09T08:00:00Z"
-				}
-			],
-			pagination: {
-				page: 1,
-				limit: 20,
-				total: 45,
-				totalPages: 3
-			}
-		},
-		{
-			data: [
-				{
-					id: 0,
-					title: "Maison T3",
-					price: 50000000,
-					type: "rent",
-					zone: "tana-analakely",
-					zoneDisplay: "Antananarivo - Analakely",
-					surface: 120,
-					photos: [
-						house0
-					],
-					status: true,
-					isAvailable: true,
-					tags: ["urgent", "exclusive"],
-					createdAt: "2025-01-10T08:00:00Z",
-					expiresAt: "2025-02-09T08:00:00Z"
-				}
-			],
-			pagination: {
-				page: 1,
-				limit: 20,
-				total: 45,
-				totalPages: 3
-			}
-		},
-		{
-			data: [
-				{
-					id: 0,
-					title: "Villa T4",
-					price: 150000000,
-					type: "sale",
-					zone: "tana-analakely",
-					zoneDisplay: "Antananarivo - Analakely",
-					surface: 120,
-					photos: [
-						house1
-					],
-					status: true,
-					isAvailable: true,
-					tags: ["urgent"],
-					createdAt: "2025-01-10T08:00:00Z",
-					expiresAt: "2025-02-09T08:00:00Z"
-				}
-			],
-			pagination: {
-				page: 1,
-				limit: 20,
-				total: 45,
-				totalPages: 3
-			}
-		},
-		{
-			data: [
-				{
-					id: 0,
-					title: "Appartment T4",
-					price: 150000000,
-					type: "rent",
-					zone: "tana-analakely",
-					zoneDisplay: "Antananarivo - Ambatobe",
-					surface: 120,
-					photos: [
-						house2
-					],
-					status: true,
-					isAvailable: true,
-					tags: ["discount"],
-					createdAt: "2025-01-10T08:00:00Z",
-					expiresAt: "2025-02-09T08:00:00Z"
-				}
-			],
-			pagination: {
-				page: 1,
-				limit: 20,
-				total: 45,
-				totalPages: 3
-			}
-		},
-		{
-			data: [
-				{
-					id: 0,
-					title: "Villa T4",
-					price: 100000000,
-					type: "sale",
-					zone: "tana-ivato",
-					zoneDisplay: "Antananarivo - Ivato",
-					surface: 120,
-					photos: [
-						house3
-					],
-					status: true,
-					isAvailable: true,
-					tags: [],
-					createdAt: "2025-01-10T08:00:00Z",
-					expiresAt: "2025-02-09T08:00:00Z"
-				}
-			],
-			pagination: {
-				page: 1,
-				limit: 20,
-				total: 45,
-				totalPages: 3
-			}
+			status: true,
+			isAvailable: true,
+			tags: ["urgent"],
+			createdAt: "2025-01-10T08:00:00Z",
 		}
-	]
-
+	],
+	pagination: {
+		page: 1,
+		limit: 20,
+		total: 45,
+		totalPages: 3
+	}
+}

@@ -1089,9 +1089,9 @@ GET /listings
 - `limit` : number (défaut: 20, max: 100)
 
 **Exemple :**
-```
-```
+```http
 GET /listings?type=sale&zone=tana-analakely&minPrice=10000000&maxPrice=100000000&page=1&limit=20
+```
 
 **Response 200 :**
 ```json

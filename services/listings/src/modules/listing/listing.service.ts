@@ -103,16 +103,51 @@ export class ListingService {
     if (query.propertyType) where.propertyType = query.propertyType;
     if (query.zone) where.zone = query.zone;
 
-    if (query.minPrice || query.maxPrice) {
+    if (query.minPrice !== undefined || query.maxPrice !== undefined) {
       where.price = {};
-      if (query.minPrice) where.price.gte = query.minPrice;
-      if (query.maxPrice) where.price.lte = query.maxPrice;
+      if (query.minPrice !== undefined) where.price.gte = query.minPrice;
+      if (query.maxPrice !== undefined) where.price.lte = query.maxPrice;
     }
 
-    if (query.minSurface || query.maxSurface) {
+    if (query.minSurface !== undefined || query.maxSurface !== undefined) {
       where.surface = {};
-      if (query.minSurface) where.surface.gte = query.minSurface;
-      if (query.maxSurface) where.surface.lte = query.maxSurface;
+      if (query.minSurface !== undefined) where.surface.gte = query.minSurface;
+      if (query.maxSurface !== undefined) where.surface.lte = query.maxSurface;
+    }
+
+    // Features filters
+    const features: any = {};
+
+    if (query.minBedRoom !== undefined || query.maxBedRoom !== undefined) {
+      features.bedrooms = {};
+      if (query.minBedRoom !== undefined) features.bedrooms.gte = query.minBedRoom;
+      if (query.maxBedRoom !== undefined) features.bedrooms.lte = query.maxBedRoom;
+    }
+
+    if (query.minBathRoom !== undefined || query.maxBathRoom !== undefined) {
+      features.bathrooms = {};
+      if (query.minBathRoom !== undefined) features.bathrooms.gte = query.minBathRoom;
+      if (query.maxBathRoom !== undefined) features.bathrooms.lte = query.maxBathRoom;
+    }
+
+    if (query.parkingType && query.parkingType.length > 0) {
+      features.parking_type = {
+        in: query.parkingType
+      };
+    }
+    if (query.waterAccess !== undefined) features.water_access = query.waterAccess;
+    if (query.electricityAccess !== undefined) features.electricity_access = query.electricityAccess;
+    if (query.pool !== undefined) features.pool = query.pool;
+    if (query.gardenPrivate !== undefined) features.garden_private = query.gardenPrivate;
+
+    if (Object.keys(features).length > 0) {
+      where.features = features;
+    }
+
+    if (query.tags && query.tags.length > 0) {
+      where.tags = {
+        hasSome: query.tags
+      };
     }
 
     const [listings, countMatching] = await Promise.all([
@@ -240,6 +275,15 @@ export class ListingService {
     return { listing, sellerStats };
   }
 
+  static async incrementViews(id: string) {
+    await prisma.listingStats.updateMany({
+      where: { listingId: id },
+      data: {
+        views: { increment: 1 }
+      }
+    });
+  }
+
   static async deleteUserData(userId: string) {
     return await prisma.$transaction(async (tx) => {
       await tx.report.deleteMany({
@@ -354,5 +398,20 @@ export class ListingService {
     }
 
     return listing;
+  }
+
+
+  static async incrementReservationStat(listingId: string) {
+    const stats = await prisma.listingStats.findUnique({
+      where: { listingId }
+    });
+
+    if (!stats) {
+      throw new Error('listing.stats_not_found');
+    }
+    await prisma.listingStats.update({
+      where: { listingId: listingId },
+      data: { reservations: { increment: 1 } }
+    })
   }
 }
