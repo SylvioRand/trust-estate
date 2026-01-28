@@ -9,5 +9,7 @@ export async function feedbackRoutes(app: FastifyInstance) {
 			schema: FeedbackSchema,
 			preHandler: app.authentication
 		}, feedbackController.postFeedback);
-	// app.get("/feedback/mine", )
+	app.get("/feedback/mine", {
+		preHandler: app.authentication
+	}, feedbackController.getFeedback);
 }
