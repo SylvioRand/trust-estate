@@ -106,7 +106,8 @@ class LLMService:
     def generate_header(self):
         headers = {
             "Authorization": "Bearer " + self.key,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "User-Agent": "MyChatGPT/1.0"
         }
         return headers
 
@@ -123,35 +124,41 @@ class LLMService:
         }
         return data
 
-    def generate_stream_response(self, text, links, system_prompt=""):
-        with httpx.stream(
+    async def generate_stream_response(self, text, links, system_prompt=""):
+        async with httpx.AsyncClient() as client:
+            async with client.stream(
                 "POST",
                 url = self.url,
                 headers = self.generate_header(),
                 json = self.generate_json(text, True, system_prompt),
                 timeout = 130.0
-        ) as response:
-            response.raise_for_status()
-            for word in response.iter_lines():
-                if not word:
-                    continue
-                parse_line = word.strip()
+            ) as response:
+                response.raise_for_status()
+                async for word in response.aiter_lines():
+                    if not word:
+                        continue
+                    parse_line = word.strip()
 
-                if parse_line == "data: [DONE]":
-                    break
-                if parse_line.startswith("data: "):
-                    parse_line = parse_line[6:]
+                    if parse_line == "data: [DONE]":
+                        break
+                    if parse_line.startswith("data: "):
+                        parse_line = parse_line[6:]
 
-                try:
-                    result = json.loads(parse_line)
-                    content = result["choices"][0].get("delta", {}).get("content", "")
-                    if content:
-                        yield json.dumps({"type": "content", "reply": content}) + "\n"
+                    try:
+                        result = json.loads(parse_line)
 
-                except json.JSONDecodeError:
-                    continue
+                        content_exist = result.get("choices", [])
 
-        yield json.dumps({"type": "metadata", "links": links})
+                        if not content_exist:
+                            continue
+                        content = result["choices"][0].get("delta", {}).get("content", "")
+                        if content:
+                            yield json.dumps({"type": "content", "reply": content}) + "\n"
+
+                    except json.JSONDecodeError:
+                        continue
+
+            yield json.dumps({"type": "metadata", "links": links})
         
 
     def generate_bloc_response(self, text, system_prompt=""):

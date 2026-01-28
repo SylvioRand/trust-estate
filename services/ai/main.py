@@ -192,11 +192,11 @@ async def chatbot(text: RequestChat):
     try:
         llm_response = llm_service.generate_stream_response(formated, id_found, llm_service.generate_rules())
 
-        frag = next(llm_response)
+        # frag = next(llm_response)
 
-        def wrapper():
-            yield frag
-            yield from llm_response
+        async def wrapper():
+            async for content in llm_response:
+                yield content
 
         return StreamingResponse(wrapper(), media_type="text/plain")
 
