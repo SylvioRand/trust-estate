@@ -37,6 +37,8 @@ const	ActionsMenu: React.FC<ActionsMenuProps> = ({
 				>
 					{
 						menu_content.map((value: ActionsMenuContent, index: number) => {
+							if (value.title === "IGNORE")
+								return (null);
 							return (
 								<DropdownMenu.Item
 								className="text-background

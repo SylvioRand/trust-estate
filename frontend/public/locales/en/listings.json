@@ -9,6 +9,14 @@
 	"viewDetails": "View Details",
 	"areaUnit": "sqft",
 
+	"status": {
+		"active": "Active",
+		"archived": "Archived",
+		"blocked": "Blocked",
+		"available": "Available",
+		"unavailable": "Unavailable"
+	},
+
 	"section": {
 		"header": {
 			"propertyType": {
@@ -87,7 +95,66 @@
 		
 		"actionButton": {
 			"popup": {
-				"title": "Listings Action"
+				"title": "Listings Action",
+				"edit": {
+					"title": "Edit"
+				},
+				"archive": {
+					"title": "Archive",
+					"popup": {
+						"title": "Archive listing",
+						"warning": "Archiving this listing is permanent and cannot be undone. Once archived, the listing will be removed from public view and you will not be able to restore it. Please make sure you really want to archive this listing before proceeding.",
+						"continue": "Archive listing",
+						"success": "Your listing was placed in the archive."
+					}
+				},
+				"mark": {
+					"sold": {
+						"title": "Mark as sold"
+					},
+					"rented": {
+						"title": "Mark as rented"
+					},
+					"popup": {
+						"sale": {
+							"title": "Mark as sold",
+							"warning": "Marking this property as sold is permanent and cannot be undone.",
+							"continue": "Mark it"
+						},
+						"rent": {
+							"title": "Mark as rented",
+							"warning": "Marking this property as rented can be reversed later if needed.",
+							"continue": "Mark it"
+						}
+					}
+				},
+				"unmark": {
+					"title": "Mark as available",
+					"popup": {
+						"title": "Mark as available",
+						"warning": "Marking this listing as available again will make it visible to other users. Once reactivated, the property will appear in search results and can be viewed and contacted by interested users.",
+						"continue": "Unmark it"
+					}
+				},
+				"report": {
+					"title": "Report",
+					"popup": {
+						"title": "Report Listing",
+						"reason": {
+							"title": "Reason",
+							"fraud": "Fraud",
+							"spam": "Spam",
+							"incorrect_info": "Incorrect information",
+							"inappropriate": "Inappropriate"
+						},
+						"comment": {
+							"title": "Comment",
+							"placeholder": "Enter your comment here."
+						},
+						"warning": "Reporting a listing lets you alert our moderation team about content that may be inaccurate, inappropriate, or in violation of our rules.",
+						"submit": "Submit"
+					}
+				}
 			}
 		},
 

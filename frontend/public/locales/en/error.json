@@ -143,7 +143,10 @@
 		"renew_success": "The listing has been renewed for 30 days.",
 		"availability_updated": "The availability has been updated.",
 		"report_success": "The report has been submitted successfully.",
-		"already_reported": "This listing has already been reported."
+		"already_reported": "This listing has already been reported.",
+		"marked_as_sold": "This listing was marked as sold.",
+		"marked_as_rented": "This listing was marked as rented.",
+		"made_available": "This listing was marked as available."
 	},
 	"reservation": {
 		"slot_already_reserved": "The selected slot is already reserved.",

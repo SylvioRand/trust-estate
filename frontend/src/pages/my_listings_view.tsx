@@ -4,18 +4,31 @@ import type { TFunction } from "i18next";
 import type { ListingsData } from "../dataModel/modelListings";
 import ActionButton from "../components/ActionButton";
 import { useNavigate } from "react-router-dom";
-import { useRef, useState } from "react";
-import PopUp, { type PopUpAPI } from "../components/PopUp";
+import ActionsMenu, { type ActionsMenuContent } from "../components/ActionsMenu";
+import type { PopUpAPI } from "../components/PopUp";
+import { useRef, useState, type RefObject } from "react";
+import PopUp from "../components/PopUp";
+import { toast } from "react-toastify";
 
-export const	ListingsHeader: React.FC<ListingsViewProps> = ({
+interface	ListingsHeaderProps {
+	postMenuContent: ActionsMenuContent[];
+	fetchedData: ListingsData;
+	t: TFunction<["listings", "error", "common"]>
+}
+export const	ListingsHeader: React.FC<ListingsHeaderProps> = ({
+	postMenuContent,
 	fetchedData,
 	t
 }) => {
 	const	formatter = new Intl.NumberFormat("de-DE");
 	const	navigate = useNavigate();
-	const	refActionPopup = useRef<PopUpAPI>(null);
-	const	[isActionPopupOpen, setIsActionPopupOpen] = useState<boolean>(false);
 
+	const	colorStatus: Record<"active" | "archived" | "blocked", string> = {
+		active: "var(--color-green-500)",
+		archived: "var(--color-gray-500)",
+		blocked: "var(--color-red-500)"
+	};
+		
 	return (
 		<div
 		className="flex flex-col items-center justify-center
@@ -38,13 +51,13 @@ export const	ListingsHeader: React.FC<ListingsViewProps> = ({
 					>
 						{ fetchedData.title }
 					</div>
-					<button
-					className="font-icon text-2xl justify-self-end
-					cursor-pointer"
-					onClick={ () => setIsActionPopupOpen(true) }
+					<div
+					className="justify-self-end"
 					>
-						󰇘
-					</button>
+						<ActionsMenu
+						menu_content={ postMenuContent }
+						/>
+					</div>
 				</div>
 
 				<div
@@ -65,9 +78,45 @@ export const	ListingsHeader: React.FC<ListingsViewProps> = ({
 				</div>
 
 				<div
-				className="font-light mt-2"
+				className="grid grid-cols-[1fr_auto] grid-rows-1 gap-3
+				place-items-center
+				mt-2
+				w-full"
 				>
-					{ `${t("section.post.publicationDate")} ${CreateDateForPost(fetchedData.createdAt)}` }
+					<div
+					className="font-light
+					justify-self-start"
+					>
+						{ `${t("section.post.publicationDate")} ${CreateDateForPost(fetchedData.createdAt)}` }
+					</div>
+
+					{
+						fetchedData.mine === true &&
+						<div
+						style={{
+							border: `solid 1px ${colorStatus[fetchedData.status]}`,
+							color: colorStatus[fetchedData.status],
+							borderRadius: "100px",
+							textShadow: `0px 0px 4px color-mix(in srgb, ${colorStatus[fetchedData.status]} 50%, transparent)`,
+							padding: "2px 8px"
+						}}>
+							{ t(`status.${fetchedData.status}`) }
+						</div>
+					}
+
+					{
+						fetchedData.mine === false &&
+						<div
+						style={{
+							border: `solid 1px ${fetchedData.isAvailable ? "var(--color-green-500)" : "var(--color-red-500)"}`,
+							color: fetchedData.isAvailable ? "var(--color-green-500)" : "var(--color-red-500)",
+							borderRadius: "100px",
+							textShadow: `0px 0px 4px color-mix(in srgb, ${fetchedData.isAvailable ? "var(--color-green-500)" : "var(--color-red-500)"} 50%, transparent)`,
+							padding: "2px 8px"
+						}}>
+							{ t(`status.${fetchedData.isAvailable === true ? "available" : "unavailable"}`) }
+						</div>
+					}
 				</div>
 				{
 					fetchedData.updatedAt && 
@@ -109,16 +158,6 @@ export const	ListingsHeader: React.FC<ListingsViewProps> = ({
 					</div>
 				</div>
 			</div>
-			
-			{
-				isActionPopupOpen && <PopUp
-				title={ t("section.actionButton.popup.title") }
-				onClose={ () => setIsActionPopupOpen(false) }
-				ref={ refActionPopup }
-				>
-					HELLO
-				</PopUp>
-			}
 		</div>
 	);
 }
@@ -415,12 +454,44 @@ export const	ListingsFeaturesAndEquipment: React.FC<ListingsViewProps> = ({
 
 const	MyListingsView: React.FC<ListingsViewProps> = ({
 	fetchedData,
+	setFetchedData,
 	t
 }) => {
+	const	navigate = useNavigate();
+	const	refPopUpArchive: RefObject<PopUpAPI | null> = useRef<PopUpAPI>(null);
+	const	[arePopUpArchiveOpen, setArePopUpArchiveOpen] = useState<boolean>(false);
+	const	[processingArchive, setProcessingArchive] = useState<boolean>(false);
+
+	const	refPopUpMarking: RefObject<PopUpAPI | null> = useRef<PopUpAPI>(null);
+	const	[arePopUpMarkingOpen, setArePopUpMarkingOpen] = useState<boolean>(false);
+	const	[processingMarking, setProcessingMarking] = useState<boolean>(false);
+
+	const	refPopUpUnmarking: RefObject<PopUpAPI | null> = useRef<PopUpAPI>(null);
+	const	[arePopUpUnmarkingOpen, setArePopUpUnmarkingOpen] = useState<boolean>(false);
+	const	[processingUnmarking, setProcessingUnmarking] = useState<boolean>(false);
+
 	const	postStats: FeaturesType[] = [
 		{ value: "views", icon: "󰈈" },
 		{ value: "reservations", icon: "󰃭" }
 	];
+
+	const	buttonAvailabilityModifier: ActionsMenuContent = fetchedData.isAvailable
+	? {
+		icon: "󰄬",
+		title: t(`section.actionButton.popup.mark.${fetchedData.type === "rent" ? "rented" : "sold"}.title`),
+		func: () => setArePopUpMarkingOpen(true)
+	}
+	: ( fetchedData.type === "rent"
+		? {
+		icon: "󰄬",
+		title: t(`section.actionButton.popup.unmark.title`),
+		func: () => setArePopUpUnmarkingOpen(true)
+	}
+	: {
+		icon: "",
+		title: "IGNORE",
+		func: () => console.log("nothing")
+	})
 
 	return (
 		<div
@@ -428,11 +499,32 @@ const	MyListingsView: React.FC<ListingsViewProps> = ({
 		w-full h-full"
 		>
 			<ListingsHeader
+			postMenuContent={[
+				{
+					icon: "",
+					title: t("section.actionButton.popup.edit.title"),
+					func: () => navigate(`/property/listings/edit?id=${fetchedData.id}`)
+				},
+				// {
+				// 	icon: "󰄬",
+				// 	title: t(`section.actionButton.popup.mark.${fetchedData.type === "rent" ? "rented" : "sold"}.title`),
+				// 	func: () => setArePopUpMarkingOpen(true)
+				// },
+				buttonAvailabilityModifier,
+				{
+					color: "var(--color-red-500)",
+					icon: "󰀼",
+					title: t("section.actionButton.popup.archive.title"),
+					func: () => setArePopUpArchiveOpen(true)
+				}
+			]}
 			fetchedData={ fetchedData }
 			t={ t }
 			/>
+
 			<ListingsFeaturesAndEquipment
 			fetchedData={ fetchedData }
+			setFetchedData={ setFetchedData }
 			t={ t }
 			/>
 			<div
@@ -477,6 +569,216 @@ const	MyListingsView: React.FC<ListingsViewProps> = ({
 					}
 				</div>
 				
+				{
+					arePopUpArchiveOpen && <PopUp
+					title={ t("section.actionButton.popup.archive.popup.title") }
+					onClose={ () => setArePopUpArchiveOpen(false) }
+					ref={ refPopUpArchive }
+					>
+						<div>
+							{ t("section.actionButton.popup.archive.popup.warning") }
+						</div>
+						<div
+						className="grid grid-cols-2 grid-rows-1 gap-3
+						w-full">
+							<div>
+								<ActionButton
+								title={ t("common:cancel") }
+								onClick={ () => {
+									refPopUpArchive?.current?.close();
+								}}
+								/>
+							</div>
+							<div>
+								<ActionButton
+								base_color="var(--color-red-500)"
+								title={ t("section.actionButton.popup.archive.popup.continue") }
+								processing_action={ processingArchive }
+								onClick={ () => {
+									const	archiveListings = async () => {
+										try {
+											setProcessingArchive(true);
+		
+											const	response = await fetch(`/api/listings/${fetchedData.id}/archive`, {
+												method: "POST",
+												headers: {
+													"Content-Type": "application/json"
+												},
+												credentials: "include",
+												body: JSON.stringify({ action: "archive" })
+											})
+
+											const	responseData = await response.json();
+											
+											if (response.ok)
+											{
+												toast.success(t("section.actionButton.popup.archive.popup.success"));
+												setFetchedData({
+													...fetchedData,
+													status: "archived"
+												})
+											}
+											else
+											{
+												if (responseData.details) {
+													const details: Record<string, string[]> = responseData.details as Record<string, string[]>;
+													
+													for (const [key, value] of Object.entries(details)) {
+														for (let i = 0; i < value.length; i++)
+															toast.error(t(`error:${value[i]}`));
+													}
+												}
+											}
+										} catch (error) {
+											if (error instanceof Error && error.message !== "")
+												toast.error(t(`error:${error.message}`));
+										} finally {
+											setProcessingArchive(false);
+												refPopUpArchive?.current?.close();
+										}
+									}
+									archiveListings();
+								}}
+								/>
+							</div>
+						</div>
+					</PopUp>
+				}
+
+				{
+					arePopUpMarkingOpen && <PopUp
+					title={ t(`section.actionButton.popup.mark.popup.${fetchedData.type}.title`) }
+					onClose={ () => setArePopUpMarkingOpen(false) }
+					ref={ refPopUpMarking }>
+						<div>
+							{ t(`section.actionButton.popup.mark.popup.${fetchedData.type}.warning`) }
+						</div>
+						<div
+						className="grid grid-cols-2 grid-rows-1 gap-3
+						w-full"
+						>
+							<ActionButton
+							title={ t("common:cancel") }
+							onClick={ () => refPopUpMarking.current?.close() }
+							/>
+							<ActionButton
+							title={ t(`section.actionButton.popup.mark.popup.${fetchedData.type}.continue`) }
+							base_color="var(--color-red-500)"
+							onClick={ () => {
+								const	markListing = async () => {
+									setProcessingMarking(true);
+
+									try {
+										const	response = await fetch(`/api/listings/${fetchedData.id}/mark-realized`, {
+											method: "PUT",
+											credentials: "include"
+										})
+
+										const	responseData = await response.json();
+
+										if (response.ok)
+										{
+											toast.success(t(`error:${responseData.message}`));
+											setFetchedData({
+												...fetchedData,
+												status: "archived",
+												isAvailable: false
+											});
+										}
+										else
+										{
+											if (responseData.details) {
+												const details: Record<string, string[]> = responseData.details as Record<string, string[]>;
+												
+												for (const [key, value] of Object.entries(details)) {
+													for (let i = 0; i < value.length; i++)
+														toast.error(t(`error:${value[i]}`));
+												}
+											}
+										}
+									} catch (error) {
+										if (error instanceof Error && error.message !== "")
+											toast.error(t(`error:${error.message}`));
+									} finally {
+										setProcessingMarking(false);
+										refPopUpMarking.current?.close();
+									}
+								}
+								markListing();
+							}}
+							processing_action={ processingMarking }
+							/>
+						</div>
+					</PopUp>
+				}
+
+				{
+					arePopUpUnmarkingOpen && <PopUp
+					title={ t("section.actionButton.popup.unmark.popup.title") }
+					onClose={ () => setArePopUpUnmarkingOpen(false) }
+					ref={ refPopUpUnmarking }
+					>
+						<div>
+							{ t("section.actionButton.popup.unmark.popup.warning") }
+						</div>
+
+						<div
+						className="grid grid-cols-2 grid-rows-1 gap-3
+						w-full"
+						>
+							<ActionButton
+							title={ t("common:cancel") }
+							onClick={ () => refPopUpUnmarking.current?.close() }
+							/>
+							<ActionButton
+							title={ t("section.actionButton.popup.unmark.popup.continue") }
+							base_color="var(--color-green-500)"
+							processing_action={ processingUnmarking }
+							onClick={ () => {
+								const	unmarkListings = async () => 
+								{
+									setProcessingUnmarking(true);
+									try {
+										const	response = await fetch(`/api/listings/${fetchedData.id}/make-available`, {
+											method: "PUT",
+											credentials: "include"
+										})
+
+										const	responseData = await response.json();
+										if (response.ok)
+										{
+											toast.success(t(`error:${responseData.message}`))
+											setFetchedData({
+												...fetchedData,
+												status: "active",
+												isAvailable: true
+											})
+										}
+										else
+										{
+											if (responseData.details) {
+												const details: Record<string, string[]> = responseData.details as Record<string, string[]>;
+												
+												for (const [key, value] of Object.entries(details)) {
+													for (let i = 0; i < value.length; i++)
+														toast.error(t(`error:${value[i]}`));
+												}
+											}
+										}
+									} catch (error) {
+										if (error instanceof Error && error.message !== "")
+											toast.error(t(`error:${error.message}`));
+									} finally {
+										setProcessingUnmarking(false);
+										refPopUpUnmarking.current?.close();
+									}
+								}
+								unmarkListings();
+							}}
+							/>
+						</div>
+					</PopUp>
+				}
 				<div className="w-full h-10 flex-none"></div>
 			</div>
 		</div>

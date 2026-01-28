@@ -96,7 +96,7 @@ const	ListingsPage: React.FC = () => {
 		overflow-y-scroll
 		w-full h-screen"
 		>
-			<div className="flex-none w-full h-18"></div>
+			<div className="flex-none w-full h-18 xl:h-14"></div>
 			{
 				fetchedData === null &&
 				<div
@@ -120,100 +120,106 @@ const	ListingsPage: React.FC = () => {
 				gap-3
 				overflow-y-scroll
 				w-full
-				p-4
 				xl:h-full"
 				>
 
-					<div className="flex items-center justify-center
-					relative
+					<div
+					className="w-full min-h-75
+					xl:h-full
 					order-1
 					xl:order-2
 					overflow-y-hidden
 					xl:overflow-x-hidden
-					rounded-t-4xl
-					xl:rounded-4xl
-					w-full min-h-75
-					xl:h-full"
+					xl:p-4"
 					>
-						{
-							window.innerWidth >= 1024 && fetchedData.photos.map((value: string, index: number) => {
-								const	factor: number = index - currentPictures;
-
-								return (
-									<img
-									key={ index }
-									className="w-full h-full object-cover
-									absolute
-									rounded-t-4xl
-									xl:rounded-none
-									ease-in-out
-									transition-transform duration-500"
-									style={{
-										transform: `translateX(${100 * factor}%)`
-									}}
-									src={ value }
-									alt="House Pictures"
-									/>
-								);
-							})
-						}
-
-						{
-							window.innerWidth < 1024 && fetchedData.photos.map((value: string, index: number) => {
-								const	active: boolean = currentPictures === index;
-
-								return (
-									<img
-									key={ index }
-									className="w-full h-full object-cover
-									absolute
-									rounded-t-4xl
-									ease-in-out
-									transition-transform duration-500
-									shadow-standard
-									xl:rounded-t-none xl:rounded-r-4xl"
-									style={{
-										transform: active ? "none" : "translateY(200%)"
-									}}
-									src={ value }
-									alt="House Pictures"
-									/>
-								);
-							})
-						}
-
-						<NavigatePictureButton
-						icon=""
-						customStyle={{
-							left: 16
-						}}
-						onClick={ () => setCurrentPictures(currentPictures > 0 ? currentPictures - 1 : fetchedData.photos.length - 1)}
-						disabled={ currentPictures === 0 }
-						/>
-
-						<NavigatePictureButton
-						icon=""
-						customStyle={{
-							right: 16
-						}}
-						disabled={ currentPictures === fetchedData.photos.length - 1 }
-						onClick={ () => setCurrentPictures(currentPictures === fetchedData.photos.length - 1 ? 1 : currentPictures + 1)}
-						/>
-
-						<div
-						className="absolute top-4 left-4
-						flex flex-wrap gap-3
-						w-full">
+						<div className="flex items-center justify-center
+						relative
+						rounded-t-4xl
+						overflow-hidden
+						xl:rounded-4xl
+						w-full min-h-75
+						xl:h-full"
+						>
 							{
-								fetchedData.tags.map((value: ListingsTags, index: number) => {
+								window.innerWidth >= 1024 && fetchedData.photos.map((value: string, index: number) => {
+									const	factor: number = index - currentPictures;
+
 									return (
-										<TagsComponents
+										<img
 										key={ index }
-										tags={ value }
+										className="w-full h-full object-cover
+										absolute
+										rounded-t-4xl
+										xl:rounded-none
+										ease-in-out
+										transition-transform duration-500"
+										style={{
+											transform: `translateX(${100 * factor}%)`
+										}}
+										src={ value }
+										alt="House Pictures"
 										/>
 									);
 								})
 							}
+
+							{
+								window.innerWidth < 1024 && fetchedData.photos.map((value: string, index: number) => {
+									const	active: boolean = currentPictures === index;
+
+									return (
+										<img
+										key={ index }
+										className="w-full h-full object-cover
+										absolute
+										rounded-t-4xl
+										ease-in-out
+										transition-transform duration-500
+										shadow-standard
+										xl:rounded-t-none xl:rounded-r-4xl"
+										style={{
+											transform: active ? "none" : "translateY(200%)"
+										}}
+										src={ value }
+										alt="House Pictures"
+										/>
+									);
+								})
+							}
+
+							<NavigatePictureButton
+							icon=""
+							customStyle={{
+								left: 16
+							}}
+							onClick={ () => setCurrentPictures(currentPictures > 0 ? currentPictures - 1 : fetchedData.photos.length - 1)}
+							disabled={ currentPictures === 0 }
+							/>
+
+							<NavigatePictureButton
+							icon=""
+							customStyle={{
+								right: 16
+							}}
+							disabled={ currentPictures === fetchedData.photos.length - 1 }
+							onClick={ () => setCurrentPictures(currentPictures === fetchedData.photos.length - 1 ? 1 : currentPictures + 1)}
+							/>
+
+							<div
+							className="absolute top-4 left-4
+							flex flex-wrap gap-3
+							w-full">
+								{
+									fetchedData.tags.map((value: ListingsTags, index: number) => {
+										return (
+											<TagsComponents
+											key={ index }
+											tags={ value }
+											/>
+										);
+									})
+								}
+							</div>
 						</div>
 					</div>
 
@@ -221,9 +227,9 @@ const	ListingsPage: React.FC = () => {
 					className="flex flex-col items-center justify-start
 					order-2
 					xl:order-1
-					xl:px-4
-					relative
+					px-4
 					xl:p-4
+					relative
 					xl:overflow-y-scroll
 					bg-foreground
 					z-1
@@ -233,6 +239,7 @@ const	ListingsPage: React.FC = () => {
 							fetchedData.mine === true &&
 							<MyListingsView
 							fetchedData={ fetchedData }
+							setFetchedData={ setFetchedData }
 							t={ t }
 							/>
 						}
@@ -240,6 +247,7 @@ const	ListingsPage: React.FC = () => {
 							fetchedData.mine === false &&
 							<ClientListingsView
 							fetchedData={ fetchedData }
+							setFetchedData={ setFetchedData }
 							t={ t }
 							/>
 						}
