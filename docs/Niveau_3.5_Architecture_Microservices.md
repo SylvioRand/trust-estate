@@ -186,8 +186,8 @@ server {
     location /api/zones/ {
         proxy_pass http://listings_service/zones/;
     }
-    location /api/admin/ {
-        proxy_pass http://listings_service/admin/;
+    location /api/moderator/ {
+        proxy_pass http://listings_service/moderator/;
     }
     
     # Reservations routes
