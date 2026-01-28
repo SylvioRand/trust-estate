@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/01/27 09:51:33 by aelison          ###   ########.fr        #
+#    Updated: 2026/01/28 09:13:16 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -224,8 +224,7 @@ async def deletePost(listingId: str, _: dict = Depends(check_keys)):
     }
 
 @app.post("/ai/index")
-# async def add_datas(to_update: PostModel, _: dict = Depends(check_keys)):
-async def add_datas(to_update: PostModel):
+async def add_datas(to_update: PostModel, _: dict = Depends(check_keys)):
 
     result = await chromadb_service.add_to_collection("posts", to_update)
 
