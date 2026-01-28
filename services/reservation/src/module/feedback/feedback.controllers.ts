@@ -72,7 +72,7 @@ export async function getFeedback(request: FastifyRequest, reply: FastifyReply) 
 		return reply.status(200).send(feedback);
 	} catch (error: any) {
 		if (error.message === "feedback_not_found")
-			return reply.status(400).send({
+			return reply.status(404).send({
 				"error": "feedback_not_found",
 				"message": "feedback.feedback_not_found",
 			});
