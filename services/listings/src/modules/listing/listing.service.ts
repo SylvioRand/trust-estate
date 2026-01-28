@@ -276,6 +276,15 @@ export class ListingService {
     return { listing, sellerStats };
   }
 
+  static async incrementViews(id: string) {
+    await prisma.listingStats.updateMany({
+      where: { listingId: id },
+      data: {
+        views: { increment: 1 }
+      }
+    });
+  }
+
   static async deleteUserData(userId: string) {
     return await prisma.$transaction(async (tx) => {
       await tx.report.deleteMany({
@@ -390,5 +399,20 @@ export class ListingService {
     }
 
     return listing;
+  }
+
+
+  static async incrementReservationStat(listingId: string) {
+    const stats = await prisma.listingStats.findUnique({
+      where: { listingId }
+    });
+
+    if (!stats) {
+      throw new Error('listing.stats_not_found');
+    }
+    await prisma.listingStats.update({
+      where: { listingId: listingId },
+      data: { reservations: { increment: 1 } }
+    })
   }
 }
