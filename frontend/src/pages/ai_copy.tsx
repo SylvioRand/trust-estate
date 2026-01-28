@@ -189,8 +189,12 @@ const	AICopyPage: React.FC = () => {
             maxRows={7}
             placeholder={t("inputChat.placeholder")}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && chatValue !== "\n")
-                handleSendButton();
+              if (e.key === "Enter") {
+								e.preventDefault();
+								if (chatValue.trim() !== ""){
+	                handleSendButton();
+								}
+							}
             }}
           />
 
