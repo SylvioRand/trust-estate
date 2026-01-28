@@ -69,7 +69,7 @@ export async function getFeedback(request: FastifyRequest, reply: FastifyReply) 
 
 	try {
 		const feedback = await feedbackServices.getUserFeedback(request.server, user.id);
-		return reply.status(201).send(feedback);
+		return reply.status(200).send(feedback);
 	} catch (error: any) {
 		if (error.message === "feedback_not_found")
 			return reply.status(400).send({

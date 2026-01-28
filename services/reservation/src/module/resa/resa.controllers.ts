@@ -262,6 +262,42 @@ export async function rejectReservation(request: FastifyRequest<
 	}
 };
 
+export async function doneReservation(request: FastifyRequest<
+	{Params: ReservationIdInterface}>, reply: FastifyReply) {
+	const	reservationId = request.params.id;
+	const	user = (request as any).user as UserInterface;
+
+	if (!user)
+		return reply.status(401).send({
+			"error": "unauthorized",
+			"message": "common.unauthorized"
+		});
+
+	try {
+		const doneAt = await resaServices.doneStatusReservation(request.server, user.id, reservationId);
+		return reply.status(200).send({
+			"status": "done",
+  			"doneAt": doneAt
+		})
+	} catch (error: any) {
+		if (error.message === "reservation_not_found")
+			return reply.status(404).send({
+				"error": "reservation_not_found",
+				"message": "reservation.not_found"
+			})
+		else if (error.message === "reservation_not_completed")
+			return reply.status(400).send({
+				"error": "reservation_not_completed",
+				"message": "reservation.not_completed"
+			});
+		else
+			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
+};
+
 export async function statusListing(request: FastifyRequest<{Querystring: StatusInterface}>, reply: FastifyReply) {
 	const listingId = request.query.listingId;
 	const userId = request.query.userId;
@@ -326,12 +362,7 @@ export async function getSlots(request: FastifyRequest<{Querystring: {id: string
 		});
 
 	try {
-		// const data = await resaServices.getAvailability(request.server, userId) as ListingInterface;
-		const data: ListingInterface = {
-			weeklySchedule: [
-				{ dayOfWeek: 2, startTime: "08:00", endTime: "17:00" },
-			]
-		};
+		const data = await resaServices.getAvailability(request.server, userId) as ListingInterface;
 		const availability = await resaServices.getAvailableSlotsByUserId(request.server, userId, data.weeklySchedule);
 		return reply.status(200).send({ availability });
 	} catch (error: any) {

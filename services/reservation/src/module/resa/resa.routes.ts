@@ -43,6 +43,11 @@ export async function reservationRoutes(app: FastifyInstance, options: FastifyPl
 			schema: ReservationIdSchema,
 			preHandler: app.authentication
 		}, resaControllers.rejectReservation);
+	app.patch< {Params: ReservationIdInterface }>("/reservations/:id/done",
+		{
+			schema: ReservationIdSchema,
+			preHandler: app.authentication
+		}, resaControllers.doneReservation);
 	app.get<{Querystring: StatusInterface}>("/reservations/internal/status", 
 		{
 			schema: StatusListingSchema,
