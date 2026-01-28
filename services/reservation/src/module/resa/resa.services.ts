@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { responseReservation } from "../../utils/utils";
+import { generateSlotsForDay, parseHourMinute, responseReservation, toGmt3String } from "../../utils/utils";
 import { Prisma, PrismaClient, $Enums } from "@prisma/client";
 import { error } from "console";
 
@@ -233,9 +233,58 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
             }
         });
 
+		try {
+			const internalToken = await import('jsonwebtoken');
+			const token = internalToken.default.sign(
+				{ service: 'reservation-service', userId },
+				app.config.INTERNAL_KEY_SECRET,
+				{ algorithm: 'HS256', expiresIn: '30s' }
+			);
+
+			await fetch(`${app.config.LISTINGS_SERVICE_URL}/listings/${data.listingId}/events/reservation-confirmed`, {
+				method: 'POST',
+				headers: {
+					'x-internal-key': token,
+					'x-user-id': userId
+				}
+			});
+		} catch (error) {
+			app.log.error({ error }, 'Failed to notify listing service of reservation confirmation');
+		}
         return (data.confirmedAt);
     });
 };
+
+export async function doneStatusReservation(app: FastifyInstance, userId: string, reservationId: string) {
+	await app.prisma.$transaction(async (tx: TransactionClient) => {
+		const reservation = await tx.reservation.findFirst({
+			where: {
+				AND: [
+					{ reservationId },
+					{ sellerId: userId }
+				]
+			}
+		});
+
+		if (!reservation)
+			throw new Error("reservation_not_found");
+
+		if (reservation.status !== "confirmed")
+			throw new Error("reservation_not_confirmed");
+
+		const data = await tx.reservation.update({
+			where: { reservationId },
+			data: {
+				status: "done",
+				feedbackEligible: true,
+				feedbackGiven: false,
+				doneAt: new Date()
+			}
+		});
+
+		return (data.doneAt);
+	});
+}
 
 export async function rejectStatusReservation(app: FastifyInstance, userId: string, reservationId: string) {
     await app.prisma.$transaction(async (tx: TransactionClient) => {
@@ -303,7 +352,10 @@ export async function getSlot(app: FastifyInstance, listingId: string, slot: Dat
                             gte: slotStart,
                             lte: slotEnd
                         }
-                    }
+                    },
+					{
+						status: { in: ['confirmed'] }
+					}
                 ]
             }
         });
@@ -314,51 +366,50 @@ export async function getSlot(app: FastifyInstance, listingId: string, slot: Dat
 };
 
 async function debiter(app: FastifyInstance, buyerId: string) {
-    const jwt = await import('jsonwebtoken');
-    const internalToken = jwt.default.sign(
-        { service: 'reservation-service', userId: buyerId },
-        app.config.INTERNAL_KEY_SECRET,
-        { algorithm: 'HS256', expiresIn: '30s' }
-    );
+	const jwt = await import('jsonwebtoken');
+	const internalToken = jwt.default.sign(
+		{ service: 'reservation-service', userId: buyerId },
+		app.config.INTERNAL_KEY_SECRET,
+		{ algorithm: 'HS256', expiresIn: '30s' }
+	);
 
-    try {
-        const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/internal/credits/debit`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-internal-key': internalToken,
-                'x-user-id': buyerId
-            },
-            body: JSON.stringify({
-                reason: 'reserve_visit'
-            })
-        });
+	try {
+		const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/internal/credits/debit`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'x-internal-key': internalToken,
+				'x-user-id': buyerId
+			},
+			body: JSON.stringify({
+				reason: 'reserve_visit'
+			})
+		});
 
-        if (!response.ok) {
-            const error = await response.json() as any;
+		if (!response.ok) {
+			const error = await response.json() as any;
 
-            if (error.error === 'insufficient_credits') {
-                throw new Error('insufficient_credits');
-            }
-            throw new Error('credit_service_error');
-        }
-    } catch (error: any) {
-        app.log.error({ error }, 'Failed to debit credits');
-        throw error;
-    }
+			if (error.error === 'insufficient_credits') {
+				throw new Error('insufficient_credits');
+			}
+			throw new Error('credit_service_error');
+		}
+	} catch (error: any) {
+		app.log.error({ error }, 'Failed to debit credits');
+		throw error;
+	}
 }
 export async function deleteUserData(app: FastifyInstance, userId: string) {
-    return await app.prisma.$transaction(async (tx: TransactionClient) => {
-        await tx.reservation.deleteMany({
-            where: {
-                OR: [
-                    { buyerId: userId },
-                    { sellerId: userId }
-                ]
-            }
-        });
-		console.log("DELETE RESERVATION")
-    });
+	return await app.prisma.$transaction(async (tx: TransactionClient) => {
+		await tx.reservation.deleteMany({
+			where: {
+				OR: [
+					{ buyerId: userId },
+					{ sellerId: userId }
+				]
+			}
+		});
+	});
 }
 
 async function crediter(app: FastifyInstance, userId: string) {
@@ -416,107 +467,83 @@ export async function getAvailability(app: FastifyInstance, userId: string) {
 		const data = await response.json();
 		return (data);
 	} catch (error: any) {
-		console.log(error);
 		app.log.error({ error }, 'listing_server_error');
 		throw new Error("listing_server_error");
 	}
 }
 
-export async function getAvailableSlotsByUserId(app: FastifyInstance, userId: string, days: { dayOfWeek: number, startTime: number|string, endTime: number|string }[]) {
-		let allAvailableSlots: { day: Date, slots: Date[] }[] = [];
-		const now = new Date();
-		const GMT_OFFSET = 3; // heures
-		// today = date du jour à minuit GMT+3 (en UTC)
-		const todayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
 
-		function parseHourMinute(val: number|string): { hour: number, minute: number } {
-			if (typeof val === 'number') return { hour: val, minute: 0 };
-			if (typeof val === 'string') {
-				const [h, m] = val.split(':').map(Number);
-				return { hour: h, minute: m || 0 };
+async function getReservedSlots(app: FastifyInstance, userId: string, startOfDayUtc: Date, endOfDayUtc: Date): Promise<number[]> {
+	const reservedSlots = await app.prisma.reservation.findMany({
+		where: {
+			listingId: userId,
+			status: { in: ['confirmed'] },
+			slot: {
+				gte: startOfDayUtc,
+				lt: endOfDayUtc
 			}
-			return { hour: 0, minute: 0 };
-		}
+		},
+		select: { slot: true }
+	});
+	return reservedSlots.map(r => r.slot.getTime());
+}
 
-		for (const dayObj of days) {
-			// 1=lundi -> 1, 7=dimanche -> 0 (JS Sunday=0)
+async function getAvailableSlotsForDay(app: FastifyInstance, userId: string, dayDateUtc: Date, startTime: number, startMinute: number, endTime: number, endMinute: number, GMT_OFFSET: number) {
+	const slots = generateSlotsForDay(dayDateUtc, startTime, startMinute, endTime, endMinute, GMT_OFFSET);
+	const startOfDayUtc = new Date(Date.UTC(
+		dayDateUtc.getUTCFullYear(),
+		dayDateUtc.getUTCMonth(),
+		dayDateUtc.getUTCDate(),
+		0 - GMT_OFFSET, 0, 0, 0
+	));
+	const endOfDayUtc = new Date(Date.UTC(
+		dayDateUtc.getUTCFullYear(),
+		dayDateUtc.getUTCMonth(),
+		dayDateUtc.getUTCDate(),
+		23 - GMT_OFFSET, 59, 59, 999
+	));
+	const reservedDates = await getReservedSlots(app, userId, startOfDayUtc, endOfDayUtc);
+	return slots.filter(slot => !reservedDates.includes(slot.getTime()));
+}
+
+export async function getAvailableSlotsByUserId(
+	app: FastifyInstance,
+	userId: string,
+	days: { dayOfWeek: number, startTime: number | string, endTime: number | string }[]
+): Promise<{ day: string, slots: string[] }[]> {
+	const allAvailableSlots: { day: string, slots: string[] }[] = [];
+	const now = new Date();
+	const GMT_OFFSET = 3;
+	const todayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
+
+	for (const dayObj of days) {
+		for (let week = 0; week < 2; week++) {
 			const jsDay = (dayObj.dayOfWeek % 7);
 			const todayJsDay = todayUtc.getUTCDay();
-			let daysToAdd = jsDay - todayJsDay;
+			let daysToAdd = jsDay - todayJsDay + week * 7;
 			if (daysToAdd < 0) daysToAdd += 7;
-			// Date du jour cible à minuit GMT+3 (en UTC)
 			const dayDateUtc = new Date(todayUtc);
 			dayDateUtc.setUTCDate(todayUtc.getUTCDate() + daysToAdd);
 
 			const { hour: startTime, minute: startMinute } = parseHourMinute(dayObj.startTime);
 			const { hour: endTime, minute: endMinute } = parseHourMinute(dayObj.endTime);
 
-			const slots: Date[] = [];
-			for (let hour = startTime; hour <= endTime; hour++) {
-				for (let minute = (hour === startTime ? startMinute : 0); minute < 60; minute += 30) {
-					if (hour === endTime && minute > endMinute) break;
-					// Crée le slot en UTC correspondant à l'heure GMT+3 demandée
-					const slotUtc = new Date(Date.UTC(
-						dayDateUtc.getUTCFullYear(),
-						dayDateUtc.getUTCMonth(),
-						dayDateUtc.getUTCDate(),
-						hour - GMT_OFFSET,
-						minute,
-						0,
-						0
-					));
-					slots.push(slotUtc);
-				}
-			}
-
-			// début et fin de la journée en GMT+3 (en UTC)
-			const startOfDayUtc = new Date(Date.UTC(
-				dayDateUtc.getUTCFullYear(),
-				dayDateUtc.getUTCMonth(),
-				dayDateUtc.getUTCDate(),
-				0 - GMT_OFFSET, 0, 0, 0
-			));
-			const endOfDayUtc = new Date(Date.UTC(
-				dayDateUtc.getUTCFullYear(),
-				dayDateUtc.getUTCMonth(),
-				dayDateUtc.getUTCDate(),
-				23 - GMT_OFFSET, 59, 59, 999
-			));
-
-			const reservedSlots = await app.prisma.reservation.findMany({
-				where: {
-					listingId: userId,
-					status: { in: ['confirmed'] },
-					slot: {
-						gte: startOfDayUtc,
-						lt: endOfDayUtc
-					}
-				},
-				select: { slot: true }
-			});
-			console.log(reservedSlots);
-			const reservedDates = reservedSlots.map(r => r.slot.getTime());
-			const availableSlots = slots.filter(slot => !reservedDates.includes(slot.getTime()));
-
-			// Formatage explicite en GMT+3 pour l'affichage
-			function toGmt3String(date: Date) {
-				// Décale la date de +3h et retourne sous forme YYYY-MM-DDTHH:mm:ss+03:00
-				const gmt3 = new Date(date.getTime() + 3 * 60 * 60 * 1000);
-				const pad = (n: number) => n.toString().padStart(2, '0');
-				const year = gmt3.getUTCFullYear();
-				const month = pad(gmt3.getUTCMonth() + 1);
-				const day = pad(gmt3.getUTCDate());
-				const hour = pad(gmt3.getUTCHours());
-				const min = pad(gmt3.getUTCMinutes());
-				const sec = pad(gmt3.getUTCSeconds());
-				return `${year}-${month}-${day}T${hour}:${min}:${sec}+03:00`;
-			}
+			const availableSlots = await getAvailableSlotsForDay(
+				app,
+				userId,
+				dayDateUtc,
+				startTime,
+				startMinute,
+				endTime,
+				endMinute,
+				GMT_OFFSET
+			);
 
 			allAvailableSlots.push({
 				day: toGmt3String(new Date(dayDateUtc)),
 				slots: availableSlots.map(toGmt3String)
 			});
 		}
-
-		return allAvailableSlots;
+	}
+	return allAvailableSlots;
 }

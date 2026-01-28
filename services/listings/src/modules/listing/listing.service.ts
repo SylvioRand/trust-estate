@@ -1,4 +1,3 @@
-import { ListingAvailability } from '@prisma/client';
 import { prisma } from '../../config/prisma';
 import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing, UpdateavailabilityType, getAvailabilityParams } from "./listing.schema";
 import path from 'path';
@@ -399,5 +398,20 @@ export class ListingService {
     }
 
     return listing;
+  }
+
+
+  static async incrementReservationStat(listingId: string) {
+    const stats = await prisma.listingStats.findUnique({
+      where: { listingId }
+    });
+
+    if (!stats) {
+      throw new Error('listing.stats_not_found');
+    }
+    await prisma.listingStats.update({
+      where: { listingId: listingId },
+      data: { reservations: { increment: 1 } }
+    })
   }
 }
