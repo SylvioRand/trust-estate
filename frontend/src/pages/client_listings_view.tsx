@@ -1,7 +1,7 @@
 import type { TFunction } from "i18next";
 import type { ListingsData } from "../dataModel/modelListings";
 import { ListingsFeaturesAndEquipment, ListingsHeader } from "./my_listings_view";
-import { useRef, useState, type Dispatch, type FormEvent, type MutableRefObject, type RefObject, type SetStateAction } from "react";
+import { useRef, useState, type Dispatch, type RefObject, type SetStateAction } from "react";
 import PopUp, { type PopUpAPI } from "../components/PopUp";
 import TextArea from "../components/TextArea";
 import ActionButton from "../components/ActionButton";
