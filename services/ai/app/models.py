@@ -1,14 +1,14 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    models.py                                          :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aelison <aelison@student.42antananarivo    +#+  +:+       +#+         #
+#    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:23 by aelison           #+#    #+#              #
-#    Updated: 2026/01/05 07:27:37 by aelison          ###   ########.fr        #
+#    Updated: 2026/01/27 09:57:28 by aelison          ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 from typing import Literal, Optional, Any
 from pydantic import BaseModel, Field
@@ -17,11 +17,6 @@ from pydantic import BaseModel, Field
 class RequestChat(BaseModel):
     message: str = "Hello world"
     context: Optional[str] = None
-
-class ResponseSource(BaseModel):
-    type: str = "sale"
-    id: str = "default"
-    title: str = "Title list"
 
 #=========== Collection models ============
 class Description(BaseModel):

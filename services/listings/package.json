@@ -9,7 +9,8 @@
     "build": "tsup src/app.ts --format esm --clean",
     "start": "node ./dist/app.js",
     "dev": "nodemon --exec ts-node src/app.ts",
-    "seed": "ts-node src/seed-test-user.ts"
+    "seed": "ts-node src/seed-test-user.ts",
+    "devs": "tsx watch src/app.ts"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +23,7 @@
     "fastify": "^5.6.2",
     "jsonwebtoken": "^9.0.3",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "zod": "^4.3.5"
   },
   "devDependencies": {

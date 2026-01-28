@@ -33,6 +33,7 @@ const	InputEnum: React.FC<InputEnumProps> = ({
 				className="w-full
 				border border-background/25
 				p-2
+				cursor-pointer
 				rounded-md
 				shadow-standard
 				"

@@ -1,7 +1,52 @@
 {
+	"no_result": "No Result",
+	"rangeError": "There is an error in your values, please correct them and try again.",
 	"buttons": {
+		"page": {
+			"previous": "Previous Page",
+			"next": "Next Page"
+		},
 		"filter": {
 			"title": "Filter",
+			"priceRange": {
+				"title": "Price range (Ar)",
+				"min": "Minimum",
+				"max": "Maximum"
+			},
+			"areaRange": {
+				"title": "Area range (Sqft)",
+				"min": "Minimum",
+				"max": "Maximum"
+			},
+			"bedroomRange": {
+				"title": "Bedroom Range",
+				"min": "Minimum",
+				"max": "Maximum"
+			},
+			"bathroomRange": {
+				"title": "Bathroom Range",
+				"min": "Minimum",
+				"max": "Maximum"
+			},
+			"parkingType": {
+				"title": "Parking Type",
+				"garage": "Garage",
+				"box": "Box",
+				"parking": "Parking"
+			},
+			"gardenPrivate": {
+				"title": "Garden"
+			},
+			"waterAccess": {
+				"title": "Water"
+			},
+			"electricityAccess": {
+				"title": "Electricity"
+			},
+			"pool": {
+				"title": "Pool"
+			},
+			"apply": "Apply Filter",
 			"contract": {
 				"title": "Contract",
 				"none": "None",
@@ -21,17 +66,8 @@
 				"land": "Land",
 				"commercial": "Commercial"
 			},
-			"price": {
-				"title": "Price",
-				"none": "No budget"
-			},
-			"room": {
-				"none": "Any",
-				"title": "Room"
-			},
 			"tag": {
 				"title": "Tag",
-				"none": "All",
 				"urgent": "Urgent",
 				"exclusive": "Exclusive",
 				"discount": "Discount"

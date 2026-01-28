@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyPluginOptions } from "fastify";
 import * as authControllers from "../auth/auth.controllers"
-import { ForgotPasswordSchema, LoginUserSchema, ResendEmailSchema, ResetPasswordSchema, SignUpUserSchema, UpdatePhoneNumberSchema, VerificationTokenSchema } from "./auth.schema";
+import { ChangeRoleSchema, ForgotPasswordSchema, LoginUserSchema, ResendEmailSchema, ResetPasswordSchema, SignUpUserSchema, UpdatePhoneNumberSchema, VerificationTokenSchema } from "./auth.schema";
 import { changePermissionInterface } from "./auth.interface";
 
 export async function authRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
@@ -62,7 +62,8 @@ export async function spaceModerator(app: FastifyInstance, options: FastifyPlugi
 	app.get("/auth/is-moderator",
 		{ preHandler: app.authValidations }
 		, authControllers.verificationUserRole);
-	app.patch<{ Body: changePermissionInterface, Params: { id: string } }>("/auth/change-permission/:id", {
+	app.patch<{Body: changePermissionInterface}>("/auth/change-permission/:id", {
+		schema: ChangeRoleSchema,
 		preHandler: app.authentication
 	}, authControllers.changeUserPermission);
 }
