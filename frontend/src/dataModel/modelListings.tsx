@@ -66,7 +66,7 @@ export type ListingsData = {
 
 export const	dataExampleListingsData: ListingsData = {
 	id: "da9sd8d7as9d7b9a9hdw3l14",
-	title: "Maison T2",
+	title: "Beautiful Villa",
 	description: "Beautiful House located at Analakely in the core center of Antananarivo. And this is a lot of another blabla, and again and again. This is for testing the reaction of the layout with a lot of text, we expect at least 200 characters so ...",
 	price: 4300000,
 	type: "sale",

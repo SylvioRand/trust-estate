@@ -42,17 +42,20 @@ export const	ListingsHeader: React.FC<ListingsHeaderProps> = ({
 			
 			>
 				<div
-				className="grid grid-cols-[auto_1fr] grid-rows-1
+				className="grid grid-cols-[70%_auto] grid-rows-1
 				place-items-center
+				wrap-break-word
 				w-full"
 				>
 					<div
-					className="font-higuen font-bold text-4xl"
+					className="font-higuen font-bold text-4xl
+					justify-self-start
+					wrap-break-word w-full"
 					>
 						{ fetchedData.title }
 					</div>
 					<div
-					className="justify-self-end"
+					className="justify-self-end mb-auto"
 					>
 						<ActionsMenu
 						menu_content={ postMenuContent }
@@ -72,7 +75,7 @@ export const	ListingsHeader: React.FC<ListingsHeaderProps> = ({
 				</div>
 
 				<div
-				className="font-light"
+				className="font-light wrap-break-word w-full"
 				>
 					{ fetchedData.description }
 				</div>
@@ -278,6 +281,7 @@ const	ListingsInfo: React.FC<ListingsInfoProps> = ({
 		className="grid grid-cols-[auto_1fr] grid-rows-1
 		gap-3
 		place-items-center
+		truncate
 		w-full"
 		>
 			<div
