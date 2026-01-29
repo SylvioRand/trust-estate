@@ -74,6 +74,7 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
         successfulSales: sellerStats?.successfulSales || 0,
         averageRating: sellerStats?.averageRating || 0
       },
+      isAvailable: listing.isAvailable,
       stats: isMine && listing.stats ? {
         views: listing.stats.views,
         reservations: listing.stats.reservations,
