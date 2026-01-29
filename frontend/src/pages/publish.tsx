@@ -160,10 +160,7 @@ const PublishPage: React.FC = () => {
 
 		if (response.ok) {
 		toast.success(t("uploadSuccess"));
-		console.log(responseData);
-		setTimeout(() => {
-			navigate(`/property/listings?id=${responseData?.listingId}`)
-		}, 3000);
+		navigate(`/property/listings?id=${responseData?.listingId}`)
 		}
 		else {
 		toast.error(t(`error:${responseData.message ?? "ERROR"}`));
