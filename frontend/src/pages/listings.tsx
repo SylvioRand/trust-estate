@@ -210,7 +210,7 @@ const	ListingsPage: React.FC = () => {
 							flex flex-wrap gap-3
 							w-full">
 								{
-									fetchedData.tags.map((value: ListingsTags, index: number) => {
+									fetchedData.tags && fetchedData.tags.map((value: ListingsTags, index: number) => {
 										return (
 											<TagsComponents
 											key={ index }
