@@ -231,6 +231,7 @@ const	ListingsPage: React.FC = () => {
 					xl:p-4
 					relative
 					xl:overflow-y-scroll
+					wrap-break-word
 					bg-foreground
 					z-1
 					w-full xl:h-full"
