@@ -68,8 +68,6 @@ const	ListingsPage: React.FC = () => {
 				const	responseData = await response.json();
 				if (response.ok)
 				{
-					console.log(responseData);
-					// NOTE: Directly swap this one to simulate the data
 					setFetchedData(responseData);
 				}
 				else
