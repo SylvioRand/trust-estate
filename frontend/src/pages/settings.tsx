@@ -479,7 +479,7 @@ const SettingsPage: React.FC = () => {
           <SettingsButton
             icon="󰇚"
             title={t("section.settings.downloadGDPR")}
-            onClick={handleLogOut}
+            onClick={ () => console.log("SHOULD BE IMPLEMENTED")}
           />
           <SettingsButton
             icon=""
