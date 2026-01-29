@@ -79,7 +79,6 @@ const	EditPage: React.FC = () => {
 			"tags": activeTags
 		}
 
-		console.log(dataObj);
 		try {
 			const	response = await fetch(`/api/listings/${listingID}`, {
 				method: "PUT",
@@ -95,7 +94,7 @@ const	EditPage: React.FC = () => {
 			if (response.ok)
 			{
 				toast.success(t(`error:listing.change_saved`));
-				navigate(`/api/listings?id=${listingID}`);
+				navigate(`/property/listings?id=${listingID}`);
 			}
 			else
 			{
@@ -206,12 +205,11 @@ const	EditPage: React.FC = () => {
 	}
 
 	useEffect(() => {
-		if (!formRef.current)
-			navigate("/home");
-
-		let	responseData: ListingsData | APIResponse | null = null;
 		const	fetchListingsData = async () => {
+			let	responseData: ListingsData | APIResponse | null = null;
 			try {
+				if (!formRef.current)
+					navigate("/home");
 				if (listingID === null)
 					navigate("/property");
 
@@ -225,6 +223,27 @@ const	EditPage: React.FC = () => {
 				{
 					const	dataFromBack = responseData as ListingsData;
 					setActiveTags(dataFromBack.tags);
+
+					// NOTE: assign a default value to all the input matching with the current state of the metadata.
+					// I still can't use fetchedData since it will be updated in the next render so
+					// I just use responseData directly
+					if (responseData && formRef.current?.elements)
+					{
+						const	elements = formRef.current?.elements;
+						
+						for (const el of elements)
+						{
+							if (
+								el instanceof HTMLInputElement
+								|| el instanceof HTMLTextAreaElement
+								|| el instanceof HTMLSelectElement
+							)
+							{
+								// console.log(el.name, ": ", findByKey(responseData, el.name));
+								el.value = findByKey(responseData, el.name);
+							}
+						}
+					}
 				}
 				else
 				{
@@ -238,27 +257,6 @@ const	EditPage: React.FC = () => {
 			}
 		}
 		fetchListingsData();
-
-		// NOTE: assign a default value to all the input matching with the current state of the metadata.
-		// I still can't use fetchedData since it will be updated in the next render so
-		// I just use responseData directly
-		if (responseData && formRef.current?.elements)
-		{
-			const	elements = formRef.current?.elements;
-
-			for (const el of elements)
-			{
-				if (
-					el instanceof HTMLInputElement
-					|| el instanceof HTMLTextAreaElement
-					|| el instanceof HTMLSelectElement
-				)
-				{
-					// console.log(el.name, ": ", findByKey(responseData, el.name));
-					el.value = findByKey(responseData, el.name);
-				}
-			}
-		}
 	}, [])
 
 	useEffect(() => {
@@ -511,7 +509,7 @@ const	EditPage: React.FC = () => {
 							mt-4
 							w-full">
 					{
-						activeTags.length > 0 && activeTags.map((value: ListingsTags, index: number) => {
+						activeTags && activeTags.length > 0 && activeTags.map((value: ListingsTags, index: number) => {
 						return (
 							<div
 							key={index}
