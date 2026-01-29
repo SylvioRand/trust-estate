@@ -75,14 +75,10 @@ const	ListingsPage: React.FC = () => {
 			} catch (error) {
 				if (error instanceof Error && error.message !== "")
 					toast.error(`error:${error.message}`);
-				setTimeout(() => navigate("/property"), 1000);
+				navigate("/property");
 			}
 		}
-
 		fetchListingsData();
-
-		// NOTE: DEBUG
-		// setFetchedData(dataExampleListingsData);
 	}, []);
 
 	return (
