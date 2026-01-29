@@ -1,5 +1,8 @@
 {
 	"inputChat": {
 		"placeholder": "En quoi je peux t'aider aujourd'hui?"
+	},
+	"message": {
+		"processing": "Traitement de votre demande ..."
 	}
 }
