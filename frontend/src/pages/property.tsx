@@ -54,7 +54,7 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
           }}
         />
         <div className="absolute top-0 left-0
-					grid grid-cols-[repeat(auto-fill,minmax(80px,1fr))] grid-rows-1
+          flex flex-wrap
 					p-2
 					gap-2
 					w-full"
