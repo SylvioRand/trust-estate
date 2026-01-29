@@ -45,6 +45,8 @@ const Message: React.FC<MessageProps> = ({
           max-w-[70%]
 	    		p-3
 	    		border border-background/25
+				text-sm
+				wrap-break-word
 	    		shadow-standard"
 	    		style={{
 	    			order: side === "right" ? "2" : "1",
@@ -67,10 +69,7 @@ type MessageType = {
 const AIPage: React.FC = () => {
 	const [chatValue, setChatValue] = useState<string>("");
 	// const	messageRef: RefObject<MessageType[]> = useRef<MessageType[]>([]);
-	const [messageData, setMessageData] = useState<MessageType[]>([
-    // { value: "Hi, how can I assist you today? alsdasld sklahd laskd hlask hdskla hdlkas dlkash dlka shd", side: "left" },
-    // { value: "Hello lasjdlsaj doasj dosiaj dsioa doiasj doiasj doisajdoisajdoia sodi jasoid jsoaijd", side: "right" }
-  ]);
+	const [messageData, setMessageData] = useState<MessageType[]>([]);
 	const { t } = useTranslation(["ai", "error", "common"]);
 
 	const handleSendButton = async () => {
@@ -94,7 +93,12 @@ const AIPage: React.FC = () => {
 			});
 			if (!response.ok) {
 				const errorMessage = await response.json();
-				throw new Error(errorMessage);
+
+				setMessageData((prev) => [
+					{ value: "ERROR: IA PART: ", side: "left" } as MessageType,
+					...prev
+				].filter((msg) => msg.value !== ""));
+				throw new Error(t(`error:ERROR`));
 			}
 
 			const reader = response.body?.getReader();
@@ -145,7 +149,10 @@ const AIPage: React.FC = () => {
 			}
 		} catch (error) {
 			console.log("Error in AI: ", error);
-
+			setMessageData((prev) => [
+				{ value: "ERROR: IA PART: ", side: "left" } as MessageType,
+				...prev
+			].filter((msg) => msg.value !== ""));
 		}
 	}
 
@@ -163,6 +170,39 @@ const AIPage: React.FC = () => {
 
 			{
 				messageData.map((value: MessageType, index: number) => {
+					if (value.value === "ERROR: IA PART: " && value.side === "left")
+						return (
+							<div
+							className="flex items-center justify-start
+							w-full"
+							>
+								<div
+								className="flex items-center justify-center gap-3
+								rounded-xl
+								p-3
+								shadow-standard
+								max-w-[70%]
+								outline-solid outline-1 outline-red-500/50"
+								>
+									<div
+									className="flex items-center justify-center">
+										<div
+										className="font-icon text-4xl text-red-500 animate-pulse"
+										style={{
+											textShadow: "0px 0px 4px color-mix(in srgb, var(--color-red-500) 75%, transparent)"
+										}}
+										>
+											
+										</div>
+									</div>
+									<div
+									className="font-light
+									text-sm">
+										{ t("error:ERROR") }
+									</div>
+								</div>
+							</div>
+					);
 					if (value.value === "")
 						return (
 							<div
@@ -170,10 +210,11 @@ const AIPage: React.FC = () => {
 							w-full"
 							>
 								<div
-									className="font-light
+								className="font-light
+								text-sm
 								animate-fade-in"
 								>
-                { t("message.processing") }
+               						{ t("message.processing") }
 								</div>
 							</div>
 						);
@@ -186,7 +227,15 @@ const AIPage: React.FC = () => {
 					);
 				})
 			}
+
 			<div className="w-full h-20 flex-none"></div>
+			<div
+			className="fixed bottom-0 left-0
+			bg-linear-to-t from-foreground to-transparent
+			w-full h-24"
+			>
+				
+			</div>
 			<div className="fixed bottom-8
 				px-4 md:px-7 xl:px-64
 				w-full"
