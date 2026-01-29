@@ -40,12 +40,12 @@
 			"too_long": "The email address must not exceed 255 characters."
 		},
 		"firstname": {
-			"too_short": "The first name must contain at least 2 characters.",
+			"too_short": "The first name must contain at least 3 characters.",
 			"too_long": "The first name must not exceed 50 characters.",
 			"invalid_chars": "The first name may contain letters and spaces only."
 		},
 		"lastname": {
-			"too_short": "The last name must contain at least 2 characters.",
+			"too_short": "The last name must contain at least 3 characters.",
 			"too_long": "The last name must not exceed 50 characters.",
 			"invalid_chars": "The last name may contain letters and spaces only."
 		},
