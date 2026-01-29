@@ -143,6 +143,7 @@ export const	ListingsHeader: React.FC<ListingsHeaderProps> = ({
 				onClick={ () => {
 					navigate(`/property/listings/${ fetchedData.mine === true ? "seller" : "buyer" }-slots?id=${fetchedData.id}`)
 				}}
+				disabled={ !fetchedData.isAvailable }
 				/>
 				<div
 				className="flex flex-col items-start justify-center
@@ -151,14 +152,14 @@ export const	ListingsHeader: React.FC<ListingsHeaderProps> = ({
 					<div>
 						{ `${formatter.format(fetchedData.price)} Ar` }
 					</div>
-					<div
-					className="font-light text-sm"
-					style={{
-						display: fetchedData.type === "rent" ? "block" : "hidden"
-					}}
-					>
-						{ `${ " / " + t("common:month")}` }
-					</div>
+					{
+						fetchedData.type === "rent" &&
+						<div
+						className="font-light text-sm"
+						>
+							{ `${ " / " + t("common:month")}` }
+						</div>
+					}
 				</div>
 			</div>
 		</div>
