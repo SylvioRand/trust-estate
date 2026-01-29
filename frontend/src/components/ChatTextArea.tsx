@@ -51,11 +51,12 @@ export const ChatTextarea: React.FC<ChatTextareaProps> = ({
 			}}
 			style={{
 				all: "unset",
+				fontSize: "14px",
 				boxSizing: "border-box",
 				width: "100%",
 				font: "inherit",
 				lineHeight: "1.4",
-				padding: "8px 12px",
+				padding: "9px 12px",
 				borderRadius: "12px",
 				resize: "none",
 				overflowY: "hidden",
