@@ -112,8 +112,8 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 					type={ type }
 					required={ true }
 					{...(pattern ? { pattern } : {})}
-					{...(minLength ? { minLength } : {})}
-					{...(maxLength ? { maxLength } : {})}
+					minLength={ minLength }
+					maxLength={ maxLength }
 					{...(ref ? { ref } : {})}
 					{...(list ? { list } : {})}
 					onFocus={ () => setFocused(true) }
