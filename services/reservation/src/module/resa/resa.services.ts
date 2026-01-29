@@ -510,40 +510,50 @@ export async function getAvailableSlotsByUserId(
 	app: FastifyInstance,
 	userId: string,
 	days: { dayOfWeek: number, startTime: number | string, endTime: number | string }[]
-): Promise<{ day: string, slots: string[] }[]> {
-	const allAvailableSlots: { day: string, slots: string[] }[] = [];
-	const now = new Date();
-	const GMT_OFFSET = 3;
-	const todayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
+	): Promise<{ day: string, slots: string[], Taken: string[] }[]> {
+		const allAvailableSlots: { day: string, slots: string[], Taken: string[] }[] = [];
+		const now = new Date();
+		const GMT_OFFSET = 3;
+		const todayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
 
-	for (const dayObj of days) {
-		for (let week = 0; week < 2; week++) {
-			const jsDay = (dayObj.dayOfWeek % 7);
-			const todayJsDay = todayUtc.getUTCDay();
-			let daysToAdd = jsDay - todayJsDay + week * 7;
-			if (daysToAdd < 0) daysToAdd += 7;
-			const dayDateUtc = new Date(todayUtc);
-			dayDateUtc.setUTCDate(todayUtc.getUTCDate() + daysToAdd);
+		for (const dayObj of days) {
+			for (let week = 0; week < 2; week++) {
+				const jsDay = (dayObj.dayOfWeek % 7);
+				const todayJsDay = todayUtc.getUTCDay();
+				let daysToAdd = jsDay - todayJsDay + week * 7;
+				if (daysToAdd < 0) daysToAdd += 7;
+				const dayDateUtc = new Date(todayUtc);
+				dayDateUtc.setUTCDate(todayUtc.getUTCDate() + daysToAdd);
 
-			const { hour: startTime, minute: startMinute } = parseHourMinute(dayObj.startTime);
-			const { hour: endTime, minute: endMinute } = parseHourMinute(dayObj.endTime);
+				const { hour: startTime, minute: startMinute } = parseHourMinute(dayObj.startTime);
+				const { hour: endTime, minute: endMinute } = parseHourMinute(dayObj.endTime);
 
-			const availableSlots = await getAvailableSlotsForDay(
-				app,
-				userId,
-				dayDateUtc,
-				startTime,
-				startMinute,
-				endTime,
-				endMinute,
-				GMT_OFFSET
-			);
+				const slots = generateSlotsForDay(dayDateUtc, startTime, startMinute, endTime, endMinute, GMT_OFFSET);
 
-			allAvailableSlots.push({
-				day: toGmt3String(new Date(dayDateUtc)),
-				slots: availableSlots.map(toGmt3String)
-			});
+				const startOfDayUtc = new Date(Date.UTC(
+					dayDateUtc.getUTCFullYear(),
+					dayDateUtc.getUTCMonth(),
+					dayDateUtc.getUTCDate(),
+					0 - GMT_OFFSET, 0, 0, 0
+				));
+				const endOfDayUtc = new Date(Date.UTC(
+					dayDateUtc.getUTCFullYear(),
+					dayDateUtc.getUTCMonth(),
+					dayDateUtc.getUTCDate(),
+					23 - GMT_OFFSET, 59, 59, 999
+				));
+
+				const reservedDates = await getReservedSlots(app, userId, startOfDayUtc, endOfDayUtc);
+
+				const availableSlots = slots.filter(slot => !reservedDates.includes(slot.getTime()));
+				const takenSlots = slots.filter(slot => reservedDates.includes(slot.getTime()));
+
+				allAvailableSlots.push({
+					day: toGmt3String(new Date(dayDateUtc)),
+					slots: availableSlots.map(toGmt3String),
+					Taken: takenSlots.map(toGmt3String)
+				});
+			}
 		}
+		return allAvailableSlots;
 	}
-	return allAvailableSlots;
-}
