@@ -376,4 +376,31 @@ export async function getSlots(request: FastifyRequest<{Querystring: {id: string
 				"message": "common.internal_server_error"
 			});
 	}
+};
+
+export async function getSellerReservations(request: FastifyRequest, reply: FastifyReply) {
+	const user = (request as any).user as UserInterface;
+	const status = (request.query as any).status as string[] | undefined;
+
+	console.log("Status query:", status);
+	if (!user)
+		return reply.status(401).send({
+			"error": "unauthorized",
+			"message": "common.unauthorized"
+		});
+
+	try {
+		const reservations = await resaServices.getReservationsBySellerId(request.server, user.id, status);
+		return reply.status(200).send(reservations);
+	} catch (error: any) {
+		if (error.message === "reservations_not_found")
+			return reply.status(404).send({
+				"error": "reservations_not_found",
+				"message": "reservations.not_found"
+			});
+		return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
 }
