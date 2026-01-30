@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { generateSlotsForDay, parseHourMinute, responseReservation, toGmt3String } from "../../utils/utils";
 import { Prisma, PrismaClient, $Enums } from "@prisma/client";
 import { error } from "console";
+import { ListingDataInterface, ListingInterface, ReservationDetailsInterface } from "./resa.interface";
 
 type TransactionClient = Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>;
 
@@ -556,4 +557,66 @@ export async function getAvailableSlotsByUserId(
 			}
 		}
 		return allAvailableSlots;
+	};
+
+
+export async function getReservationsBySellerId(app: FastifyInstance, sellerId: string) {
+	const reservations = await app.prisma.reservation.findMany({
+		where: {
+			sellerId
+		}
+	});
+
+	if (!reservations)
+		throw new Error("reservations_not_found");
+
+	const internalToken = await import('jsonwebtoken');
+	const token = internalToken.default.sign(
+		{ service: 'reservation-service', userId: sellerId },
+		app.config.INTERNAL_KEY_SECRET,
+		{ algorithm: 'HS256', expiresIn: '30s' }
+	);
+	let listingData: any;
+	let userData: any;
+	try {
+		const res = await fetch(`${app.config.LISTINGS_SERVICE_URL}/listings/${sellerId}`, {
+			method: 'GET',
+			headers: {
+				'x-internal-key': token,
+				'x-user-id': sellerId
+			}
+		});
+		const resUser = await fetch(`${app.config.AUTH_SERVICE_URL}/users/${reservations[0].buyerId}/details`, {
+			method: 'GET',
+			headers: {
+				'x-internal-key': token,
+				'x-user-id': sellerId
+			}
+		});
+		userData =  await resUser.json();
+		listingData = await res.json() as ListingDataInterface;
+	} catch (error) {
+		app.log.error({ error }, 'Failed to notify listing service of reservations viewed');
 	}
+
+	const response: ReservationDetailsInterface = {
+		reservationId: reservations[0].reservationId,
+		slot: reservations[0].slot,
+		status: reservations[0].status,
+		createdAt: reservations[0].createdAt,
+		listing: {
+			id: listingData.id,
+			title: listingData.title,
+			price: listingData.price,
+			mainImage: listingData.mainImage
+		},
+		buyer: {
+			id: userData.id,
+			firstName: userData.firstName,
+			lastName: userData.lastName,
+			email: userData.email,
+			phone: userData.phone
+		}
+	}
+	return (response);
+}

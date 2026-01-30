@@ -27,3 +27,27 @@ interface DayListingInterface {
 export interface ListingInterface {
 	weeklySchedule: DayListingInterface[]
 }
+
+export interface ListingDataInterface {
+	id: string
+	title: string
+	price: number
+	mainImage: string
+}
+
+export interface UserDetailsInterface {
+	id: string
+	firstName: string
+	lastName: string
+	email: string
+	phone: string
+}
+
+export interface ReservationDetailsInterface {
+	reservationId: string
+	slot: Date
+	status: string
+	createdAt: Date
+	listing: ListingDataInterface
+	buyer: UserDetailsInterface
+}
