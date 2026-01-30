@@ -83,3 +83,19 @@ export const GetReservationSchema = {
 		additionalProperties: false
 	}
 }
+
+export const FilterReservationsSchema = {
+	querystring: {
+		type: 'object',
+		properties: {
+			status: {
+				type: ['string', 'array'],
+				items: {
+					type: 'string',
+					enum: ['pending', 'confirmed', 'cancelled', 'rejected', 'done']
+				}
+			}
+		},
+		additionalProperties: false
+	}
+}
