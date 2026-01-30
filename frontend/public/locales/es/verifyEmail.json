@@ -1,0 +1,12 @@
+{
+    "brand": {
+        "name": "CASA"
+    },
+
+    "header": {
+        "title": "Verificación de correo electrónico",
+        "subtitle": "Por favor, espere mientras confirmamos la validez de su dirección de correo electrónico."
+    },
+
+    "success": "Su correo electrónico ha sido verificado."
+}
