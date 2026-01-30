@@ -59,6 +59,9 @@ export async function reservationRoutes(app: FastifyInstance, options: FastifyPl
 			schema: CheckSlotSchema,
 			preHandler: app.authentication
 		}, resaControllers.checkSlot);
+	app.get("/reservations/seller/me", {
+		preHandler: app.authentication
+	}, resaControllers.getSellerReservations);
 }
 
 export async function deleteData(app: FastifyInstance, options: FastifyPluginOptions) {
