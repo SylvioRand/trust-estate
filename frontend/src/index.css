@@ -13,6 +13,7 @@
 	--color-midtone: #363636;
 	--color-darktone: #262626;
 	--color-background: #1E1E1E;
+	--color-card-bg: #FFFFFF;
 
 	color-scheme: light dark;
 }
@@ -24,6 +25,7 @@
 		--color-highlight: #262626;
 		--color-darktone: #666666;
 		--color-background: #DADADA;
+		--color-card-bg: #363636;
 	}
 }
 
@@ -39,9 +41,10 @@
 	--color-midtone: var(--color-midtone);
 	--color-darktone: var(--color-darktone);
 	--color-background: var(--color-background);
+	--color-card-bg: var(--color-card-bg);
 
-	--shadow-standard: 0px 7px 12px rgba(0,0,0,0.12);
-	--drop-shadow-standard: 0px 7px 12px rgba(0,0,0,0.12);
+	--shadow-standard: 0px 7px 12px rgba(0, 0, 0, 0.12);
+	--drop-shadow-standard: 0px 7px 12px rgba(0, 0, 0, 0.12);
 
 	--font-inter: "Inter";
 	--font-icon: "Icons";
