@@ -32,7 +32,7 @@ export interface ListingDataInterface {
 	id: string
 	title: string
 	price: number
-	mainImage: string
+	mainImage?: string
 }
 
 export interface UserDetailsInterface {
@@ -50,4 +50,8 @@ export interface ReservationDetailsInterface {
 	createdAt: Date
 	listing: ListingDataInterface
 	buyer: UserDetailsInterface
+}
+
+export interface FilterReservationsInterface {
+	status?: string
 }
