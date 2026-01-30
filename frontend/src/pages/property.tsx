@@ -1,9 +1,9 @@
 import React, { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { listData, type PropertyDataType, type ListingsProps } from "../dataModel/modelPropertyList";
+import { type PropertyDataType } from "../dataModel/modelPropertyList";
 import ActionButton from "../components/ActionButton";
-import { TagsComponents } from "./listings";
+import { TagsComponents } from "../components/TagsComponents";
 import type { ListingsTags } from "../dataModel/modelListings";
 import InputEnum, { type InputEnumData } from "../components/InputEnum";
 import type { TFunction } from "i18next";
@@ -54,7 +54,7 @@ export const PublicationCard: React.FC<PublicationCardProps> = ({
           }}
         />
         <div className="absolute top-0 left-0
-					grid grid-cols-[repeat(auto-fill,minmax(80px,1fr))] grid-rows-1
+          flex flex-wrap
 					p-2
 					gap-2
 					w-full"
@@ -166,7 +166,7 @@ const Filter: React.FC<FilterProps> = ({
     e.preventDefault();
     setIsOpen(false);
     const formData: FormData = new FormData(e.currentTarget);
-    let url: string = `/api/listings/?limit=1&page=${page}`;
+    let url: string = `/api/listings/?page=${page}`;
     const query = new URLSearchParams();
     const uniqueKeys = new Set(formData.keys());
 
@@ -437,7 +437,7 @@ const PropertyPage: React.FC = () => {
   const getDataFromBackend = async () => {
     setIsFetchingData(true);
     try {
-      const response = await fetch(`/api/listings/?limit=1&page=${page}${lastFilter}`, {
+      const response = await fetch(`/api/listings/?page=${page}${lastFilter}`, {
         method: "GET",
         credentials: "include"
       });

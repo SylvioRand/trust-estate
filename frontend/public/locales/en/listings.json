@@ -9,31 +9,58 @@
 	"viewDetails": "View Details",
 	"areaUnit": "sqft",
 
+	"status": {
+		"active": "Active",
+		"archived": "Archived",
+		"blocked": "Blocked",
+		"available": "Available",
+		"unavailable": "Unavailable"
+	},
+
 	"section": {
+		"header": {
+			"propertyType": {
+				"apartment": "Apartment",
+				"house": "House",
+				"loft": "Loft",
+				"land": "Land",
+				"commercial": "Commercial"
+			}
+		},
 		"listingType": {
-			"rent": "Rent",
+			"rent": "For rent",
 			"sale": "For sale"
 		},
-
 		"features": {
+			"title": "Features",
 			"bedrooms": "Bedroom",
 			"bathrooms": "Bathroom",
-			"area": "Area",
-			"parking_type": "Parking",
-			"water_access": "Water",
-			"electricity_access": "Electricity",
-			"garden_private": "Garden",
-			"wc_separate": "Toilet Separate"
+			"area": "Sqft"
 		},
-
+		"equipments": {
+			"title": "Amenities",
+			"parking_type": "Parking",
+			"garden_private": "Garden",
+			"wc": "Toilet",
+			"pool": "Pool",
+			"electricity_access": {
+				"title": "Electricity Access",
+				"true": "This property have access to electricity.",
+				"false": "This property doesn't have access to electricity."
+			},
+			"water_access": {
+				"title": "Water Access",
+				"true": "This property have access to water.",
+				"false": "This property doesn't have access to water."
+			}
+		},
 		"description": {
 			"title": "Description"
 		},
-
 		"quickButtons": {
 			"favorites": "Favorites",
 			"report": "Report",
-			"visit": "Schedule a visit",
+			"scheduleVisit": "Schedule a visit",
 			"visitSlot": "Visit Slot",
 			"editPost": "Edit post"
 		},
@@ -53,64 +80,81 @@
 		"post": {
 			"title": "Post",
 			"publicationDate": "Posted the",
-			"updateDate": "Updated the",
-
-			"availability": {
-				"status": {
-					"available": "This offer is available.",
-					"not_available": "This offer is no more available."
-				},
-
-				"buttons": {
-					"rented": "Unavailable",
-					"sold": "Sold",
-					"markRented": "Mark as rented",
-					"markSold": "Mark as sold"
-				},
-
-				"popup": {
-					"markRented": {
-						"title": "Rented",
-						"explanation": "Mark the publication as rented, you can unmark it only after 1 month from the moment you change it.",
-						"accept": "Mark as rented"
-					},
-					"unmarkRented": {
-						"title": "Replace in market",
-						"explanation": "Unmarking this publication replace it on the feed of other users. Do you want to proceed?",
-						"accept": "Unmark"
-					},
-					"markSold": {
-						"title": "Sold",
-						"explanation": "Mark the publication as sold, you cannot invert this process. Are you certain to continue?",
-						"accept": "Mark as sold"
-					}
-				}
-			},
-
-			"archive": {
-				"buttons": {
-					"title": "Archive",
-					"disabled": "This post is archived"
-				},
-
-				"popup": {
-					"title": "Archive post",
-					"warning": "Archived post will not be visible by other users.\nThis action cannot be undo.\nAre you sure?",
-					"continue": "Archive it"
-				}
-			}
+			"updateDate": "Updated the"
 		},
 
 		"stats": {
 			"title": "Statistics of the seller",
 
 			"sellerStats": {
-				"totalListings": "Listings",
-				"activeListings": "On Market",
 				"successfulSales": "Sold Property",
-				"successfulRents": "Rented Property",
-				"averageRating": "Rating",
-				"responseRate": "Response Rate"
+				"successfulRent": "Rented Property",
+				"averageRating": "Rating"
+			}
+		},
+		
+		"actionButton": {
+			"popup": {
+				"title": "Listings Action",
+				"edit": {
+					"title": "Edit"
+				},
+				"archive": {
+					"title": "Archive",
+					"popup": {
+						"title": "Archive listing",
+						"warning": "Archiving this listing is permanent and cannot be undone. Once archived, the listing will be removed from public view and you will not be able to restore it. Please make sure you really want to archive this listing before proceeding.",
+						"continue": "Archive listing",
+						"success": "Your listing was placed in the archive."
+					}
+				},
+				"mark": {
+					"sold": {
+						"title": "Mark as sold"
+					},
+					"rented": {
+						"title": "Mark as rented"
+					},
+					"popup": {
+						"sale": {
+							"title": "Mark as sold",
+							"warning": "Marking this property as sold is permanent and cannot be undone.",
+							"continue": "Mark it"
+						},
+						"rent": {
+							"title": "Mark as rented",
+							"warning": "Marking this property as rented can be reversed later if needed.",
+							"continue": "Mark it"
+						}
+					}
+				},
+				"unmark": {
+					"title": "Mark as available",
+					"popup": {
+						"title": "Mark as available",
+						"warning": "Marking this listing as available again will make it visible to other users. Once reactivated, the property will appear in search results and can be viewed and contacted by interested users.",
+						"continue": "Unmark it"
+					}
+				},
+				"report": {
+					"title": "Report",
+					"popup": {
+						"title": "Report Listing",
+						"reason": {
+							"title": "Reason",
+							"fraud": "Fraud",
+							"spam": "Spam",
+							"incorrect_info": "Incorrect information",
+							"inappropriate": "Inappropriate"
+						},
+						"comment": {
+							"title": "Comment",
+							"placeholder": "Enter your comment here."
+						},
+						"warning": "Reporting a listing lets you alert our moderation team about content that may be inaccurate, inappropriate, or in violation of our rules.",
+						"submit": "Submit"
+					}
+				}
 			}
 		},
 
@@ -119,12 +163,6 @@
 			"views": "Views",
 			"reservations": "Reservations",
 			"feedbacks": "Feedbacks"
-		},
-
-		"pictures": {
-			"buttons": {
-				"seeMore": "See more"
-			}
 		}
 	}
 }

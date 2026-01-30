@@ -9,21 +9,51 @@
 	"viewDetails": "Voir les détails",
 	"areaUnit": "m2",
 
+	"status": {
+		"active": "Actif",
+		"archived": "Archivée",
+		"blocked": "Bloquée",
+		"available": "Disponible",
+		"unavailable": "Indisponible"
+	},
+
 	"section": {
+		"header": {
+			"propertyType": {
+				"apartment": "Appartement",
+				"house": "Maison",
+				"loft": "Loft",
+				"land": "Terrain",
+				"commercial": "Commercial"
+			}
+		},
 		"listingType": {
 			"rent": "Location",
 			"sale": "Vente"
 		},
-
 		"features": {
+			"title": "Caractéristiques",
 			"bedrooms": "Chambres",
-			"bathrooms": "Salle de bains",
-			"area": "Surface",
-			"parking_type": "Stationnement",
-			"water_access": "Eau",
-			"electricity_access": "Courant",
-			"garden_private": "Jardin",
+			"bathrooms": "Douches",
+			"area": "m2",
 			"wc_separate": "WC exterieur"
+		},
+		"equipments": {
+			"title": "Equipements",
+			"parking_type": "Parking",
+			"garden_private": "Jardin",
+			"wc": "Toilette",
+			"pool": "Piscine",
+			"electricity_access": {
+				"title": "Accès electricité",
+				"true": "Cette propriété a accèss a l'électricité.",
+				"false": "Cette propriété n'a pas accèss a l'électricité."
+			},
+			"water_access": {
+				"title": "Accès d'eau",
+				"true": "Cette propriété a accès a l'eau.",
+				"false": "Cette propriété n'a pas accès a l'eau."
+			}
 		},
 
 		"description": {
@@ -33,7 +63,7 @@
 		"quickButtons": {
 			"favorites": "Favoris",
 			"report": "Signaler",
-			"visit": "Planifier une visite",
+			"scheduleVisit": "Planifier une visite",
 			"visitSlot": "Voir créneaux",
 			"editPost": "Editer la publication"
 		},
@@ -52,46 +82,73 @@
 		"post": {
 			"title": "Publication",
 			"publicationDate": "Publié le",
-			"updateDate": "Mis à jour le",
-
-			"availability": {
-				"status": {
-					"available": "Cette offre est encore disponible.",
-					"not_available": "Cette offre n'est plus disponible."
-				},
-
-				"buttons": {
-					"rented": "Loué",
-					"sold": "Vendue",
-					"markRented": "Marquer comme louer",
-					"markSold": "Marquer comme vendue"
-				}
-			},
-
-			"archive": {
-				"buttons": {
-					"title": "Archiver",
-					"disabled": "Cette publication est archiver"
-				},
-
-				"popup": {
-					"title": "Archiver la publication",
-					"warning": "Les postes archiver ne sont plus visibles par les autres utilisateurs.\nCette action est irréversible.\nEn êtes-vous sure?",
-					"continue": "Continuer"
-				}
-			}
+			"updateDate": "Mis à jour le"
 		},
 
 		"stats": {
 			"title": "Statistiques du vendeur",
 
 			"sellerStats": {
-				"totalListings": "Annonces",
-				"activeListings": "Sur le marché",
 				"successfulSales": "Biens Vendues",
-				"successfulRents": "Biens loués",
-				"averageRating": "Score",
-				"responseRate": "Score de réponse"
+				"successfulRent": "Biens loués",
+				"averageRating": "Score"
+			}
+		},
+		
+		"actionButton": {
+			"popup": {
+				"title": "Action de l'annonce",
+				"edit": {
+					"title": "Modifier"
+				},
+				"archive": {
+					"title": "Archiver",
+					"popup": {
+						"title": "Archiver annonce",
+						"warning": "L’archivage de cette annonce est définitif et ne peut pas être annulé. Une fois archivée, l’annonce sera retirée de la vue publique et il ne sera pas possible de la restaurer. Veuillez vous assurer que vous souhaitez vraiment archiver cette annonce avant de continuer.",
+						"continue": "Archiver l'annonce",
+						"success": "L'annonce à été placée dans les archives."
+					}
+				},
+				"mark": {
+					"sold": {
+						"title": "Marquer comme vendu",
+						"warning": "Marquer cette propriété comme vendue est définitif et ne peut pas être annulé.",
+						"continue": "Marquer"
+					},
+					"rented": {
+						"title": "Marquer comme louée",
+						"warning": "Marquer cette propriété comme louée peut être annulé ultérieurement si nécessaire.",
+						"continue": "Marquer"
+					}
+				},
+				"unmark": {
+					"title": "Marquer comme disponible",
+					"popup": {
+						"title": "Marquer comme disponible",
+						"warning": "Marquer cette annonce comme disponible à nouveau la rendra visible pour les autres utilisateurs. Une fois réactivée, la propriété apparaîtra dans les résultats de recherche et pourra être consultée et contactée par les utilisateurs intéressés.",
+						"continue": "Continuer"
+					}
+				},
+				"report": {
+					"title": "Signaler",
+					"popup": {
+						"title": "Signaler l'annonce",
+						"reason": {
+							"title": "Raison",
+							"fraud": "Fraude",
+							"spam": "Spam",
+							"incorrect_info": "Information incorrecte",
+							"inappropriate": "Inapproprié"
+						},
+						"comment": {
+							"title": "Commentaire",
+							"placeholder": "Entrer votre commentaire ici."
+						},
+						"warning": "Signaler une annonce vous permet d’alerter notre équipe de modération concernant un contenu qui pourrait être inexact, inapproprié ou ne pas respecter nos règles.",
+						"submit": "Envoyer"
+					}
+				}
 			}
 		},
 
@@ -100,12 +157,6 @@
 			"views": "Vues",
 			"reservations": "Reservations",
 			"feedbacks": "Critiques"
-		},
-
-		"pictures": {
-			"buttons": {
-				"seeMore": "Voir plus"
-			}
 		}
 	}
 }

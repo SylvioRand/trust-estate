@@ -48,8 +48,9 @@ const	PhoneInput: React.FC<PhoneInputProps> = ({
 				shadow-standard
 				w-full h-12"
 				style={{
-					borderColor: error.length > 0 ? "var(--color-red-500)" : "color-mix(in srgb, var(--color-background) 25%, transparent)",
-					borderWidth: focused ? "3px" : "1px",
+					outlineStyle: "solid",
+					outlineColor: error.length > 0 ? "var(--color-red-500)" : "color-mix(in srgb, var(--color-background) 25%, transparent)",
+					outlineWidth: focused ? "3px" : "1px",
 				}}
 			>
 				<div className="flex items-center justify-center

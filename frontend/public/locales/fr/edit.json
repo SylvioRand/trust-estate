@@ -1,0 +1,98 @@
+{
+	"tags": {
+		"title": "Tags",
+		"add": {
+			"title": "Ajouter Tag",
+			"popup": {
+				"title": "Ajouter un Tag",
+				"value": {
+					"urgent": "Urgent",
+					"exclusive": "Exclusive",
+					"discount": "Promotion"
+				}
+			}
+		}
+	},
+	"buttons": {
+		"goBackToListing": "Revenir à l'annonce",
+		"save": "Enregistrer"
+	},
+	"form": {
+		"title": {
+			"title": "Titre",
+			"placeholder": "Titre de votre annonce"
+		},
+		"description": {
+			"title": "Description",
+			"placeholder": "Laisser une description à propos de la maison.",
+			"buttons": {
+				"enhance": "Améliorer avec l'IA"
+			}
+		},
+		"price": {
+			"title": "Prix",
+			"placeholder": "Prix en Ariary"
+		},
+		"area": {
+			"title": "Surface",
+			"placeholder": "Surface en m2"
+		},
+		"wc": {
+			"title": "Toilette"
+		},
+		"propertyType": {
+			"title": "Type de propriété",
+			"apartment": "Appartement",
+			"house": "Maison",
+			"loft": "Loft",
+			"land": "Terrain",
+			"commercial": "Commercial"
+		},
+		"zone": {
+			"title": "Lieu"
+		},
+		"type": {
+			"title": "Type de contrat",
+			"sale": "Vente",
+			"rent": "Location"
+		},
+		"bedrooms": {
+			"title": "Chambre à coucher",
+			"placeholder": "Nombre de chambre à coucher"
+		},
+		"bathrooms": {
+			"title": "Salle de bain",
+			"placeholder": "Nombre de salle de bain"
+		},
+		"wc_separate": {
+			"title": "Toilette extérieure"
+		},
+		"pool": {
+			"title": "Piscine"
+		},
+		"parking_type": {
+			"title": "Parking",
+			"none": {
+				"title": "Non"
+			},
+			"garage": {
+				"title": "Garage"
+			},
+			"box": {
+				"title": "Box"
+			},
+			"parking": {
+				"title": "Parking"
+			}
+		},
+		"garden_private": {
+			"title": "Jardin"
+		},
+		"water_access": {
+			"title": "Eau"
+		},
+		"electricity_access": {
+			"title": "Courant"
+		}
+	}
+}
