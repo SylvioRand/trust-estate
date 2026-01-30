@@ -351,7 +351,7 @@ const PublishPage: React.FC = () => {
 			title={t("section.main.form.price.title")}
 			name="price"
 			type="decimal"
-			minLength={6}
+			minLength={1}
 			maxLength={24}
 			placeholder={t("section.main.form.price.placeholder")}
 			error={errorPrice}
@@ -362,7 +362,7 @@ const PublishPage: React.FC = () => {
 			title={t("section.main.form.area.title")}
 			name="area"
 			type="decimal"
-			minLength={2}
+			minLength={1}
 			maxLength={24}
 			placeholder={t("section.main.form.area.placeholder")}
 			error={errorArea}
