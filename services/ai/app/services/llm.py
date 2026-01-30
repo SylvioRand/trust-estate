@@ -104,7 +104,7 @@ class LLMService:
         headers = {
             "Authorization": "Bearer " + self.key,
             "Content-Type": "application/json",
-            "User-Agent": "MyChatGPT/1.0"
+            "User-Agent": "ft_transcendence_ai/1.0"
         }
         return headers
 
