@@ -318,13 +318,16 @@ const BuyerSlotsPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex gap-4 mt-2">
-              <button
-                onClick={() => setShowConfirmation(false)}
-                className="flex-1 py-3 px-6 rounded-2xl border border-highlight/20 font-bold hover:bg-highlight/5 transition-colors"
-              >
-                {t("buttons.cancel", "Annuler")}
-              </button>
+            <div className="flex gap-4 mt-2 w-full">
+              <div className="flex-1">
+                <ActionButton
+                  title={t("buttons.cancel", "Annuler")}
+                  padding="p-4"
+                  base_color="var(--color-darktone)"
+                  accent_color="var(--color-background)"
+                  onClick={() => setShowConfirmation(false)}
+                />
+              </div>
               <div className="flex-1">
                 <ActionButton
                   title={t("buttons.confirm", "Confirmer")}
