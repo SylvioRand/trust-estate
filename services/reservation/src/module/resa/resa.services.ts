@@ -74,6 +74,8 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 			throw new Error("cannot_reserve_own_listing");
 		}
 
+		await debitCredits(app, userId);
+
 		const reservation = await tx.reservation.create({
 			data: {
 				listingId,
@@ -122,7 +124,7 @@ export async function deleteReservation(app: FastifyInstance, userId: string, re
 	})
 };
 
-export async function changeStatusReservation(app: FastifyInstance, userId: string, reservationId: string) {
+export async function cancelReservation(app: FastifyInstance, userId: string, reservationId: string) {
 	await app.prisma.$transaction(async (tx: TransactionClient) => {
 		const reservation = await tx.reservation.findFirst({
 			where: {
@@ -155,8 +157,11 @@ export async function changeStatusReservation(app: FastifyInstance, userId: stri
 		else
 			cancel = $Enums.CancelledBy.system;
 
-		if (reservation.status === "confirmed" && cancel === $Enums.CancelledBy.seller) {
-			await crediter(app, reservation.buyerId);
+
+		// NEW RULE: Only refund if the SELLER or SYSTEM cancels.
+		// If the BUYER cancels their own reservation, they lose their credits.
+		if ((reservation.status === 'confirmed' || reservation.status === 'pending') && (cancel === $Enums.CancelledBy.seller || cancel === $Enums.CancelledBy.system)) {
+			await refundCredits(app, reservation.buyerId);
 		}
 
 		await tx.reservation.update({
@@ -208,8 +213,6 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 		if (conflictingReservation) {
 			throw new Error("seller_slot_unavailable");
 		}
-
-		await debiter(app, reservation.buyerId);
 
 		await tx.reservation.updateMany({
 			where: {
@@ -306,6 +309,8 @@ export async function rejectStatusReservation(app: FastifyInstance, userId: stri
 		if (reservation.status !== "pending")
 			throw new Error("reservation_already_processed");
 
+		await refundCredits(app, reservation.buyerId);
+
 		const data = await tx.reservation.update({
 			where: { reservationId },
 			data: {
@@ -368,7 +373,7 @@ export async function getSlot(app: FastifyInstance, listingId: string, slot: Dat
 	})
 };
 
-async function debiter(app: FastifyInstance, buyerId: string) {
+async function debitCredits(app: FastifyInstance, buyerId: string) {
 	const jwt = await import('jsonwebtoken');
 	const internalToken = jwt.default.sign(
 		{ service: 'reservation-service', userId: buyerId },
@@ -402,6 +407,36 @@ async function debiter(app: FastifyInstance, buyerId: string) {
 		throw error;
 	}
 }
+
+async function refundCredits(app: FastifyInstance, buyerId: string) {
+	const jwt = await import('jsonwebtoken');
+	const internalToken = jwt.default.sign(
+		{ service: 'reservation-service', userId: buyerId },
+		app.config.INTERNAL_KEY_SECRET,
+		{ algorithm: 'HS256', expiresIn: '30s' }
+	);
+
+	try {
+		const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/internal/credits/refund`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'x-internal-key': internalToken,
+				'x-user-id': buyerId
+			},
+			body: JSON.stringify({
+				reason: 'refund_visit'
+			})
+		});
+
+		if (!response.ok) {
+			throw new Error('credit_service_error');
+		}
+	} catch (error: any) {
+		app.log.error({ error }, 'Failed to refund credits');
+		// We don't necessarily want to crash the whole process if refund fails, but log it
+	}
+}
 export async function deleteUserData(app: FastifyInstance, userId: string) {
 	return await app.prisma.$transaction(async (tx: TransactionClient) => {
 		await tx.reservation.deleteMany({
@@ -415,36 +450,6 @@ export async function deleteUserData(app: FastifyInstance, userId: string) {
 	});
 }
 
-async function crediter(app: FastifyInstance, userId: string) {
-	const jwt = await import('jsonwebtoken');
-	const internalToken = jwt.default.sign(
-		{ service: 'reservation-service', userId },
-		app.config.INTERNAL_KEY_SECRET,
-		{ algorithm: 'HS256', expiresIn: '30s' }
-	);
-
-	try {
-		const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/internal/credits/credit`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'x-internal-key': internalToken,
-				'x-user-id': userId
-			},
-			body: JSON.stringify({
-				reason: "refund_cancelled",
-				type: 'refund'
-			})
-		});
-
-		if (!response.ok) {
-			const error = await response.json() as any;
-			throw new Error('credit_service_error');
-		}
-	} catch (error: any) {
-		app.log.error({ error }, 'Failed to credit user');
-	}
-};
 
 export async function getAvailability(app: FastifyInstance, userId: string) {
 	const jwt = await import('jsonwebtoken');

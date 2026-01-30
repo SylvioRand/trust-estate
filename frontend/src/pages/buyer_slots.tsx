@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
 import { useState } from "react";
+import PopUp from "../components/PopUp";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { useEffect } from "react";
@@ -65,6 +66,7 @@ const BuyerSlotsPage: React.FC = () => {
   const [selectedSlot, setSelectedSlot] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const url = `/api/reservations/get-slot?id=${listingID}`;
   //url = "http://127.0.0.1:3658/m1/1162080-1155411-default/api/reservations/get-slot"; // mock
 
@@ -267,7 +269,7 @@ const BuyerSlotsPage: React.FC = () => {
                           font_size="text-[20px]"
                           icon_size={28}
                           disabled={!selectedSlot}
-                          onClick={() => alert(`Réservation pour le ${selected?.toLocaleDateString()} à ${new Date(selectedSlot!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`)}
+                          onClick={() => setShowConfirmation(true)}
                         />
                       </div>
                     </>
@@ -278,6 +280,66 @@ const BuyerSlotsPage: React.FC = () => {
           </div>
         )}
       </div>
+      {showConfirmation && (
+        <PopUp
+          title={t("confirmationTitle", "Confirmer la réservation")}
+          onClose={() => setShowConfirmation(false)}
+        >
+          <div className="flex flex-col gap-6 p-2 text-background">
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-bold uppercase tracking-widest opacity-60">
+                {t("dateAndTime", "Date et heure")}
+              </p>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">📅</span>
+                <p className="text-lg font-black">
+                  {selected?.toLocaleDateString(i18n.language, {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">⏰</span>
+                <p className="text-lg font-black">
+                  {selectedSlot && new Date(selectedSlot).toLocaleTimeString(i18n.language, {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-accent/10 p-4 rounded-2xl border border-accent/20">
+              <p className="text-xs leading-relaxed opacity-80">
+                {t("confirmationNotice", "En confirmant, une demande de visite sera envoyée au propriétaire. Vous pourrez suivre l'état de votre demande dans vos réservations.")}
+              </p>
+            </div>
+
+            <div className="flex gap-4 mt-2">
+              <button
+                onClick={() => setShowConfirmation(false)}
+                className="flex-1 py-3 px-6 rounded-2xl border border-highlight/20 font-bold hover:bg-highlight/5 transition-colors"
+              >
+                {t("buttons.cancel", "Annuler")}
+              </button>
+              <div className="flex-1">
+                <ActionButton
+                  title={t("buttons.confirm", "Confirmer")}
+                  icon=""
+                  padding="p-4"
+                  onClick={() => {
+                    alert("Action de réservation réelle ici");
+                    setShowConfirmation(false);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </PopUp>
+      )}
     </div>
   );
 };
