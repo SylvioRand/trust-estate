@@ -6,10 +6,11 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated: 2026/01/27 09:54:59 by aelison          ###   ########.fr        #
+#    Updated: 2026/01/30 08:55:29 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+from typing import Collection
 import chromadb
 import json
 import re
@@ -35,15 +36,13 @@ class ChromadbService:
         
         try:
             return json.loads(json_str)
-        except json.JSONDecodeError as e:
-            print(f"Error: Failed to parse JSON: {e}")
-        return None
+        except json.JSONDecodeError:
+            return None
         
     async def initRequest(self):
         self.client = await chromadb.AsyncHttpClient(
                 host='chromadb-service',
                 port=8000,
-                settings=Settings(anonymized_telemetry=False)
         )
 
     async def create_collection(self, collection_name="posts"):
@@ -54,8 +53,8 @@ class ChromadbService:
             )
             self.collections[collection_name] = tmp
             return tmp
-        except Exception as e:
-            print(f"Error create collection: {e}")
+        except Exception:
+            return None
 
     async def add_to_collection(self, collection_name, data: PostModel):
         target_collection = self.collections.get(collection_name)
@@ -139,50 +138,76 @@ class ChromadbService:
             await to_find.delete(ids=[id])
             return True
 
-        except Exception as e:
-            print(f"Error deleting data in collection {e}")
-        return False
+        except Exception:
+            return False
 
-    async def query_in_collection(self, collection_name, text, nb_result=10, filters=None):
+    async def query_in_collection(self, collection_name, text, nb_result=10, filters=None, id_ref=None):
         to_find = self.collections.get(collection_name)
         parse_filters = None
 
         if not to_find:
             return False
-        if filters:
-            if len(filters) > 1:
-                parse_filters = {
-                    "$and": [{key: value} for key, value in filters.items()]
-                }
-            if len(filters) == 1:
-                parse_filters = filters
-
-        embedding_format = embeddingService.generate_embedding(text)
+        if filters and not id_ref:
+            filter_bloc = []
+            for key, value in filters.items():
+                if isinstance(value, dict):
+                    for operator, content in value.items():
+                        filter_bloc.append({key: {operator: content}})
+                else:
+                    filter_bloc.append({key: value})
+            if len(filter_bloc) > 1:
+                parse_filters = {"$and": filter_bloc}
+            else:
+                parse_filters = filter_bloc[0]
+            embedding_format = ""
+        if id_ref:
+            target_ref = await self.collections[collection_name].get(
+                    ids=[id_ref],
+                    include=['embeddings']
+            )
+            embedding_format = target_ref['embeddings'][0]
+            parse_filters = { "id": {"$ne": id_ref}}
+        else:
+            embedding_format = embeddingService.generate_embedding(text)
         result = await self.collections[collection_name].query(
-            query_embeddings=[embedding_format],
-            n_results=nb_result,
-            where=parse_filters
+        query_embeddings=[embedding_format],
+        n_results=nb_result,
+        where=parse_filters
         )
         return result
 
     def get_parse_prompt(self):
         parse_prompt = """
+        RULES:
+        1. ONLY use these metadata fields in "filters": "price", "zone", "post_type", "property_type", "surface".
+        2. If the user mentions bedrooms, bathrooms, or gardens, DO NOT put them in "filters". Put those keywords in "search_text".
+        3. "post_type" must be exactly 'sale' or 'rent'.
+        4. "price" and "surface" must be numbers (integers), not strings.
+
         You are a search assistant for a real estate app. 
         Analyze the user's request and output a JSON object with:
         1. "search_text": The semantic part of the query (e.g., "beautiful house with garden").
         2. "filters": A dictionary of metadata filters for ChromaDB.
-        
+
         Available metadata fields: "price", "zone", "post_type" (sale/rent), "property_type" ('apartment', 'house', 'loft', 'land', 'commercial'), 'surface'
         
         Use ChromaDB operators: $gt, $lt, $eq, $gte, $lte.
-        
+        Example output for "House with 3 bedrooms in Ambohipo under 2M":
+        {
+            "search_text": "house 3 bedrooms garden",
+            "filters": {
+                "zone": "Ambohipo",
+                "price": {"$lt": 2000000},
+                "post_type": "rent"
+            }
+        }
         Example output for "House in Madagascar under 2M":
         {
-        "search_text": "house",
-        "filters": {
-            "zone": "Madagascar",
-            "price": {"$lt": 2000000}
-        }
+            "search_text": "house",
+            "filters": {
+                "zone": "Madagascar",
+                "price": {"$lt": 2000000}
+            }
         }
         """
         return parse_prompt
@@ -208,14 +233,14 @@ class ChromadbService:
         """
         return prompt
 
-    async def get_query(self, user_mssg, llm_service, sys_prompt):
+    async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
         llm_parse_response = llm_service.generate_bloc_response(user_mssg, sys_prompt)
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}
         search_text = datas.get("search_text", user_mssg)
         filters = datas.get("filters", None)
-        result = await self.query_in_collection("posts", search_text, 5, filters)
+        result = await self.query_in_collection("posts", search_text, 3, filters, id_ref)
 
         relevant_data = [
                 (id, doc, meta, score)
@@ -244,8 +269,7 @@ class ChromadbService:
             data = await target_collection.get(ids=specific_ids)
             if len(data['ids']) == 0:
                 return False
-        except Exception as e:
-            print(f"Error in getting data inside collection {e}")
+        except Exception:
             return False
         return True
     
@@ -259,8 +283,7 @@ class ChromadbService:
             if len(data['ids']) == 0:
                 return None
             return data
-        except Exception as e:
-            print(f"Error in getting data inside collection {e}")
+        except Exception:
             return None
 
     async def add_context_to_query(self, collection_name, query, context):

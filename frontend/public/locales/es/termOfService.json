@@ -1,0 +1,70 @@
+{
+    "title": "Términos de Uso",
+
+    "section": {
+        "acceptanceOfTerms": {
+            "title": "Aceptación de los términos",
+            "legalText": "Al acceder a este sitio web o utilizar sus servicios, usted reconoce haber leído, comprendido y aceptado estar sujeto a estos Términos de Uso. Si no acepta estas condiciones, no debe utilizar la plataforma. Estos términos constituyen un acuerdo legalmente vinculante entre usted y la plataforma."
+        },
+        "descriptionOfService": {
+            "title": "Descripción del servicio",
+            "legalText": "La plataforma es un mercado inmobiliario digital diseñado para facilitar la publicación de anuncios inmobiliarios y la reserva de visitas a propiedades en Madagascar. La plataforma actúa exclusivamente como un intermediario que organiza la información y permite el contacto entre usuarios. No actúa como agencia inmobiliaria, notario, autoridad de tierras, asesor legal o institución financiera."
+        },
+        "userAccounts": {
+            "title": "Cuentas de usuario y responsabilidades",
+            "legalText": "Ciertas funciones de la plataforma requieren la creación de una cuenta de usuario. Los usuarios se comprometen a proporcionar información exacta, completa y actualizada, y a preservar la confidencialidad de sus credenciales de acceso. Los usuarios son los únicos responsables de todas las actividades realizadas a través de su cuenta. La plataforma se reserva el derecho de suspender o cancelar una cuenta en caso de violación de estos términos, uso abusivo o comportamiento fraudulento."
+        },
+        "userRoles": {
+            "title": "Roles de usuario y uso contextual",
+            "legalText": "La plataforma funciona con una cuenta única por persona. Los roles como comprador, vendedor, arrendador o arrendatario son contextuales y se determinan por las acciones del usuario. La plataforma no otorga ningún estatus permanente, certificación ni reconocimiento profesional a ningún usuario."
+        },
+        "userContent": {
+            "title": "Anuncios y contenidos generados por los usuarios",
+            "legalText": "Los usuarios son los únicos responsables de los contenidos que publiquen, incluidos anuncios, descripciones, imágenes y documentos. La plataforma no garantiza la exactitud, legalidad, existencia, propiedad ni el estado de cualquier propiedad listada. Cualquier documento subido se proporciona solo a título informativo y no constituye en ningún caso una verificación o certificación legal."
+        },
+        "moderationAndVisibility": {
+            "title": "Moderación, visibilidad y gestión de contenidos",
+            "legalText": "La plataforma puede utilizar mecanismos de moderación automatizados o humanos para detectar incoherencias, contenidos engañosos o comportamientos abusivos. Estas acciones pueden afectar la visibilidad de los anuncios sin constituir una validación legal. La plataforma se reserva el derecho de solicitar correcciones, reducir la visibilidad o eliminar contenido en caso de fraude manifiesto, abuso o violación de estos términos."
+        },
+        "reservations": {
+            "title": "Reservas y compromisos de los usuarios",
+            "legalText": "La reserva de una visita constituye un compromiso entre usuarios, pero no crea ninguna obligación contractual garantizada o ejecutada por la plataforma. La plataforma no verifica la realización efectiva de las visitas ni la conclusión de las transacciones. Cualquier negociación, acuerdo, pago, arrendamiento o venta se realiza estrictamente fuera de la plataforma y bajo la exclusiva responsabilidad de las partes involucradas."
+        },
+        "paymentsAndCredits": {
+            "title": "Pagos y créditos",
+            "legalText": "Ciertas acciones en la plataforma pueden requerir el uso de créditos. Los créditos corresponden a acciones unitarias en la plataforma y no son reembolsables. La plataforma no garantiza ningún resultado, nivel de visibilidad o éxito de la transacción a cambio del uso de los créditos."
+        },
+        "noTransactionalResponsibility": {
+            "title": "Ausencia de responsabilidad legal o transaccional",
+            "legalText": "La plataforma no participa, no supervisa, no garantiza ni valida ninguna transacción. No verifica los documentos de propiedad, títulos de propiedad, precios, cumplimiento legal u obligaciones contractuales. Los usuarios reconocen que cualquier transacción resultante del uso de la plataforma se realiza bajo su propio riesgo."
+        },
+        "intellectualProperty": {
+            "title": "Propiedad intelectual",
+            "legalText": "Todos los contenidos y elementos proporcionados por la plataforma, incluidos el software, el diseño, los logotipos y los textos, son propiedad exclusiva de la plataforma. Los usuarios conservan la propiedad de sus contenidos, pero otorgan a la plataforma una licencia no exclusiva, mundial y gratuita para su uso, visualización y difusión con fines de funcionamiento del servicio."
+        },
+        "serviceAvailability": {
+            "title": "Disponibilidad del servicio y modificaciones",
+            "legalText": "La plataforma se proporciona 'tal cual' y 'según disponibilidad'. La plataforma no garantiza un acceso ininterrumpido, un funcionamiento libre de errores ni la disponibilidad permanente de las funciones. La plataforma puede modificar, suspender o interrumpir total o parcialmente el servicio en cualquier momento, sin incurrir en responsabilidad."
+        },
+        "limitationOfLiability": {
+            "title": "Limitación de responsabilidad",
+            "legalText": "Dentro de los límites permitidos por la ley aplicable, la plataforma no será responsable de los daños indirectos, incidentales, consecuentes o financieros resultantes del uso o la imposibilidad de usar el servicio, incluidos los litigios entre usuarios o los anuncios fraudulentos."
+        },
+        "termination": {
+            "title": "Rescisión",
+            "legalText": "Los usuarios pueden dejar de utilizar la plataforma en cualquier momento. La plataforma se reserva el derecho de suspender o cancelar el acceso al servicio en caso de violación de estos términos, abuso o riesgo legal. La rescisión no afecta a las obligaciones contraídas anteriormente."
+        },
+        "governingLaw": {
+            "title": "Ley aplicable y jurisdicción competente",
+            "legalText": "Estos Términos de Uso se rigen por las leyes aplicables en Madagascar. Cualquier disputa relacionada con el uso de la plataforma queda bajo la jurisdicción exclusiva de los tribunales competentes."
+        },
+        "changesToTerms": {
+            "title": "Modificación de los términos",
+            "legalText": "La plataforma se reserva el derecho de modificar estos Términos de Uso en cualquier momento. El uso continuo de la plataforma después de cualquier modificación implica la aceptación de los términos actualizados."
+        },
+        "contactInformation": {
+            "title": "Información de contacto",
+            "legalText": "Para cualquier pregunta o inquietud relacionada con estos Términos de Uso, los usuarios pueden contactar con la plataforma a través de los datos de contacto oficiales disponibles en el sitio."
+        }
+    }
+}

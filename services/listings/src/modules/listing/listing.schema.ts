@@ -209,3 +209,9 @@ export const ReservationIdSchema = z.object({
 }).strict();
 
 export type ReservationIdParams = z.infer<typeof ReservationIdSchema>
+
+export const GetDeleteUserDataParams = z.object({
+  userId: z.string().uuid()
+}).strict();
+
+export type GetDeleteUserDataParamsType = z.infer<typeof GetDeleteUserDataParams>;

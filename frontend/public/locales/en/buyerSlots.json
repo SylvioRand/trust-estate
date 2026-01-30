@@ -1,5 +1,12 @@
 {
 	"buttons": {
-		"goBackToListing": "Back to the listing"
-	}
+		"goBackToListing": "Back to listing",
+		"reserve": "Reserve this slot"
+	},
+	"timezoneNote": "All times are in Madagascar (GMT+3)",
+	"pleaseSelectDate": "Please select a date",
+	"slotsAvailable": "slots available",
+	"morning": "Morning",
+	"afternoon": "Afternoon",
+	"evening": "Evening"
 }
