@@ -40,12 +40,12 @@
 			"too_long": "The email address must not exceed 255 characters."
 		},
 		"firstname": {
-			"too_short": "The first name must contain at least 2 characters.",
+			"too_short": "The first name must contain at least 3 characters.",
 			"too_long": "The first name must not exceed 50 characters.",
 			"invalid_chars": "The first name may contain letters and spaces only."
 		},
 		"lastname": {
-			"too_short": "The last name must contain at least 2 characters.",
+			"too_short": "The last name must contain at least 3 characters.",
 			"too_long": "The last name must not exceed 50 characters.",
 			"invalid_chars": "The last name may contain letters and spaces only."
 		},
@@ -140,7 +140,11 @@
 		"renew_success": "The listing has been renewed for 30 days.",
 		"availability_updated": "The availability has been updated.",
 		"report_success": "The report has been submitted successfully.",
-		"already_reported": "This listing has already been reported."
+		"already_reported": "This listing has already been reported.",
+		"marked_as_sold": "This listing was marked as sold.",
+		"marked_as_rented": "This listing was marked as rented.",
+		"made_available": "This listing was marked as available.",
+		"change_saved": "The listing was updated."
 	},
 	"reservation": {
 		"slot_already_reserved": "The selected slot is already reserved.",
