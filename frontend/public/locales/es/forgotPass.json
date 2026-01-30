@@ -1,0 +1,28 @@
+{
+    "brand": {
+        "name": "CASA"
+    },
+
+    "header": {
+        "title": "Contraseña olvidada",
+        "subtitle": "Introduzca su dirección de correo electrónico y le enviaremos las instrucciones de restablecimiento."
+    },
+
+    "form": {
+        "email": {
+            "label": "Correo electrónico",
+            "placeholder": "tu@ejemplo.com"
+        }
+    },
+
+    "notification": {
+        "emailSent": "Se ha enviado un enlace a su correo electrónico."
+    },
+
+    "countdownMessage": "Podrá reenviar un enlace después de: ",
+
+    "actions": {
+        "send": "Enviar enlace",
+        "cancel": "Volver al inicio de sesión"
+    }
+}

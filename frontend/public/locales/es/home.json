@@ -1,0 +1,50 @@
+{
+    "brand": {
+        "name": "CASA"
+    },
+
+    "buttons": {
+        "search": {
+            "title": "Buscar",
+            "placeholder": "Buscar una propiedad en"
+        }
+    },
+    
+    "header": {
+        "title": "Encuentre la propiedad de sus sueños",
+        "subtitle": "Descubra una nueva forma de comprar o alquilar bienes raíces. Nuestra inteligencia artificial le acompaña para encontrar la propiedad perfecta."
+    },
+
+    "aboutUs": {
+        "whyUs": {
+            "title": "¿Por qué elegir CASA?",
+            "reason": "Una plataforma diseñada para ofrecerle una experiencia inmobiliaria excepcional."
+        },
+
+        "stats": {
+            "0": "Soporte Premium",
+            "1": "Propiedades de Prestigio",
+            "2": "Puntuación del Cliente",
+            "3": "Experto Inmobiliario"
+        },
+
+        "card": {
+            "AI": {
+                "title": "IA Inteligente",
+                "content": "Nuestro asistente de IA analiza sus criterios para ofrecerle las propiedades perfectas."
+            },
+            "verifiedProperty": {
+                "title": "Propiedades Verificadas",
+                "content": "Cada anuncio es verificado minuciosamente por nuestros expertos inmobiliarios."
+            },
+            "accurateValuation": {
+                "title": "Valoración Precisa",
+                "content": "Obtenga una estimación de precio basada en los datos del mercado en tiempo real."
+            },
+            "instantNotification": {
+                "title": "Alertas Instantáneas",
+                "content": "Sea el primero en enterarse de las nuevas oportunidades que coincidan con sus criterios."
+            }
+        }
+    }
+}

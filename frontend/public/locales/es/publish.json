@@ -1,0 +1,115 @@
+{
+    "buttons": {
+        "goBackToProfile": "Volver al perfil"
+    },
+    
+    "uploadSuccess": "El anuncio ha sido enviado y publicado con éxito. Será redirigido a la página correspondiente en breve.",
+
+    "section": {
+        "main": {
+            "title": "Publicar un anuncio",
+            "tags": {
+                "title": "Etiquetas",
+                "add": {
+                    "title": "Añadir etiqueta",
+                    "popup": {
+                        "title": "Añadir una etiqueta",
+                        "value": {
+                            "urgent": "Urgente",
+                            "exclusive": "Exclusivo",
+                            "discount": "Descuento"
+                        }
+                    }
+                }
+            },
+            "form": {
+                "title": {
+                    "title": "Título",
+                    "placeholder": "Título de su anuncio"
+                },
+                "description": {
+                    "title": "Descripción",
+                    "placeholder": "Escriba una descripción sobre la propiedad",
+                    "buttons": {
+                        "enhance": "Mejorar con IA"
+                    }
+                },
+                "price": {
+                    "title": "Precio",
+                    "placeholder": "Precio en Ariary"
+                },
+                "area": {
+                    "title": "Superficie",
+                    "placeholder": "Superficie en metros cuadrados (m2)"
+                },
+                "wc": {
+                    "title": "Aseo"
+                },
+                "propertyType": {
+                    "title": "Tipo de propiedad",
+                    "apartment": "Apartamento",
+                    "house": "Casa",
+                    "loft": "Loft",
+                    "land": "Terreno",
+                    "commercial": "Local comercial"
+                },
+                "zone": {
+                    "title": "Ubicación"
+                },
+                "type": {
+                    "title": "Tipo de contrato",
+                    "sale": "Venta",
+                    "rent": "Alquiler"
+                },
+                "bedrooms": {
+                    "title": "Dormitorios",
+                    "placeholder": "Número de dormitorios"
+                },
+                "bathrooms": {
+                    "title": "Baños",
+                    "placeholder": "Número de baños"
+                },
+                "wc_separate": {
+                    "title": "Aseo independiente"
+                },
+                "pool": {
+                    "title": "Piscina"
+                },
+                "parking_type": {
+                    "title": "Estacionamiento",
+                    "none": {
+                        "title": "No"
+                    },
+                    "garage": {
+                        "title": "Garaje"
+                    },
+                    "box": {
+                        "title": "Box"
+                    },
+                    "parking": {
+                        "title": "Parking"
+                    }
+                },
+                "garden_private": {
+                    "title": "Jardín"
+                },
+                "water_access": {
+                    "title": "Agua"
+                },
+                "electricity_access": {
+                    "title": "Electricidad"
+                }
+            },
+            "buttons": {
+                "pictures": {
+                    "upload": "Subir fotos",
+                    "clear": "Borrar todo"
+                },
+                "upload": {
+                    "title": "Publicar",
+                    "processing": "Publicando"
+                }
+            }
+        }
+    }
+}

@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/01/28 09:13:16 by aelison          ###   ########.fr        #
+#    Updated: 2026/01/30 08:41:06 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,10 @@ from httpx import HTTPStatusError, RequestError, TimeoutException
 from fastapi.middleware.cors import CORSMiddleware
 
 # ====================== Utils ==================
+import logging
+
+logging.getLogger('chromadb.telemetry.product.posthog').setLevel(logging.CRITICAL)
+
 def format_chroma_response(user_mssg, chroma_text):
     context = llm_service.format_for_llm(chroma_text)
     formated = "CONTEXT:\n"
@@ -78,56 +82,56 @@ async def lifespan(_: FastAPI):
         print("Failed to init with server chromadb")
         exit(1)
     else:
-        post1 = PostModel(
-                id="je",
-                title = "White House",
-                description = "President house, with a lot of space",
-                price = 1000000000000000,
-                type = "sale",
-                propertyType = "house",
-                surface = 800.0,
-                zone = "Ivandry",
-                features = {
-                    "toilette": 12,
-                    "garage": True,
-                    "room": 42,
-                }
-        )
-        post2 = PostModel(
-                id="moi",
-                title = "Black House",
-                description = "Dark Vador unique house",
-                price = 1000000000000000,
-                type = "sale",
-                propertyType = "house",
-                surface = 800.0,
-                zone = "Ivato",
-                features = {
-                    "toilette": 3,
-                    "garage": True,
-                    "room": 55,
-                },
-                tags = ["exclusive"]
-        )
-        post3 = PostModel(
-                id="koko",
-                title = "Simple House",
-                description = "Minimum requirement to live alone",
-                price = 400000000,
-                type = "sale",
-                propertyType = "house",
-                surface = 40.0,
-                zone = "Ankadifotsy",
-                features = {
-                    "toilette": 1,
-                    "bedroom": 1,
-                    "kitchen": 1,
-                },
-        )
+        # post1 = PostModel(
+        #         id="je",
+        #         title = "White House",
+        #         description = "President house, with a lot of space",
+        #         price = 1000000000000000,
+        #         type = "sale",
+        #         propertyType = "house",
+        #         surface = 800.0,
+        #         zone = "Ivandry",
+        #         features = {
+        #             "toilette": 12,
+        #             "garage": True,
+        #             "room": 42,
+        #         }
+        # )
+        # post2 = PostModel(
+        #         id="moi",
+        #         title = "Black House",
+        #         description = "Dark Vador unique house",
+        #         price = 1000000000000000,
+        #         type = "sale",
+        #         propertyType = "house",
+        #         surface = 800.0,
+        #         zone = "Ivato",
+        #         features = {
+        #             "toilette": 3,
+        #             "garage": True,
+        #             "room": 55,
+        #         },
+        #         tags = ["exclusive"]
+        # )
+        # post3 = PostModel(
+        #         id="koko",
+        #         title = "Simple House",
+        #         description = "Minimum requirement to live alone",
+        #         price = 400000000,
+        #         type = "sale",
+        #         propertyType = "house",
+        #         surface = 40.0,
+        #         zone = "Ankadifotsy",
+        #         features = {
+        #             "toilette": 1,
+        #             "bedroom": 1,
+        #             "kitchen": 1,
+        #         },
+        # )
         await chromadb_service.create_collection("posts")
-        await chromadb_service.add_to_collection("posts", post1)
-        await chromadb_service.add_to_collection("posts", post2)
-        await chromadb_service.add_to_collection("posts", post3)
+        # await chromadb_service.add_to_collection("posts", post1)
+        # await chromadb_service.add_to_collection("posts", post2)
+        # await chromadb_service.add_to_collection("posts", post3)
     yield
     
 app = FastAPI(lifespan=lifespan)
@@ -178,15 +182,13 @@ async def chatbot(text: RequestChat):
     context = None
     chroma_reply = None
 
-    #Debug: show all the data inside collection post
-    # await chromadb_service.get_all_in_collection("posts")
     if text.context and len(text.context) > 0:
         context = text.context
 
     if not context:
         chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt)
     else:
-        chroma_reply = await chromadb_service.get_post_in_collection("posts", context)
+        chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt, context)
     formated = format_chroma_response(user_mssg, chroma_reply)
     id_found = chromadb_service.get_ids_from_query(chroma_reply)
     try:
