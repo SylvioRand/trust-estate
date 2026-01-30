@@ -79,6 +79,7 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
         views: listing.stats.views,
         reservations: listing.stats.reservations,
       } : {},
+      tags: listing.tags,
       createdAt: listing.createdAt.toISOString(),
       updatedAt: listing.updatedAt.toISOString()
     };

@@ -5,6 +5,9 @@ import { useTranslation } from "react-i18next";
 import i18n from "../i18n/i18n";
 import ActionButton from "./ActionButton";
 import useDataProvider from "../provider/useDataProvider";
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
+import type { UserModelData } from "../provider/DataProvider";
+import type { APIResponse } from "../pages/sign_up";
 
 interface NavButtonProps {
 	icon: string;
@@ -123,7 +126,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 	dataUser = [],
 	onClose = () => console.error("Error: HamburgerMenu doesn't have onClose func!")
 }) => {
-	const	{ isConnected } = useDataProvider();
+	const	{ isConnected, userData } = useDataProvider();
 
 	return (
 		<div className="fixed top-0 right-0
@@ -192,7 +195,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 						isConnected === true &&
 							<MobileNavButton
 								icon=""
-								title="djazejhasi@gmail.com"
+								title={ userData?.email ?? "notDefinedUserdataEmail"}
 								path="/profile"
 							/>
 					}
@@ -339,8 +342,7 @@ const	LogOutButton: React.FC = () => {
 const	NavBar: React.FC = () => {
 	const	{ t } = useTranslation("nav");
 	const	[openHamburger, setOpenHamburger] = useState<boolean>(false);
-	const	navigate = useNavigate();
-	const	{ isConnected, setIsConnected } = useDataProvider();
+	const	{ isConnected, userData } = useDataProvider();
 
 	const	dataNavButton: NavButtonProps[] = [
 		{ icon: "", title: t("button.home"), path: "/home" },
@@ -351,7 +353,6 @@ const	NavBar: React.FC = () => {
 		{ icon: "󰍂", icon_size: 28, title: t("button.signIn"), path: "/sign-in" },
 		{ icon: "󰆓", icon_size: 24, title: t("button.signUp"), path: "/sign-up" }
 	]
-
 
 	return (
 		<div className="fixed top-0 left-0
@@ -422,7 +423,7 @@ const	NavBar: React.FC = () => {
 									<NavigationButton
 										icon=""
 										icon_size={ 32 }
-										title="djazejhasi@gmail.com"
+										title={ userData?.email ?? "NotdefinedUserDataEmail" }
 										path="/profile"
 									/>
 								</div>

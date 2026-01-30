@@ -86,6 +86,8 @@ const SettingsPage: React.FC = () => {
     e.preventDefault();
 
     setIsProcessingSavingInfo(true);
+    setErrorFirstName([]);
+    setErrorLastName([]);
     setErrorPhone([]);
 
     const formData = new FormData(e.currentTarget);
@@ -108,8 +110,24 @@ const SettingsPage: React.FC = () => {
       if (!response.ok) {
         const errorData = responseData as APIResponse;
 
+				if (errorData.details) {
+					const details: Record<string, string[]> = errorData.details as Record<string, string[]>;
+					
+					for (const [key, value] of Object.entries(details)) {
+						for (let i = 0; i < value.length; i++)
+							toast.error(t(`error:${value[i]}`));
+					}
+				}
         if (response.status === 400) {
-          setErrorPhone([errorData.message]);
+          if (errorData.details)
+          {
+            if (errorData.details.firstName)
+              setErrorFirstName(errorData.details.firstName as string[]);
+            if (errorData.details.lastName)
+              setErrorLastName(errorData.details.lastName as string[]);
+            if (errorData.details.phone)
+              setErrorPhone(errorData.details.phone as string[]);
+          }
           throw new Error(errorData.message);
         }
       }
@@ -118,7 +136,6 @@ const SettingsPage: React.FC = () => {
     } catch (error) {
       if (error instanceof Error) {
         toast.error(t(`error:${error.message}`))
-        console.error(t(`error:${error.message}`));
       }
     } finally {
       setIsProcessingSavingInfo(false);
@@ -343,7 +360,7 @@ const SettingsPage: React.FC = () => {
                 title={t("section.profileSettings.form.firstName.label")}
                 name="firstName"
                 placeholder={t("section.profileSettings.form.firstName.placeholder")}
-                minLength={2}
+                minLength={3}
                 error={errorFirstName}
                 ref={refFirstNameInput}
               />
@@ -352,7 +369,7 @@ const SettingsPage: React.FC = () => {
                 title={t("section.profileSettings.form.lastName.label")}
                 name="lastName"
                 placeholder={t("section.profileSettings.form.lastName.placeholder")}
-                minLength={2}
+                minLength={3}
                 error={errorLastName}
                 ref={refLastNameInput}
               />
@@ -462,7 +479,7 @@ const SettingsPage: React.FC = () => {
           <SettingsButton
             icon="󰇚"
             title={t("section.settings.downloadGDPR")}
-            onClick={handleLogOut}
+            onClick={ () => console.log("SHOULD BE IMPLEMENTED")}
           />
           <SettingsButton
             icon=""

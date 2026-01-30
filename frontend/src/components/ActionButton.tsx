@@ -10,6 +10,7 @@ interface ActionButtonProps {
 	type?: "button" | "submit" | "reset" | undefined;
 	disabled?: boolean;
 	processing_action?: boolean;
+	base_color?: string;
 	accent_color?: string;
 	onClick?: () => void;
 }
@@ -22,6 +23,7 @@ const	ActionButton: React.FC<ActionButtonProps> = ({
 	type = "button",
 	disabled = false,
 	processing_action = false,
+	base_color = "var(--color-background)",
 	accent_color = "var(--color-accent)",
 	onClick
 }) => {
@@ -44,14 +46,17 @@ const	ActionButton: React.FC<ActionButtonProps> = ({
 			onPointerLeave = { () => setHovered(false) }
 			style={{
 				pointerEvents: disabled ? "none" : "auto",
-				backgroundColor: disabled ? "color-mix(in srgb, var(--color-background) 25%, var(--color-foreground))" : hovered || processing_action ? "transparent" : "var(--color-background)",
+				backgroundColor: disabled ? "color-mix(in srgb, var(--color-background) 25%, var(--color-foreground))" : hovered || processing_action ? "transparent" : base_color,
 				cursor: disabled ? "not-allowed" : "pointer",
 				flexDirection: icon_place === "left" ? "row" : "row-reverse",
 				borderRadius: hovered || processing_action ? "var(--radius-4xl)" : "var(--radius-lg)",
 				filter: hovered || processing_action ? `drop-shadow(0px 0px 3px ${ accent_color })` : "drop-shadow(0px 7px 7px rgba(0,0,0,0.25))",
 				transform: hovered || processing_action ? "scale(98%)" : "none"
 			}}
-			{...(onClick ? { onClick } : {})}
+			onClick={ () => {
+				if (!processing_action && onClick)
+					onClick();
+			}}
 		>
 
 			<div className="absolute

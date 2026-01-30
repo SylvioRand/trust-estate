@@ -8,5 +8,7 @@
 	"all": "All",
 	"digitOnly": "Only digit are allowed",
 	"minBiggerMax": "Min can't be bigger than max",
-	"maxSmallerMin": "Max can't be smaller than min"
+	"maxSmallerMin": "Max can't be smaller than min",
+	"month": "Per Month",
+	"cancel": "Cancel"
 }
