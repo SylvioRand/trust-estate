@@ -65,8 +65,8 @@ const BuyerSlotsPage: React.FC = () => {
   const [selectedSlot, setSelectedSlot] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
-  let url = `/api/reservations/get-slot?id=${listingID}`;
-  url = "http://127.0.0.1:3658/m1/1162080-1155411-default/api/reservations/get-slot"; // mock
+  const url = `/api/reservations/get-slot?id=${listingID}`;
+  //url = "http://127.0.0.1:3658/m1/1162080-1155411-default/api/reservations/get-slot"; // mock
 
   useEffect(() => {
     console.log("url: ", url);
@@ -106,7 +106,7 @@ const BuyerSlotsPage: React.FC = () => {
 
   const today = new Date();
   const minDate = new Date(today);
-  minDate.setDate(today.getDate() + 3);
+  minDate.setDate(today.getDate() + 2);
   minDate.setHours(0, 0, 0, 0);
 
   const maxDate = new Date(minDate);

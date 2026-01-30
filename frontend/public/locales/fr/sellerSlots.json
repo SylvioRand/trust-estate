@@ -1,14 +1,11 @@
 {
 	"title": "Gérer créneau",
-
 	"errors": {
 		"overlapping": "Cette configuration se chevauche avec un autre créneau.",
 		"time_invalid": "L'heure de début doit être plus tôt que l'heure de fin."
 	},
-
 	"buttons": {
 		"goBackToListing": "Retourner à l'annonce",
-
 		"create": {
 			"title": "Créer un créneau"
 		},
@@ -16,7 +13,6 @@
 			"title": "Enregistrer"
 		}
 	},
-
 	"popup": {
 		"create": {
 			"dayOfTheWeek": "Jour de la semaine",
@@ -24,14 +20,13 @@
 			"endTime": "Jusqu'à"
 		}
 	},
-
 	"day": {
-		"0": "Lundi",
-		"1": "Mardi",
-		"2": "Mercredi",
-		"3": "Jeudi",
-		"4": "Vendredi",
-		"5": "Samedi",
-		"6": "Dimanche"
+		"0": "Dimanche",
+		"1": "Lundi",
+		"2": "Mardi",
+		"3": "Mercredi",
+		"4": "Jeudi",
+		"5": "Vendredi",
+		"6": "Samedi"
 	}
 }
