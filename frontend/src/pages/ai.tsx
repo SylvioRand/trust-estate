@@ -1,14 +1,15 @@
 // ************************************************************************** //
-//																																						//
-//																												:::			::::::::	 //
-//	 ai_copy.tsx																				:+:			:+:		:+:	 //
-//																										+:+ +:+				 +:+		 //
-//	 By: aelison <aelison@student.42antananarivo.m	+#+	+:+			 +#+				//
-//																								+#+#+#+#+#+	 +#+					 //
-//	 Created: 2026/01/26 14:15:16 by aelison					 #+#		#+#						 //
-//	 Updated: 2026/01/27 13:08:09 by aelison					###	 ########.fr			 //
-//																																						//
+//                                                                            //
+//                                                        :::      ::::::::   //
+//   ai.tsx                                             :+:      :+:    :+:   //
+//                                                    +:+ +:+         +:+     //
+//   By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+        //
+//                                                +#+#+#+#+#+   +#+           //
+//   Created: 2026/01/26 14:15:16 by aelison           #+#    #+#             //
+//   Updated: 2026/01/30 13:35:39 by aelison          ###   ########.fr       //
+//                                                                            //
 // ************************************************************************** //
+
 
 import React, { useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
@@ -68,17 +69,17 @@ type MessageType = {
 
 const AIPage: React.FC = () => {
 	const [chatValue, setChatValue] = useState<string>("");
-	// const	messageRef: RefObject<MessageType[]> = useRef<MessageType[]>([]);
 	const [messageData, setMessageData] = useState<MessageType[]>([]);
+	const [canSend, setCanSend] = useState<boolean>(true);
 	const { t } = useTranslation(["ai", "error", "common"]);
 
 	const handleSendButton = async () => {
-		if (!chatValue.trim())
+		if (!chatValue.trim() || !canSend)
 			return;
 
 		const userQuery = chatValue;
 		setChatValue("");
-
+		setCanSend(false);
 		setMessageData((prev) => [
 			{ value: "", side: "left" },
 			{ value: userQuery, side: "right" },
@@ -148,11 +149,12 @@ const AIPage: React.FC = () => {
 				}
 			}
 		} catch (error) {
-			console.log("Error in AI: ", error);
 			setMessageData((prev) => [
 				{ value: "ERROR: IA PART: ", side: "left" } as MessageType,
 				...prev
 			].filter((msg) => msg.value !== ""));
+		} finally {
+			setCanSend(true);
 		}
 	}
 
@@ -256,7 +258,7 @@ const AIPage: React.FC = () => {
 						onKeyDown={(e) => {
 							if (e.key === "Enter") {
 								e.preventDefault();
-								if (chatValue.trim() !== "")
+								if (chatValue.trim() !== "" && canSend)
 									handleSendButton();
 							}
 						}}
@@ -273,6 +275,7 @@ const AIPage: React.FC = () => {
 							cursor-pointer
 							select-none
 							w-8 h-8"
+							disabled={!canSend}
 							onClick={handleSendButton}
 						>
 							<div className="font-icon text-3xl
