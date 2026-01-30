@@ -180,13 +180,15 @@ class ChromadbService:
         parse_prompt = """
         RULES:
         1. ONLY use these metadata fields in "filters": "price", "zone", "post_type", "property_type", "surface".
-        2. If the user mentions bedrooms, bathrooms, or gardens, DO NOT put them in "filters". Put those keywords in "search_text".
+        2. If the user mentions bedrooms, bathrooms, gardens, urgent, exclusive, or discount DO NOT put them in "filters". Put those keywords in "search_text".
         3. "post_type" must be exactly 'sale' or 'rent'.
         4. "price" and "surface" must be numbers (integers), not strings.
+        5. "property_type" must be exactly 'apartment', 'house', 'loft', 'land' or 'commercial'.
 
         You are a search assistant for a real estate app. 
         Analyze the user's request and output a JSON object with:
-        1. "search_text": The semantic part of the query (e.g., "beautiful house with garden").
+        1. "search_text": The semantic part of the query (e.g., "beautiful house with garden"). The content must at least contain
+        one of the values of 'property_type', if there is no value found for the 'property_type', put at least 'house'.
         2. "filters": A dictionary of metadata filters for ChromaDB.
 
         Available metadata fields: "price", "zone", "post_type" (sale/rent), "property_type" ('apartment', 'house', 'loft', 'land', 'commercial'), 'surface'
@@ -308,14 +310,6 @@ class ChromadbService:
         return []
 
     #================= DEBUG Methods =========================
-    async def list_collections(self):
-        if self.client:
-            result = await self.client.list_collections()
-            print(f"nb elem inside collection {len(result)}")
-
-            for elem in result:
-                print(f"Name: {elem}")
-            return result
     async def get_all_in_collection(self, collection_name):
         target_collection = self.collections.get(collection_name)
 
