@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { generateSlotsForDay, parseHourMinute, responseReservation, toGmt3String } from "../../utils/utils";
 import { Prisma, PrismaClient, $Enums } from "@prisma/client";
 import { error } from "console";
+import { ListingDataInterface, ListingInterface, ReservationDetailsInterface, UserDetailsInterface } from "./resa.interface";
 
 type TransactionClient = Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>;
 
@@ -556,4 +557,84 @@ export async function getAvailableSlotsByUserId(
 			}
 		}
 		return allAvailableSlots;
+	};
+
+export async function getListingData(app: FastifyInstance, listingId: string, userId: string, token: string) {
+	try {
+		const response = await fetch(`${app.config.LISTINGS_SERVICE_URL}/listings/${listingId}`, {
+			method: 'GET',
+			headers: {
+				'x-internal-key': token,
+				'x-user-id': userId
+			}
+		});
+
+		if (!response.ok) {
+			const error = await response.json() as any;
+			throw new Error('listing_server_error');
+		}
+		const data = await response.json() as ListingDataInterface;
+		return (data);
+	} catch (error: any) {
+		app.log.error({ error }, 'listing_server_error');
+		throw new Error("listing_server_error");
 	}
+}
+
+export async function getUserData(app: FastifyInstance, userId: string, token: string) {
+	try {
+		const response = await fetch(`${app.config.AUTH_SERVICE_URL}/users/${userId}/details`, {
+			method: 'GET',
+			headers: {
+				'x-internal-key': token,
+				'x-user-id': userId
+			}
+		});
+
+		if (!response.ok) {
+			const error = await response.json() as any;
+			throw new Error('auth_server_error');
+		}
+		const data = await response.json() as UserDetailsInterface;
+		return (data);
+	} catch (error: any) {
+		app.log.error({ error }, 'auth_server_error');
+		throw new Error("auth_server_error");
+	}
+}
+
+export async function getReservationsBySellerId(app: FastifyInstance, sellerId: string, status?: string | string[]) : Promise<ReservationDetailsInterface[]> {
+	const reservations = await app.prisma.reservation.findMany({
+		where: {
+			sellerId,
+			...(status ? { status: Array.isArray(status) ? { in: status } : status } : {})
+		}
+	});
+
+	if (!reservations)
+		throw new Error("reservations_not_found");
+
+	const internalToken = await import('jsonwebtoken');
+	const token = internalToken.default.sign(
+		{ service: 'reservation-service', userId: sellerId },
+		app.config.INTERNAL_KEY_SECRET,
+		{ algorithm: 'HS256', expiresIn: '30s' }
+	);
+
+	let response: ReservationDetailsInterface[] = [];
+	try {
+		const response = await Promise.all(reservations.map(async (reservation: any) => ({
+			reservationId: reservation.reservationId,
+			slot: reservation.slot,
+			status: reservation.status,
+			createdAt: reservation.createdAt,
+			listing: await getListingData(app, reservation.listingId, sellerId, token),
+			buyer: await getUserData(app, reservation.buyerId, token)
+		})));
+		return (response);
+	} catch (error) {
+		app.log.error({ error }, 'Failed to notify listing service of reservations viewed');
+	}
+
+	return (response);
+}
