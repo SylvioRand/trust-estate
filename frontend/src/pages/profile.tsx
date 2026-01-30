@@ -102,10 +102,9 @@ const ProfilePage: React.FC = () => {
   const { t } = useTranslation(["profile", "listings"]);
 
   useEffect(() => {
-    console.log("ProfilePage: isConnected: ", isConnected);
-    if (isConnected === false)
+    if (!isConnected) // this doesn't work when refreshing the route /profile refresh
       navigate("/sign-in");
-  }, []);
+  }, [isConnected, navigate]);
   return (
     <div className="flex flex-col items-center justify-start
 			px-2 md:px-7 xl:px-64
