@@ -9,7 +9,7 @@ export const	TagsComponents: React.FC<TagsComponentsProps> = ({
 	tags = "urgent"
 }) => {
 	const	icon: Record<ListingsTags, string> = {
-		urgent: "󰈸",
+		urgent: "",
 		exclusive: "󱉏",
 		discount: ""
 	}

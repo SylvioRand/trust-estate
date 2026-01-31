@@ -112,7 +112,7 @@ const	BentoProperty: React.FC<BentoPropertyProps> = ({
 					<div
 					className="flex items-center justify-center gap-1 mr-auto"
 					>
-						<div className="font-icon"></div><div className="truncate w-full max-w-full">{ `${t(`propertyType.${propertyData.propertyType}`)}, ${propertyData.zone}` }</div>
+						<div className="font-icon"></div><div className="text-sm">{ `${t(`propertyType.${propertyData.propertyType}`)}, ${propertyData.zone}` }</div>
 					</div>
 				</div>
 
