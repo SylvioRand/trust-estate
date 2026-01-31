@@ -96,8 +96,8 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 			where: {
 				listingId,
 				slot: {
-					gte: slotStart,
-					lte: slotEnd
+					gt: slotStart,
+					lt: slotEnd
 				},
 				status: {
 					in: ['confirmed', 'pending']
@@ -113,8 +113,8 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 			where: {
 				buyerId: userId,
 				slot: {
-					gte: slotStart,
-					lte: slotEnd
+					gt: slotStart,
+					lt: slotEnd
 				},
 				status: {
 					in: ['pending', 'confirmed']
