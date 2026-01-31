@@ -65,14 +65,6 @@ export async function createSlot(request: FastifyRequest<{ Body: ReservationInte
 
 	try {
 		const slotDate = new Date(slot);
-		const hour = slotDate.getHours();
-		if (hour < 8 || hour > 17) {
-			return reply.status(409).send({
-				"error": "slot_unavailable",
-				"message": "reservation.slot_unavailable",
-				"availableSlots": []
-			});
-		}
 
 		const reservation = await resaServices.addSlot(request.server, user.id, slot, sellerId, listingId);
 		return reply.status(201).send(reservation);
