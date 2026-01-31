@@ -70,7 +70,6 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 				const startVal = startH * 60 + startM;
 				const endVal = endH * 60 + endM;
 
-				// Check if the slot START is within the range AND if the slot END (start + 30 mins) is <= range end
 				if (slotTimeVal >= startVal && (slotTimeVal + 30) <= endVal) {
 					isScheduleOpen = true;
 					break;
