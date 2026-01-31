@@ -50,7 +50,7 @@ const AddSlotsButton: React.FC<AddSlotsButtonProps> = ({
   );
 }
 
-const CreateNumberRange = (min: number, max: number) => Array.from({ length: max + 1 }, (_, i) => i);
+
 
 interface CreateSlotPopUpContentProps {
   t: TFunction<"slots">;
@@ -151,13 +151,13 @@ const CreateSlotPopUpContent: React.FC<CreateSlotPopUpContentProps> = ({
           id="dayOfWeek"
         >
           {
-            CreateNumberRange(0, 6).map((value: number, index: number) => {
+            [1, 2, 3, 4, 5, 6, 0].map((dayIndex) => {
               return (
                 <option
-                  key={index}
-                  value={index}
+                  key={dayIndex}
+                  value={dayIndex}
                 >
-                  {t && t(`day.${index}`)}
+                  {t && t(`day.${dayIndex}`)}
                 </option>
               );
             })
@@ -168,15 +168,11 @@ const CreateSlotPopUpContent: React.FC<CreateSlotPopUpContentProps> = ({
       <TimeInput
         id="startTime"
         name="startTime"
-        min="09:00"
-        max="16:00"
         title={t && t("popup.create.startTime") || "startTime"}
       />
       <TimeInput
         id="endTime"
         name="endTime"
-        min="09:00"
-        max="16:00"
         title={t && t("popup.create.endTime") || "endTime"}
       />
 
@@ -298,20 +294,73 @@ const SellerSlotsPage: React.FC = () => {
 
   const [initialData, setInitialData] = useState<SlotsData[]>(fetchedSlots.map(s => ({ ...s })));
   const dataChanged: boolean = areSlotsEqual(fetchedSlots, initialData);
-  const [areSaving, setAreSaving] = useState<boolean>(false);
+  //const [areSaving, setAreSaving] = useState<boolean>(false);
   const [areProcessingSave, setAreProcessingSave] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // get the id inside the query
   const [searchParams] = useSearchParams();
   const listingID = searchParams.get("id");
 
-  const handleSaving = async () => {
-    console.log("Saving!");
+  useEffect(() => {
+    if (!listingID) return;
 
-    // change the version
-    setInitialData(fetchedSlots.map(s => ({ ...s })));
-    // console.log("current Version: ", initialData);
-    // console.log("fetchedSlots: ", fetchedSlots);
+    const fetchAvailability = async () => {
+      try {
+        const response = await fetch(`/api/listings/${listingID}/availability`, {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const slots: SlotsData[] = data.weeklySchedule.map((s: any) => ({
+            ...s,
+            taken: true
+          }));
+          setFetchedSlots(slots);
+          setInitialData(slots.map(s => ({ ...s })));
+        } else {
+          console.error("Failed to fetch availability", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching availability:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAvailability();
+  }, [listingID]);
+
+  const handleSaving = async () => {
+    if (!listingID) return;
+    setAreProcessingSave(true);
+    try {
+      const response = await fetch(`/api/listings/${listingID}/availability`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          weeklySchedule: fetchedSlots.map(s => ({
+            dayOfWeek: s.dayOfWeek,
+            startTime: s.startTime,
+            endTime: s.endTime
+          }))
+        }),
+        credentials: "include"
+      });
+
+      if (response.ok) {
+        toast.success(t("success.saved", "Disponibilités enregistrées !"));
+        setInitialData(fetchedSlots.map(s => ({ ...s })));
+      } else {
+        const errorData = await response.json();
+        toast.error(t(errorData.message || "errors.save_failed", "Échec de l'enregistrement"));
+      }
+    } catch (error) {
+      console.error("Error saving availability:", error);
+      toast.error(t("errors.save_failed", "Une erreur est survenue lors de la sauvegarde"));
+    } finally {
+      setAreProcessingSave(false);
+    }
   }
 
   return (
@@ -323,89 +372,99 @@ const SellerSlotsPage: React.FC = () => {
     >
       <div className="w-full h-20 flex-none"></div>
 
-      <div className="grid grid-cols-[auto_1fr] grid-rows-1
+      {loading ? (
+        <div className="flex flex-col items-center justify-center w-full h-64 text-accent animate-pulse">
+          <div className="font-icon text-6xl mb-4">󰚙</div>
+          <div className="text-sm font-light tracking-widest uppercase">Chargement...</div>
+        </div>
+      ) : (
+        <>
+
+          <div className="grid grid-cols-[auto_1fr] grid-rows-1
 				place-items-center
 				mb-4
 				w-full"
-      >
-        <Link
-          to={`/property/listings?id=${listingID}`}
-        >
-          <ActionButton
-            icon=""
-            title={t("buttons.goBackToListing")}
-          />
-        </Link>
-        <div
-          className="w-full"
-        >
-          <ContentDivider
-            line_color="linear-gradient(to right,var(--color-background) 80%,transparent)"
-          />
-        </div>
-      </div>
+          >
+            <Link
+              to={`/property/listings?id=${listingID}`}
+            >
+              <ActionButton
+                icon=""
+                title={t("buttons.goBackToListing")}
+              />
+            </Link>
+            <div
+              className="w-full"
+            >
+              <ContentDivider
+                line_color="linear-gradient(to right,var(--color-background) 80%,transparent)"
+              />
+            </div>
+          </div>
 
-      <div className="grid grid-cols-[1fr_auto] grid-rows-1
+          <div className="grid grid-cols-[1fr_auto] grid-rows-1
 				place-items-center
 				mb-4
 				w-full"
-      >
-        <div className="justify-self-start w-full">
-          {t("title")}
-        </div>
-        <div className="justify-self-end">
-          <ActionButton
-            title={t("buttons.save.title")}
-            icon="󰆓"
-            disabled={dataChanged}
-            processing_action={areProcessingSave}
-            onClick={handleSaving}
-          />
-        </div>
-      </div>
+          >
+            <div className="justify-self-start w-full">
+              {t("title")}
+            </div>
+            <div className="justify-self-end">
+              <ActionButton
+                title={t("buttons.save.title")}
+                icon="󰆓"
+                disabled={dataChanged}
+                processing_action={areProcessingSave}
+                onClick={handleSaving}
+              />
+            </div>
+          </div>
 
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] grid-rows-1
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] grid-rows-1
 				gap-x-4 gap-y-4
 				w-full"
-      >
+          >
 
-        {
-          fetchedSlots.map((value: SlotsData, index: number) => {
-            return (
-              <SlotsBox
-                key={index}
-                data={value}
+            {
+              fetchedSlots.map((value: SlotsData, index: number) => {
+                return (
+                  <SlotsBox
+                    key={index}
+                    data={value}
+                    t={t}
+                    fetchedSlots={fetchedSlots}
+                    setFetchedSlots={setFetchedSlots}
+                  />
+                );
+              })
+            }
+
+            <AddSlotsButton
+              t={t}
+              setOpenPopUpAddSlots={setOpenPopUpAddSlots}
+            />
+          </div>
+
+          <div className="w-full h-7 flex-none">
+          </div>
+
+          {
+            openPopUpAddSlots && <PopUp
+              title={t("buttons.create.title")}
+              onClose={() => setOpenPopUpAddSlots(false)}
+              ref={refOpenPopUpAddSlots}
+            >
+              <CreateSlotPopUpContent
                 t={t}
+                refOpenPopUpAddSlots={refOpenPopUpAddSlots}
                 fetchedSlots={fetchedSlots}
                 setFetchedSlots={setFetchedSlots}
               />
-            );
-          })
-        }
-
-        <AddSlotsButton
-          t={t}
-          setOpenPopUpAddSlots={setOpenPopUpAddSlots}
-        />
-      </div>
-
-      <div className="w-full h-7 flex-none">
-      </div>
-
-      {
-        openPopUpAddSlots && <PopUp
-          title={t("buttons.create.title")}
-          onClose={() => setOpenPopUpAddSlots(false)}
-          ref={refOpenPopUpAddSlots}
-        >
-          <CreateSlotPopUpContent
-            t={t}
-            refOpenPopUpAddSlots={refOpenPopUpAddSlots}
-            fetchedSlots={fetchedSlots}
-            setFetchedSlots={setFetchedSlots}
-          />
-        </PopUp>
-      }
+            </PopUp>
+          }
+        </>
+      )}
     </div>
   );
 }
