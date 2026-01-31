@@ -69,16 +69,21 @@ export async function createSlot(request: FastifyRequest<{ Body: ReservationInte
 		const reservation = await resaServices.addSlot(request.server, user.id, slot, sellerId, listingId);
 		return reply.status(201).send(reservation);
 	} catch (error: any) {
-		if (error.message === "cannot_reserve_own_listing")
+		if (error.message.includes("cannot_reserve_own_listing"))
 			return reply.status(403).send({
 				"error": "cannot_reserve_own_listing",
 				"message": "reservation.cannot_reserve_own"
 			});
-		else if (error.message === "slot_unavailable")
+		else if (error.message.includes("slot_unavailable"))
 			return reply.status(409).send({
 				"error": "slot_unavailable",
 				"message": "reservation.slot_unavailable",
 				"availableSlots": []
+			});
+		else if (error.message.includes("insufficient_credits"))
+			return reply.status(402).send({
+				"error": "insufficient_credits",
+				"message": "payment.insufficient_credits"
 			});
 		else
 			return reply.status(500).send({
