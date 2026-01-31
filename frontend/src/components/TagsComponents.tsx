@@ -20,38 +20,32 @@ export const	TagsComponents: React.FC<TagsComponentsProps> = ({
 		discount: "var(--color-blue-600)"
 	}
 
-	const	{ t } = useTranslation("listings");
+	const	{ t } = useTranslation("common");
 
 	return (
-		<div className="grid grid-cols-[auto_1fr] grid-rows-1
-			place-items-center
-			gap-2
-			border border-background/25
-			backdrop-blur-2xl
-			select-none
-			rounded-xl
-			shadow-standard
-			text-light-foreground
-			flex-none
-			bg-foreground
-			p-1"
+		<div
+		className="grid grid-cols-[auto_1fr] grid-rows-1 gap-1
+		bg-foreground text-background
+		px-2 py-1
+		rounded-full
+		shadow-standard
+		place-items-center"
 		>
 			<div
 			className="flex items-center justify-center
-			rounded-lg
-			w-6 h-6"
-			style={{
-				backgroundColor: color[tags],
-				boxShadow: "inset 2px 4px 4px color-mix(in srgb, white 25%, transparent), inset -2px -4px 4px color-mix(in srgb, white 25%, transparent)"
-			}}
+			w-4 h-4"
 			>
-				<div className="font-icon text-lg text-shadow-md">
+				<div
+				className="font-icon text-xl"
+				style={{
+					color: color[tags]
+				}}>
 					{ icon[tags] }
 				</div>
 			</div>
-			<div className="font-light text-sm text-background mr-1"
-			>
-				{ t(`section.tags.${tags}`) }
+			<div
+			className="mr-[0.1rem] text-sm">
+				{ t(`tags.${tags}`) }
 			</div>
 		</div>
 	);
