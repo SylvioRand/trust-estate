@@ -1,14 +1,10 @@
 import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import housePicture from "../images/terrain0.webp";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
-import type { SellerStatsDataType } from "../dataModel/modelListings";
 import { CreateDateForMemberSince } from "../utils/Format";
-import BoxSection from "../components/BoxSection";
-import { listData, type ListingsProps } from "../dataModel/modelPropertyList";
-import { PublicationCard } from "./property";
+import BentoProperty from "../components/BentoProperty";
 import useDataProvider from "../provider/useDataProvider";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
@@ -230,7 +226,7 @@ const ProfilePage: React.FC = () => {
 					{
 						listData.map((value: ListingsProps, index: number) => {
 							return (
-								<PublicationCard
+								<BentoProperty
 									key={ index }
 									propertyData={ value }
 								/>
@@ -245,7 +241,7 @@ const ProfilePage: React.FC = () => {
 					{
 						listData.map((value: ListingsProps, index: number) => {
 							return (
-								<PublicationCard
+								<BentoProperty
 									key={ index }
 									propertyData={ value }
 								/>
