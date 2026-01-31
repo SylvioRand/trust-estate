@@ -1,138 +1,14 @@
 import React, { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import { type PropertyDataType } from "../dataModel/modelPropertyList";
+import { listData, type PropertyDataType } from "../dataModel/modelPropertyList";
 import ActionButton from "../components/ActionButton";
-import { TagsComponents } from "../components/TagsComponents";
-import type { ListingsTags } from "../dataModel/modelListings";
 import InputEnum, { type InputEnumData } from "../components/InputEnum";
 import type { TFunction } from "i18next";
 import { ZONE_ENUM } from "../dataModel/dataZone";
 import { toast } from "react-toastify";
 import InputRange from "../components/InputRange";
 import InputCheckbox from "../components/InputCheckBox";
-
-interface PublicationCardProps {
-  propertyData: PropertyDataType;
-}
-
-export const PublicationCard: React.FC<PublicationCardProps> = ({
-  propertyData
-}) => {
-  const [hovered, setHovered] = useState<boolean>(false);
-  const navigate = useNavigate();
-  const formatter = new Intl.NumberFormat("de-DE");
-  const { t } = useTranslation("listings");
-
-  return (
-    <div className="grid grid-cols-1 grid-rows-[auto_1fr]
-			flex-none
-			rounded-xl
-			shadow-standard
-			relative
-			w-full h-full
-			min-h-90 max-h-90
-			border border-background/25
-			overflow-hidden"
-      onPointerOver={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
-    >
-      <div className="w-full h-50
-				flex items-center justify-center
-				relative
-				overflow-hidden
-				bg-red-500"
-      >
-        <img
-          className="w-full h-full object-cover
-					ease-in-out
-					transition-transform duration-500"
-          src={propertyData.photos[0]}
-          alt="House Picture"
-          style={{
-            transform: hovered ? "scale(105%)" : "none"
-          }}
-        />
-        <div className="absolute top-0 left-0
-          flex flex-wrap
-					p-2
-					gap-2
-					w-full"
-        >
-          {
-            propertyData.tags.map((value: ListingsTags, index: number) => {
-              return (
-                <TagsComponents
-                  key={index}
-                  tags={value}
-                />
-              );
-            })
-          }
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 grid-rows-1 w-full h-full
-				border-t border-background/25
-				p-3"
-      >
-        <div className="grid grid-cols-[1fr_auto] grid-rows-1
-					place-items-center">
-          <div className="flex items-center justify-start gap-1
-						font-inter font-light
-						w-full"
-          >
-            <div className="font-icon"></div>{propertyData.zone}</div>
-          <div className="border border-background/25
-						px-3 py-1
-						shadow-standard
-						rounded-full"
-          >
-            {t(`section.listingType.${propertyData.type}`)}
-          </div>
-        </div>
-
-        <div className="flex flex-col items-start justify-center
-					flex-none
-					w-full"
-        >
-          <div className="font-bold text-lg">
-            {propertyData.title}
-          </div>
-
-          <div className="flex items-center justify-center gap-2">
-            <div className="font-icon text-xl">
-              󰳂
-            </div>
-            <div className="font-light text-md">
-              {propertyData.surface} m<sup>2</sup>
-            </div>
-          </div>
-
-        </div>
-
-        <div className="grid grid-cols-[1fr_auto] grid-rows-1
-					place-items-center
-					w-full"
-        >
-          <div className="font-light text-lg
-						justify-self-start"
-          >
-            {formatter.format(propertyData.price)} AR
-          </div>
-          <div>
-            <ActionButton
-              icon=""
-              icon_place="right"
-              title={t("viewDetails")}
-              onClick={() => navigate(`/property/listings?id=${propertyData.id}`)}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+import BentoProperty from "../components/BentoProperty";
 
 interface FilterProps {
   t: TFunction<["property", "error", "common"]>;
@@ -489,6 +365,10 @@ const PropertyPage: React.FC = () => {
         setMaxPage={setMaxPage}
       />
 
+      <BentoProperty
+      propertyData={ listData.data[0] }
+      />
+
       {
         isFetchingData === false && dataToDisplay.length > 0 &&
         <div className="flex flex-col items-center justify-start gap-4
@@ -520,7 +400,7 @@ const PropertyPage: React.FC = () => {
                       animationDelay: `${200 * index}ms`
                     }}
                   >
-                    <PublicationCard
+                    <BentoProperty
                       propertyData={value}
                     />
                   </div>
