@@ -356,7 +356,7 @@ export async function getSlots(request: FastifyRequest<{ Querystring: { id: stri
 	try {
 		const data = await resaServices.getAvailability(request.server, userId) as ListingInterface;
 		const availability = await resaServices.getAvailableSlotsByUserId(request.server, userId, data.weeklySchedule);
-		return reply.status(200).send({ availability });
+		return reply.status(200).send({ availability, sellerId: data.sellerId });
 	} catch (error: any) {
 		if (error.message === "listing_server_error")
 			return reply.status(503).send({
