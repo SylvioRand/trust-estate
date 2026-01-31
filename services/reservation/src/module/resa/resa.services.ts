@@ -33,16 +33,68 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 		minDate.setDate(now.getDate() + 2);
 		minDate.setHours(0, 0, 0, 0);
 
+		const maxDate = new Date(minDate);
+		maxDate.setDate(minDate.getDate() + 14);
+		maxDate.setHours(23, 59, 59, 999);
+
 		if (slotDate < minDate) {
+			throw new Error("slot_unavailable");
+		}
+
+		if (slotDate > maxDate) {
+			throw new Error("slot_unavailable");
+		}
+
+		try {
+			const listingData = await getAvailability(app, listingId) as ListingInterface;
+			const weeklySchedule = listingData.weeklySchedule;
+
+			if (!weeklySchedule || !Array.isArray(weeklySchedule)) {
+				throw new Error("slot_unavailable");
+			}
+
+			const GMT_OFFSET = 3;
+			const slotGmt3 = new Date(slotDate.getTime() + GMT_OFFSET * 3600 * 1000);
+			const dayOfWeek = slotGmt3.getUTCDay();
+
+			const slotHour = slotGmt3.getUTCHours();
+			const slotMinute = slotGmt3.getUTCMinutes();
+			const slotTimeVal = slotHour * 60 + slotMinute;
+
+			const daySchedules = weeklySchedule.filter((d: any) => (d.dayOfWeek % 7) === dayOfWeek);
+
+			let isScheduleOpen = false;
+			for (const schedule of daySchedules) {
+				const { hour: startH, minute: startM } = parseHourMinute(schedule.startTime);
+				const { hour: endH, minute: endM } = parseHourMinute(schedule.endTime);
+				const startVal = startH * 60 + startM;
+				const endVal = endH * 60 + endM;
+
+				// Check if the slot START is within the range AND if the slot END (start + 30 mins) is <= range end
+				if (slotTimeVal >= startVal && (slotTimeVal + 30) <= endVal) {
+					isScheduleOpen = true;
+					break;
+				}
+			}
+
+			if (!isScheduleOpen) {
+				throw new Error("slot_unavailable");
+			}
+
+		} catch (error) {
+			if (error instanceof Error && error.message === "slot_unavailable") {
+				throw error;
+			}
+			console.error("Failed to validate schedule", error);
 			throw new Error("slot_unavailable");
 		}
 
 		const slotStart = new Date(slotDate.getTime() - 30 * 60 * 1000); // 30 minutes avant
 		const slotEnd = new Date(slotDate.getTime() + 30 * 60 * 1000); // 30 minutes après
 
-		const sellerSlotTaken = await tx.reservation.findFirst({
+		const listingSlotTaken = await tx.reservation.findFirst({
 			where: {
-				sellerId,
+				listingId,
 				slot: {
 					gte: slotStart,
 					lte: slotEnd
@@ -53,7 +105,7 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 			}
 		});
 
-		if (sellerSlotTaken) {
+		if (listingSlotTaken) {
 			throw new Error("slot_unavailable");
 		}
 
@@ -564,11 +616,13 @@ export async function getAvailableSlotsByUserId(
 			const availableSlots = uniqueSlots.filter(slot => !reservedDates.includes(slot.getTime()));
 			const takenSlots = uniqueSlots.filter(slot => reservedDates.includes(slot.getTime()));
 
-			allAvailableSlots.push({
-				day: toGmt3String(new Date(dayDateUtc)),
-				slots: availableSlots.map(toGmt3String),
-				Taken: takenSlots.map(toGmt3String)
-			});
+			if (availableSlots.length > 0) {
+				allAvailableSlots.push({
+					day: toGmt3String(new Date(dayDateUtc)),
+					slots: availableSlots.map(toGmt3String),
+					Taken: takenSlots.map(toGmt3String)
+				});
+			}
 		}
 	}
 	return allAvailableSlots;
