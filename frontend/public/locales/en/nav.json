@@ -6,7 +6,13 @@
 		"home": "Home",
 		"property": "Property",
 		"ai": "AI",
-		"dashboard": "Dashboard",
+		"dashboard": {
+			"title": "Dashboard",
+			"tabs": {
+				"visits": "My Visits",
+				"reservations": "My Reservations"
+			}
+		},
 		"signIn": "Sign In",
 		"signUp": "Sign Up",
 		"profile": "Profile"
