@@ -22,9 +22,9 @@ const MobileNavButton: React.FC<NavButtonProps> = ({
 	title = "Title",
 	path = "/sign-in" // by default just go back to sign-in
 }) => {
-	const	location = useLocation();
-	const	[active, setActive] = useState<boolean>(false);
-	const	[hovered, setHovered] = useState<boolean>(false);
+	const location = useLocation();
+	const [active, setActive] = useState<boolean>(false);
+	const [hovered, setHovered] = useState<boolean>(false);
 
 	useEffect(() => {
 		setActive(location.pathname === path);
@@ -36,9 +36,9 @@ const MobileNavButton: React.FC<NavButtonProps> = ({
 				relative
 				p-2
 				w-full h-12"
-			to={ path }
-			onPointerEnter={ () => setHovered(true) }
-			onPointerLeave={ () => setHovered(false) }
+			to={path}
+			onPointerEnter={() => setHovered(true)}
+			onPointerLeave={() => setHovered(false)}
 		>
 			<div className="absolute top-0 left-0
 				bg-linear-to-r from-accent to-transparent
@@ -107,7 +107,7 @@ const MobileNavButton: React.FC<NavButtonProps> = ({
 					color: active ? "var(--color-foreground)" : "var(--color-background)"
 				}}
 			>
-				{ title }
+				{title}
 			</div>
 		</Link>
 	);
@@ -126,7 +126,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 	dataUser = [],
 	onClose = () => console.error("Error: HamburgerMenu doesn't have onClose func!")
 }) => {
-	const	{ isConnected, userData } = useDataProvider();
+	const { isConnected, userData } = useDataProvider();
 
 	return (
 		<div className="fixed top-0 right-0
@@ -193,11 +193,11 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 
 					{
 						isConnected === true &&
-							<MobileNavButton
-								icon=""
-								title={ userData?.email ?? "notDefinedUserdataEmail"}
-								path="/profile"
-							/>
+						<MobileNavButton
+							icon=""
+							title={userData?.email ?? "notDefinedUserdataEmail"}
+							path="/profile"
+						/>
 					}
 				</div>
 			</div>
@@ -205,15 +205,15 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 	);
 }
 
-const	NavigationButton: React.FC<NavButtonProps> = ({
+const NavigationButton: React.FC<NavButtonProps> = ({
 	icon = "",
 	icon_size = 32,
 	title = "Title",
 	path = "/sign-in" // by default just go back to sign-in
 }) => {
-	const	location = useLocation();
-	const	[active, setActive] = useState<boolean>(false);
-	const	[hovered, setHovered] = useState<boolean>(false);
+	const location = useLocation();
+	const [active, setActive] = useState<boolean>(false);
+	const [hovered, setHovered] = useState<boolean>(false);
 
 	useEffect(() => {
 		// setActive(location.pathname === path);
@@ -222,7 +222,7 @@ const	NavigationButton: React.FC<NavButtonProps> = ({
 
 	return (
 		<Link
-			to={ path }
+			to={path}
 			className="relative
 			flex items-center justify-center
 			cursor-pointer
@@ -230,8 +230,8 @@ const	NavigationButton: React.FC<NavButtonProps> = ({
 			overflow-hidden
 			min-w-20
 			select-none"
-			onPointerEnter={ () => setHovered(true) }
-			onPointerLeave={ () => setHovered(false) }
+			onPointerEnter={() => setHovered(true)}
+			onPointerLeave={() => setHovered(false)}
 		>
 			<div className="text-sm p-2
 				z-1
@@ -241,7 +241,7 @@ const	NavigationButton: React.FC<NavButtonProps> = ({
 					textShadow: active ? "0px 0px 2px black" : "none"
 				}}
 			>
-				{ title }
+				{title}
 			</div>
 
 			<div className="absolute
@@ -257,7 +257,7 @@ const	NavigationButton: React.FC<NavButtonProps> = ({
 				}}
 			>
 			</div>
-			
+
 			<div className="absolute
 				blur-md
 				transition-opacity duration-500
@@ -304,20 +304,20 @@ const	NavigationButton: React.FC<NavButtonProps> = ({
 	);
 }
 
-const	LogOutButton: React.FC = () => {
-	const	navigate = useNavigate();
-	const	[hovered, setHovered] = useState<boolean>(false);
-	const	{ isConnected, setIsConnected } = useDataProvider();
+const LogOutButton: React.FC = () => {
+	const navigate = useNavigate();
+	const [hovered, setHovered] = useState<boolean>(false);
+	const { isConnected, setIsConnected } = useDataProvider();
 
 	return (
 		<button
 			className="flex items-center justify-center
 			w-10 h-10"
-			onPointerEnter={ () => setHovered(true) }
-			onPointerLeave={ () => setHovered(false) }
-			onClick={ async () => {
+			onPointerEnter={() => setHovered(true)}
+			onPointerLeave={() => setHovered(false)}
+			onClick={async () => {
 				try {
-					const	response = await fetch("/api/auth/logout", {
+					const response = await fetch("/api/auth/logout", {
 						method: "POST",
 						credentials: "include"
 					});
@@ -339,17 +339,18 @@ const	LogOutButton: React.FC = () => {
 	);
 }
 
-const	NavBar: React.FC = () => {
-	const	{ t } = useTranslation("nav");
-	const	[openHamburger, setOpenHamburger] = useState<boolean>(false);
-	const	{ isConnected, userData } = useDataProvider();
+const NavBar: React.FC = () => {
+	const { t } = useTranslation("nav");
+	const [openHamburger, setOpenHamburger] = useState<boolean>(false);
+	const { isConnected, userData } = useDataProvider();
 
-	const	dataNavButton: NavButtonProps[] = [
+	const dataNavButton: NavButtonProps[] = [
 		{ icon: "", title: t("button.home"), path: "/home" },
 		{ icon: "", icon_size: 22, title: t("button.property"), path: "/property" },
-		{ icon: "", icon_size: 34, title: t("button.ai"), path: "/ai" }
+		{ icon: "", icon_size: 34, title: t("button.ai"), path: "/ai" },
+		...(isConnected ? [{ icon: "󰕒", icon_size: 28, title: t("button.dashboard"), path: "/dashboard" }] : [])
 	];
-	const	userNavButton: NavButtonProps[] = [
+	const userNavButton: NavButtonProps[] = [
 		{ icon: "󰍂", icon_size: 28, title: t("button.signIn"), path: "/sign-in" },
 		{ icon: "󰆓", icon_size: 24, title: t("button.signUp"), path: "/sign-up" }
 	]
@@ -382,20 +383,20 @@ const	NavBar: React.FC = () => {
 				<div className="md:flex items-center justify-center gap-3
 						h-full
 						hidden"
-					>
-						{
-							dataNavButton.map((value: NavButtonProps, index: number) => {
-								return (
-									<NavigationButton
-										key={index}
-										icon={value.icon}
-										icon_size={value.icon_size ?? 32}
-										title={value.title}
-										path={value.path}
-									/>
-								);
-							})
-						}
+				>
+					{
+						dataNavButton.map((value: NavButtonProps, index: number) => {
+							return (
+								<NavigationButton
+									key={index}
+									icon={value.icon}
+									icon_size={value.icon_size ?? 32}
+									title={value.title}
+									path={value.path}
+								/>
+							);
+						})
+					}
 				</div>
 
 				<div className="flex items-center justify-center justify-self-end gap-3 h-full">
@@ -418,15 +419,15 @@ const	NavBar: React.FC = () => {
 						}
 
 						{
-							isConnected === true && 
-								<div className="flex items-center justify-center gap-3 h-full">
-									<NavigationButton
-										icon=""
-										icon_size={ 32 }
-										title={ userData?.email ?? "NotdefinedUserDataEmail" }
-										path="/profile"
-									/>
-								</div>
+							isConnected === true &&
+							<div className="flex items-center justify-center gap-3 h-full">
+								<NavigationButton
+									icon=""
+									icon_size={32}
+									title={userData?.email ?? "NotdefinedUserDataEmail"}
+									path="/profile"
+								/>
+							</div>
 						}
 
 
@@ -455,8 +456,8 @@ const	NavBar: React.FC = () => {
 
 				<HamburgerMenu
 					open={openHamburger}
-					data={ dataNavButton }
-					dataUser={ userNavButton }
+					data={dataNavButton}
+					dataUser={userNavButton}
 					onClose={() => setOpenHamburger(false)}
 				/>
 
