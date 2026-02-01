@@ -2,11 +2,17 @@
 	"brand": {
 		"name": "CASA"
 	},
-
 	"button": {
 		"home": "Home",
 		"property": "Property",
 		"ai": "AI",
+		"dashboard": {
+			"title": "Dashboard",
+			"tabs": {
+				"visits": "My Visits",
+				"reservations": "My Reservations"
+			}
+		},
 		"signIn": "Sign In",
 		"signUp": "Sign Up",
 		"profile": "Profile"
