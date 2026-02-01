@@ -27,6 +27,7 @@ import BuyerSlotsPage from './pages/buyer_slots.tsx';
 import TermOfServicePage from './pages/term_of_service.tsx';
 import PrivacyPolicyPage from './pages/privacy_policy.tsx';
 import EditPage from './pages/edit.tsx';
+import DashboardPage from './pages/dashboard.tsx';
 
 const router = createBrowserRouter([
   {
@@ -112,6 +113,10 @@ const router = createBrowserRouter([
       {
         path: "/privacy-policy",
         element: <PrivacyPolicyPage />
+      },
+      {
+        path: "/dashboard",
+        element: <DashboardPage />
       },
       {
         path: "/",
