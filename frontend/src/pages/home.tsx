@@ -119,11 +119,9 @@ const HomePage: React.FC = () => {
 
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
-    setIsProcessingSearch(true);
-    setTimeout(() => setIsProcessingSearch(false), 10000);
+	setIsProcessingSearch(true);
 
-    // TODO: Create the URL with query and navigate to property.
-    console.log(data);
+	navigate(`/property?zone=${data.searchAtLocation}`);
   };
 
   const [searchParams] = useSearchParams();
