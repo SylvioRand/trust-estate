@@ -3,7 +3,7 @@ import { ReservationsResponseSchema, type Reservation } from "./zodSchema/dashbo
 import { ZodError } from "zod";
 import LoadingPage from "../loading";
 
-const filterValue = ["pending", "confirmed", "rejected", "cancelled", "done", "all"]
+const filterValue = ["all", "pending", "confirmed", "rejected", "cancelled", "done"]
 
 interface DropdownProps {
     selection: string;
@@ -97,7 +97,7 @@ const ReservationsSection: React.FC = () => {
 
                 const data = await response.json();
                 const parsedData = ReservationsResponseSchema.parse(data);
-                setReservations(parsedData);
+                setReservations(parsedData.reservations);
             } catch (error) {
                 if (error instanceof ZodError) {
                     console.error("Zod Error Detail:", error.message);
