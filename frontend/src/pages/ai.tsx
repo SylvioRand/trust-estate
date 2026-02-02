@@ -15,6 +15,7 @@ import React, { useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
 import { useTranslation } from "react-i18next";
 import Markdown from 'react-markdown';
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 interface MessageProps {
 	value: string;
@@ -72,6 +73,8 @@ const AIPage: React.FC = () => {
 	const [messageData, setMessageData] = useState<MessageType[]>([]);
 	const [canSend, setCanSend] = useState<boolean>(true);
 	const { t } = useTranslation(["ai", "error", "common"]);
+
+	VerifyUsersState();
 
 	const handleSendButton = async () => {
 		if (!chatValue.trim() || !canSend)

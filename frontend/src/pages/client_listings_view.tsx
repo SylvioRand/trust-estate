@@ -9,6 +9,7 @@ import InputEnum from "../components/InputEnum";
 import { toast } from "react-toastify";
 import useDataProvider from "../provider/useDataProvider";
 import { useNavigate } from "react-router-dom";
+import Animate from "../components/Animate";
 
 export interface	ListingsViewProps {
 	fetchedData: ListingsData;
@@ -140,34 +141,48 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 			my-4"
 			
 			>
-				<div
-				className="font-bold text-2xl"
+				<Animate
+				delay="1200ms"
+				direction="bottom"
 				>
-					{ t("section.stats.title") }
-				</div>
+					<div
+					className="font-bold text-2xl"
+					>
+						{ t("section.stats.title") }
+					</div>
+				</Animate>
 			</div>
-			<div
-			className="flex flex-wrap gap-3
-			w-full"
-			>
-				{
-					sellerStats.map((value: string, index: number) => {
-						type FeatureKey = keyof ListingsData["sellerStats"];
 
-						const getValue = (
-							features: ListingsData["sellerStats"],
-							key: FeatureKey
-						) => (features[key]);
-						return (
-							<SellerStats
-							key={ index }
-							title={ t(`section.stats.sellerStats.${value}`) }
-							value={ getValue(fetchedData.sellerStats, value as keyof ListingsData["sellerStats"]) }
-							/>
-						);
-					})
-				}
-			</div>
+			<Animate
+			delay="1300ms"
+			direction="bottom"
+			customStyle={{
+				width: "100%"
+			}}
+			>
+				<div
+				className="flex flex-wrap gap-3
+				w-full"
+				>
+					{
+						sellerStats.map((value: string, index: number) => {
+							type FeatureKey = keyof ListingsData["sellerStats"];
+
+							const getValue = (
+								features: ListingsData["sellerStats"],
+								key: FeatureKey
+							) => (features[key]);
+							return (
+								<SellerStats
+								key={ index }
+								title={ t(`section.stats.sellerStats.${value}`) }
+								value={ getValue(fetchedData.sellerStats, value as keyof ListingsData["sellerStats"]) }
+								/>
+							);
+						})
+					}
+				</div>
+			</Animate>
 
 			{
 				arePopUpReportOpen && <PopUp
