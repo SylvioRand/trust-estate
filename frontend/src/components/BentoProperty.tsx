@@ -36,6 +36,7 @@ const	BentoProperty: React.FC<BentoPropertyProps> = ({
 			<div
 			className="absolute top-0 left-0
 			transition-opacity duration-300
+			select-none
 			w-full h-full"
 			style={{
 				opacity: loading ? "0%" : "100%"
