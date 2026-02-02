@@ -1,8 +1,10 @@
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import { Link, useSearchParams } from "react-router-dom";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
 import { useState } from "react";
+import PopUp from "../components/PopUp";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { useEffect } from "react";
@@ -53,6 +55,7 @@ interface AvailabilitySlot {
 
 interface AvailabilityData {
   availability: AvailabilitySlot[];
+  sellerId: string;
 }
 
 const BuyerSlotsPage: React.FC = () => {
@@ -65,8 +68,10 @@ const BuyerSlotsPage: React.FC = () => {
   const [selectedSlot, setSelectedSlot] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
-  let url = `/api/reservations/get-slot?id=${listingID}`;
-  url = "http://127.0.0.1:3658/m1/1162080-1155411-default/api/reservations/get-slot"; // mock
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
+  const [isConfirming, setIsConfirming] = useState<boolean>(false);
+  const url = `/api/reservations/get-slot?id=${listingID}`;
+  //url = "http://127.0.0.1:3658/m1/1162080-1155411-default/api/reservations/get-slot"; // mock
 
   useEffect(() => {
     console.log("url: ", url);
@@ -89,8 +94,8 @@ const BuyerSlotsPage: React.FC = () => {
         const dates = data.availability.map(slot => new Date(slot.day));
         setAvailableDates(dates);
         setAvailability(data);
-        console.log("data[0].slots: ", data.availability[0].slots);
-        console.log("data[0].day: ", data.availability[0].day);
+        console.log("data[0].slots: ", data.availability[0]?.slots);
+        console.log("data[0].day: ", data.availability[0]?.day);
         console.log("Available dates:", dates);
 
       } catch (error) {
@@ -104,9 +109,42 @@ const BuyerSlotsPage: React.FC = () => {
     fetchSlots();
   }, [url]);
 
+  const handleConfirm = async () => {
+    if (!selectedSlot || !availability?.sellerId) return;
+
+    setIsConfirming(true);
+    try {
+      const response = await fetch('/api/reservations/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          slot: selectedSlot,
+          listingId: listingID,
+          sellerId: availability.sellerId
+        })
+      });
+
+      if (response.ok) {
+        toast.success(t("messages.success", "Réservation confirmée avec succès !"));
+        setShowConfirmation(false);
+      } else {
+        const errorData = await response.json();
+        toast.error(t("errors.failed", "Erreur lors de la réservation : ") + (errorData.message || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Reservation error:", error);
+      toast.error(t("errors.network", "Erreur réseau lors de la réservation"));
+    } finally {
+      setIsConfirming(false);
+    }
+  };
+
   const today = new Date();
   const minDate = new Date(today);
-  minDate.setDate(today.getDate() + 3);
+  minDate.setDate(today.getDate() + 2);
   minDate.setHours(0, 0, 0, 0);
 
   const maxDate = new Date(minDate);
@@ -116,9 +154,6 @@ const BuyerSlotsPage: React.FC = () => {
   if (loading)
     return (
       <div className="text-amber-400">
-        {/* <CommonPart */}
-        {/*   listingID={listingID} */}
-        {/* /> */}
         <div className="flex flex-col items-center justify-center">
 
           <DayPicker
@@ -267,7 +302,7 @@ const BuyerSlotsPage: React.FC = () => {
                           font_size="text-[20px]"
                           icon_size={28}
                           disabled={!selectedSlot}
-                          onClick={() => alert(`Réservation pour le ${selected?.toLocaleDateString()} à ${new Date(selectedSlot!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`)}
+                          onClick={() => setShowConfirmation(true)}
                         />
                       </div>
                     </>
@@ -278,6 +313,68 @@ const BuyerSlotsPage: React.FC = () => {
           </div>
         )}
       </div>
+      {showConfirmation && (
+        <PopUp
+          title={t("confirmationTitle", "Confirmer la réservation")}
+          onClose={() => !isConfirming && setShowConfirmation(false)}
+        >
+          <div className="flex flex-col gap-6 p-2 text-background">
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-bold uppercase tracking-widest opacity-60">
+                {t("dateAndTime", "Date et heure")}
+              </p>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">📅</span>
+                <p className="text-lg font-black">
+                  {selected?.toLocaleDateString(i18n.language, {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">⏰</span>
+                <p className="text-lg font-black">
+                  {selectedSlot && new Date(selectedSlot).toLocaleTimeString(i18n.language, {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-accent/10 p-4 rounded-2xl border border-accent/20">
+              <p className="text-xs leading-relaxed opacity-80">
+                {t("confirmationNotice", "En confirmant, une demande de visite sera envoyée au propriétaire. Vous pourrez suivre l'état de votre demande dans vos réservations.")}
+              </p>
+            </div>
+
+            <div className="flex gap-4 mt-2 w-full">
+              <div className="flex-1">
+                <ActionButton
+                  title={t("buttons.cancel", "Annuler")}
+                  padding="p-4"
+                  base_color="var(--color-darktone)"
+                  accent_color="var(--color-background)"
+                  onClick={() => setShowConfirmation(false)}
+                  disabled={isConfirming}
+                />
+              </div>
+              <div className="flex-1">
+                <ActionButton
+                  title={isConfirming ? t("buttons.loading", "En cours...") : t("buttons.confirm", "Confirmer")}
+                  icon={isConfirming ? "⏳" : ""}
+                  padding="p-4"
+                  onClick={handleConfirm}
+                  disabled={isConfirming}
+                />
+              </div>
+            </div>
+          </div>
+        </PopUp>
+      )}
     </div>
   );
 };

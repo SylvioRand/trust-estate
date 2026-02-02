@@ -36,6 +36,7 @@ export async function getAvailability(request: FastifyRequest, reply: FastifyRep
     }
 
     return reply.status(200).send({
+      sellerId: listing.sellerId,
       weeklySchedule: listing.availability.map((slot: any) => ({
         dayOfWeek: slot.dayOfWeek,
         startTime: slot.startTime,

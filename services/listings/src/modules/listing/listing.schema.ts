@@ -164,7 +164,7 @@ export const UpdateAvailabilitySchema = z.object({
       startTime: z.string().regex(timeRegex, "validation.listing.schedule.invalid_time"),
       endTime: z.string().regex(timeRegex, "validation.listing.schedule.invalid_time"),
     })
-  ).min(1, "validation.listing.schedule.required")
+  )
     .refine((data) => {
       return data.every(slot => {
         const [startH, startM] = slot.startTime.split(':').map(Number);
