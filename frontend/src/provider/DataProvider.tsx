@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState, type Dispatch } from "react";
+import React, { useEffect, useState } from "react";
 import { DataContext } from "./DataContext";
 import type { APIResponse } from "../pages/sign_up";
-import { useNavigate } from "react-router-dom";
 
 interface	DataProviderProps {
 	children: React.ReactNode;
@@ -50,6 +49,8 @@ const	DataProvider: React.FC<DataProviderProps> = ({
 					setUserData(serverResponse);
 					return;
 				}
+
+				setIsConnected(false);
 
 				if (response.status === 403) {
 					const errorData = responseData as APIResponse;

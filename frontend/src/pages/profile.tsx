@@ -97,10 +97,10 @@ const ProfilePage: React.FC = () => {
   VerifyUsersState();
   const { t } = useTranslation(["profile", "listings"]);
 
-  useEffect(() => {
-    if (!isConnected) // this doesn't work when refreshing the route /profile refresh
-      navigate("/sign-in");
-  }, [isConnected, navigate]);
+  // Redirect if user is not connected
+  if (isConnected !== null && isConnected === false)
+	navigate("/sign-in");
+
   return (
     <div className="flex flex-col items-center justify-start
 			px-2 md:px-7 xl:px-64
