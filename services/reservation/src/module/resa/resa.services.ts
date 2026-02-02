@@ -671,13 +671,27 @@ export async function getUserData(app: FastifyInstance, userId: string, token: s
 	}
 }
 
-export async function getReservationsBySellerId(app: FastifyInstance, sellerId: string, status?: string | string[]): Promise<ReservationDetailsInterface[]> {
-	const reservations = await app.prisma.reservation.findMany({
-		where: {
-			sellerId,
-			...(status ? { status: Array.isArray(status) ? { in: status as $Enums.ReservationStatus[] } : status as $Enums.ReservationStatus } : {})
-		}
-	});
+export async function getReservationsBySellerId(
+	app: FastifyInstance,
+	sellerId: string,
+	status?: string | string[],
+	page: number = 1,
+	limit: number = 10
+): Promise<{ reservations: ReservationDetailsInterface[], totalMatching: number }> {
+	const where: Prisma.ReservationWhereInput = {
+		sellerId,
+		...(status ? { status: Array.isArray(status) ? { in: status as $Enums.ReservationStatus[] } : status as $Enums.ReservationStatus } : {})
+	};
+
+	const [reservations, totalMatching] = await Promise.all([
+		app.prisma.reservation.findMany({
+			where,
+			skip: (page - 1) * limit,
+			take: limit,
+			orderBy: { createdAt: 'desc' }
+		}),
+		app.prisma.reservation.count({ where })
+	]);
 
 	if (!reservations)
 		throw new Error("reservations_not_found");
@@ -689,20 +703,17 @@ export async function getReservationsBySellerId(app: FastifyInstance, sellerId: 
 		{ algorithm: 'HS256', expiresIn: '30s' }
 	);
 
-	let response: ReservationDetailsInterface[] = [];
-	try {
-		const response = await Promise.all(reservations.map(async (reservation: any) => ({
-			reservationId: reservation.reservationId,
-			slot: reservation.slot,
-			status: reservation.status,
-			createdAt: reservation.createdAt,
-			listing: await getListingData(app, reservation.listingId, sellerId, token),
-			buyer: await getUserData(app, reservation.buyerId, token)
-		})));
-		return (response);
-	} catch (error) {
-		app.log.error({ error }, 'Failed to notify listing service of reservations viewed');
-	}
+	const formattedReservations = await Promise.all(reservations.map(async (reservation: any) => ({
+		reservationId: reservation.reservationId,
+		slot: reservation.slot,
+		status: reservation.status,
+		createdAt: reservation.createdAt,
+		listing: await getListingData(app, reservation.listingId, sellerId, token),
+		buyer: await getUserData(app, reservation.buyerId, token)
+	})));
 
-	return (response);
+	return {
+		reservations: formattedReservations,
+		totalMatching
+	};
 }

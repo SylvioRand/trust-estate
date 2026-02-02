@@ -11,6 +11,8 @@ interface ActionButtonProps {
 	disabled?: boolean;
 	processing_action?: boolean;
 	base_color?: string;
+	text_color?: string;
+	text_color_hover?: string;
 	accent_color?: string;
 	padding?: string;
 	font_size?: string;
@@ -25,6 +27,8 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 	type = "button",
 	disabled = false,
 	processing_action = false,
+	text_color="var(--color-foreground)",
+	text_color_hover="var(--color-foreground)",
 	base_color = "var(--color-background)",
 	accent_color = "var(--color-accent)",
 	padding = "p-3",
@@ -54,9 +58,9 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 				backgroundColor: disabled ? "color-mix(in srgb, var(--color-background) 25%, var(--color-foreground))" : hovered || processing_action ? "transparent" : base_color,
 				cursor: disabled ? "not-allowed" : "pointer",
 				flexDirection: icon_place === "left" ? "row" : "row-reverse",
-				borderRadius: hovered || processing_action ? "var(--radius-4xl)" : "var(--radius-lg)",
-				filter: hovered || processing_action ? `drop-shadow(0px 0px 3px ${accent_color})` : "drop-shadow(0px 7px 7px rgba(0,0,0,0.25))",
-				transform: hovered || processing_action ? "scale(98%)" : "none"
+				borderRadius: "var(--radius-lg)",
+				// borderRadius: hovered || processing_action ? "var(--radius-4xl)" : "var(--radius-lg)",
+				filter: hovered || processing_action ? `drop-shadow(0px 0px 3px ${accent_color})` : "drop-shadow(0px 7px 7px rgba(0,0,0,0.25))"
 			}}
 			onClick={() => {
 				if (!processing_action && onClick)
@@ -91,14 +95,20 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 			}
 			{
 				icon &&
-				<div className="pt-[0.1rem] z-1">
+				<div className="pt-[0.1rem] z-1
+				transition-colors duration-300"
+				style={{
+					color: hovered || processing_action ? text_color_hover : text_color,
+				}}>
 					{title}
 				</div>
 			}
 			{
 				!icon &&
-				<div className="pt-[0.1rem] z-1"
+				<div className="pt-[0.1rem] z-1
+				transition-colors duration-300"
 					style={{
+						color: hovered || processing_action ? text_color_hover : text_color,
 						fontFamily: processing_action ? "var(--font-icon)" : "inherit",
 						fontSize: processing_action ? icon_size : "16px",
 						animation: processing_action ? "var(--animate-spin)" : "none"
