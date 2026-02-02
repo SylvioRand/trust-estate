@@ -106,6 +106,7 @@ const	EditPage: React.FC = () => {
 							toast.error(t(`error:${value[i]}`));
 					}
 				}
+				throw new Error(responseData.message);
 			}
 		} catch (error) {
 			if (error instanceof Error && error.message !== "")

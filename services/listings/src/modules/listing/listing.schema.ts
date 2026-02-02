@@ -3,16 +3,18 @@ import zonesData from '../../shared/zones.json';
 import { ReportReason } from '@prisma/client';
 
 const validZone = zonesData.zones.map(z => z.displayName) as [string, ...string[]];
-const ZoneSchema = z.enum(validZone);
+const ZoneSchema = z.enum(validZone, {
+  message: 'validation.listing.zone.invalid_value'
+});
 
 export const PublishListingSchema = z.object({
   type: z.enum(['sale', 'rent']),
   propertyType: z.enum(['apartment', 'house', 'loft', 'land', 'commercial']),
 
-  title: z.string().min(10).max(100),
-  description: z.string().min(50).max(2000),
+  title: z.string().min(10, { message: 'validation.listing.title.too_short' }).max(100, { message: 'validation.listing.title.too_long' }),
+  description: z.string().min(50, { message: 'validation.listing.description.too_short' }).max(2000, { message: 'validation.listing.description.too_long' }),
 
-  price: z.number().int().positive().max(999_999_999_999),
+  price: z.number().int().positive({ message: 'validation.listing.price.positive' }).max(999_999_999_999),
   surface: z.number().int().positive().max(10_000),
 
   zone: ZoneSchema,
@@ -160,9 +162,9 @@ const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
 export const UpdateAvailabilitySchema = z.object({
   weeklySchedule: z.array(
     z.object({
-      dayOfWeek: z.number().int().min(0, 'validation.listing.schedule.invalid_day').max(6, 'validation.listing.schedule.invalid_day'),
-      startTime: z.string().regex(timeRegex, "validation.listing.schedule.invalid_time"),
-      endTime: z.string().regex(timeRegex, "validation.listing.schedule.invalid_time"),
+      dayOfWeek: z.number().int({ message: 'validation.listing.schedule.invalid_day' }).min(0, { message: 'validation.listing.schedule.invalid_day' }).max(6, { message: 'validation.listing.schedule.invalid_day' }),
+      startTime: z.string().regex(timeRegex, { message: "validation.listing.schedule.invalid_time" }),
+      endTime: z.string().regex(timeRegex, { message: "validation.listing.schedule.invalid_time" }),
     })
   )
     .refine((data) => {
