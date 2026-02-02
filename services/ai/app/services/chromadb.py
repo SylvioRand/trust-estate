@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated: 2026/01/30 08:55:29 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/02 09:04:28 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,6 @@ import chromadb
 import json
 import re
 
-from chromadb.config import Settings
 from app.models import PostModel
 from app.services.embedding import embeddingService
 

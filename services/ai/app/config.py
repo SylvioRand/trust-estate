@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:17 by aelison           #+#    #+#              #
-#    Updated: 2026/01/27 09:56:12 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/02 08:51:28 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,15 +19,11 @@ class ft_config:
     #API key for all routes
     INTERNAL_KEY = os.getenv("INTERNAL_KEY_SECRET", "")
     #LLM config
-    LLM_API_URL=os.getenv("LLM_API_URL", "https://api.routeway.ai/v1/chat/completions")
+    LLM_API_URL=os.getenv("LLM_API_URL", "https://api.groq.com/openai/v1/chat/completions")
     LLM_API_KEY=os.getenv("LLM_API_KEY", "")
-    LLM_MODEL=os.getenv("LLM_MODEL", "devstral-2512:free")
+    LLM_MODEL=os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
 
     #Embedding
     EMBEDDING_MODEL=os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
-
-    #Debug
-    LOG_LEVEL=os.getenv("LOG_LEVEL", "info")
-    DEBUG=os.getenv("DEBUG", "true").lower() == "true"
 
 config = ft_config()
