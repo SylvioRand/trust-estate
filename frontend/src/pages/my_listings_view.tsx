@@ -102,6 +102,9 @@ export const	ListingsHeader: React.FC<ListingsHeaderProps> = ({
 				<Animate
 				delay="400ms"
 				direction="bottom"
+				customStyle={{
+					width: "100%"
+				}}
 				>
 					<div
 					className="grid grid-cols-[1fr_auto] grid-rows-1 gap-3
