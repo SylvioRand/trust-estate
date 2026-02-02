@@ -8,6 +8,7 @@
 		},
 		"filter": {
 			"title": "Filtres",
+			"clear": "Enlever les filtres",
 			"priceRange": {
 				"title": "Fourchette de prix (Ar)",
 				"min": "Minimum",
