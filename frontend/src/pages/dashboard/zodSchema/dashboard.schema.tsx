@@ -25,5 +25,15 @@ const ReservationItemSchema = z.object({
     buyer: BuyerSchema
 });
 
-export const ReservationsResponseSchema = z.array(ReservationItemSchema);
+export const ReservationsResponseSchema = z.object({
+    reservations: z.array(ReservationItemSchema),
+    pagination: z.object({
+        page: z.number(),
+        limit: z.number(),
+        totalMatching: z.number(),
+        totalPages: z.number()
+    })
+});
+
+export type ReservationsResponse = z.infer<typeof ReservationsResponseSchema>;
 export type Reservation = z.infer<typeof ReservationItemSchema>;
