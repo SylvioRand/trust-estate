@@ -7,6 +7,8 @@ import TextArea from "../components/TextArea";
 import ActionButton from "../components/ActionButton";
 import InputEnum from "../components/InputEnum";
 import { toast } from "react-toastify";
+import useDataProvider from "../provider/useDataProvider";
+import { useNavigate } from "react-router-dom";
 
 export interface	ListingsViewProps {
 	fetchedData: ListingsData;
@@ -52,6 +54,8 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 	setFetchedData,
 	t
 }) => {
+	const	{ isConnected } = useDataProvider();
+	const	navigate = useNavigate();
 	const	refToComment: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement>(null);
 	const	refPopUpReport: RefObject<PopUpAPI | null> = useRef<PopUpAPI>(null);
 	const	[arePopUpReportOpen, setArePopUpReportOpen] = useState<boolean>(false);
@@ -62,9 +66,11 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 		"averageRating",
 	];
 
-	const	handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+	const	handleOnSubmitReport = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setProcessingReport(true);
+
+
 		const	formData = new FormData(e.currentTarget);
 		const	data = Object.fromEntries(formData.entries());
 		
@@ -112,7 +118,11 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 				{
 					icon: "",
 					title: t("section.actionButton.popup.report.title"),
-					func: () => setArePopUpReportOpen(true)
+					func: () => {
+						if (isConnected !== null && isConnected === false)
+							navigate("/sign-in");
+						setArePopUpReportOpen(true);
+					}
 				}
 			]}
 			fetchedData={ fetchedData }
@@ -173,7 +183,7 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 					className="flex flex-col items-center justify-center
 					gap-3
 					w-full"
-					onSubmit={ handleOnSubmit }
+					onSubmit={ handleOnSubmitReport }
 					>
 						<InputEnum
 						title={ t("section.actionButton.popup.report.popup.reason.title") }

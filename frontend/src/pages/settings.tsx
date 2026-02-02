@@ -71,6 +71,10 @@ const SettingsPage: React.FC = () => {
 
 	const { t } = useTranslation(["settings", "error"]);
 
+	// Redirect if user is not connected
+	if (isConnected !== null && isConnected === false)
+		navigate("/sign-in");
+
 	// NOTE: May remove those error check since the back-end looks like
 	const [errorFirstName, setErrorFirstName] = useState<string[]>([]);
 	const [errorLastName, setErrorLastName] = useState<string[]>([]);
@@ -336,7 +340,7 @@ const SettingsPage: React.FC = () => {
 		if (refLastNameInput.current)
 			refLastNameInput.current.value = userData?.lastName ?? "";
 		if (refPhoneInput.current)
-			refPhoneInput.current.value = userData?.phone.slice(4) ?? "";
+			refPhoneInput.current.value = userData?.phone?.slice(4) ?? "";
 	}, []);
 	return (
 		<div
