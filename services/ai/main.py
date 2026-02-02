@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/01/30 08:41:06 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/02 08:49:52 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,8 +66,8 @@ async def check_keys(x_internal_key: str = Header(None)):
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     is_connected = False
-    nb_retry = 20
-    interval = 1
+    nb_retry = 5
+    interval = 5
 
     for _ in range(nb_retry):
         try:
@@ -82,56 +82,7 @@ async def lifespan(_: FastAPI):
         print("Failed to init with server chromadb")
         exit(1)
     else:
-        # post1 = PostModel(
-        #         id="je",
-        #         title = "White House",
-        #         description = "President house, with a lot of space",
-        #         price = 1000000000000000,
-        #         type = "sale",
-        #         propertyType = "house",
-        #         surface = 800.0,
-        #         zone = "Ivandry",
-        #         features = {
-        #             "toilette": 12,
-        #             "garage": True,
-        #             "room": 42,
-        #         }
-        # )
-        # post2 = PostModel(
-        #         id="moi",
-        #         title = "Black House",
-        #         description = "Dark Vador unique house",
-        #         price = 1000000000000000,
-        #         type = "sale",
-        #         propertyType = "house",
-        #         surface = 800.0,
-        #         zone = "Ivato",
-        #         features = {
-        #             "toilette": 3,
-        #             "garage": True,
-        #             "room": 55,
-        #         },
-        #         tags = ["exclusive"]
-        # )
-        # post3 = PostModel(
-        #         id="koko",
-        #         title = "Simple House",
-        #         description = "Minimum requirement to live alone",
-        #         price = 400000000,
-        #         type = "sale",
-        #         propertyType = "house",
-        #         surface = 40.0,
-        #         zone = "Ankadifotsy",
-        #         features = {
-        #             "toilette": 1,
-        #             "bedroom": 1,
-        #             "kitchen": 1,
-        #         },
-        # )
         await chromadb_service.create_collection("posts")
-        # await chromadb_service.add_to_collection("posts", post1)
-        # await chromadb_service.add_to_collection("posts", post2)
-        # await chromadb_service.add_to_collection("posts", post3)
     yield
     
 app = FastAPI(lifespan=lifespan)
@@ -148,7 +99,6 @@ app.add_middleware(
 
 llm_service = LLMService()
 
-# Catch errors of models, type need to be str, or field name incorrect, value not correct, ...
 @app.exception_handler(RequestValidationError)
 async def exception_handler(_: Request):
     return JSONResponse(
@@ -159,7 +109,6 @@ async def exception_handler(_: Request):
                 },
             )
 
-# check if chromadb is ready to get data, query data, delete data, .... 
 @app.get("/ai/health")
 async def check_health():
     try:

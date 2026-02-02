@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:10 by aelison           #+#    #+#              #
-#    Updated: 2026/01/27 09:54:46 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/02 09:20:09 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,11 +55,11 @@ class LLMService:
         - "id" (string)
         - "title" (string)
 
-        ### CONSTRAINT
+        CONSTRAINT
         - DO NOT include "metadata", "price", "description", "zone", or any other fields found in the data.
         - If a field is missing in the data, use "null".
 
-        ### OUTPUT FORMAT
+        OUTPUT FORMAT
         {
         "sources": [
             {
