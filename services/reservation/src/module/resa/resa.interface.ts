@@ -20,11 +20,12 @@ export interface CheckSlotInterface {
 
 interface DayListingInterface {
 	dayOfWeek: number,
-	startTime: number|string,
-	endTime: number|string
+	startTime: number | string,
+	endTime: number | string
 }
 
 export interface ListingInterface {
+	sellerId: string;
 	weeklySchedule: DayListingInterface[]
 }
 
