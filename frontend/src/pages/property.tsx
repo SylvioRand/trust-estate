@@ -100,7 +100,7 @@ const Filter: React.FC<FilterProps> = ({
 				setDataToDisplay(responseData.data);
 				setLastFilter(result === "" ? "" : `&${result}`);
 				setPage(1);
-				setMaxPage(responseData.pagination.totalPages);
+				setMaxPage(responseData.pagination.totalPages > 0 ? responseData.pagination.totalPages : 1);
 			}
 			else
 				throw new Error(responseData.message);
@@ -294,29 +294,36 @@ const Filter: React.FC<FilterProps> = ({
 }
 
 interface PageButtonProps {
-	title: string;
+	icon: string;
 	onClick: () => void;
 	disabled: boolean;
 }
 
 const PageButton: React.FC<PageButtonProps> = ({
-	title = "Title",
+	icon = "",
 	onClick,
 	disabled = false
 }) => {
 	return (
 		<button
-			className="border border-background/25
+		className="border border-background/25
+		flex items-center justify-center
+		z-1
 		p-2 rounded-md
+		bg-foreground
+		w-12 h-12
 		cursor-pointer
 		shadow-standard"
 			style={{
 				opacity: disabled ? "42%" : "100%",
 				pointerEvents: disabled ? "none" : "auto"
 			}}
-			onClick={onClick}
+			onClick={ onClick }
 		>
-			{title}
+			<div
+			className="font-icon text-3xl">
+				{ icon }
+			</div>
 		</button>
 	);
 }
@@ -344,7 +351,7 @@ const PropertyPage: React.FC = () => {
 			// NOTE: Should verify if there is an error or not!
 			if (response.ok) {
 				setDataToDisplay(responseData.data);
-				setMaxPage(responseData.pagination.totalPages);
+				setMaxPage(responseData.pagination.totalPages > 0 ? responseData.pagination.totalPages : 1);
 			}
 			else
 				throw new Error(responseData.message);
@@ -390,8 +397,7 @@ const PropertyPage: React.FC = () => {
 			{
 				isFetchingData === false && dataToDisplay.length > 0 &&
 				<div className="flex flex-col items-center justify-start gap-4
-				md:grid md:grid-cols-2 md:grid-rows-2
-				xl:grid xl:grid-cols-3 xl:grid-rows-2
+				xl:grid xl:grid-cols-[repeat(auto-fit,minmax(340px,1fr))] xl:grid-rows-1
 				place-items-center
 				transition-opacity duration-300
 				w-full"
@@ -455,23 +461,43 @@ const PropertyPage: React.FC = () => {
 			}
 
 			<div
-				className="flex items-center justify-center gap-3
-			w-full"
+			className="w-full h-14 flex-none">
+			</div>
+
+			<div
+			className="fixed bottom-0
+			w-full h-24"
 			>
-				<PageButton
-					title={t("buttons.page.previous")}
-					onClick={() => {
-						setPage(page > 1 ? page - 1 : 1);
-					}}
-					disabled={arePreviousDisabled || isFetchingData}
-				/>
-				<PageButton
-					title={t("buttons.page.next")}
-					onClick={() => {
-						setPage(page + 1);
-					}}
-					disabled={areNextDisabled || isFetchingData}
-				/>
+				<div
+				className="flex items-center justify-start
+				px-7
+				md:justify-center
+				relative
+				gap-3
+				w-full h-full"
+				>
+					<div
+					className="absolute top-0 left-0
+					bg-linear-to-t from-foreground to-transparent
+					w-full h-full"
+					>
+					</div>
+
+					<PageButton
+						icon=""
+						onClick={() => {
+							setPage(page > 1 ? page - 1 : 1);
+						}}
+						disabled={arePreviousDisabled || isFetchingData}
+					/>
+					<PageButton
+						icon=""
+						onClick={() => {
+							setPage(page + 1);
+						}}
+						disabled={areNextDisabled || isFetchingData}
+					/>
+				</div>
 			</div>
 		</div>
 	);
