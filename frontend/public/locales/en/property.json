@@ -2,10 +2,6 @@
 	"no_result": "No Result",
 	"rangeError": "There is an error in your values, please correct them and try again.",
 	"buttons": {
-		"page": {
-			"previous": "Previous Page",
-			"next": "Next Page"
-		},
 		"filter": {
 			"title": "Filter",
 			"clear": "Clear Filter",

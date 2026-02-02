@@ -97,10 +97,10 @@ const ProfilePage: React.FC = () => {
   VerifyUsersState();
   const { t } = useTranslation(["profile", "listings"]);
 
-  useEffect(() => {
-    if (!isConnected) // this doesn't work when refreshing the route /profile refresh
-      navigate("/sign-in");
-  }, [isConnected, navigate]);
+  // Redirect if user is not connected
+  if (isConnected !== null && isConnected === false)
+	navigate("/sign-in");
+
   return (
     <div className="flex flex-col items-center justify-start
 			px-2 md:px-7 xl:px-64
@@ -138,7 +138,7 @@ const ProfilePage: React.FC = () => {
           <div className="font-bold
 						mr-auto"
           >
-            {userData?.firstName + " " + userData?.lastName}
+            {userData?.firstName + " " + (userData?.lastName ? userData.lastName : "")}
           </div>
           <div className="font-light
 						whitespace-pre-line
@@ -146,7 +146,7 @@ const ProfilePage: React.FC = () => {
           >
             {
               userData?.email + "\n"
-              + userData?.phone + "\n\n"
+              + (userData?.phone ? userData.phone : "") + "\n\n"
               + t("listings:section.contact.memberSince")
               + " "
               + CreateDateForMemberSince(userData?.createdAt)
