@@ -6,7 +6,7 @@
 //   By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2026/01/26 14:15:16 by aelison           #+#    #+#             //
-//   Updated: 2026/01/30 13:35:39 by aelison          ###   ########.fr       //
+//   Updated: 2026/02/02 14:06:09 by aelison          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -141,10 +141,7 @@ const AIPage: React.FC = () => {
 						});
 					}
 					else if (data.type === "metadata") {
-						if (data.links.length > 0)
-							console.log("Founds metadatas: ", data.links);
-						else
-							console.log("Nothing inside links !")
+						console.log("Founds metadatas: ", data.links);
 					}
 				}
 			}

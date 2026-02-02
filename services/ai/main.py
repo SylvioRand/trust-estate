@@ -151,10 +151,10 @@ async def chatbot(text: RequestChat):
 
     except Exception:
         return JSONResponse(
-                status_code = 503,
+                status_code = 500,
                 content = {
                     "error": "llm_unavailable",
-                    "message": "ai.llm_service_unavailable"
+                    "message": "global.500"
                 }
         )
 
@@ -210,28 +210,28 @@ async def generate_better_description(text: Description):
             "reply": llm_response
         }
 
-    except HTTPStatusError as e:
+    except HTTPStatusError:
         return JSONResponse(
-                status_code = 503,
+                status_code = 500,
                 content = {
                     "error": "llm_unavailable",
-                    "message": "ai.llm_service_unavailable"
+                    "message": "global.500"
                 }
         )
-    except (RequestError, TimeoutException) as e:
+    except (RequestError, TimeoutException):
         return JSONResponse(
-                status_code = 503,
+                status_code = 500,
                 content = {
                     "error": "llm_unavailable",
-                    "message": "ai.llm_service_unavailable"
+                    "message": "global.500"
                 }
         )
 
-    except Exception as e:
+    except Exception:
         return JSONResponse(
-                status_code = 400,
+                status_code = 500,
                 content = {
-                    "status": "failure",
-                    "reason": e
+                    "error": "llm_unavailable",
+                    "message": "global.500"
                 }
         )
