@@ -27,7 +27,7 @@ const	BentoProperty: React.FC<BentoPropertyProps> = ({
 		relative
 		text-foreground
 		w-full
-		min-w-80 max-w-90
+		min-w-80
 		h-120"
 		style={{
 			backgroundColor: loading ? "var(--color-midtone)" : "transparent"
