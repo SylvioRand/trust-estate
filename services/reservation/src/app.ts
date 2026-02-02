@@ -26,6 +26,7 @@ const options = {
 
 const server = fastify({
 	logger: true,
+	ignoreTrailingSlash: true,
 });
 
 

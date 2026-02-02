@@ -27,6 +27,7 @@ import BuyerSlotsPage from './pages/buyer_slots.tsx';
 import TermOfServicePage from './pages/term_of_service.tsx';
 import PrivacyPolicyPage from './pages/privacy_policy.tsx';
 import EditPage from './pages/edit.tsx';
+import DashboardPage from './pages/dashboard.tsx';
 
 const router = createBrowserRouter([
   {
@@ -73,52 +74,56 @@ const router = createBrowserRouter([
         element: <AddPhonePage />
       },
 
-			{
-				path: "/home",
-				element: <HomePage />
-			},
-			{
-				path: "/property",
-				element: <PropertyPage />
-			},
-			{
-				path: "/ai",
-				element: <AIPage />
-			},
-			{
-				path: "/profile",
-				element: <ProfilePage />
-			},
-			{
-				path: "/profile/settings",
-				element: <SettingsPage />
-			},
-			{
-				path: "/property/listings/edit",
-				element: <EditPage />
-			},
-			{
-				path: "/property/listings/seller-slots",
-				element: <SellerSlotsPage />
-			},
-			{
-				path: "/property/listings/buyer-slots",
-				element: <BuyerSlotsPage />
-			},
-			{
-				path: "/term-of-services",
-				element: <TermOfServicePage />
-			},
-			{
-				path: "/privacy-policy",
-				element: <PrivacyPolicyPage />
-			},
-			{
-				path: "/",
-				element: <Navigate to="/home" replace />
-			},
-		]
-	},
+      {
+        path: "/home",
+        element: <HomePage />
+      },
+      {
+        path: "/property",
+        element: <PropertyPage />
+      },
+      {
+        path: "/ai",
+        element: <AIPage />
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />
+      },
+      {
+        path: "/profile/settings",
+        element: <SettingsPage />
+      },
+      {
+        path: "/property/listings/edit",
+        element: <EditPage />
+      },
+      {
+        path: "/property/listings/seller-slots",
+        element: <SellerSlotsPage />
+      },
+      {
+        path: "/property/listings/buyer-slots",
+        element: <BuyerSlotsPage />
+      },
+      {
+        path: "/term-of-services",
+        element: <TermOfServicePage />
+      },
+      {
+        path: "/privacy-policy",
+        element: <PrivacyPolicyPage />
+      },
+      {
+        path: "/dashboard",
+        element: <DashboardPage />
+      },
+      {
+        path: "/",
+        element: <Navigate to="/home" replace />
+      },
+    ]
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

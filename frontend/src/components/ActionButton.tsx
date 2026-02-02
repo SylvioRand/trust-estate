@@ -58,7 +58,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 				filter: hovered || processing_action ? `drop-shadow(0px 0px 3px ${accent_color})` : "drop-shadow(0px 7px 7px rgba(0,0,0,0.25))",
 				transform: hovered || processing_action ? "scale(98%)" : "none"
 			}}
-			onClick={ () => {
+			onClick={() => {
 				if (!processing_action && onClick)
 					onClick();
 			}}
