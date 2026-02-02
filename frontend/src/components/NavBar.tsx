@@ -304,45 +304,12 @@ const NavigationButton: React.FC<NavButtonProps> = ({
 	);
 }
 
-const LogOutButton: React.FC = () => {
-	const navigate = useNavigate();
-	const [hovered, setHovered] = useState<boolean>(false);
-	const { isConnected, setIsConnected } = useDataProvider();
-
-	return (
-		<button
-			className="flex items-center justify-center
-			w-10 h-10"
-			onPointerEnter={() => setHovered(true)}
-			onPointerLeave={() => setHovered(false)}
-			onClick={async () => {
-				try {
-					const response = await fetch("/api/auth/logout", {
-						method: "POST",
-						credentials: "include"
-					});
-				} catch (e) {
-					console.error("VerifyEmailPage: handleOnLogOut: error logging out.");
-				} finally {
-					setIsConnected(false);
-					navigate("/home");
-				}
-			}}
-		>
-			<div className="font-icon text-2xl
-				-translate-y-[0.05rem]
-				translate-x-[0.075rem]"
-			>
-				󰍃
-			</div>
-		</button>
-	);
-}
-
 const NavBar: React.FC = () => {
 	const { t } = useTranslation("nav");
 	const [openHamburger, setOpenHamburger] = useState<boolean>(false);
 	const { isConnected, userData } = useDataProvider();
+
+	VerifyUsersState();
 
 	const dataNavButton: NavButtonProps[] = [
 		{ icon: "", title: t("button.home"), path: "/home" },
