@@ -13,10 +13,18 @@ const handleZodError = (error: ZodError, reply: FastifyReply) => {
       details[field] = [];
     }
 
+    // If a custom message starting with "validation." is provided, use it directly
+    if (issue.message && issue.message.startsWith('validation.')) {
+      details[field].push(issue.message);
+      return;
+    }
+
+    // Map Zod codes to more descriptive ones if they are related to length
     let code = issue.code as string;
     if (code === 'too_big') code = 'too_long';
     if (code === 'too_small') code = 'too_short';
 
+    // Format error key: validation.listing.[field].[code]
     details[field].push(`validation.listing.${field}.${code}`);
   });
 
