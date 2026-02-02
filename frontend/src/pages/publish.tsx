@@ -75,7 +75,6 @@ const PublishPage: React.FC = () => {
 	const	[errorBathrooms, setErrorBathrooms] = useState<string[]>([]);
 	const	[uploadButtonProcessing, setUploadButtonProcessing] = useState<boolean>(false);
 	const	[isUploadDisabled, setIsUploadDisabled] = useState<boolean>(false);
-
 	const	navigate = useNavigate();
 
 	const	[activeTags, setActiveTags] = useState<ListingsTags[]>(["urgent", "exclusive", "discount"]);
@@ -114,8 +113,6 @@ const PublishPage: React.FC = () => {
 	},
 	"tags": ListingsTags[]
 	};
-
-	const navigate = useNavigate();
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 	e.preventDefault();
