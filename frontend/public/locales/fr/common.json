@@ -10,5 +10,18 @@
 	"minBiggerMax": "Min ne peut pas être plus grand que max",
 	"maxSmallerMin": "Max ne peut pas être plus petit que min",
 	"month": "Par Mois",
-	"cancel": "Annuler"
+	"cancel": "Annuler",
+	"viewDetails": "Voir détails",
+	"propertyType": {
+		"apartment": "Appartement",
+		"house": "Maison",
+		"loft": "Loft",
+		"land": "Terrain",
+		"commercial": "Commercial"
+	},
+	"tags": {
+		"urgent": "Urgent",
+		"exclusive": "Exclusif",
+		"discount": "Promotion"
+	}
 }

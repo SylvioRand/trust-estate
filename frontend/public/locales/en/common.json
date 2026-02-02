@@ -10,5 +10,18 @@
 	"minBiggerMax": "Min can't be bigger than max",
 	"maxSmallerMin": "Max can't be smaller than min",
 	"month": "Per Month",
-	"cancel": "Cancel"
+	"cancel": "Cancel",
+	"viewDetails": "View details",
+	"propertyType": {
+		"apartment": "Apartment",
+		"house": "House",
+		"loft": "Loft",
+		"land": "Land",
+		"commercial": "Commercial"
+	},
+	"tags": {
+		"urgent": "Urgent",
+		"exclusive": "Exclusive",
+		"discount": "Discount"
+	}
 }
