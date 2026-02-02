@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { UserInterface } from "../../interfaces/config.interface";
 import * as resaServices from "./resa.services"
-import type { CheckSlotInterface, ListingInterface, ReservationIdInterface, ReservationInterface, StatusInterface } from "./resa.interface";
+import type { CheckSlotInterface, ListingInterface, ReservationIdInterface, ReservationInterface, StatusInterface, FilterReservationsInterface } from "./resa.interface";
 
 export async function listReservation(request: FastifyRequest, reply: FastifyReply) {
 	const user = (request as any).user as UserInterface;
@@ -375,11 +375,11 @@ export async function getSlots(request: FastifyRequest<{ Querystring: { id: stri
 	}
 };
 
-export async function getSellerReservations(request: FastifyRequest, reply: FastifyReply) {
+export async function getSellerReservations(request: FastifyRequest<{ Querystring: FilterReservationsInterface }>, reply: FastifyReply) {
 	const user = (request as any).user as UserInterface;
-	const status = (request.query as any).status as string[] | undefined;
+	const { status, page = 1, limit = 10 } = request.query;
 
-	console.log("Status query:", status);
+	console.log("Status query:", status, "Page:", page, "Limit:", limit);
 	if (!user)
 		return reply.status(401).send({
 			"error": "unauthorized",
@@ -387,8 +387,17 @@ export async function getSellerReservations(request: FastifyRequest, reply: Fast
 		});
 
 	try {
-		const reservations = await resaServices.getReservationsBySellerId(request.server, user.id, status);
-		return reply.status(200).send(reservations);
+		const result = await resaServices.getReservationsBySellerId(request.server, user.id, status, page, limit);
+
+		return reply.status(200).send({
+			reservations: result.reservations,
+			pagination: {
+				page,
+				limit,
+				totalMatching: result.totalMatching,
+				totalPages: Math.ceil(result.totalMatching / limit)
+			}
+		});
 	} catch (error: any) {
 		if (error.message === "reservations_not_found")
 			return reply.status(404).send({

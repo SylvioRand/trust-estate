@@ -54,5 +54,7 @@ export interface ReservationDetailsInterface {
 }
 
 export interface FilterReservationsInterface {
-	status?: string
+	status?: string;
+	page?: number;
+	limit?: number;
 }
