@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, type Dispatch, type RefObject, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
-import { listData, type PropertyDataType } from "../dataModel/modelPropertyList";
+import { type PropertyDataType } from "../dataModel/modelPropertyList";
 import ActionButton from "../components/ActionButton";
 import InputEnum, { type InputEnumData } from "../components/InputEnum";
 import type { TFunction } from "i18next";
@@ -9,6 +9,8 @@ import { toast } from "react-toastify";
 import InputRange from "../components/InputRange";
 import InputCheckbox from "../components/InputCheckBox";
 import BentoProperty from "../components/BentoProperty";
+import { useSearchParams } from "react-router-dom";
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 interface FilterProps {
 	t: TFunction<["property", "error", "common"]>;
@@ -30,7 +32,6 @@ const Filter: React.FC<FilterProps> = ({
 	page = 1
 }) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
-	const [hovered, setHovered] = useState<boolean>(false);
 
 	const InputEnumDataBoolean: InputEnumData[] = [
 		{ value: "none", title: t("common:all") },
@@ -329,20 +330,22 @@ const PageButton: React.FC<PageButtonProps> = ({
 }
 
 const PropertyPage: React.FC = () => {
-	const { t } = useTranslation(["property", "error", "common"]);
+	const	{ t } = useTranslation(["property", "error", "common"]);
 
-	const [dataToDisplay, setDataToDisplay] = useState<PropertyDataType[]>([]);
-	const [isFetchingData, setIsFetchingData] = useState<boolean>(false);
-	const [page, setPage] = useState<number>(1);
-	const [maxPage, setMaxPage] = useState<number>(1);
-	const [lastFilter, setLastFilter] = useState<string>("");
-	const arePreviousDisabled = page === 1;
-	const areNextDisabled = page === maxPage;
+	const	[dataToDisplay, setDataToDisplay] = useState<PropertyDataType[]>([]);
+	const	[isFetchingData, setIsFetchingData] = useState<boolean>(false);
+	const	[page, setPage] = useState<number>(1);
+	const	[maxPage, setMaxPage] = useState<number>(1);
+	const	[lastFilter, setLastFilter] = useState<string>("");
+	const	arePreviousDisabled: boolean = page === 1;
+	const	areNextDisabled: boolean = page === maxPage;
+	const	[searchParams] = useSearchParams();
+	const	zone: string | null = searchParams.get("zone");
 
 	const getDataFromBackend = async () => {
 		setIsFetchingData(true);
 		try {
-			const response = await fetch(`/api/listings/?page=${page}${lastFilter}`, {
+			const response = await fetch(`/api/listings/?page=${page}${zone !== null && ZONE_ENUM.some(z => z.value === zone) ? `&zone=${zone}` : ""}${lastFilter}`, {
 				method: "GET",
 				credentials: "include"
 			});
@@ -371,6 +374,8 @@ const PropertyPage: React.FC = () => {
 	useEffect(() => {
 		getDataFromBackend();
 	}, [page]);
+
+	VerifyUsersState();
 
 	return (
 		<div className="flex flex-col items-center justify-start gap-4
