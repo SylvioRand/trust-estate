@@ -1,13 +1,13 @@
 // ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
-//   ai.tsx                                             :+:      :+:    :+:   //
-//                                                    +:+ +:+         +:+     //
-//   By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
-//   Created: 2026/01/26 14:15:16 by aelison           #+#    #+#             //
-//   Updated: 2026/02/02 14:06:09 by aelison          ###   ########.fr       //
-//                                                                            //
+//						   													//
+//														:::	  ::::::::   //
+//   ai.tsx											 :+:	  :+:	:+:   //
+//													+:+ +:+		 +:+	 //
+//   By: aelison <aelison@student.42antananarivo.m  +#+  +:+	   +#+		//
+//												+#+#+#+#+#+   +#+		   //
+//   Created: 2026/01/26 14:15:16 by aelison		   #+#	#+#			 //
+//   Updated: 2026/02/02 14:06:09 by aelison		  ###   ########.fr	   //
+//																			//
 // ************************************************************************** //
 
 
@@ -15,6 +15,7 @@ import React, { useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
 import { useTranslation } from "react-i18next";
 import Markdown from 'react-markdown';
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 interface MessageProps {
 	value: string;
@@ -27,37 +28,37 @@ const Message: React.FC<MessageProps> = ({
 }) => {
 	return (
 		<div
-    className="animate-fade-in
-    w-full"
-    style={{
-      animationDuration: "50ms"
-    }}
-    >
-	    <div
-      className="flex
-      animate-from-bottom
-	    w-full"
-	    style={{
-	    	justifyContent: side === "right" ? "flex-end" : "flex-start",
-        animationDuration: "50ms"
-	    }}
-	    >
-	    	<div className="rounded-xl
-          max-w-[70%]
-	    		p-3
-	    		border border-background/25
+	className="animate-fade-in
+	w-full"
+	style={{
+	  animationDuration: "50ms"
+	}}
+	>
+		<div
+	  className="flex
+	  animate-from-bottom
+		w-full"
+		style={{
+			justifyContent: side === "right" ? "flex-end" : "flex-start",
+		animationDuration: "50ms"
+		}}
+		>
+			<div className="rounded-xl
+		  max-w-[70%]
+				p-3
+				border border-background/25
 				text-sm
 				wrap-break-word
-	    		shadow-standard"
-	    		style={{
-	    			order: side === "right" ? "2" : "1",
-	    		}}
-	    	>
-	    		<Markdown>
-	    			{value}
-	    		</Markdown>
-	    	</div>
-	    </div>
+				shadow-standard"
+				style={{
+					order: side === "right" ? "2" : "1",
+				}}
+			>
+				<Markdown>
+					{value}
+				</Markdown>
+			</div>
+		</div>
 		</div>
 	);
 }
@@ -72,6 +73,8 @@ const AIPage: React.FC = () => {
 	const [messageData, setMessageData] = useState<MessageType[]>([]);
 	const [canSend, setCanSend] = useState<boolean>(true);
 	const { t } = useTranslation(["ai", "error", "common"]);
+
+	VerifyUsersState();
 
 	const handleSendButton = async () => {
 		if (!chatValue.trim() || !canSend)
@@ -213,7 +216,7 @@ const AIPage: React.FC = () => {
 								text-sm
 								animate-fade-in"
 								>
-               						{ t("message.processing") }
+			   						{ t("message.processing") }
 								</div>
 							</div>
 						);
