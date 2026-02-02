@@ -1,5 +1,5 @@
 export const ReservationSchema = {
-	body:{
+	body: {
 		type: 'object',
 		required: ['slot', 'listingId', 'sellerId'],
 		properties: {
@@ -21,7 +21,7 @@ export const ReservationSchema = {
 };
 
 export const ReservationIdSchema = {
-	params : {
+	params: {
 		type: 'object',
 		required: ['id'],
 		properties: {
@@ -35,7 +35,7 @@ export const ReservationIdSchema = {
 };
 
 export const StatusListingSchema = {
-	querystring : {
+	querystring: {
 		type: 'object',
 		required: ['listingId', 'userId'],
 		properties: {
@@ -53,7 +53,7 @@ export const StatusListingSchema = {
 };
 
 export const CheckSlotSchema = {
-	querystring : {
+	querystring: {
 		type: 'object',
 		required: ['listingId', 'slot'],
 		properties: {
@@ -94,7 +94,9 @@ export const FilterReservationsSchema = {
 					type: 'string',
 					enum: ['pending', 'confirmed', 'cancelled', 'rejected', 'done']
 				}
-			}
+			},
+			page: { type: 'integer', minimum: 1, default: 1 },
+			limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 }
 		},
 		additionalProperties: false
 	}
