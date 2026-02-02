@@ -76,14 +76,22 @@ const ReservationsSection: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [reservations, setReservations] = useState<Reservation[]>([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalMatching, setTotalMatching] = useState(0);
+
+    const handleFilterChange = (newFilter: string) => {
+        setSelection(newFilter);
+        setPage(1);
+    };
 
     useEffect(() => {
         const fetchReservations = async () => {
             setLoading(true);
             try {
-                let url = "/api/reservations/seller/me";
+                let url = `/api/reservations/seller/me?page=${page}&limit=3`;
                 if (selection !== 'all')
-                    url = `/api/reservations/seller/me?status=${selection}`;
+                    url += `&status=${selection}`;
 
                 const response = await fetch(url, {
                     method: 'GET',
@@ -98,6 +106,8 @@ const ReservationsSection: React.FC = () => {
                 const data = await response.json();
                 const parsedData = ReservationsResponseSchema.parse(data);
                 setReservations(parsedData.reservations);
+                setTotalPages(parsedData.pagination.totalPages);
+                setTotalMatching(parsedData.pagination.totalMatching);
             } catch (error) {
                 if (error instanceof ZodError) {
                     console.error("Zod Error Detail:", error.message);
@@ -110,7 +120,7 @@ const ReservationsSection: React.FC = () => {
         };
 
         fetchReservations();
-    }, [selection]);
+    }, [selection, page]);
 
     if (loading)
         return (
@@ -124,18 +134,55 @@ const ReservationsSection: React.FC = () => {
             <div className="flex items-center justify-between">
                 <Dropdown
                     selection={selection}
-                    setSelection={setSelection}
+                    setSelection={handleFilterChange}
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}
                 />
                 <span className="text-sm opacity-50 font-light">
-                    {reservations.length} réservation(s) trouvée(s)
+                    {totalMatching} reservations trouvées
                 </span>
             </div>
 
             <div className="w-full min-h-[400px] flex flex-col gap-4">
                 {reservations.length > 0 ? (
-                    <ReservationCards reservations={reservations} />
+                    <>
+                        <ReservationCards reservations={reservations} />
+
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-center gap-2 mt-8">
+                                <button
+                                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                                    disabled={page === 1}
+                                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-background/5 hover:bg-background/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-xl font-bold"
+                                >
+                                    ‹
+                                </button>
+
+                                <div className="flex gap-1">
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                                        <button
+                                            key={n}
+                                            onClick={() => setPage(n)}
+                                            className={`w-10 h-10 rounded-lg transition-colors ${page === n
+                                                ? "bg-accent text-white font-bold"
+                                                : "bg-background/5 hover:bg-background/10"
+                                                }`}
+                                        >
+                                            {n}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <button
+                                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={page === totalPages}
+                                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-background/5 hover:bg-background/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-xl font-bold"
+                                >
+                                    ›
+                                </button>
+                            </div>
+                        )}
+                    </>
                 ) : (
                     <div className="w-full h-64 flex items-center justify-center border-2 border-dashed border-background/10 rounded-3xl">
                         <p className="text-xl font-light opacity-50 italic">Aucune réservation trouvée pour ce filtre.</p>
