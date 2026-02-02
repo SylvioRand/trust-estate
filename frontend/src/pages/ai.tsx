@@ -1,13 +1,13 @@
 // ************************************************************************** //
-//                                                                            //
-//                                                        :::      ::::::::   //
-//   ai.tsx                                             :+:      :+:    :+:   //
-//                                                    +:+ +:+         +:+     //
-//   By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+        //
-//                                                +#+#+#+#+#+   +#+           //
-//   Created: 2026/01/26 14:15:16 by aelison           #+#    #+#             //
-//   Updated: 2026/02/02 14:06:09 by aelison          ###   ########.fr       //
-//                                                                            //
+//						   													//
+//														:::	  ::::::::   //
+//   ai.tsx											 :+:	  :+:	:+:   //
+//													+:+ +:+		 +:+	 //
+//   By: aelison <aelison@student.42antananarivo.m  +#+  +:+	   +#+		//
+//												+#+#+#+#+#+   +#+		   //
+//   Created: 2026/01/26 14:15:16 by aelison		   #+#	#+#			 //
+//   Updated: 2026/02/02 14:06:09 by aelison		  ###   ########.fr	   //
+//																			//
 // ************************************************************************** //
 
 
@@ -27,37 +27,37 @@ const Message: React.FC<MessageProps> = ({
 }) => {
 	return (
 		<div
-    className="animate-fade-in
-    w-full"
-    style={{
-      animationDuration: "50ms"
-    }}
-    >
-	    <div
-      className="flex
-      animate-from-bottom
-	    w-full"
-	    style={{
-	    	justifyContent: side === "right" ? "flex-end" : "flex-start",
-        animationDuration: "50ms"
-	    }}
-	    >
-	    	<div className="rounded-xl
-          max-w-[70%]
-	    		p-3
-	    		border border-background/25
+	className="animate-fade-in
+	w-full"
+	style={{
+	  animationDuration: "50ms"
+	}}
+	>
+		<div
+	  className="flex
+	  animate-from-bottom
+		w-full"
+		style={{
+			justifyContent: side === "right" ? "flex-end" : "flex-start",
+		animationDuration: "50ms"
+		}}
+		>
+			<div className="rounded-xl
+		  max-w-[70%]
+				p-3
+				border border-background/25
 				text-sm
 				wrap-break-word
-	    		shadow-standard"
-	    		style={{
-	    			order: side === "right" ? "2" : "1",
-	    		}}
-	    	>
-	    		<Markdown>
-	    			{value}
-	    		</Markdown>
-	    	</div>
-	    </div>
+				shadow-standard"
+				style={{
+					order: side === "right" ? "2" : "1",
+				}}
+			>
+				<Markdown>
+					{value}
+				</Markdown>
+			</div>
+		</div>
 		</div>
 	);
 }
@@ -213,7 +213,7 @@ const AIPage: React.FC = () => {
 								text-sm
 								animate-fade-in"
 								>
-               						{ t("message.processing") }
+			   						{ t("message.processing") }
 								</div>
 							</div>
 						);
