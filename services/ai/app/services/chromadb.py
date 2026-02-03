@@ -244,10 +244,30 @@ class ChromadbService:
         """
         return prompt
 
+
+    def from_score_only(self, to_parse, ref_score):
+        relevant_data = [
+                (id, doc, meta, score)
+                for id, doc, meta, score in zip(
+                    to_parse['ids'][0],
+                    to_parse['documents'][0],
+                    to_parse['metadatas'][0],
+                    to_parse['distances'][0]
+                )
+                if score < ref_score
+        ]
+        new_result = {
+                "ids": [[id for id, _, _, _ in relevant_data]],
+                "documents": [[doc for _, doc, _, _ in relevant_data]],
+                "metadatas": [[meta for _, _, meta, _ in relevant_data]],
+                "distances": [[score for _, _, _, score in relevant_data]],
+        }
+
+        return new_result
+
     async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
         llm_parse_response = llm_service.generate_bloc_response(user_mssg, sys_prompt)
         
-        print(f"Hola desu f{llm_parse_response}")
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}
@@ -266,23 +286,6 @@ class ChromadbService:
             }
         result = await self.query_in_collection("posts", search_text, 3, filters, id_ref)
 
-        print(f"Founded: {result}")
-        # relevant_data = [
-        #         (id, doc, meta, score)
-        #         for id, doc, meta, score in zip(
-        #             result['ids'][0],
-        #             result['documents'][0],
-        #             result['metadatas'][0],
-        #             result['distances'][0]
-        #         )
-        #         if score < 1.0
-        # ]
-        # new_result = {
-        #         "ids": [[id for id, _, _, _ in relevant_data]],
-        #         "documents": [[doc for _, doc, _, _ in relevant_data]],
-        #         "metadatas": [[meta for _, _, meta, _ in relevant_data]],
-        #         "distances": [[score for _, _, _, score in relevant_data]],
-        # }
         return result
 
     async def is_post_in_collection(self, collection_name, specific_ids):
