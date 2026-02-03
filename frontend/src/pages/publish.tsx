@@ -12,6 +12,7 @@ import PopUp, { type PopUpAPI } from "../components/PopUp";
 import { ZONE_ENUM } from "../dataModel/dataZone";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import useDataProvider from "../provider/useDataProvider";
 
 interface PicturePreviewerProps {
 	src: string;
@@ -64,25 +65,32 @@ const PicturePreviewer: React.FC<PicturePreviewerProps> = ({
 }
 
 const PublishPage: React.FC = () => {
-	const { t } = useTranslation(["publish", "common", "error"]);
-	const [dataToPreview, setDataToPreview] = useState<string[]>([]);
-	const uploaderRef = useRef<ImageUploaderHandle>(null);
-	const [errorTitle, setErrorTitle] = useState<string[]>([]);
-	const [errorPrice, setErrorPrice] = useState<string[]>([]);
-	const [errorArea, setErrorArea] = useState<string[]>([]);
-	const [errorBedrooms, setErrorBedrooms] = useState<string[]>([]);
-	const [errorBathrooms, setErrorBathrooms] = useState<string[]>([]);
-	const [uploadButtonProcessing, setUploadButtonProcessing] = useState<boolean>(false);
-	const [isUploadDisabled, setIsUploadDisabled] = useState<boolean>(false);
+	const	{ t } = useTranslation(["publish", "common", "error"]);
+	const	[dataToPreview, setDataToPreview] = useState<string[]>([]);
+	const	uploaderRef = useRef<ImageUploaderHandle>(null);
+	const	[errorTitle, setErrorTitle] = useState<string[]>([]);
+	const	[errorPrice, setErrorPrice] = useState<string[]>([]);
+	const	[errorArea, setErrorArea] = useState<string[]>([]);
+	const	[errorBedrooms, setErrorBedrooms] = useState<string[]>([]);
+	const	[errorBathrooms, setErrorBathrooms] = useState<string[]>([]);
+	const	[uploadButtonProcessing, setUploadButtonProcessing] = useState<boolean>(false);
+	const	[isUploadDisabled, setIsUploadDisabled] = useState<boolean>(false);
+	const	navigate = useNavigate();
 
-	const [activeTags, setActiveTags] = useState<ListingsTags[]>(["urgent", "exclusive", "discount"]);
-	const [openPopupAddTags, setOpenPopupAddTags] = useState<boolean>(false);
-	const addTagsPopupRef = useRef<PopUpAPI>(null);
+	const	[activeTags, setActiveTags] = useState<ListingsTags[]>(["urgent", "exclusive", "discount"]);
+	const	[openPopupAddTags, setOpenPopupAddTags] = useState<boolean>(false);
+	const	addTagsPopupRef = useRef<PopUpAPI>(null);
 
-	const InputEnumDataBoolean: InputEnumData[] = [
-    { value: "true", title: t("common:true") },
-    { value: "false", title: t("common:false") }
-  ]
+	const	InputEnumDataBoolean: InputEnumData[] = [
+		{ value: "true", title: t("common:true") },
+		{ value: "false", title: t("common:false") }
+	]
+
+	const	{ isConnected } = useDataProvider();
+
+	// Redirect if user is not connected
+	if (isConnected !== null && isConnected === false)
+		navigate("/sign-in");
 
 	type UploadDataType = {
 	"type": "sale" | "rent",
@@ -105,8 +113,6 @@ const PublishPage: React.FC = () => {
 	},
 	"tags": ListingsTags[]
 	};
-
-	const navigate = useNavigate();
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 	e.preventDefault();

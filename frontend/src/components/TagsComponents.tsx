@@ -25,6 +25,7 @@ export const	TagsComponents: React.FC<TagsComponentsProps> = ({
 	return (
 		<div
 		className="grid grid-cols-[auto_1fr] grid-rows-1 gap-1
+		select-none
 		bg-foreground text-background
 		px-2 py-1
 		rounded-full

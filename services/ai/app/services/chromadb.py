@@ -176,38 +176,47 @@ class ChromadbService:
         return result
 
     def get_parse_prompt(self):
+
         parse_prompt = """
+        ROLE: You are a strict JSON generator for a real estate search engine.
+
         RULES:
-        1. ONLY use these metadata fields in "filters": "price", "zone", "post_type", "property_type", "surface".
-        2. If the user mentions bedrooms, bathrooms, gardens, urgent, exclusive, or discount DO NOT put them in "filters". Put those keywords in "search_text".
-        3. "post_type" must be exactly 'sale' or 'rent'.
-        4. "price" and "surface" must be numbers (integers), not strings.
-        5. "property_type" must be exactly 'apartment', 'house', 'loft', 'land' or 'commercial'.
+        1. ONLY use these keys in "filters": "price", "zone", "post_type", "property_type", "surface".
+        2. If the user mentions bedrooms, bathrooms, gardens, urgent, exclusive, or discount, put these in "search_text" ONLY. NEVER in "filters".
+        3. post_type NORMALIZATION:
+        - Map to exactly 'sale' or 'rent'.
+        - IF THE USER DOES NOT SPECIFY (e.g., they don't say "buy", "sale", "rent", or "louer"), OMIT this field from the "filters" dictionary entirely. Do not guess.
+        4. property_type NORMALIZATION:
+        - You MUST map the property_type to one of these: 'apartment', 'house', 'loft', 'land', 'commercial'.
+        - Handle typos (e.g., "Apartement" -> "apartment") and synonyms (e.g., "flat" -> "apartment", "villa" -> "house").
+        - If none of the type is mentioned, Do not put anything.
+        5. NUMBERS: "price" and "surface" must be positive integers. Use ChromaDB operators: $gt, $lt, $eq, $gte, $lte.
 
-        You are a search assistant for a real estate app. 
-        Analyze the user's request and output a JSON object with:
-        1. "search_text": The semantic part of the query (e.g., "beautiful house with garden"). The content must at least contain
-        one of the values of 'property_type', if there is no value found for the 'property_type', put at least 'house'.
-        2. "filters": A dictionary of metadata filters for ChromaDB.
-
-        Available metadata fields: "price", "zone", "post_type" (sale/rent), "property_type" ('apartment', 'house', 'loft', 'land', 'commercial'), 'surface'
-        
-        Use ChromaDB operators: $gt, $lt, $eq, $gte, $lte.
-        Example output for "House with 3 bedrooms in Ambohipo under 2M":
+        OUTPUT STRUCTURE:
+        Return ONLY a JSON object:
         {
-            "search_text": "house 3 bedrooms garden",
+        "search_text": "string including property_type and keywords. If the property_type is defined here, it must me defined in the filters too",
+        "filters": { ...metadata }
+        }
+
+        EXAMPLES:
+
+        User: "Apartement at Paris"
+        {
+            "search_text": "apartment",
+            "filters": {
+                "zone": "Paris",
+                "property_type": "apartment"
+            }
+        }
+
+        User: "House with 3 bedrooms in Ambohipo under 2M"
+        {
+            "search_text": "house 3 bedrooms",
             "filters": {
                 "zone": "Ambohipo",
                 "price": {"$lt": 2000000},
-                "post_type": "rent"
-            }
-        }
-        Example output for "House in Madagascar under 2M":
-        {
-            "search_text": "house",
-            "filters": {
-                "zone": "Madagascar",
-                "price": {"$lt": 2000000}
+                "property_type": "house"
             }
         }
         """
@@ -236,6 +245,8 @@ class ChromadbService:
 
     async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
         llm_parse_response = llm_service.generate_bloc_response(user_mssg, sys_prompt)
+        
+        print(f"Hola desus f{llm_parse_response}")
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}
@@ -251,7 +262,7 @@ class ChromadbService:
                     result['metadatas'][0],
                     result['distances'][0]
                 )
-                if score < 0.8
+                if score < 0.7
         ]
         new_result = {
                 "ids": [[id for id, _, _, _ in relevant_data]],
