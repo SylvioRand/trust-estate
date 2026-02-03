@@ -104,8 +104,7 @@ class LLMService:
     def generate_header(self):
         headers = {
             "Authorization": "Bearer " + self.key,
-            "Content-Type": "application/json",
-            "User-Agent": "ft_transcendence_ai/1.0"
+            "Content-Type": "application/json"
         }
         return headers
 
@@ -131,6 +130,9 @@ class LLMService:
                 json = self.generate_json(text, True, system_prompt),
                 timeout = 130.0
             ) as response:
+                if response.status_code != 200:
+                        error_details = await response.aread() 
+                        print(f"Error {response.status_code}: {error_details.decode()}")
                 response.raise_for_status()
                 async for word in response.aiter_lines():
                     if not word:

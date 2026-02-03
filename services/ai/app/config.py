@@ -24,6 +24,6 @@ class ft_config:
     LLM_MODEL=os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
 
     #Embedding
-    EMBEDDING_MODEL=os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+    EMBEDDING_MODEL=os.getenv("EMBEDDING_MODEL", "paraphrase-multilingual-MiniLM-L12-v2")
 
 config = ft_config()
