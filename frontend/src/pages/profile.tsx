@@ -138,7 +138,7 @@ const ProfilePage: React.FC = () => {
           <div className="font-bold
 						mr-auto"
           >
-            {userData?.firstName + " " + userData?.lastName}
+            {userData?.firstName + " " + (userData?.lastName ? userData.lastName : "")}
           </div>
           <div className="font-light
 						whitespace-pre-line
@@ -146,7 +146,7 @@ const ProfilePage: React.FC = () => {
           >
             {
               userData?.email + "\n"
-              + userData?.phone + "\n\n"
+              + (userData?.phone ? userData.phone : "") + "\n\n"
               + t("listings:section.contact.memberSince")
               + " "
               + CreateDateForMemberSince(userData?.createdAt)

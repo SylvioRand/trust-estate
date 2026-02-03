@@ -9,6 +9,7 @@ import type { PopUpAPI } from "../components/PopUp";
 import { useRef, useState, type RefObject } from "react";
 import PopUp from "../components/PopUp";
 import { toast } from "react-toastify";
+import Animate from "../components/Animate";
 
 interface	ListingsHeaderProps {
 	postMenuContent: ActionsMenuContent[];
@@ -41,127 +42,166 @@ export const	ListingsHeader: React.FC<ListingsHeaderProps> = ({
 			mt-4"
 			
 			>
-				<div
-				className="grid grid-cols-[70%_auto] grid-rows-1
-				place-items-center
-				wrap-break-word
-				w-full"
+				<Animate
+				delay="100ms"
+				direction="bottom"
+				customStyle={{
+					width: "100%"
+				}}
 				>
 					<div
-					className="font-higuen font-bold text-4xl
-					justify-self-start
-					wrap-break-word w-full"
+					className="grid grid-cols-[70%_auto] grid-rows-1
+					place-items-center
+					wrap-break-word
+					w-full"
 					>
-						{ fetchedData.title }
+							<div
+							className="font-higuen font-bold text-4xl
+							justify-self-start
+							wrap-break-word w-full"
+							>
+									{ fetchedData.title }
+							</div>
+							<div
+							className="justify-self-end mb-auto"
+							>
+								<ActionsMenu
+								menu_content={ postMenuContent }
+								/>
+							</div>
 					</div>
-					<div
-					className="justify-self-end mb-auto"
-					>
-						<ActionsMenu
-						menu_content={ postMenuContent }
-						/>
-					</div>
-				</div>
+				</Animate>
 
-				<div
-				className="flex items-center justify-center gap-1"
+				<Animate
+				delay="200ms"
+				direction="bottom"
 				>
-					<div className="font-icon"></div><div>{ `${t(`section.header.propertyType.${fetchedData.propertyType}`)}, ${fetchedData.zone}` }</div>
-				</div>
+					<div
+					className="flex items-center justify-center gap-1"
+					>
+						<div className="font-icon"></div><div>{ `${t(`section.header.propertyType.${fetchedData.propertyType}`)}, ${fetchedData.zone}` }</div>
+					</div>
+				</Animate>
 				<div
 				className="flex items-center justify-center gap-1
 				mb-4"
 				>
 				</div>
 
-				<div
-				className="font-light wrap-break-word w-full"
-				>
-					{ fetchedData.description }
-				</div>
-
-				<div
-				className="grid grid-cols-[1fr_auto] grid-rows-1 gap-3
-				place-items-center
-				mt-2
-				w-full"
+				<Animate
+				delay="300ms"
+				direction="bottom"
 				>
 					<div
-					className="font-light
-					justify-self-start"
+					className="font-light wrap-break-word w-full"
 					>
-						{ `${t("section.post.publicationDate")} ${CreateDateForPost(fetchedData.createdAt)}` }
+						{ fetchedData.description }
 					</div>
+				</Animate>
 
-					{
-						fetchedData.mine === true &&
+				<Animate
+				delay="400ms"
+				direction="bottom"
+				customStyle={{
+					width: "100%"
+				}}
+				>
+					<div
+					className="grid grid-cols-[1fr_auto] grid-rows-1 gap-3
+					place-items-center
+					mt-2
+					w-full"
+					>
 						<div
-						style={{
-							border: `solid 1px ${colorStatus[fetchedData.status]}`,
-							color: colorStatus[fetchedData.status],
-							borderRadius: "100px",
-							textShadow: `0px 0px 4px color-mix(in srgb, ${colorStatus[fetchedData.status]} 50%, transparent)`,
-							padding: "2px 8px"
-						}}>
-							{ t(`status.${fetchedData.status}`) }
+						className="font-light
+						justify-self-start"
+						>
+							{ `${t("section.post.publicationDate")} ${CreateDateForPost(fetchedData.createdAt)}` }
 						</div>
-					}
 
-					{
-						fetchedData.mine === false &&
-						<div
-						style={{
-							border: `solid 1px ${fetchedData.isAvailable ? "var(--color-green-500)" : "var(--color-red-500)"}`,
-							color: fetchedData.isAvailable ? "var(--color-green-500)" : "var(--color-red-500)",
-							borderRadius: "100px",
-							textShadow: `0px 0px 4px color-mix(in srgb, ${fetchedData.isAvailable ? "var(--color-green-500)" : "var(--color-red-500)"} 50%, transparent)`,
-							padding: "2px 8px"
-						}}>
-							{ t(`status.${fetchedData.isAvailable === true ? "available" : "unavailable"}`) }
-						</div>
-					}
-				</div>
+						{
+							fetchedData.mine === true &&
+							<div
+							style={{
+								border: `solid 1px ${colorStatus[fetchedData.status]}`,
+								color: colorStatus[fetchedData.status],
+								borderRadius: "100px",
+								textShadow: `0px 0px 4px color-mix(in srgb, ${colorStatus[fetchedData.status]} 50%, transparent)`,
+								padding: "2px 8px"
+							}}>
+								{ t(`status.${fetchedData.status}`) }
+							</div>
+						}
+
+						{
+							fetchedData.mine === false &&
+							<div
+							style={{
+								border: `solid 1px ${fetchedData.isAvailable ? "var(--color-green-500)" : "var(--color-red-500)"}`,
+								color: fetchedData.isAvailable ? "var(--color-green-500)" : "var(--color-red-500)",
+								borderRadius: "100px",
+								textShadow: `0px 0px 4px color-mix(in srgb, ${fetchedData.isAvailable ? "var(--color-green-500)" : "var(--color-red-500)"} 50%, transparent)`,
+								padding: "2px 8px"
+							}}>
+								{ t(`status.${fetchedData.isAvailable === true ? "available" : "unavailable"}`) }
+							</div>
+						}
+					</div>
+				</Animate>
 				{
 					fetchedData.updatedAt && 
-					<div
-					className="font-light"
+					<Animate
+					delay="500ms"
+					direction="bottom"
 					>
-						{ `${t("section.post.updateDate")} ${CreateDateForPost(fetchedData.updatedAt)}` }
-					</div>
+						<div
+						className="font-light"
+						>
+							{ `${t("section.post.updateDate")} ${CreateDateForPost(fetchedData.updatedAt)}` }
+						</div>
+					</Animate>
 				}
 			</div>
-			<div
-			className="grid grid-cols-[auto_1fr] grid-rows-1
-			place-items-center
-			font-bold text-xl
-			mt-7
-			gap-3
-			w-full"
+			<Animate
+			delay="600ms"
+			direction="bottom"
+			customStyle={{
+				width: "100%"
+			}}
 			>
-				<ActionButton
-				title={ t(`section.quickButtons.${ fetchedData.mine === true ? "visitSlot" : "scheduleVisit" }`) }
-				onClick={ () => {
-					navigate(`/property/listings/${ fetchedData.mine === true ? "seller" : "buyer" }-slots?id=${fetchedData.id}`)
-				}}
-				disabled={ !fetchedData.isAvailable }
-				/>
 				<div
-				className="flex flex-col items-start justify-center
-				justify-self-start"
+				className="grid grid-cols-[auto_1fr] grid-rows-1
+				place-items-center
+				font-bold text-xl
+				mt-7
+				gap-3
+				w-full"
 				>
-					<div>
-						{ `${formatter.format(fetchedData.price)} Ar` }
-					</div>
-					{
-						fetchedData.type === "rent" &&
-						<div
-						className="font-light text-sm"
-						>
-							{ `${ " / " + t("common:month")}` }
+					<ActionButton
+					title={ t(`section.quickButtons.${ fetchedData.mine === true ? "visitSlot" : "scheduleVisit" }`) }
+					onClick={ () => {
+						navigate(`/property/listings/${ fetchedData.mine === true ? "seller" : "buyer" }-slots?id=${fetchedData.id}`)
+					}}
+					disabled={ !fetchedData.isAvailable }
+					/>
+					<div
+					className="flex flex-col items-start justify-center
+					justify-self-start"
+					>
+						<div>
+							{ `${formatter.format(fetchedData.price)} Ar` }
 						</div>
-					}
+						{
+							fetchedData.type === "rent" &&
+							<div
+							className="font-light text-sm"
+							>
+								{ `${ " / " + t("common:month")}` }
+							</div>
+						}
+					</div>
 				</div>
-			</div>
+			</Animate>
 		</div>
 	);
 }
@@ -349,66 +389,94 @@ export const	ListingsFeaturesAndEquipment: React.FC<ListingsViewProps> = ({
 			mt-4"
 			
 			>
-				<div
-				className="font-bold text-2xl"
+				<Animate
+				delay="700ms"
+				direction="bottom"
 				>
-					{ t("section.features.title") }
-				</div>
+					<div
+					className="font-bold text-2xl"
+					>
+						{ t("section.features.title") }
+					</div>
+				</Animate>
 			</div>
 
-			<div
-			className="flex flex-wrap
-			gap-3
-			w-full"
+			<Animate
+			delay="800ms"
+			direction="bottom"
+			customStyle={{
+				width: "100%"
+			}}
 			>
-				<FeaturesStats
-				data="area"
-				namespace="features"
-				icon="󰳂"
-				value={ fetchedData.surface }
-				t={ t }
-				/>
+				<div
+				className="flex flex-wrap
+				gap-3
+				w-full"
+				>
+					<FeaturesStats
+					data="area"
+					namespace="features"
+					icon="󰳂"
+					value={ fetchedData.surface }
+					t={ t }
+					/>
 
-				{
-					dataFeatures.map((value: FeaturesType, index: number) => {
-						type FeatureKey = keyof ListingsData["features"];
+					{
+						dataFeatures.map((value: FeaturesType, index: number) => {
+							type FeatureKey = keyof ListingsData["features"];
 
-						const getValue = (
-							features: ListingsData["features"],
-							key: FeatureKey
-						) => (features[key]);
+							const getValue = (
+								features: ListingsData["features"],
+								key: FeatureKey
+							) => (features[key]);
 
-						return (
-							<FeaturesStats
-							key={ index }
-							namespace="features"
-							data={ value.value }
-							icon={ value.icon }
-							value={ getValue(fetchedData.features, value.value as keyof ListingsData["features"]) }
-							t={ t }
-							/>
-						);
-					})
-				}
-			</div>
+							return (
+								<FeaturesStats
+								key={ index }
+								namespace="features"
+								data={ value.value }
+								icon={ value.icon }
+								value={ getValue(fetchedData.features, value.value as keyof ListingsData["features"]) }
+								t={ t }
+								/>
+							);
+						})
+					}
+				</div>
+			</Animate>
+
 
 			<div
 			className="flex flex-col items-center justify-center
 			gap-3
 			my-4
 			w-full">
-				<ListingsInfo
-				icon="󰖌"
-				icon_color="var(--color-blue-400)"
-				title={ t("section.equipments.water_access.title") }
-				info={ t(`section.equipments.water_access.${fetchedData.features.water_access ? "true" : "false"}`) }
-				/>
-				<ListingsInfo
-				icon="󱐋"
-				icon_color="var(--color-yellow-500)"
-				title={ t("section.equipments.electricity_access.title") }
-				info={ t(`section.equipments.electricity_access.${fetchedData.features.electricity_access ? "true" : "false"}`) }
-				/>
+				<Animate
+				delay="900ms"
+				direction="bottom"
+				customStyle={{
+					width: "100%"
+				}}>
+					<ListingsInfo
+					icon="󰖌"
+					icon_color="var(--color-blue-400)"
+					title={ t("section.equipments.water_access.title") }
+					info={ t(`section.equipments.water_access.${fetchedData.features.water_access ? "true" : "false"}`) }
+					/>
+				</Animate>
+				<Animate
+				delay="1000ms"
+				direction="bottom"
+				customStyle={{
+					width: "100%"
+				}}>
+					<ListingsInfo
+					icon="󱐋"
+					icon_color="var(--color-yellow-500)"
+					title={ t("section.equipments.electricity_access.title") }
+					info={ t(`section.equipments.electricity_access.${fetchedData.features.electricity_access ? "true" : "false"}`) }
+					/>
+				</Animate>
 			</div>
 
 			<div
@@ -418,41 +486,55 @@ export const	ListingsFeaturesAndEquipment: React.FC<ListingsViewProps> = ({
 			mt-4"
 			
 			>
+				<Animate
+				delay="1100ms"
+				direction="bottom"
+				customStyle={{
+					width: "100%"
+				}}>
+					<div
+					className="font-bold text-2xl"
+					>
+						{ t("section.equipments.title") }
+					</div>
+				</Animate>
+			</div>
+
+			<Animate
+			delay="1100ms"
+			direction="bottom"
+			customStyle={{
+				width: "100%"
+			}}>
 				<div
-				className="font-bold text-2xl"
+				className="flex flex-wrap
+				gap-3
+				w-full"
 				>
-					{ t("section.equipments.title") }
+					{
+						dataEquipments.map((value: FeaturesType, index: number) => {
+							type FeatureKey = keyof ListingsData["features"];
+
+							const isEquipmentEnabled = (
+								features: ListingsData["features"],
+								key: FeatureKey
+							) => (features[key] === true || features[key] !== "none");
+
+							if (!isEquipmentEnabled(fetchedData.features, value.value as keyof ListingsData["features"]))
+								return (null);
+
+							return (
+								<EquipmentStats
+								key={ index }
+								value={ value.value }
+								icon={ value.icon }
+								t={ t }
+								/>
+							);
+						})
+					}
 				</div>
-			</div>
-
-			<div
-			className="flex flex-wrap
-			gap-3
-			w-full"
-			>
-				{
-					dataEquipments.map((value: FeaturesType, index: number) => {
-						type FeatureKey = keyof ListingsData["features"];
-
-						const isEquipmentEnabled = (
-							features: ListingsData["features"],
-							key: FeatureKey
-						) => (features[key] === true || features[key] !== "none");
-						
-						if (!isEquipmentEnabled(fetchedData.features, value.value as keyof ListingsData["features"]))
-							return (null);
-
-						return (
-							<EquipmentStats
-							key={ index }
-							value={ value.value }
-							icon={ value.icon }
-							t={ t }
-							/>
-						);
-					})
-				}
-			</div>
+			</Animate>
 		</div>
 	);
 }
@@ -510,11 +592,6 @@ const	MyListingsView: React.FC<ListingsViewProps> = ({
 					title: t("section.actionButton.popup.edit.title"),
 					func: () => navigate(`/property/listings/edit?id=${fetchedData.id}`)
 				},
-				// {
-				// 	icon: "󰄬",
-				// 	title: t(`section.actionButton.popup.mark.${fetchedData.type === "rent" ? "rented" : "sold"}.title`),
-				// 	func: () => setArePopUpMarkingOpen(true)
-				// },
 				buttonAvailabilityModifier,
 				{
 					color: "var(--color-red-500)",
@@ -539,40 +616,53 @@ const	MyListingsView: React.FC<ListingsViewProps> = ({
 			my-4"
 			
 			>
-				<div
-				className="font-bold text-2xl"
+				<Animate
+				delay="1200ms"
+				direction="bottom"
 				>
-					{ t("section.postStats.title") }
-				</div>
+					<div
+					className="font-bold text-2xl"
+					>
+						{ t("section.postStats.title") }
+					</div>
+				</Animate>
 
-				<div
-				className="flex flex-wrap
-				mt-2
-				gap-3
-				w-full"
+				<Animate
+				delay="1300ms"
+				direction="bottom"
+				customStyle={{
+					width: "100%"
+				}}
 				>
-					{
-						postStats.map((value: FeaturesType, index: number) => {
-							type FeatureKey = keyof ListingsData["stats"];
+					<div
+					className="flex flex-wrap
+					mt-2
+					gap-3
+					w-full"
+					>
+						{
+							postStats.map((value: FeaturesType, index: number) => {
+								type FeatureKey = keyof ListingsData["stats"];
 
-							const getValue = (
-								features: ListingsData["stats"],
-								key: FeatureKey
-							) => (features[key]);
+								const getValue = (
+									features: ListingsData["stats"],
+									key: FeatureKey
+								) => (features[key]);
 
-							return (
-								<FeaturesStats
-								key={ index }
-								namespace="postStats"
-								data={ value.value }
-								icon={ value.icon }
-								value={ getValue(fetchedData.stats, value.value as keyof ListingsData["stats"]) }
-								t={ t }
-								/>
-							);
-						})
-					}
-				</div>
+								return (
+									<FeaturesStats
+									key={ index }
+									namespace="postStats"
+									data={ value.value }
+									icon={ value.icon }
+									value={ getValue(fetchedData.stats, value.value as keyof ListingsData["stats"]) }
+									t={ t }
+									/>
+								);
+							})
+						}
+					</div>
+				</Animate>
 				
 				{
 					arePopUpArchiveOpen && <PopUp

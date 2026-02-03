@@ -154,8 +154,7 @@ class LLMService:
 
                     except json.JSONDecodeError:
                         continue
-
-            yield json.dumps({"type": "metadata", "links": links})
+                yield json.dumps({"type": "metadata", "links": links}) + "\n"
         
 
     def generate_bloc_response(self, text, system_prompt=""):

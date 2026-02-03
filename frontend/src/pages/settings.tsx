@@ -340,7 +340,7 @@ const SettingsPage: React.FC = () => {
 		if (refLastNameInput.current)
 			refLastNameInput.current.value = userData?.lastName ?? "";
 		if (refPhoneInput.current)
-			refPhoneInput.current.value = userData?.phone.slice(4) ?? "";
+			refPhoneInput.current.value = userData?.phone?.slice(4) ?? "";
 	}, []);
 	return (
 		<div
