@@ -33,7 +33,7 @@ export async function handleGetMine(request: FastifyRequest, reply: FastifyReply
         return reply.send({
             data: formattedData,
             stats: result.stats,
-            pagination: {           // Add to contract if needed 
+            pagination: {
                 page: query.page,
                 limit: query.limit,
                 totalMatching: result.countMatching,
