@@ -182,7 +182,7 @@ class ChromadbService:
 
         RULES:
         1. ONLY use these keys in "filters": "price", "zone", "post_type", "property_type", "surface".
-        2. If the user mentions bedrooms, bathrooms, gardens, urgent, exclusive, or discount, put these in "search_text" ONLY. NEVER in "filters".
+        2. If the user mentions some features like bedrooms, bathrooms, gardens, urgent, exclusive, water, electricity or discount, put these in "search_text" ONLY. NEVER in "filters".
         3. post_type NORMALIZATION:
         - Map to exactly 'sale' or 'rent'.
         - IF THE USER DOES NOT SPECIFY (e.g., they don't say "buy", "sale", "rent", or "louer"), OMIT this field from the "filters" dictionary entirely. Do not guess.
@@ -191,10 +191,11 @@ class ChromadbService:
         - Handle typos (e.g., "Apartement" -> "apartment") and synonyms (e.g., "flat" -> "apartment", "villa" -> "house").
         - If none of the type is mentioned, Do not put anything.
         5. NUMBERS: "price" and "surface" must be positive integers. Use ChromaDB operators: $gt, $lt, $eq, $gte, $lte.
-
+        6. There should be at least one word, and one filter. If not the case, send an empty search_text and empty filters.
         OUTPUT STRUCTURE:
         Return ONLY a JSON object:
         {
+        "isAbout_real_estate": "A boolean that value can be 'True' or 'False' that be set depending on user input. If user input is about searching listing then put on True, else put on False"
         "search_text": "string including property_type and keywords. If the property_type is defined here, it must me defined in the filters too",
         "filters": { ...metadata }
         }
@@ -246,31 +247,43 @@ class ChromadbService:
     async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
         llm_parse_response = llm_service.generate_bloc_response(user_mssg, sys_prompt)
         
-        print(f"Hola desus f{llm_parse_response}")
+        print(f"Hola desu f{llm_parse_response}")
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}
         search_text = datas.get("search_text", user_mssg)
         filters = datas.get("filters", None)
+        searched = datas.get("isAbout_real_estate", False)
+
+        if not searched:
+            return {
+                'ids': [],
+                'distances': [],
+                'metadatas': [],
+                'documents': [],
+                'uris': None,
+                'datas': None
+            }
         result = await self.query_in_collection("posts", search_text, 3, filters, id_ref)
 
-        relevant_data = [
-                (id, doc, meta, score)
-                for id, doc, meta, score in zip(
-                    result['ids'][0],
-                    result['documents'][0],
-                    result['metadatas'][0],
-                    result['distances'][0]
-                )
-                if score < 0.7
-        ]
-        new_result = {
-                "ids": [[id for id, _, _, _ in relevant_data]],
-                "documents": [[doc for _, doc, _, _ in relevant_data]],
-                "metadatas": [[meta for _, _, meta, _ in relevant_data]],
-                "distances": [[score for _, _, _, score in relevant_data]],
-        }
-        return new_result
+        print(f"Founded: {result}")
+        # relevant_data = [
+        #         (id, doc, meta, score)
+        #         for id, doc, meta, score in zip(
+        #             result['ids'][0],
+        #             result['documents'][0],
+        #             result['metadatas'][0],
+        #             result['distances'][0]
+        #         )
+        #         if score < 1.0
+        # ]
+        # new_result = {
+        #         "ids": [[id for id, _, _, _ in relevant_data]],
+        #         "documents": [[doc for _, doc, _, _ in relevant_data]],
+        #         "metadatas": [[meta for _, _, meta, _ in relevant_data]],
+        #         "distances": [[score for _, _, _, score in relevant_data]],
+        # }
+        return result
 
     async def is_post_in_collection(self, collection_name, specific_ids):
         target_collection = self.collections.get(collection_name)
