@@ -1162,11 +1162,13 @@ GET /listings/:id
     "https://mock-cdn.com/photo2.jpg"
   ],
   "features": {
-    "bedrooms": 3,
-    "bathrooms": 2,
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "wc": true,
     "wc_separate": true,
-    "parking_type": "garage", // Enum: "garage", "box", "parking", "none"
+    "parking_type": "garage",  // Enum: "garage", "box", "parking", "none"
     "garden_private": true,
+    "pool": true,
     "water_access": true,
     "electricity_access": true
   },

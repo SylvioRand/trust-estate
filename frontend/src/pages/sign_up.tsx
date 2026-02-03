@@ -174,12 +174,14 @@ const SignUpPage: React.FC = () => {
               title={t("form.firstName.label")}
               name="firstName"
               placeholder={t("form.firstName.placeholder")}
+              minLength={3}
               error={errorFirstName}
             />
 
             <SimpleInput
               title={t("form.lastName.label")}
               name="lastName"
+              minLength={3}
               placeholder={t("form.lastName.placeholder")}
               error={errorLastName}
             />

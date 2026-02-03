@@ -1,0 +1,25 @@
+{
+    "brand": {
+        "name": "CASA"
+    },
+
+    "header": {
+        "title": "Restablecer contraseña",
+        "subtitle": "Introduzca su nueva contraseña."
+    },
+
+    "form": {
+        "password": {
+            "label": "Nueva contraseña",
+            "placeholder": "Introduzca su nueva contraseña"
+        },
+        "confirm": {
+            "label": "Confirmar contraseña",
+            "placeholder": "Confirme su contraseña"
+        }
+    },
+
+    "actions": {
+        "change": "Cambiar contraseña"
+    }
+}

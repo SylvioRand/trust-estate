@@ -47,13 +47,13 @@ const	TextArea: React.FC<TextAreaProps> = ({
 			<textarea
 				ref={ ref }
 				className="w-full
-				border border-background/25
-				focus:border-3
+				outline-1 outline-background/25
+				focus:outline-3
 				p-2
 				rounded-md
 				shadow-standard
+				field-sizing-content
 				text-[14px]
-				focus:outline-none
 				font-light
 				resize-none"
 				inputMode={ inputMode }

@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/01/28 09:13:16 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/02 08:49:52 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,10 @@ from httpx import HTTPStatusError, RequestError, TimeoutException
 from fastapi.middleware.cors import CORSMiddleware
 
 # ====================== Utils ==================
+import logging
+
+logging.getLogger('chromadb.telemetry.product.posthog').setLevel(logging.CRITICAL)
+
 def format_chroma_response(user_mssg, chroma_text):
     context = llm_service.format_for_llm(chroma_text)
     formated = "CONTEXT:\n"
@@ -62,8 +66,8 @@ async def check_keys(x_internal_key: str = Header(None)):
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     is_connected = False
-    nb_retry = 20
-    interval = 1
+    nb_retry = 5
+    interval = 5
 
     for _ in range(nb_retry):
         try:
@@ -78,56 +82,7 @@ async def lifespan(_: FastAPI):
         print("Failed to init with server chromadb")
         exit(1)
     else:
-        post1 = PostModel(
-                id="je",
-                title = "White House",
-                description = "President house, with a lot of space",
-                price = 1000000000000000,
-                type = "sale",
-                propertyType = "house",
-                surface = 800.0,
-                zone = "Ivandry",
-                features = {
-                    "toilette": 12,
-                    "garage": True,
-                    "room": 42,
-                }
-        )
-        post2 = PostModel(
-                id="moi",
-                title = "Black House",
-                description = "Dark Vador unique house",
-                price = 1000000000000000,
-                type = "sale",
-                propertyType = "house",
-                surface = 800.0,
-                zone = "Ivato",
-                features = {
-                    "toilette": 3,
-                    "garage": True,
-                    "room": 55,
-                },
-                tags = ["exclusive"]
-        )
-        post3 = PostModel(
-                id="koko",
-                title = "Simple House",
-                description = "Minimum requirement to live alone",
-                price = 400000000,
-                type = "sale",
-                propertyType = "house",
-                surface = 40.0,
-                zone = "Ankadifotsy",
-                features = {
-                    "toilette": 1,
-                    "bedroom": 1,
-                    "kitchen": 1,
-                },
-        )
         await chromadb_service.create_collection("posts")
-        await chromadb_service.add_to_collection("posts", post1)
-        await chromadb_service.add_to_collection("posts", post2)
-        await chromadb_service.add_to_collection("posts", post3)
     yield
     
 app = FastAPI(lifespan=lifespan)
@@ -144,7 +99,6 @@ app.add_middleware(
 
 llm_service = LLMService()
 
-# Catch errors of models, type need to be str, or field name incorrect, value not correct, ...
 @app.exception_handler(RequestValidationError)
 async def exception_handler(_: Request):
     return JSONResponse(
@@ -155,7 +109,6 @@ async def exception_handler(_: Request):
                 },
             )
 
-# check if chromadb is ready to get data, query data, delete data, .... 
 @app.get("/ai/health")
 async def check_health():
     try:
@@ -173,20 +126,21 @@ async def check_health():
 
 @app.post("/ai/chat/")
 async def chatbot(text: RequestChat):
+
+    await chromadb_service.get_all_in_collection("posts")
+
     user_mssg = text.message
     sys_prompt = chromadb_service.get_parse_prompt()
     context = None
     chroma_reply = None
 
-    #Debug: show all the data inside collection post
-    # await chromadb_service.get_all_in_collection("posts")
     if text.context and len(text.context) > 0:
         context = text.context
 
     if not context:
         chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt)
     else:
-        chroma_reply = await chromadb_service.get_post_in_collection("posts", context)
+        chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt, context)
     formated = format_chroma_response(user_mssg, chroma_reply)
     id_found = chromadb_service.get_ids_from_query(chroma_reply)
     try:
@@ -200,10 +154,10 @@ async def chatbot(text: RequestChat):
 
     except Exception:
         return JSONResponse(
-                status_code = 503,
+                status_code = 500,
                 content = {
                     "error": "llm_unavailable",
-                    "message": "ai.llm_service_unavailable"
+                    "message": "global.500"
                 }
         )
 
@@ -259,28 +213,28 @@ async def generate_better_description(text: Description):
             "reply": llm_response
         }
 
-    except HTTPStatusError as e:
+    except HTTPStatusError:
         return JSONResponse(
-                status_code = 503,
+                status_code = 500,
                 content = {
                     "error": "llm_unavailable",
-                    "message": "ai.llm_service_unavailable"
+                    "message": "global.500"
                 }
         )
-    except (RequestError, TimeoutException) as e:
+    except (RequestError, TimeoutException):
         return JSONResponse(
-                status_code = 503,
+                status_code = 500,
                 content = {
                     "error": "llm_unavailable",
-                    "message": "ai.llm_service_unavailable"
+                    "message": "global.500"
                 }
         )
 
-    except Exception as e:
+    except Exception:
         return JSONResponse(
-                status_code = 400,
+                status_code = 500,
                 content = {
-                    "status": "failure",
-                    "reason": e
+                    "error": "llm_unavailable",
+                    "message": "global.500"
                 }
         )

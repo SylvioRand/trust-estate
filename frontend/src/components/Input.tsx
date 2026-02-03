@@ -79,8 +79,9 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 				bg-foreground
 				w-full h-10"
 				style={{
-					borderColor: error.length > 0 ? "var(--color-red-500)" : "color-mix(in srgb, var(--color-background) 25%, transparent)",
-					borderWidth: focused ? "3px" : "1px",
+					outlineStyle: "solid",
+					outlineColor: error.length > 0 ? "var(--color-red-500)" : "color-mix(in srgb, var(--color-background) 25%, transparent)",
+					outlineWidth: focused ? "3px" : "1px",
 					gridTemplateColumns: icon ? "auto 1fr" : "auto"
 				}}
 			>
@@ -111,8 +112,8 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 					type={ type }
 					required={ true }
 					{...(pattern ? { pattern } : {})}
-					{...(minLength ? { minLength } : {})}
-					{...(maxLength ? { maxLength } : {})}
+					minLength={ minLength }
+					maxLength={ maxLength }
 					{...(ref ? { ref } : {})}
 					{...(list ? { list } : {})}
 					onFocus={ () => setFocused(true) }
@@ -171,13 +172,13 @@ export const	PasswordInput: React.FC<PasswordInputProps> = ({
 
 			<div className="grid grid-cols-[1fr_auto] grid-rows-1 gap-3
 				p-2
-				border
 				rounded-md
 				shadow-standard
 				w-full h-10"
 				style={{
-					borderColor: error.length > 0 ? "var(--color-red-500)" : "color-mix(in srgb, var(--color-background) 25%, transparent)",
-					borderWidth: focused ? "3px" : "1px",
+					outlineStyle: "solid",
+					outlineColor: error.length > 0 ? "var(--color-red-500)" : "color-mix(in srgb, var(--color-background) 25%, transparent)",
+					outlineWidth: focused ? "3px" : "1px",
 				}}
 			>
 				<input

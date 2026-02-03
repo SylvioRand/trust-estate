@@ -1,0 +1,12 @@
+{
+	"brand": {
+		"name": "CASA"
+	},
+	"true": "Sí",
+	"false": "No",
+	"noLimit": "Ninguno",
+	"all": "Todos",
+	"digitOnly": "Solo se permiten números.",
+	"minBiggerMax": "Min no puede ser mayor que max.",
+	"maxSmallerMin": "Max no puede ser menor que min."
+}

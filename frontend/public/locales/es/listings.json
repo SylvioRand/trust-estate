@@ -1,0 +1,129 @@
+{
+    "brand": {
+        "name": "CASA"
+    },
+
+    "yes": "Sí",
+    "no": "No",
+
+    "viewDetails": "Ver detalles",
+    "areaUnit": "m2",
+
+    "section": {
+        "listingType": {
+            "rent": "Alquiler",
+            "sale": "En venta"
+        },
+
+        "features": {
+            "bedrooms": "Habitaciones",
+            "bathrooms": "Baños",
+            "area": "Superficie",
+            "parking_type": "Estacionamiento",
+            "water_access": "Agua",
+            "electricity_access": "Electricidad",
+            "garden_private": "Jardín",
+            "wc_separate": "Aseo independiente"
+        },
+
+        "description": {
+            "title": "Descripción"
+        },
+
+        "quickButtons": {
+            "favorites": "Favoritos",
+            "report": "Reportar",
+            "visit": "Programar una visita",
+            "visitSlot": "Horarios de visita",
+            "editPost": "Editar publicación"
+        },
+
+        "tags": {
+            "urgent": "Urgente",
+            "exclusive": "Exclusivo",
+            "discount": "Descuento"
+        },
+
+        "contact": {
+            "title": "Contacto",
+            "memberSince": "Miembro desde"
+        },
+
+        "post": {
+            "title": "Publicación",
+            "publicationDate": "Publicado el",
+            "updateDate": "Actualizado el",
+
+            "availability": {
+                "status": {
+                    "available": "Esta oferta está disponible.",
+                    "not_available": "Esta oferta ya no está disponible."
+                },
+
+                "buttons": {
+                    "rented": "No disponible",
+                    "sold": "Vendido",
+                    "markRented": "Marcar como alquilado",
+                    "markSold": "Marcar como vendido"
+                },
+
+                "popup": {
+                    "markRented": {
+                        "title": "Alquilado",
+                        "explanation": "Al marcar la publicación como alquilada, solo podrá desmarcarla después de 1 mes desde el momento del cambio.",
+                        "accept": "Marcar como alquilado"
+                    },
+                    "unmarkRented": {
+                        "title": "Volver al mercado",
+                        "explanation": "Desmarcar esta publicación la volverá a mostrar en el feed de otros usuarios. ¿Desea continuar?",
+                        "accept": "Desmarcar"
+                    },
+                    "markSold": {
+                        "title": "Vendido",
+                        "explanation": "Al marcar la publicación como vendida, no podrá deshacer este proceso. ¿Está seguro de continuar?",
+                        "accept": "Marcar como vendido"
+                    }
+                }
+            },
+
+            "archive": {
+                "buttons": {
+                    "title": "Archivar",
+                    "disabled": "Esta publicación está archivada"
+                },
+
+                "popup": {
+                    "title": "Archivar publicación",
+                    "warning": "La publicación archivada no será visible para otros usuarios.\nEsta acción no se puede deshacer.\n¿Está seguro?",
+                    "continue": "Archivar ahora"
+                }
+            }
+        },
+
+        "stats": {
+            "title": "Estadísticas del vendedor",
+
+            "sellerStats": {
+                "totalListings": "Anuncios",
+                "activeListings": "En el mercado",
+                "successfulSales": "Propiedades vendidas",
+                "successfulRents": "Propiedades alquiladas",
+                "averageRating": "Calificación",
+                "responseRate": "Tasa de respuesta"
+            }
+        },
+
+        "postStats": {
+            "title": "Estadísticas de la publicación",
+            "views": "Vistas",
+            "reservations": "Reservas",
+            "feedbacks": "Comentarios"
+        },
+
+        "pictures": {
+            "buttons": {
+                "seeMore": "Ver más"
+            }
+        }
+    }
+}

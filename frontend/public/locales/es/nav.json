@@ -1,0 +1,14 @@
+{
+    "brand": {
+        "name": "CASA"
+    },
+
+    "button": {
+        "home": "Inicio",
+        "property": "Propiedades",
+        "ai": "IA",
+        "signIn": "Iniciar sesión",
+        "signUp": "Crear cuenta",
+        "profile": "Perfil"
+    }
+}

@@ -67,13 +67,11 @@ up: certs
 down:
 	@echo "🛑 Stopping services..."
 	$(DOCKER_COMPOSE) down
-	docker image prune -f
 
 # Clean everything (containers, images, volumes)
 clean:
-	@echo "🧹 Cleaning up..."
-# 	$(DOCKER_COMPOSE) down -v --rmi local
-	$(DOCKER_COMPOSE) down -v local
+	@echo "🧹 Cleaning up everything (images, volumes, data)..."
+	$(DOCKER_COMPOSE) down -v --rmi local
 	@echo "✅ Cleanup complete"
 
 # View logs

@@ -1,16 +1,9 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { ListingService } from '../listing.service';
+import { GetDeleteUserDataParams } from '../listing.schema';
 
 export async function handleDeleteUserData(request: FastifyRequest, reply: FastifyReply) {
-  const userId = (request as any).user?.id;
-
-  if (!userId) {
-    return reply.status(401).send({
-      error: 'unauthorized',
-      message: 'common.unauthorized'
-    });
-  }
-
+  const userId = request.headers['x-user-id'] as string;
   try {
     await ListingService.deleteUserData(userId);
 

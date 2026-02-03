@@ -1,5 +1,12 @@
 {
 	"buttons": {
-		"goBackToListing": "Retourner à l'annonce"
-	}
+		"goBackToListing": "Retourner à l'annonce",
+		"reserve": "Réserver ce créneau"
+	},
+	"timezoneNote": "Tous les horaires sont en Madagascar (GMT+3)",
+	"pleaseSelectDate": "Veuillez sélectionner une date",
+	"slotsAvailable": "créneaux disponibles",
+	"morning": "Matin",
+	"afternoon": "Après-midi",
+	"evening": "Soir"
 }

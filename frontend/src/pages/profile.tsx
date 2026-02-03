@@ -1,14 +1,10 @@
 import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import housePicture from "../images/terrain0.webp";
 import { useTranslation } from "react-i18next";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
-import type { SellerStatsDataType } from "../dataModel/modelListings";
 import { CreateDateForMemberSince } from "../utils/Format";
-import BoxSection from "../components/BoxSection";
-import { listData, type ListingsProps } from "../dataModel/modelPropertyList";
-import { PublicationCard } from "./property";
+import BentoProperty from "../components/BentoProperty";
 import useDataProvider from "../provider/useDataProvider";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
@@ -101,11 +97,10 @@ const ProfilePage: React.FC = () => {
   VerifyUsersState();
   const { t } = useTranslation(["profile", "listings"]);
 
-  useEffect(() => {
-    console.log("ProfilePage: isConnected: ", isConnected);
-    if (isConnected === false)
-      navigate("/sign-in");
-  }, []);
+  // Redirect if user is not connected
+  if (isConnected !== null && isConnected === false)
+	navigate("/sign-in");
+
   return (
     <div className="flex flex-col items-center justify-start
 			px-2 md:px-7 xl:px-64
@@ -143,7 +138,7 @@ const ProfilePage: React.FC = () => {
           <div className="font-bold
 						mr-auto"
           >
-            {userData?.firstName + " " + userData?.lastName}
+            {userData?.firstName + " " + (userData?.lastName ? userData.lastName : "")}
           </div>
           <div className="font-light
 						whitespace-pre-line
@@ -151,7 +146,7 @@ const ProfilePage: React.FC = () => {
           >
             {
               userData?.email + "\n"
-              + userData?.phone + "\n\n"
+              + (userData?.phone ? userData.phone : "") + "\n\n"
               + t("listings:section.contact.memberSince")
               + " "
               + CreateDateForMemberSince(userData?.createdAt)
@@ -231,7 +226,7 @@ const ProfilePage: React.FC = () => {
 					{
 						listData.map((value: ListingsProps, index: number) => {
 							return (
-								<PublicationCard
+								<BentoProperty
 									key={ index }
 									propertyData={ value }
 								/>
@@ -246,7 +241,7 @@ const ProfilePage: React.FC = () => {
 					{
 						listData.map((value: ListingsProps, index: number) => {
 							return (
-								<PublicationCard
+								<BentoProperty
 									key={ index }
 									propertyData={ value }
 								/>
