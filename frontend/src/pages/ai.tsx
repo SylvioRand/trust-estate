@@ -1,15 +1,14 @@
 // ************************************************************************** //
-//						   													//
-//														:::	  ::::::::   //
-//   ai.tsx											 :+:	  :+:	:+:   //
-//													+:+ +:+		 +:+	 //
-//   By: aelison <aelison@student.42antananarivo.m  +#+  +:+	   +#+		//
-//												+#+#+#+#+#+   +#+		   //
-//   Created: 2026/01/26 14:15:16 by aelison		   #+#	#+#			 //
-//   Updated: 2026/02/02 14:06:09 by aelison		  ###   ########.fr	   //
-//																			//
+//                                                                            //
+//                                                        :::      ::::::::   //
+//   ai.tsx                                             :+:      :+:    :+:   //
+//                                                    +:+ +:+         +:+     //
+//   By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+        //
+//                                                +#+#+#+#+#+   +#+           //
+//   Created: 2026/01/26 14:15:16 by aelison           #+#    #+#             //
+//   Updated: 2026/02/03 07:09:01 by aelison          ###   ########.fr       //
+//                                                                            //
 // ************************************************************************** //
-
 
 import React, { useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
