@@ -282,7 +282,6 @@ class ChromadbService:
 
     async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
         llm_parse_response = llm_service.generate_bloc_response(user_mssg, sys_prompt)
-        print(f"LLM RESPONSE: ", llm_parse_response)
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}
