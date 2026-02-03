@@ -19,9 +19,8 @@ export async function listReservation(request: FastifyRequest, reply: FastifyRep
 		if (error.message === "slot_unavailable")
 			return reply.status(409).send({
 				"error": "slot_unavailable",
-				"message": "reservation.slot_unavailable",
-				"availableSlots": []
-			});
+				"message": "reservation.slot_unavailable"
+		});
 		else
 			return reply.status(500).send({
 				"error": "internal_server_error",
@@ -41,10 +40,7 @@ export async function requestDeleteData(request: FastifyRequest, reply: FastifyR
 
 	try {
 		await resaServices.deleteUserData(request.server, user.id);
-		return reply.status(200).send({
-			"deleted": true,
-			"message": "User data deleted successfully"
-		});
+		return reply.status(204).send();
 	} catch (error: any) {
 		return reply.status(500).send({
 			"error": "internal_server_error",
@@ -200,18 +196,17 @@ export async function confirmReservation(request: FastifyRequest<
 		else if (error.message === "slot_unavailable")
 			return reply.status(409).send({
 				"error": "slot_unavailable",
-				"message": "reservation.slot_unavailable",
-				"availableSlots": []
-			});
+				"message": "reservation.slot_unavailable"
+		});
 		else if (error.message === "insufficient_credits")
 			return reply.status(402).send({
 				"error": "insufficient_credits",
-				"message": "payment.insufficient_credits"
+				"message": "payment.insufficient_credits_reservation"
 			});
 		else if (error.message === "credit_service_error")
 			return reply.status(503).send({
 				"error": "service_unavailable",
-				"message": "common.service_unavailable"
+				"message": "payment.service_unavailable"
 			});
 		else {
 			request.server.log.error({ error, userId: user?.id, reservationId }, 'ConfirmReservation error');
@@ -379,7 +374,6 @@ export async function getSellerReservations(request: FastifyRequest<{ Querystrin
 	const user = (request as any).user as UserInterface;
 	const { status, page = 1, limit = 10 } = request.query;
 
-	console.log("Status query:", status, "Page:", page, "Limit:", limit);
 	if (!user)
 		return reply.status(401).send({
 			"error": "unauthorized",
