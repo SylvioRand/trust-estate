@@ -13,6 +13,7 @@
 	--color-midtone: #363636;
 	--color-darktone: #262626;
 	--color-background: #1E1E1E;
+	--color-card-bg: #FFFFFF;
 
 	color-scheme: light dark;
 }
@@ -24,6 +25,7 @@
 		--color-highlight: #262626;
 		--color-darktone: #666666;
 		--color-background: #DADADA;
+		--color-card-bg: #363636;
 	}
 }
 
@@ -39,9 +41,10 @@
 	--color-midtone: var(--color-midtone);
 	--color-darktone: var(--color-darktone);
 	--color-background: var(--color-background);
+	--color-card-bg: var(--color-card-bg);
 
-	--shadow-standard: 0px 7px 12px rgba(0,0,0,0.12);
-	--drop-shadow-standard: 0px 7px 12px rgba(0,0,0,0.12);
+	--shadow-standard: 0px 7px 12px rgba(0, 0, 0, 0.12);
+	--drop-shadow-standard: 0px 7px 12px rgba(0, 0, 0, 0.12);
 
 	--font-inter: "Inter";
 	--font-icon: "Icons";
@@ -59,26 +62,34 @@
 	--animate-random-translation: random_translation 60s ease-in-out infinite;
 }
 
-.chat-textarea {
+/* summary {
 	all: unset;
+}
 
-	box-sizing: border-box;
-	width: 100%;
+summary::-webkit-details-marker,
+summary::marker {
+	display: none;
+} */
 
-	font: inherit;
-	line-height: 1.4;
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
 
-	padding: 8px 12px;
-	border-radius: 12px;
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 
-	background: #f4f4f5;
-	color: #111;
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
 
-	resize: none;
-	overflow-y: hidden;
-
-	white-space: pre-wrap;
-	word-break: break-word;
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
 }
 
 @font-face {

@@ -1,0 +1,50 @@
+{
+    "title": "Política de Privacidad",
+
+    "section": {
+        "introduction": {
+            "title": "Introducción",
+            "legalText": "Damos gran importancia a la protección de sus datos personales. Esta Política de privacidad explica qué datos recopilamos, cómo los utilizamos y los derechos que usted tiene como usuario de nuestra plataforma inmobiliaria digital en Madagascar. Al utilizar nuestro servicio, usted acepta la recopilación y el uso de la información de acuerdo con esta política."
+        },
+        "dataCollected": {
+            "title": "Datos recopilados",
+            "legalText": "Solo recopilamos la información necesaria para el buen funcionamiento de la plataforma y la protección de nuestros usuarios. Tipos de datos: Información personal (nombre, correo electrónico, número de teléfono), información de la cuenta (identificadores, contraseña, historial de acciones), contenido del usuario (anuncios, descripciones, fotos, documentos privados), datos técnicos (IP, navegador, dispositivo, registro de conexión) y pagos (historial de créditos y transacciones)."
+        },
+        "purposeOfData": {
+            "title": "Finalidades de la recopilación",
+            "legalText": "Utilizamos sus datos para crear y gestionar su cuenta de usuario, permitir la publicación y consulta de anuncios, facilitar la reserva de visitas y notificar a los usuarios, prevenir y detectar fraudes o contenidos engañosos, mejorar nuestros servicios y comunicarnos con usted en relación con su cuenta o las actualizaciones de la plataforma."
+        },
+        "legalBasis": {
+            "title": "Bases legales",
+            "legalText": "Tratamos sus datos personales para la ejecución del contrato (creación y gestión de la cuenta, reserva de visitas), para cumplir con nuestras obligaciones legales y reglamentarias, y para proteger nuestros intereses legítimos (seguridad, lucha contra el fraude, mejora del servicio)."
+        },
+        "dataSharing": {
+            "title": "Uso compartido de datos",
+            "legalText": "No vendemos ni alquilamos sus datos personales. Su información puede ser compartida con proveedores de servicios externos (alojamiento, correos electrónicos, análisis técnico, procesamiento de pagos) y con las autoridades legales si así se requiere. Ningún documento privado se comparte públicamente ni con terceros."
+        },
+        "dataStorageAndSecurity": {
+            "title": "Almacenamiento y seguridad",
+            "legalText": "Sus datos se almacenan de forma segura y solo son accesibles para el personal autorizado. Los documentos y fotos subidos están protegidos por medidas de seguridad estándar (cifrado, acceso restringido). Conservamos sus datos mientras su cuenta exista o según las obligaciones legales."
+        },
+        "userRights": {
+            "title": "Sus derechos",
+            "legalText": "Usted dispone de los siguientes derechos: acceso a los datos, corrección de información inexacta, eliminación de datos personales, oposición a ciertos tratamientos y portabilidad de los datos. Para ejercer sus derechos, contáctenos a través de la información proporcionada en la sección de Contacto."
+        },
+        "cookies": {
+            "title": "Cookies y tecnologías similares",
+            "legalText": "Utilizamos cookies para recordar sus preferencias de idioma, analizar el uso de la plataforma y garantizar la seguridad y prevención del fraude. Puede configurar su navegador para rechazar las cookies, pero algunas funciones de la plataforma podrían verse limitadas."
+        },
+        "dataRetention": {
+            "title": "Conservación de datos",
+            "legalText": "La información de la cuenta y de las reservas se conserva mientras la cuenta exista o según la legislación aplicable. Los anuncios y documentos subidos permanecen almacenados para permitir la consulta histórica y la gestión de la plataforma."
+        },
+        "policyChanges": {
+            "title": "Modificaciones de la política",
+            "legalText": "Nos reservamos el derecho de modificar esta Política de privacidad en cualquier momento. Los cambios se publicarán en esta página con la fecha de actualización. El uso continuo de la plataforma después de la modificación constituye su aceptación de la versión actualizada."
+        },
+        "contact": {
+            "title": "Contacto",
+            "legalText": "Para cualquier pregunta relacionada con sus datos personales o la aplicación de esta Política de privacidad, puede contactarnos a través de los datos de contacto oficiales disponibles en el sitio."
+        }
+    }
+}

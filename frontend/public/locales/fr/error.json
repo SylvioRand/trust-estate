@@ -41,12 +41,12 @@
 			"too_long": "L’adresse e-mail ne doit pas dépasser 255 caractères."
 		},
 		"firstname": {
-			"too_short": "Le prénom doit contenir au moins 2 caractères.",
+			"too_short": "Le prénom doit contenir au moins 3 caractères.",
 			"too_long": "Le prénom ne doit pas dépasser 50 caractères.",
 			"invalid_chars": "Le prénom ne peut contenir que des lettres et des espaces."
 		},
 		"lastname": {
-			"too_short": "Le nom doit contenir au moins 2 caractères.",
+			"too_short": "Le nom doit contenir au moins 3 caractères.",
 			"too_long": "Le nom ne doit pas dépasser 50 caractères.",
 			"invalid_chars": "Le nom ne peut contenir que des lettres et des espaces."
 		},
@@ -141,7 +141,11 @@
 		"renew_success": "L’annonce a été renouvelée pour 30 jours.",
 		"availability_updated": "La disponibilité a été mise à jour.",
 		"report_success": "Le signalement a été soumis avec succès.",
-		"already_reported": "Cette annonce a déjà été signalée."
+		"already_reported": "Cette annonce a déjà été signalée.",
+		"marked_as_sold": "Cette annonce a été marquée comme vendue.",
+		"marked_as_rented": "Cette annonce a été marquée comme louée.",
+		"made_available": "Cette annonce a été marquée comme disponible.",
+		"change_saved": "L'annonce a correctement été mis à jour."
 	},
 	"reservation": {
 		"slot_already_reserved": "Le créneau sélectionné est déjà réservé.",

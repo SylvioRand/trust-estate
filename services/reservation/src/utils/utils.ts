@@ -35,7 +35,7 @@ export function generateSlotsForDay(dayDateUtc: Date, startTime: number, startMi
 	const slots: Date[] = [];
 	for (let hour = startTime; hour <= endTime; hour++) {
 		for (let minute = (hour === startTime ? startMinute : 0); minute < 60; minute += 30) {
-			if (hour === endTime && minute > endMinute) break;
+			if (hour === endTime && minute >= endMinute) break;
 			const slotUtc = new Date(Date.UTC(
 				dayDateUtc.getUTCFullYear(),
 				dayDateUtc.getUTCMonth(),

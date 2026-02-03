@@ -1,0 +1,82 @@
+{
+    "buttons": {
+        "goBackToProfile": "Volver al perfil"
+    },
+    
+    "section": {
+        "profileSettings": {
+            "title": "Editar información del perfil",
+
+            "form": {
+                "firstName": {
+                    "label": "Nombre",
+                    "placeholder": "Introduzca su nuevo nombre"
+                },
+                "lastName": {
+                    "label": "Apellido",
+                    "placeholder": "Introduzca su nuevo apellido"
+                },
+                "phone": {
+                    "label": "Teléfono",
+                    "placeholder": "Introduzca su nuevo número de teléfono"
+                }
+            },
+
+            "buttons": {
+                "save": "Guardar cambios"
+            }
+        },
+
+        "accountSettings": {
+            "title": "Ajustes de la cuenta",
+
+            "form": {
+                "changePassword": {
+                    "currentPassword": {
+                        "label": "Contraseña actual",
+                        "placeholder": "Introduzca su contraseña actual"
+                    },
+                    "newPassword": {
+                        "label": "Nueva contraseña",
+                        "placeholder": "Introduzca su nueva contraseña"
+                    },
+
+                    "buttons": {
+                        "change": "Cambiar contraseña"
+                    }
+                },
+                "addPassword": {
+                    "input": {
+                        "label": "Contraseña",
+                        "placeholder": "Introduzca su nueva contraseña"
+                    },
+                    "buttons": {
+                        "save": "Guardar"
+                    }
+                }
+            }
+        },
+
+        "settings": {
+            "title": "Ajustes",
+            "downloadGDPR": "Descargar información RGPD",
+            "deleteAccount": "Eliminar su cuenta",
+            "logout": "Cerrar sesión",
+
+            "popup": {
+                "deleteAccount": {
+                    "title": "Eliminar mi cuenta",
+                    "subTitle": "Eliminar su cuenta es una acción permanente. Una vez eliminada, todos los datos, ajustes y contenidos asociados se borrarán definitivamente y no podrán recuperarse. Perderá el acceso de inmediato y esta acción no se puede deshacer. Introduzca su contraseña para confirmar.",
+                    "input": {
+                        "title": "Contraseña",
+                        "placeholder": "Introduzca su contraseña"
+                    },
+                    "buttons": {
+                        "confirm": "Eliminar mi cuenta",
+                        "cancel": "Cancelar"
+                    }
+                }
+            }
+        }
+    }
+}

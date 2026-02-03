@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { UserInterface } from "../../interfaces/config.interface";
 import * as resaServices from "./resa.services"
-import type { CheckSlotInterface, ListingInterface, ReservationIdInterface, ReservationInterface, StatusInterface } from "./resa.interface";
+import type { CheckSlotInterface, ListingInterface, ReservationIdInterface, ReservationInterface, StatusInterface, FilterReservationsInterface } from "./resa.interface";
 
 export async function listReservation(request: FastifyRequest, reply: FastifyReply) {
 	const user = (request as any).user as UserInterface;
@@ -49,8 +49,8 @@ export async function requestDeleteData(request: FastifyRequest, reply: FastifyR
 	}
 }
 
-export async function createSlot(request: FastifyRequest<{Body: ReservationInterface}>, reply: FastifyReply) {
-	const {slot, sellerId, listingId} = request.body;
+export async function createSlot(request: FastifyRequest<{ Body: ReservationInterface }>, reply: FastifyReply) {
+	const { slot, sellerId, listingId } = request.body;
 	const user = (request as any).user as UserInterface;
 
 	if (!user)
@@ -61,28 +61,26 @@ export async function createSlot(request: FastifyRequest<{Body: ReservationInter
 
 	try {
 		const slotDate = new Date(slot);
-		const hour = slotDate.getHours();
-		if (hour < 8 || hour > 17) {
-			return reply.status(409).send({
-				"error": "slot_unavailable",
-				"message": "reservation.slot_unavailable",
-			});
-		}
 
 		const reservation = await resaServices.addSlot(request.server, user.id, slot, sellerId, listingId);
 		return reply.status(201).send(reservation);
 	} catch (error: any) {
-		if (error.message === "cannot_reserve_own_listing")
+		if (error.message.includes("cannot_reserve_own_listing"))
 			return reply.status(403).send({
 				"error": "cannot_reserve_own_listing",
 				"message": "reservation.cannot_reserve_own"
 			});
-		else if (error.message === "slot_unavailable")
+		else if (error.message.includes("slot_unavailable"))
 			return reply.status(409).send({
 				"error": "slot_unavailable",
 				"message": "reservation.slot_unavailable",
 				"availableSlots": []
-		});
+			});
+		else if (error.message.includes("insufficient_credits"))
+			return reply.status(402).send({
+				"error": "insufficient_credits",
+				"message": "payment.insufficient_credits"
+			});
 		else
 			return reply.status(500).send({
 				"error": "internal_server_error",
@@ -92,9 +90,9 @@ export async function createSlot(request: FastifyRequest<{Body: ReservationInter
 };
 
 export async function deleteReservation(request: FastifyRequest<
-	{Params: ReservationIdInterface}>, reply: FastifyReply) {
-	const	reservationId = request.params.id;
-	const	user = (request as any).user as UserInterface;
+	{ Params: ReservationIdInterface }>, reply: FastifyReply) {
+	const reservationId = request.params.id;
+	const user = (request as any).user as UserInterface;
 
 	if (!user)
 		return reply.status(401).send({
@@ -105,7 +103,7 @@ export async function deleteReservation(request: FastifyRequest<
 	try {
 		await resaServices.deleteReservation(request.server, user.id, reservationId);
 		return reply.status(200).send({
-			"cancelled":true,
+			"cancelled": true,
 			"refund": 0
 		})
 	} catch (error: any) {
@@ -130,9 +128,9 @@ export async function deleteReservation(request: FastifyRequest<
 };
 
 export async function cancelReservation(request: FastifyRequest<
-	{Params: ReservationIdInterface}>, reply: FastifyReply) {
-	const	reservationId = request.params.id;
-	const	user = (request as any).user as UserInterface;
+	{ Params: ReservationIdInterface }>, reply: FastifyReply) {
+	const reservationId = request.params.id;
+	const user = (request as any).user as UserInterface;
 
 	if (!user)
 		return reply.status(401).send({
@@ -141,9 +139,9 @@ export async function cancelReservation(request: FastifyRequest<
 		});
 
 	try {
-		await resaServices.changeStatusReservation(request.server, user.id, reservationId);
+		await resaServices.cancelReservation(request.server, user.id, reservationId);
 		return reply.status(200).send({
-			"cancelled":true,
+			"cancelled": true,
 			"refund": 0
 		})
 	} catch (error: any) {
@@ -168,9 +166,9 @@ export async function cancelReservation(request: FastifyRequest<
 }
 
 export async function confirmReservation(request: FastifyRequest<
-	{Params: ReservationIdInterface}>, reply: FastifyReply) {
-	const	reservationId = request.params.id;
-	const	user = (request as any).user as UserInterface;
+	{ Params: ReservationIdInterface }>, reply: FastifyReply) {
+	const reservationId = request.params.id;
+	const user = (request as any).user as UserInterface;
 
 	if (!user)
 		return reply.status(401).send({
@@ -182,7 +180,7 @@ export async function confirmReservation(request: FastifyRequest<
 		const confirmedAt = await resaServices.confirmStatusReservation(request.server, user.id, reservationId);
 		return reply.status(200).send({
 			"status": "confirmed",
-  			"confirmedAt": confirmedAt
+			"confirmedAt": confirmedAt
 		})
 	} catch (error: any) {
 		if (error.message === "reservation_already_processed")
@@ -221,9 +219,9 @@ export async function confirmReservation(request: FastifyRequest<
 }
 
 export async function rejectReservation(request: FastifyRequest<
-	{Params: ReservationIdInterface}>, reply: FastifyReply) {
-	const	reservationId = request.params.id;
-	const	user = (request as any).user as UserInterface;
+	{ Params: ReservationIdInterface }>, reply: FastifyReply) {
+	const reservationId = request.params.id;
+	const user = (request as any).user as UserInterface;
 
 	if (!user)
 		return reply.status(401).send({
@@ -235,7 +233,7 @@ export async function rejectReservation(request: FastifyRequest<
 		const rejectedAt = await resaServices.rejectStatusReservation(request.server, user.id, reservationId);
 		return reply.status(200).send({
 			"status": "confirmed",
-  			"rejectedAt": rejectedAt
+			"rejectedAt": rejectedAt
 		})
 	} catch (error: any) {
 		if (error.message === "reservation_already_processed")
@@ -257,9 +255,9 @@ export async function rejectReservation(request: FastifyRequest<
 };
 
 export async function doneReservation(request: FastifyRequest<
-	{Params: ReservationIdInterface}>, reply: FastifyReply) {
-	const	reservationId = request.params.id;
-	const	user = (request as any).user as UserInterface;
+	{ Params: ReservationIdInterface }>, reply: FastifyReply) {
+	const reservationId = request.params.id;
+	const user = (request as any).user as UserInterface;
 
 	if (!user)
 		return reply.status(401).send({
@@ -271,7 +269,7 @@ export async function doneReservation(request: FastifyRequest<
 		const doneAt = await resaServices.doneStatusReservation(request.server, user.id, reservationId);
 		return reply.status(200).send({
 			"status": "done",
-  			"doneAt": doneAt
+			"doneAt": doneAt
 		})
 	} catch (error: any) {
 		if (error.message === "reservation_not_found")
@@ -292,7 +290,7 @@ export async function doneReservation(request: FastifyRequest<
 	}
 };
 
-export async function statusListing(request: FastifyRequest<{Querystring: StatusInterface}>, reply: FastifyReply) {
+export async function statusListing(request: FastifyRequest<{ Querystring: StatusInterface }>, reply: FastifyReply) {
 	const listingId = request.query.listingId;
 	const userId = request.query.userId;
 
@@ -315,10 +313,10 @@ export async function statusListing(request: FastifyRequest<{Querystring: Status
 	}
 };
 
-export async function checkSlot(request: FastifyRequest<{Querystring: CheckSlotInterface}>, reply: FastifyReply) {
-	const	listingId = request.query.listingId;
-	const	slot = request.query.slot;
-	const	user = (request as any).user as UserInterface;
+export async function checkSlot(request: FastifyRequest<{ Querystring: CheckSlotInterface }>, reply: FastifyReply) {
+	const listingId = request.query.listingId;
+	const slot = request.query.slot;
+	const user = (request as any).user as UserInterface;
 
 	if (!user)
 		return reply.status(401).send({
@@ -328,9 +326,9 @@ export async function checkSlot(request: FastifyRequest<{Querystring: CheckSlotI
 	try {
 		await resaServices.getSlot(request.server, listingId, slot, user.id);
 		return reply.status(200).send({
-				"available": true,
-				"expiresIn": 300
-			})
+			"available": true,
+			"expiresIn": 300
+		})
 	} catch (error: any) {
 		if (error.message === "reservation.slot_already_reserved")
 			return reply.status(409).send({
@@ -345,7 +343,7 @@ export async function checkSlot(request: FastifyRequest<{Querystring: CheckSlotI
 	}
 }
 
-export async function getSlots(request: FastifyRequest<{Querystring: {id: string}}>, reply: FastifyReply) {
+export async function getSlots(request: FastifyRequest<{ Querystring: { id: string } }>, reply: FastifyReply) {
 	const user = (request as any).user as UserInterface;
 	const userId = request.query.id;
 
@@ -358,7 +356,7 @@ export async function getSlots(request: FastifyRequest<{Querystring: {id: string
 	try {
 		const data = await resaServices.getAvailability(request.server, userId) as ListingInterface;
 		const availability = await resaServices.getAvailableSlotsByUserId(request.server, userId, data.weeklySchedule);
-		return reply.status(200).send({availability});
+		return reply.status(200).send({ availability, sellerId: data.sellerId });
 	} catch (error: any) {
 		if (error.message === "listing_server_error")
 			return reply.status(503).send({
@@ -366,15 +364,15 @@ export async function getSlots(request: FastifyRequest<{Querystring: {id: string
 				"message": "common.listing_server_error"
 			})
 		return reply.status(500).send({
-				"error": "internal_server_error",
-				"message": "common.internal_server_error"
-			});
+			"error": "internal_server_error",
+			"message": "common.internal_server_error"
+		});
 	}
 };
 
-export async function getSellerReservations(request: FastifyRequest, reply: FastifyReply) {
+export async function getSellerReservations(request: FastifyRequest<{ Querystring: FilterReservationsInterface }>, reply: FastifyReply) {
 	const user = (request as any).user as UserInterface;
-	const status = (request.query as any).status as string[] | undefined;
+	const { status, page = 1, limit = 10 } = request.query;
 
 	if (!user)
 		return reply.status(401).send({
@@ -383,8 +381,17 @@ export async function getSellerReservations(request: FastifyRequest, reply: Fast
 		});
 
 	try {
-		const reservations = await resaServices.getReservationsBySellerId(request.server, user.id, status);
-		return reply.status(200).send(reservations);
+		const result = await resaServices.getReservationsBySellerId(request.server, user.id, status, page, limit);
+
+		return reply.status(200).send({
+			reservations: result.reservations,
+			pagination: {
+				page,
+				limit,
+				totalMatching: result.totalMatching,
+				totalPages: Math.ceil(result.totalMatching / limit)
+			}
+		});
 	} catch (error: any) {
 		if (error.message === "reservations_not_found")
 			return reply.status(404).send({
@@ -392,8 +399,8 @@ export async function getSellerReservations(request: FastifyRequest, reply: Fast
 				"message": "reservations.not_found"
 			});
 		return reply.status(500).send({
-				"error": "internal_server_error",
-				"message": "common.internal_server_error"
-			});
+			"error": "internal_server_error",
+			"message": "common.internal_server_error"
+		});
 	}
 }

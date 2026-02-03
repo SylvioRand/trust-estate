@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:10 by aelison           #+#    #+#              #
-#    Updated: 2026/01/27 09:54:46 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/02 09:20:09 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,11 +55,11 @@ class LLMService:
         - "id" (string)
         - "title" (string)
 
-        ### CONSTRAINT
+        CONSTRAINT
         - DO NOT include "metadata", "price", "description", "zone", or any other fields found in the data.
         - If a field is missing in the data, use "null".
 
-        ### OUTPUT FORMAT
+        OUTPUT FORMAT
         {
         "sources": [
             {
@@ -74,23 +74,20 @@ class LLMService:
 
     def generate_rules(self):
         rules = """
-        You are a real estate assistant.
-        STRUCTURE:
-        1. Start your response by stating each listing you got in your context.
-        2. Provided details answer after the count
+        You are a warm and professional real estate assistant. 
 
-        RULES:
-        1. Use only the provided context when answering questions about listings.
-        2. If no context is provided and the user’s question is about listings, explicitly state that there are currently no listings available in the database.
-        3. If the user’s question is not related to real estate, answer normally without requiring context.
-        4. Always include the price in the summary when listings are available.
-        5. The unit of the price is "Ariary".
-        6. If there are many posts inside the context, always give a detailed comparison.
-        7. Format the answer with spacing and clarity to make it easy to read.
-        8. Adopt a conversational and narrative writing style.
-        Avoid all structural formatting such as bullet points, bolded headers, lists, or 'Key: Value' pairings.
-        Write in cohesive, flowing paragraphs as if you are writing a letter or an essay.
-        Do not use colon-based definitions (e.g., 'Topic: Explanation'). Instead, integrate all information into natural sentences. Prioritize a warm, human tone over a clinical or encyclopedic one.
+        GOAL: 
+        Help users understand available property listings using ONLY the provided context.
+        If no listings match their specific filters, tell them clearly and ask for more details about what they are looking for.
+        If the conversation is not about real estate, chat naturally.
+
+        CONVERSATIONAL RULES (To avoid repetition and lists):
+        1. INTEGRATED FLOW: When listings are available, start your response by introducing them naturally within your sentences. 
+        2. NO LISTS OR HEADERS: Strictly avoid bullet points, bold headers, or 'Key: Value' formats (e.g., avoid "Price: 100 Ariary"). Do not use colons to define attributes.
+        3. NATURAL COMPARISON: If multiple listings exist, weave a detailed comparison into your paragraphs as if you are describing them to a friend. 
+        4. PRICING: Always include the price for every property mentioned. The unit of the price is "Ariary".
+        5. TONE: Use a human, flowing, and conversational style. Use full sentences and smooth transitions between ideas rather than a clinical or structural breakdown.
+        6. Do not try to ask user questions.
         """
         return rules
 
@@ -107,7 +104,7 @@ class LLMService:
         headers = {
             "Authorization": "Bearer " + self.key,
             "Content-Type": "application/json",
-            "User-Agent": "MyChatGPT/1.0"
+            "User-Agent": "ft_transcendence_ai/1.0"
         }
         return headers
 
@@ -157,8 +154,7 @@ class LLMService:
 
                     except json.JSONDecodeError:
                         continue
-
-            yield json.dumps({"type": "metadata", "links": links})
+                yield json.dumps({"type": "metadata", "links": links}) + "\n"
         
 
     def generate_bloc_response(self, text, system_prompt=""):

@@ -1,0 +1,39 @@
+{
+    "brand": {
+        "name": "CASA"
+    },
+
+    "header": {
+        "title": "Inicie sesión en su cuenta",
+        "subtitle": "Vuelva a conectarse a {{brand}}"
+    },
+
+    "form": {
+        "email": {
+            "label": "Correo electrónico",
+            "placeholder": "tu@ejemplo.com",
+            "error": {
+                "notRegistered": "Esta dirección de correo electrónico no está registrada en nuestra base de datos."
+            }
+        },
+        "password": {
+            "label": "Contraseña",
+            "placeholder": "************",
+            "error": {
+                "wrongPass": "La contraseña que ha introducido es incorrecta."
+            }
+        },
+        "forgotPassword": "¿Olvidó su contraseña?"
+    },
+
+    "actions": {
+        "connect": "Iniciar sesión",
+        "continueWithGoogle": "Continuar con Google",
+        "or": "O"
+    },
+
+    "footer": {
+        "noAccount": "¿No tiene una cuenta?",
+        "signUp": "Registrarse"
+    }
+}

@@ -2,12 +2,9 @@
 	"no_result": "Aucun Résultat",
 	"rangeError": "Il y a une erreur dans vos valeurs, veuillez les corriger et réessayer.",
 	"buttons": {
-		"page": {
-			"previous": "Page précédente",
-			"next": "Page suivante"
-		},
 		"filter": {
 			"title": "Filtres",
+			"clear": "Enlever les filtres",
 			"priceRange": {
 				"title": "Fourchette de prix (Ar)",
 				"min": "Minimum",

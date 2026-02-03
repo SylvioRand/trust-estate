@@ -1,0 +1,98 @@
+{
+    "tags": {
+        "title": "Etiquetas",
+        "add": {
+            "title": "Añadir etiqueta",
+            "popup": {
+                "title": "Añadir una etiqueta",
+                "value": {
+                    "urgent": "Urgente",
+                    "exclusive": "Exclusivo",
+                    "discount": "Descuento"
+                }
+            }
+        }
+    },
+    "buttons": {
+        "goBackToListing": "Volver al listado",
+        "save": "Guardar"
+    },
+    "form": {
+        "title": {
+            "title": "Título",
+            "placeholder": "Título de su publicación"
+        },
+        "description": {
+            "title": "Descripción",
+            "placeholder": "Deje una descripción sobre la casa",
+            "buttons": {
+                "enhance": "Mejorar con IA"
+            }
+        },
+        "price": {
+            "title": "Precio",
+            "placeholder": "Precio en Ariary"
+        },
+        "area": {
+            "title": "Área",
+            "placeholder": "Área en pies cuadrados (M2)"
+        },
+        "wc": {
+            "title": "Inodoro"
+        },
+        "propertyType": {
+            "title": "Tipo de propiedad",
+            "apartment": "Apartamento",
+            "house": "Casa",
+            "loft": "Loft",
+            "land": "Terreno",
+            "commercial": "Comercial"
+        },
+        "zone": {
+            "title": "Ubicación"
+        },
+        "type": {
+            "title": "Tipo de contrato",
+            "sale": "Venta",
+            "rent": "Alquiler"
+        },
+        "bedrooms": {
+            "title": "Dormitorios",
+            "placeholder": "Número de dormitorios"
+        },
+        "bathrooms": {
+            "title": "Baños",
+            "placeholder": "Número de baños"
+        },
+        "wc_separate": {
+            "title": "Inodoro separado"
+        },
+        "pool": {
+            "title": "Piscina"
+        },
+        "parking_type": {
+            "title": "Aparcamiento",
+            "none": {
+                "title": "No"
+            },
+            "garage": {
+                "title": "Garaje"
+            },
+            "box": {
+                "title": "Box"
+            },
+            "parking": {
+                "title": "Estacionamiento"
+            }
+        },
+        "garden_private": {
+            "title": "Jardín"
+        },
+        "water_access": {
+            "title": "Agua"
+        },
+        "electricity_access": {
+            "title": "Electricidad"
+        }
+    }
+}

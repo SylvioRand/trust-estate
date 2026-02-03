@@ -1,0 +1,37 @@
+{
+    "title": "Gestionar horario",
+
+    "errors": {
+        "overlapping": "Esta configuración se superpone con otro horario.",
+        "time_invalid": "La hora de inicio debe ser anterior a la hora de fin."
+    },
+
+    "buttons": {
+        "goBackToListing": "Volver al anuncio",
+
+        "create": {
+            "title": "Crear un horario"
+        },
+        "save": {
+            "title": "Guardar"
+        }
+    },
+
+    "popup": {
+        "create": {
+            "dayOfTheWeek": "Día de la semana",
+            "startTime": "Comienza a las",
+            "endTime": "Hasta las"
+        }
+    },
+
+    "day": {
+        "0": "Lunes",
+        "1": "Martes",
+        "2": "Miércoles",
+        "3": "Jueves",
+        "4": "Viernes",
+        "5": "Sábado",
+        "6": "Domingo"
+    }
+}

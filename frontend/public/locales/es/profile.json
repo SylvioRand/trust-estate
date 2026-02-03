@@ -1,0 +1,16 @@
+{
+    "buttons": {
+        "publish": "Publicar",
+        "settings": "Ajustes"
+    },
+
+    "section": {
+        "favorites": {
+            "title": "Favoritos"
+        },
+
+        "myListings": {
+            "title": "Mis anuncios"
+        }
+    }
+}

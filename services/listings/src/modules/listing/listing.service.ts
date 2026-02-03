@@ -1,6 +1,7 @@
 import { prisma } from '../../config/prisma';
-import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing, UpdateavailabilityType, getAvailabilityParams } from "./listing.schema";
+import { PropertyListing, GetMineListingsQuery, SearchListingsQuery, UpdateListingData, ArchiveListingData, ReportListing, UpdateavailabilityType, getAvailabilityParams, GetDeleteUserDataParamsType } from "./listing.schema";
 import path from 'path';
+import { AIClient } from '../../infrastructure/ai.client';
 
 export class ListingService {
   static async createListing(validatedData: PropertyListing, photos: string[], sellerId: string) {
@@ -285,6 +286,17 @@ export class ListingService {
   }
 
   static async deleteUserData(userId: string) {
+    const userListings = await prisma.listing.findMany({
+      where: { sellerId: userId },
+      select: { id: true }
+    });
+
+    if (userListings.length > 0) {
+      await Promise.allSettled(
+        userListings.map(l => AIClient.deleteIndexListing(l.id))
+      );
+    }
+
     return await prisma.$transaction(async (tx) => {
       await tx.report.deleteMany({
         where: { reporterId: userId }
