@@ -9,6 +9,7 @@ export class AIClient {
     const body = {
       id: listing.id,
       title: listing.title,
+      photos: listing.photos,
       description: listing.description,
       price: listing.price,
       type: listing.type,
