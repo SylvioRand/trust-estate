@@ -76,7 +76,8 @@ export class ListingService {
         take: query.limit,
         orderBy: { createdAt: 'desc' },
         include: {
-          stats: true
+          stats: true,
+          features: true
         }
       }),
       prisma.listing.count({ where }),
