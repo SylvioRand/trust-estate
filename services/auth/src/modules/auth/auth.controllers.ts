@@ -49,7 +49,7 @@ export async function signUpUser(request: FastifyRequest<{ Body: SignUpUserInter
 		else
 			return reply.status(500).send({
 				"error": "Internal server error",
-				"message": "Internal server error"
+				"message": "common.internal_server_error"
 			});
 	}
 }
@@ -60,7 +60,7 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
 	if (!user) {
 		return reply.code(400).send({
 			"error": "Error",
-			"message": "User is not authenticated"
+			"message": "auth.invalid_credentials"
 		});
 	}
 
@@ -95,13 +95,14 @@ export async function verifiedEmail(request: FastifyRequest<{ Body: { token: str
 				"message": "auth.verification_token_invalid"
 			});
 		else if (error.message === "credit_service_error")
-			return reply.status(200).send({
-				message: "Failed to credit user"
-			})
+			return reply.status(502).send({
+				"error": "credit_service_error",
+				"message": "auth.credit_service_error"
+			});
 		else
 			return reply.status(500).send({
 				"error": "Internal server error",
-				"message": "Internal server error"
+				"message": "common.internal_server_error"
 			});
 	}
 }
@@ -174,16 +175,15 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 
 		return (reply.redirect(`${request.server.config.FRONTEND_URL}/home?auth_google=success`));
 	} catch (error: any) {
-		console.error("❌ Google Auth Callback Error:", error);
 		if (error.message === "Invalid credential")
 			return reply.status(400).send({
 				"error": "invalid_google_token",
-				"message": "auth.google_token_invalid"
+				"message": "auth.invalid_or_expired_token"
 			});
 		else if (error.message === "Ce compte est déjà lié à un autre compte Google")
 			return reply.status(403).send({
 				"error": "invalid_google_token",
-				"message": "auth.google_token_invalid"
+				"message": "auth.invalid_or_expired_token"
 			});
 		else {
 			return reply.status(500).send({
@@ -266,7 +266,7 @@ export async function verificationUserRole(request: FastifyRequest, reply: Fasti
 		if (error.message === "admin_required")
 			return reply.status(403).send({
 				"error": "forbidden",
-				"message": "auth.admin_required"
+				"common": "auth.unauthorized"
 			})
 		else if (error.message === "User not found")
 			return reply.status(404).send({
@@ -298,23 +298,23 @@ export async function changeUserPermission(request: FastifyRequest<{Body: change
 		return reply.status(200).send({
 			"userId": userId,
 			"success": true,
-			"message": "User permission updated successfully"
+			"message": "auth.user_permission_updated_successfully"
 		});
 	} catch (error: any) {
 		if (error.message === "User not found")
 			return reply.status(404).send({
 				"error":"user_not_found",
-				"message": "auth.user_not_found"
+				"message": "auth.unauthorized"
 			});
 		else if (error.message === "admin_required")
 			return reply.status(401).send({
 				"error":"permission_denied",
-				"message": "auth.permission_denied"
+				"message": "auth.unauthorized"
 			});
 		else if (error.message === "Can't assign this role")
 			return reply.status(401).send({
 				"error":"permission_denied",
-				"message": "auth.can_t_assign_this_role"
+				"message": "auth.unauthorized"
 			})
 		return reply.status(500).send({
 			"error": "internal_server_error",
