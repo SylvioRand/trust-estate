@@ -6,79 +6,80 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { type APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
+import useDataProvider from "../provider/useDataProvider";
 
 const SignInPage: React.FC = () => {
-	const { t } = useTranslation(["signIn", "error"]);
-	const navigate = useNavigate();
-	const [processSignIn, setProcessSignIn] = useState(false);
-	const [errorEmail, setErrorEmail] = useState<string[]>([]);
-	const [errorPassword, setErrorPassword] = useState<string[]>([]);
+	const	{ t } = useTranslation(["signIn", "error"]);
+	const	navigate = useNavigate();
+	const	[processSignIn, setProcessSignIn] = useState(false);
+	const	[errorEmail, setErrorEmail] = useState<string[]>([]);
+	const	[errorPassword, setErrorPassword] = useState<string[]>([]);
+	const	[googleProcessing, setgoogleProcessing] = useState<boolean>(false);
+	const	{ isConnected } = useDataProvider();
+
+	// if connected, redirect to the profile of the user
+	if (isConnected !== null && isConnected === true)
+		navigate("/profile");
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-	e.preventDefault();
+		e.preventDefault();
+		setProcessSignIn(true);
+		const formData = new FormData(e.currentTarget);
+		const data = Object.fromEntries(formData.entries());
+		try {
+			const response = await fetch("/api/auth/login", {
+			method: "POST",
+			headers: {
+				"Content-type": "application/json"
+			},
+			body: JSON.stringify(data)
+			})
 
-	setProcessSignIn(true);
-	const formData = new FormData(e.currentTarget);
-	const data = Object.fromEntries(formData.entries());
+			const responseData = await response.json();
+			console.log("Response Body:", responseData);
 
-
-	try {
-		const response = await fetch("/api/auth/login", {
-		method: "POST",
-		headers: {
-			"Content-type": "application/json"
-		},
-		body: JSON.stringify(data)
-		})
-
-		const responseData = await response.json();
-		console.log("Response Body:", responseData);
-
-		if (!response.ok) {
-		const errorData = responseData as APIResponse;
+			if (!response.ok) {
+			const errorData = responseData as APIResponse;
 
 
-		if (response.status === 403) {
-			if (errorData.error === "email_not_verified") {
-			navigate("/email-sent");
+			if (response.status === 403) {
+				if (errorData.error === "email_not_verified") {
+				navigate("/email-sent");
+				}
+				else if (errorData.error === "phone_not_verified") {
+				navigate("/add-phone");
+				}
 			}
-			else if (errorData.error === "phone_not_verified") {
-			navigate("/add-phone");
+			else if (response.status === 400) {
+				setErrorEmail([t(errorData.message)])
+				setErrorPassword([t(errorData.message)])
+				toast.error(t("error:" + errorData.message));
+				throw new Error("Invalid credentials");
 			}
-		}
-		else if (response.status === 400) {
-			setErrorEmail([t(errorData.message)])
-			setErrorPassword([t(errorData.message)])
-			toast.error(t("error:" + errorData.message));
-			throw new Error("Invalid credentials");
-		}
-		else if (response.status === 429) {
-			toast.error(t("error:" + errorData.message));
-			throw new Error("Rate Limiting");
-		}
-		}
+			else if (response.status === 429) {
+				toast.error(t("error:" + errorData.message));
+				throw new Error("Rate Limiting");
+			}
+			}
 
-		setErrorEmail([]);
-		setErrorPassword([]);
-		if (window.history.length > 1) {
-			navigate(-1);
-		} else {
-			navigate("/home");
+			setErrorEmail([]);
+			setErrorPassword([]);
+			if (window.history.length > 1) {
+				navigate(-1);
+			} else {
+				navigate("/home");
+			}
+		} catch (error) {
+			console.error("Error: ", error);
+		} finally {
+			setProcessSignIn(false);
 		}
-	} catch (error) {
-		console.error("Error: ", error);
-	} finally {
-		setProcessSignIn(false);
 	}
-	}
-
-	const [googleProcessing, setgoogleProcessing] = useState<boolean>(false);
 
 	const triggerGoogleLogin = () => {
-	setgoogleProcessing(true);
-
-	window.location.href = '/api/auth/google';
-	setgoogleProcessing(false);
+		setgoogleProcessing(true);
+		window.location.href = '/api/auth/google';
+		setgoogleProcessing(false);
 	};
 
 	return (
