@@ -10,123 +10,124 @@
 //                                                                            //
 // ************************************************************************** //
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
 import { useTranslation } from "react-i18next";
 import Markdown from 'react-markdown';
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
-import { dataExampleListingsData, type ListingsData } from "../dataModel/modelListings";
-import ActionButton from "../components/ActionButton";
+import { type PropertyType } from "../dataModel/modelListings";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import type { APIResponse } from "./sign_up";
 
-interface	ListingsLinkProps {
-	propertyData: ListingsData;
+type	MetadataAI = {
+	photos: string,
+	title: string,
+	price: number,
+	propertyType: PropertyType,
+	type: "sale" | "rent",
+	id: string,
+	zone: string
 }
 
-const	ListingsLink: React.FC<ListingsLinkProps> = ({
-	propertyData
+// TO REMOVE
+const	exampleMetadataAI: MetadataAI = {
+	photos: "https://media.istockphoto.com/id/2175973016/photo/modern-luxury-home-exterior-at-sunset.webp?s=2048x2048&w=is&k=20&c=hd0Y7MsJVp6yVsyb4iTM4FWAHgPggp90TB3mQ9GHVcI=",
+	title: "A little heaven in earth",
+	price: 2500000000,
+	propertyType: "house",
+	type: "sale",
+	id: "alda213bad2414pncoh-2318hdadhakbbqe-129723basdiuuljio",
+	zone: "Analakely"
+}
+
+interface	MetadataComponentsProps {
+	metadata: MetadataAI
+}
+
+const	MetadataComponents: React.FC<MetadataComponentsProps> = ({
+	metadata
 }) => {
+	const	[hovered, setHovered] = useState<boolean>(false);
 	const	formatter = new Intl.NumberFormat("de-DE");
 	const	{ t } = useTranslation("common");
 
 	return (
-		<div
-		className="grid grid-cols-[auto_1fr] grid-rows-1
-		gap-3
-		flex-none
-		border border-background/25
+		<Link
+		to={ `/property/listings?id=${metadata.id}` }
+		className="w-80 h-30
+		gap-2
+		grid grid-cols-[auto_1fr] grid-rows-1
+		rounded-2xl
 		shadow-standard
-		rounded-xl
-		p-2
-		max-w-90
-		overflow-hidden
-		w-90"
+		cursor-pointer
+		transition-colors duration-300
+		flex-none"
+		onPointerEnter={ () => setHovered(true) }
+		onPointerLeave={ () => setHovered(false) }
+		style={{
+			backgroundColor: hovered ? "var(--color-accent)" : "var(--color-midtone)"
+		}}
 		>
 			<div
-			className="w-24 h-24
+			className="flex items-center justify-center
+			relative
+			select-none
 			overflow-hidden
-			rounded-lg"
-			>
+			rounded-l-xl
+			h-full aspect-square">
 				<img
-				className="w-full h-full
-				object-cover"
-				src={ propertyData.photos[0] }
-				alt="Picture of a house"
+				className="w-full h-full object-cover
+				transition-transform duration-300"
+				style={{
+					transform: hovered ? "scale(106%)" : "none"
+				}}
+				src={ metadata.photos }
+				alt="User listing house picture"
 				/>
 			</div>
 			<div
-			className="flex flex-col items-start justify-center
-			w-full"
+			className="grid grid-cols-1 grid-rows-4
+			h-full
+			transition-colors duration-300
+			py-2 pr-2"
+			style={{
+				color: hovered ? "var(--color-light-background)" : "var(--color-light-foreground)"
+			}}
 			>
 				<div
-				className="flex flex-col items-start justify-center">
-					<div
-					className="font-bold
-					truncate
-					max-w-50
-					w-full">
-						{ propertyData.title }
-					</div>
-					<div
-					className="font-light">
-						{ `${formatter.format(propertyData.price)} Ar` }
-					</div>
+				className="font-higuen font-bold truncate text-lg">
+					{ metadata.title }
 				</div>
 
 				<div
-				className="flex items-center justify-end
-				w-full">
-					<Link
-					to={ `/property/listings?id=${propertyData.id}` }
-					>
-						<ActionButton
-						title={ t("viewDetails") }
-						/>
-					</Link>
+				className="flex items-center justify-start gap-1 font-light text-sm"
+				>
+					<div className="font-icon"></div><div>{ `${t(`propertyType.${metadata.propertyType}`)}, ${metadata.zone}` }</div>
+				</div>
+
+				<div
+				className="truncate
+				font-bold
+				justify-self-end
+				text-right
+				row-start-4 row-end-5">
+					{ `${formatter.format(metadata.price)} Ar` }
 				</div>
 			</div>
-		</div>
-	)
+		</Link>
+	);
 }
 
 interface MessageProps {
 	value: string;
 	side: "left" | "right";
-	links: string[];
+	metadata: MetadataAI[];
 }
 
 const Message: React.FC<MessageProps> = ({
 	value = "This is the content of your message",
 	side = "right",
-	links = []
+	metadata = []
 }) => {
-	// const	[linksData, setLinksData] = useState<ListingsData[]>();
-
-	// useEffect(() => {
-	// 	let	cancelled = false;
-
-	// 	const	getAndSetLinks = async () => {
-	// 		try {
-	// 			const	responses = await Promise.all(
-	// 				links.map((id: string) => {
-	// 					fetch(`/api/listings/${id}`).then((res) => {
-	// 						if (!res.ok)
-	// 							throw new Error("Failure");
-	// 						return res.json();
-	// 					})
-	// 				})
-	// 			)
-	// 			if (!cancelled)
-	// 				setLinksData(responses as ListingsData[]);
-	// 		} catch (error) {
-	// 			if (error instanceof Error && error.message !== "")
-	// 				toast.error(`error:${error.message}`)
-	// 		}
-	// 	}
-	// 	getAndSetLinks();
-	// }, []);
 	return (
 		<div
 		className="animate-fade-in
@@ -168,37 +169,16 @@ const Message: React.FC<MessageProps> = ({
 			grid grid-cols-2 grid-rows-1 gap-3
 			"
 			>
-				<ListingsLink
-				propertyData={ dataExampleListingsData }
-				/>
-
-				<ListingsLink
-				propertyData={ dataExampleListingsData }
-				/>
-				<ListingsLink
-				propertyData={ dataExampleListingsData }
-				/>
-				<ListingsLink
-				propertyData={ dataExampleListingsData }
-				/>
-				<ListingsLink
-				propertyData={ dataExampleListingsData }
-				/>
-				<ListingsLink
-				propertyData={ dataExampleListingsData }
-				/>
-				<ListingsLink
-				propertyData={ dataExampleListingsData }
-				/>
-				<ListingsLink
-				propertyData={ dataExampleListingsData }
-				/>
-				<ListingsLink
-				propertyData={ dataExampleListingsData }
-				/>
-				<ListingsLink
-				propertyData={ dataExampleListingsData }
-				/>
+				{
+					metadata.map((value: MetadataAI, index: number) => {
+						return (
+							<MetadataComponents
+							key={ index }
+							metadata={ value }
+							/>
+						);
+					})
+				}
 			</div>
 		</div>
 	);
@@ -207,13 +187,13 @@ const Message: React.FC<MessageProps> = ({
 type MessageType = {
 	value: string;
 	side: "left" | "right";
-	links: string[];
+	metadata: MetadataAI[];
 }
 
 const AIPage: React.FC = () => {
 	const [chatValue, setChatValue] = useState<string>("");
 	const [messageData, setMessageData] = useState<MessageType[]>([
-		{ value: "I found those links.", side: "left", links: ["a", "b", "c"]}
+		{ value: "I found those links.", side: "left", metadata: [ exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI ] }
 	]);
 
 	const [canSend, setCanSend] = useState<boolean>(true);
@@ -229,8 +209,8 @@ const AIPage: React.FC = () => {
 		setChatValue("");
 		setCanSend(false);
 		setMessageData((prev) => [
-			{ value: "", side: "left", links: [] },
-			{ value: userQuery, side: "right", links: [] },
+			{ value: "", side: "left", metadata: [] },
+			{ value: userQuery, side: "right", metadata: [] },
 			...prev
 		])
 
@@ -241,8 +221,6 @@ const AIPage: React.FC = () => {
 				headers: { "Content-type": "application/json" }
 			});
 			if (!response.ok) {
-				const errorMessage = await response.json();
-
 				setMessageData((prev) => [
 					{ value: "ERROR: IA PART: ", side: "left" } as MessageType,
 					...prev
@@ -289,13 +267,19 @@ const AIPage: React.FC = () => {
 						});
 					}
 					else if (data.type === "metadata") {
-						console.log("Founds metadatas: ", data.links);
+						setMessageData((prev) => {
+							return (
+								prev.map((value: MessageProps, index: number) => {
+									return (index === 0 ? {...value, metadata: data.metadata} : value);
+								})
+							)
+						})
 					}
 				}
 			}
 		} catch (error) {
 			setMessageData((prev) => [
-				{ value: "ERROR: IA PART: ", side: "left", links: [] } as MessageType,
+				{ value: "ERROR: IA PART: ", side: "left", metadata: [] } as MessageType,
 				...prev
 			].filter((msg) => msg.value !== ""));
 		} finally {
@@ -370,6 +354,7 @@ const AIPage: React.FC = () => {
 							key={index}
 							value={value.value}
 							side={value.side}
+							metadata={value.metadata}
 						/>
 					);
 				})
