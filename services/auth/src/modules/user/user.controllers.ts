@@ -25,7 +25,7 @@ export async function getUser(request: FastifyRequest, reply: FastifyReply) {
 				})
 		return reply.status(500).send({
 				"error": "Internal server error",
-				"message": "Internal server error"
+				"message": "common.internal_server_error"
 			});
 	}
 }
