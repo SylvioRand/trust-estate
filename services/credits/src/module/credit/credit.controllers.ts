@@ -14,7 +14,7 @@ export async function rechargeCredit(request: FastifyRequest<{ Body: RechargeInt
 	if (!user) {
 		return reply.code(400).send({
 			"error": "Error",
-			"message": "User is not authenticated"
+			"message": "auth.invalid_credentials"
 		});
 	}
 
@@ -46,7 +46,7 @@ export async function getBalance(request: FastifyRequest, reply: FastifyReply) {
 	if (!user) {
 		return reply.code(400).send({
 			"error": "Error",
-			"message": "User is not authenticated"
+			"message": "auth.invalid_credentials"
 		});
 	}
 
@@ -78,7 +78,7 @@ export async function debitBalance(request: FastifyRequest<{ Body: { reason: Tra
 	if (!user) {
 		return reply.code(400).send({
 			"error": "Error",
-			"message": "User is not authenticated"
+			"message": "auth.invalid_credentials"
 		});
 	};
 
@@ -114,7 +114,7 @@ export async function creditBalance(request: FastifyRequest<{ Body: creditBalanc
 	if (!user) {
 		return reply.code(400).send({
 			"error": "Error",
-			"message": "User is not authenticated"
+			"message": "auth.invalid_credentials"
 		});
 	};
 
@@ -140,7 +140,7 @@ export async function requestDeleteData(request: FastifyRequest, reply: FastifyR
 	if (!user) {
 		return reply.code(400).send({
 			"error": "Error",
-			"message": "User is not authenticated"
+			"message": "auth.invalid_credentials"
 		});
 	};
 
@@ -167,7 +167,7 @@ export async function history(request: FastifyRequest<{ Querystring: { page?: st
 		if (!user) {
 			return reply.code(400).send({
 				"error": "Error",
-				"message": "User is not authenticated"
+				"message": "auth.invalid_credentials"
 			});
 		}
 

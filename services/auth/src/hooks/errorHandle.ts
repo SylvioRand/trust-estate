@@ -89,10 +89,6 @@ export async function setErrorHandler(server: FastifyInstance) {
 			error.validation.forEach((err: any) => {
 				const field = err.instancePath.replace(/^\//, '');
 				const keyword = err.keyword;
-				
-				console.log("Field =", field);
-				console.log("Keyword =", keyword);
-				console.log("Params =", err.params);
 
 				if (!field && keyword !== 'required') return;
 
