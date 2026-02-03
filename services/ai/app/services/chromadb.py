@@ -75,6 +75,8 @@ class ChromadbService:
             metadata["tags"] = json.dumps(data.tags)
         if data.features:
             metadata["features"] = json.dumps(data.features)
+        if data.photos:
+            metadata["photos"] = data.photos
 
         await target_collection.add(
             ids=[data.id],
@@ -105,6 +107,8 @@ class ChromadbService:
             metadata["tags"] = json.dumps(data.tags)
         if data.features:
             metadata["features"] = json.dumps(data.features)
+        if data.photos:
+            metadata["photos"] = data.photos
 
         await to_find.upsert(
             ids=[data.id],
@@ -286,6 +290,7 @@ class ChromadbService:
             }
         result = await self.query_in_collection("posts", search_text, 3, filters, id_ref)
 
+        print(f"Hello there: {result}")
         return result
 
     async def is_post_in_collection(self, collection_name, specific_ids):
