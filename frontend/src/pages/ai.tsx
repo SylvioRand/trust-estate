@@ -30,7 +30,7 @@ type	MetadataAI = {
 
 // TO REMOVE
 const	exampleMetadataAI: MetadataAI = {
-	photos: "https://media.istockphoto.com/id/2175973016/photo/modern-luxury-home-exterior-at-sunset.webp?s=2048x2048&w=is&k=20&c=hd0Y7MsJVp6yVsyb4iTM4FWAHgPggp90TB3mQ9GHVcI=",
+	photos: "https://images.unsplash.com/photo-1564703048291-bcf7f001d83d?q=80&w=1530&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
 	title: "A little heaven in earth",
 	price: 2500000000,
 	propertyType: "house",
@@ -49,6 +49,7 @@ const	MetadataComponents: React.FC<MetadataComponentsProps> = ({
 	const	[hovered, setHovered] = useState<boolean>(false);
 	const	formatter = new Intl.NumberFormat("de-DE");
 	const	{ t } = useTranslation("common");
+	const	[loadingPictures, setLoadingPictures] = useState<boolean>(true);
 
 	return (
 		<Link
@@ -74,9 +75,21 @@ const	MetadataComponents: React.FC<MetadataComponentsProps> = ({
 			overflow-hidden
 			rounded-l-xl
 			h-full aspect-square">
+				{
+					loadingPictures &&
+					<div
+					className="font-icon text-4xl
+					absolute
+					animate-spin"
+					>
+						󱥸
+					</div>
+				}
+
 				<img
 				className="w-full h-full object-cover
 				transition-transform duration-300"
+				onLoad={ () => setLoadingPictures(false) }
 				style={{
 					transform: hovered ? "scale(106%)" : "none"
 				}}
@@ -166,7 +179,7 @@ const Message: React.FC<MessageProps> = ({
 			<div
 			className="max-w-[70%] flex-none
 			py-3
-			grid grid-cols-2 grid-rows-1 gap-3
+			flex flex-wrap gap-3
 			"
 			>
 				{
