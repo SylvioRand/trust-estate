@@ -10,54 +10,196 @@
 //                                                                            //
 // ************************************************************************** //
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
 import { useTranslation } from "react-i18next";
 import Markdown from 'react-markdown';
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
+import { dataExampleListingsData, type ListingsData } from "../dataModel/modelListings";
+import ActionButton from "../components/ActionButton";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import type { APIResponse } from "./sign_up";
+
+interface	ListingsLinkProps {
+	propertyData: ListingsData;
+}
+
+const	ListingsLink: React.FC<ListingsLinkProps> = ({
+	propertyData
+}) => {
+	const	formatter = new Intl.NumberFormat("de-DE");
+	const	{ t } = useTranslation("common");
+
+	return (
+		<div
+		className="grid grid-cols-[auto_1fr] grid-rows-1
+		gap-3
+		flex-none
+		border border-background/25
+		shadow-standard
+		rounded-xl
+		p-2
+		max-w-90
+		overflow-hidden
+		w-90"
+		>
+			<div
+			className="w-24 h-24
+			overflow-hidden
+			rounded-lg"
+			>
+				<img
+				className="w-full h-full
+				object-cover"
+				src={ propertyData.photos[0] }
+				alt="Picture of a house"
+				/>
+			</div>
+			<div
+			className="flex flex-col items-start justify-center
+			w-full"
+			>
+				<div
+				className="flex flex-col items-start justify-center">
+					<div
+					className="font-bold
+					truncate
+					max-w-50
+					w-full">
+						{ propertyData.title }
+					</div>
+					<div
+					className="font-light">
+						{ `${formatter.format(propertyData.price)} Ar` }
+					</div>
+				</div>
+
+				<div
+				className="flex items-center justify-end
+				w-full">
+					<Link
+					to={ `/property/listings?id=${propertyData.id}` }
+					>
+						<ActionButton
+						title={ t("viewDetails") }
+						/>
+					</Link>
+				</div>
+			</div>
+		</div>
+	)
+}
 
 interface MessageProps {
 	value: string;
 	side: "left" | "right";
+	links: string[];
 }
 
 const Message: React.FC<MessageProps> = ({
 	value = "This is the content of your message",
-	side = "right"
+	side = "right",
+	links = []
 }) => {
+	// const	[linksData, setLinksData] = useState<ListingsData[]>();
+
+	// useEffect(() => {
+	// 	let	cancelled = false;
+
+	// 	const	getAndSetLinks = async () => {
+	// 		try {
+	// 			const	responses = await Promise.all(
+	// 				links.map((id: string) => {
+	// 					fetch(`/api/listings/${id}`).then((res) => {
+	// 						if (!res.ok)
+	// 							throw new Error("Failure");
+	// 						return res.json();
+	// 					})
+	// 				})
+	// 			)
+	// 			if (!cancelled)
+	// 				setLinksData(responses as ListingsData[]);
+	// 		} catch (error) {
+	// 			if (error instanceof Error && error.message !== "")
+	// 				toast.error(`error:${error.message}`)
+	// 		}
+	// 	}
+	// 	getAndSetLinks();
+	// }, []);
 	return (
 		<div
-	className="animate-fade-in
-	w-full"
-	style={{
-	  animationDuration: "50ms"
-	}}
-	>
-		<div
-	  className="flex
-	  animate-from-bottom
+		className="animate-fade-in
+		flex flex-col items-start justify-center
+		gap-3
 		w-full"
 		style={{
-			justifyContent: side === "right" ? "flex-end" : "flex-start",
-		animationDuration: "50ms"
+		  animationDuration: "50ms"
 		}}
 		>
-			<div className="rounded-xl
-		  max-w-[70%]
-				p-3
-				border border-background/25
-				text-sm
-				wrap-break-word
-				shadow-standard"
-				style={{
-					order: side === "right" ? "2" : "1",
-				}}
+			<div
+		  className="flex
+		  animate-from-bottom
+			w-full"
+			style={{
+				justifyContent: side === "right" ? "flex-end" : "flex-start",
+			animationDuration: "50ms"
+			}}
 			>
-				<Markdown>
-					{value}
-				</Markdown>
+				<div className="rounded-xl
+			  max-w-[70%]
+					p-3
+					border border-background/25
+					text-sm
+					wrap-break-word
+					shadow-standard"
+					style={{
+						order: side === "right" ? "2" : "1",
+					}}
+				>
+					<Markdown>
+						{value}
+					</Markdown>
+				</div>
 			</div>
-		</div>
+			<div
+			className="max-w-[70%] flex-none
+			py-3
+			grid grid-cols-2 grid-rows-1 gap-3
+			"
+			>
+				<ListingsLink
+				propertyData={ dataExampleListingsData }
+				/>
+
+				<ListingsLink
+				propertyData={ dataExampleListingsData }
+				/>
+				<ListingsLink
+				propertyData={ dataExampleListingsData }
+				/>
+				<ListingsLink
+				propertyData={ dataExampleListingsData }
+				/>
+				<ListingsLink
+				propertyData={ dataExampleListingsData }
+				/>
+				<ListingsLink
+				propertyData={ dataExampleListingsData }
+				/>
+				<ListingsLink
+				propertyData={ dataExampleListingsData }
+				/>
+				<ListingsLink
+				propertyData={ dataExampleListingsData }
+				/>
+				<ListingsLink
+				propertyData={ dataExampleListingsData }
+				/>
+				<ListingsLink
+				propertyData={ dataExampleListingsData }
+				/>
+			</div>
 		</div>
 	);
 }
@@ -65,11 +207,15 @@ const Message: React.FC<MessageProps> = ({
 type MessageType = {
 	value: string;
 	side: "left" | "right";
+	links: string[];
 }
 
 const AIPage: React.FC = () => {
 	const [chatValue, setChatValue] = useState<string>("");
-	const [messageData, setMessageData] = useState<MessageType[]>([]);
+	const [messageData, setMessageData] = useState<MessageType[]>([
+		{ value: "I found those links.", side: "left", links: ["a", "b", "c"]}
+	]);
+
 	const [canSend, setCanSend] = useState<boolean>(true);
 	const { t } = useTranslation(["ai", "error", "common"]);
 
@@ -83,8 +229,8 @@ const AIPage: React.FC = () => {
 		setChatValue("");
 		setCanSend(false);
 		setMessageData((prev) => [
-			{ value: "", side: "left" },
-			{ value: userQuery, side: "right" },
+			{ value: "", side: "left", links: [] },
+			{ value: userQuery, side: "right", links: [] },
 			...prev
 		])
 
@@ -149,7 +295,7 @@ const AIPage: React.FC = () => {
 			}
 		} catch (error) {
 			setMessageData((prev) => [
-				{ value: "ERROR: IA PART: ", side: "left" } as MessageType,
+				{ value: "ERROR: IA PART: ", side: "left", links: [] } as MessageType,
 				...prev
 			].filter((msg) => msg.value !== ""));
 		} finally {
