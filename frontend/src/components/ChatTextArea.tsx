@@ -45,8 +45,11 @@ export const ChatTextarea: React.FC<ChatTextareaProps> = ({
 			value={value}
 			rows={1}
 			placeholder={placeholder}
-			maxLength={2000}
-			onChange={(e) => onChange(e.target.value)}
+			onChange={(e) => {
+					if (e.target.value.length < 5000)
+						onChange(e.target.value);
+				}
+			}
 			onKeyDown={ (e) => {
 				onKeyDown(e);
 			}}
