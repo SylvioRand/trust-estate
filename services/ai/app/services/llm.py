@@ -164,6 +164,7 @@ class LLMService:
                     response.raise_for_status()
                     async for to_send in self.parse_and_send(response, metadata):
                         yield to_send
+                    break
 
     def generate_bloc_response(self, text, system_prompt=""):
         llm_response = ""
