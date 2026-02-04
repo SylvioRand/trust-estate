@@ -130,16 +130,25 @@ async def chatbot(text: RequestChat):
     sys_prompt = chromadb_service.get_parse_prompt()
     context = None
     chroma_reply = None
-
+    formated = None
+    id_found = None
     if text.context and len(text.context) > 0:
         context = text.context
-
-    if not context:
-        chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt)
-    else:
-        chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt, context)
-    formated = format_chroma_response(user_mssg, chroma_reply)
-    id_found = chromadb_service.get_ids_from_query(chroma_reply)
+    try:
+        if not context:
+            chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt)
+        else:
+            chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt, context)
+        formated = format_chroma_response(user_mssg, chroma_reply)
+        id_found = chromadb_service.get_ids_from_query(chroma_reply)
+    except Exception:
+        return JSONResponse(
+                status_code = 400,
+                content = {
+                    "error": "error in chromadb",
+                    "message": "Error in chromadb"
+        }
+    )
     try:
         llm_response = llm_service.generate_stream_response(formated, id_found, llm_service.generate_rules())
 
@@ -160,39 +169,64 @@ async def chatbot(text: RequestChat):
 
 @app.delete("/ai/index/{listingId}")
 async def deletePost(listingId: str, _: dict = Depends(check_keys)):
-    result = await chromadb_service.remove_data_from_collection("posts", listingId)
-
-    if not result:
-        return JSONResponse(
-                status_code = 404,
-                content = {
-                    "error": "index_not_found",
-                    "message": "ai.listing_not_indexed"
-                }
+    try:
+        result = await chromadb_service.remove_data_from_collection("posts", listingId)
+    except Exception:
+            return JSONResponse(
+                    status_code = 400,
+                    content = {
+                        "error": "chromadb failed to delete listing",
+                        "message": "chromadb failed to delete listing"
+                    }
         )
     return {
-            "listingId": listingId
+        "success": result
     }
 
 @app.post("/ai/index")
 async def add_datas(to_update: PostModel, _: dict = Depends(check_keys)):
-    result = await chromadb_service.add_to_collection("posts", to_update)
-
+    try:
+        result = await chromadb_service.add_to_collection("posts", to_update)
+    except Exception:
+        return JSONResponse(
+                status_code = 400,
+                content = {
+                    "error": "chromadb failed to post listing",
+                    "message": "chromadb failed to post listing"
+                }
+    )
     return {
         "success": result
     }
 
 @app.put("/ai/index")
 async def update_datas(to_update: PostModel, _: dict = Depends(check_keys)):
-    result = await chromadb_service.update_in_collection("posts", to_update)
-
+    try:
+        result = await chromadb_service.update_in_collection("posts", to_update)
+    except Exception:
+        return JSONResponse(
+                status_code = 400,
+                content = {
+                    "error": "chromadb failed to update listing",
+                    "message": "chromadb failed to update listing"
+                }
+    )
     return {
-        "success": result
+            "success": result
     }
 
 @app.get("/ai/index-status/{listingId}")
 async def isListIndexed(listingId: str):
-    result = await chromadb_service.is_post_in_collection("posts", listingId)
+    try:
+        result = await chromadb_service.is_post_in_collection("posts", listingId)
+    except Exception:
+        return JSONResponse(
+                status_code = 400,
+                content = {
+                    "error": "chromadb failed to get index",
+                    "message": "chromadb failed to get index"
+                }
+    )
 
     return {
         "listingId": listingId,
