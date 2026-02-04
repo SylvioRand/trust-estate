@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated: 2026/02/04 09:21:14 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/04 10:53:08 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -181,46 +181,53 @@ class ChromadbService:
 
     def get_parse_prompt(self):
         parse_prompt = """
-        ROLE: You are a strict JSON generator for a real estate search engine.
+        ROLE: You are a strict JSON generator for a real estate search engine. 
+        You only knows the languages French, English and Spanish.
 
+        VALID ZONES = [
+        "Ambalavao-Isotry", "Ambatonakanga-Ambohitsorohitra", "Ambatovinaky", "Ambodifilao-Soarano II S", "Ampandrana-Ankadivato", "Amparibe-Avaratr'Imahamasina", "Ampasamadinika-Amboasarikely", "Anatihazo Isotry", "Andavamamba-Anatihazo I", "Andavamamba-Anatihazo II",
+        "Andavamamba-Anjezika I", "Andavamamba-Anjezika II", "Andohatapenaka I", "Andohatapenaka II", "Andohatapenaka III", "Andranomanalina Afovoany", "Andranomanalina I", "Andranomanalina-Isotry", "Ankasina", "Antanimalalaka-Analakely",
+        "Antetezana Fovoany I", "Antetezana Fovoany II", "Antohomadinika Afovoany III F", "Antohomadinika Atsimo", "Antohomadinika-Antaniavo", "Antohomadinika-FAAMI", "Antohomadinika III G Hangar", "Avaratetezana-Bekiraro", "Cité-Ambodin'Isotry", "Cité Ampefiloha",
+        "Cité 67 ha Afovoany-Andrefana", "Cité 67 ha Atsimo", "Cité 67 ha Avaratra-Andrefana", "Cité 67 ha Avaratra-Atsinanana", "Lalamby sy ny Manodidina", "Faravohitra Ambony", "Faravohitra-Mandrosoa", "Isoraka-Ampatsakana", "Tsaralalàna-Isotry FIATA", "Manarintsoa Afovoany",
+        "Manarintsoa Anatihazo", "Manarintsoa Antsinanana", "Manarintsoa Isotry", "Ambohipo", "Ambolokandrina", "Androndrakely", "Morarano", "Tsiadana", "Ambohitsoa", "Faliarivo Ambanidia",
+        "Mandroseza", "Antanimora Ampasanimalo", "Ambatoroka", "Ambohimiandra", "Miandrarivo", "Manakambahiny", "Mahazoarivo", "Andafiavaratra", "Manjakamiadana", "Ampamantanana",
+        "Andohanimandroseza", "Antsahabe", "Volosarika", "Ambohipotsy", "Ambohitsiroa VN", "Ankazotokana Ambony", "Andohamandry", "Fenomanana-Antsahakely", "Ambohibary", "Ankaditapaka-Avaratra",
+        "Behoririka-Ambatomitsangana", "Ankadifotsy Antanifotsy", "Ambohibary-Antanimena", "Befelatanana-Ankadifotsy", "Andravoahangy Tsena", "Mandialaza-Ambatomitsangana", "Andravoahangy Andrefana", "Behoririka", "Ampandrana Andrefana", "Ankadivato IIL",
+        "Ampahibe", "Antsakaviro-Ambodirotra", "Antaninandro-Ampandrana", "Ankorondrano Atsinanana", "Soavinandriana", "Avaradoha", "Betongolo", "Ampandrana Atsinanana", "Ampandrana-Besarety", "Andravoahangy Atsinanana",
+        "Ankazomanga Andraharo Avaratra", "Besarety", "Mahavoky", "Mandialaza-Ankadifotsy", "Ambodivona-Ankadifotsy", "Ambohitrakely", "Ampandrana", "Ambanin'Ampamarinana", "Ampefiloha Ambodirano", "Ampangabe Anjanakinifolo",
+        "Ambodirano-Ampefiloha", "Anosibe-Andrefana I", "Mandrangobato-Anosibe I", "Ambohijanahary III G, III M", "Ambohijanahary III H, III O", "Andrefan'Ankadimbahoaka", "Andrefan'I Mananjara", "Angarangarana", "Ankadilalana", "Ambatobe",
+        "Ambatokaranana", "Ambatomainty", "Ambatomaro", "Amboditsiry", "Ambodivoanjo", "Ambohidahy", "Ambohimirary", "Amboniloha", "Ampanotokana", "Analamahintsy cité",
+        "Analamahintsy Tanàna", "Andraisoro", "Androhibe", "Anjanahary II A", "Anjanahary II N", "Anjanahary II O", "Anjanahary II S", "Ankadindramamy", "Ivandry", "Manjakaray II B",
+        "Manjakaray II C", "Manjakaray II D", "Morarano Ambatomainty", "Nanisana", "Soavimasoandro", "Tsarahonenana", "Ambatolampy", "Amboavahy", "Ambodihady", "Ambodimita",
+        "Ambodivona", "Ambodivonakely", "Ambohidroa", "Ambohimanandray", "Andranomena", "Avaratetezana", "Anosibe Zaivola", "Antsararay", "Avaratanana", "Autre quartier"
+]
         RULES:
-        1. ONLY use these keys in "filters": "price", "zone", "post_type", "property_type", "surface".
-        2. If the user mentions some features like bedrooms, bathrooms, gardens, urgent, exclusive, water, electricity or discount, put these in "search_text" ONLY. NEVER in "filters".
-        3. post_type NORMALIZATION:
-        - Map to exactly 'sale' or 'rent'.
-        - IF THE USER DOES NOT SPECIFY (e.g., they don't say "buy", "sale", "rent", or "louer"), OMIT this field from the "filters" dictionary entirely. Do not guess.
-        4. property_type NORMALIZATION:
-        - You MUST map the property_type to one of these: 'apartment', 'house', 'loft', 'land', 'commercial'.
-        - Handle typos (e.g., "Apartement" -> "apartment") and synonyms (e.g., "flat" -> "apartment", "villa" -> "house").
-        - If none of the type is mentioned, Do not put anything.
-        5. NUMBERS: "price" and "surface" must be positive integers. Use ChromaDB operators: $gt, $lt, $eq, $gte, $lte.
-        6. There should be at least one word, and one filter. If not the case, send an empty search_text and empty filters.
-        OUTPUT STRUCTURE:
-        Return ONLY a JSON object:
+        1. OUTPUT: Return ONLY a valid JSON object. No prose.
+        2. FILTERS: Only use "price", "zone", "post_type", "property_type", "surface".
+        3. ZONE NORMALIZATION: 
+        - If the user mentions a location, map it to the closest match in the VALID ZONES list.
+        - Fix typos (e.g., "Pariis" -> "Paris") and handle case-sensitivity.
+        - If the zone is NOT in the list and you don't recognize it, keep the user's spelling but capitalize the first letter.
+        4. PROPERTY_TYPE: Map to 'apartment', 'house', 'loft', 'land', or 'commercial'. 
+        5. POST_TYPE: Map to 'sale' or 'rent'. Omit if not specified.
+        6. NUMBERS: Use ChromaDB operators ($gt, $lt, $eq, $gte, $lte) for price/surface. Ensure they are positive integers.
+        7. SEARCH_TEXT: Include keywords (e.g., "3 bedrooms", "garden"). If a property_type is identified, include it here too.
+
+        STRUCTURE:
         {
-        "isAbout_real_estate": "A boolean that value can be 'True' or 'False' that be set depending on user input. If user input is about searching listing then put on True, else put on False"
-        "search_text": "string including property_type and keywords. If the property_type is defined here, it must me defined in the filters too",
-        "filters": { ...metadata }
+        "isAbout_real_estate": boolean,
+        "search_text": "string",
+        "filters": { ... }
         }
 
         EXAMPLES:
-
-        User: "Apartement at Paris"
+        User: "Apartement at Pariis"
         {
+            "isAbout_real_estate": true,
             "search_text": "apartment",
             "filters": {
                 "zone": "Paris",
                 "property_type": "apartment"
-            }
-        }
-
-        User: "House with 3 bedrooms in Ambohipo under 2M"
-        {
-            "search_text": "house 3 bedrooms",
-            "filters": {
-                "zone": "Ambohipo",
-                "price": {"$lt": 2000000},
-                "property_type": "house"
             }
         }
         """
@@ -270,7 +277,8 @@ class ChromadbService:
 
     async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
         llm_parse_response = llm_service.generate_bloc_response(user_mssg, sys_prompt)
-        
+
+        print(f"Hello there {llm_parse_response}")
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}
@@ -288,6 +296,7 @@ class ChromadbService:
                 'datas': None
             }
         result = await self.query_in_collection("posts", search_text, 3, filters, id_ref)
+        print(f"Got result: {result}")
         return result
 
     async def is_post_in_collection(self, collection_name, specific_ids):
