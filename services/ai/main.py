@@ -203,7 +203,7 @@ async def isListIndexed(listingId: str):
 async def generate_better_description(text: Description):
 
     try:
-        llm_response = llm_service.generate_bloc_response(text.description, llm_service.generate_description())
+        llm_response = await llm_service.generate_bloc_response(text.description, llm_service.generate_description())
 
         return {
             "reply": llm_response
