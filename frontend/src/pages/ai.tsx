@@ -143,7 +143,7 @@ const AIPage: React.FC = () => {
 						});
 					}
 					else if (data.type === "metadata") {
-						console.log("Founds metadatas: ", data.links);
+						console.log("Founds metadatas: ", data.metadata);
 					}
 				}
 			}
