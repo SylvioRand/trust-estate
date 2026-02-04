@@ -17,6 +17,7 @@ import Markdown from 'react-markdown';
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import { type PropertyType } from "../dataModel/modelListings";
 import { Link } from "react-router-dom";
+import ActionButton from "../components/ActionButton";
 
 type	MetadataAI = {
 	photos: string,
@@ -46,87 +47,61 @@ interface	MetadataComponentsProps {
 const	MetadataComponents: React.FC<MetadataComponentsProps> = ({
 	metadata
 }) => {
-	const	[hovered, setHovered] = useState<boolean>(false);
 	const	formatter = new Intl.NumberFormat("de-DE");
 	const	{ t } = useTranslation("common");
-	const	[loadingPictures, setLoadingPictures] = useState<boolean>(true);
 
 	return (
-		<Link
-		to={ `/property/listings?id=${metadata.id}` }
-		className="w-80 h-30
+		<div
+		className="grid grid-cols-1 grid-rows-[auto_1fr]
+		min-w-60 max-w-60
 		gap-2
-		grid grid-cols-[auto_1fr] grid-rows-1
 		rounded-2xl
 		shadow-standard
-		cursor-pointer
+		border border-background/25
 		transition-colors duration-300
 		flex-none"
-		onPointerEnter={ () => setHovered(true) }
-		onPointerLeave={ () => setHovered(false) }
-		style={{
-			backgroundColor: hovered ? "var(--color-accent)" : "var(--color-midtone)"
-		}}
 		>
 			<div
-			className="flex items-center justify-center
-			relative
-			select-none
-			overflow-hidden
-			rounded-l-xl
-			h-full aspect-square">
-				{
-					loadingPictures &&
-					<div
-					className="font-icon text-4xl
-					absolute
-					animate-spin"
-					>
-						󱥸
-					</div>
-				}
-
+			className="w-full aspect-square"
+			>
 				<img
-				className="w-full h-full object-cover
-				transition-transform duration-300"
-				onLoad={ () => setLoadingPictures(false) }
-				style={{
-					transform: hovered ? "scale(106%)" : "none"
-				}}
+				className="rounded-2xl
+				w-full h-full object-cover"
 				src={ metadata.photos }
-				alt="User listing house picture"
+				alt="Picture of a house"
 				/>
 			</div>
 			<div
-			className="grid grid-cols-1 grid-rows-4
-			h-full
-			transition-colors duration-300
-			py-2 pr-2"
-			style={{
-				color: hovered ? "var(--color-light-background)" : "var(--color-light-foreground)"
-			}}
+			className="flex flex-col items-start justify-center
+			px-2
+			mb-2
+			text-left
+			w-full"
 			>
 				<div
-				className="font-higuen font-bold truncate text-lg">
+				className="font-higuen font-bold text-lg truncate max-w-full"
+				>
 					{ metadata.title }
 				</div>
-
 				<div
-				className="flex items-center justify-start gap-1 font-light text-sm"
+				className="flex items-center justify-center gap-1
+				text-sm"
 				>
-					<div className="font-icon"></div><div>{ `${t(`propertyType.${metadata.propertyType}`)}, ${metadata.zone}` }</div>
+					<div className="font-icon"></div><div className="truncate max-w-50">{ `${t(`propertyType.${metadata.propertyType}`)}, ${metadata.zone}` }</div>
 				</div>
-
-				<div
-				className="truncate
-				font-bold
-				justify-self-end
-				text-right
-				row-start-4 row-end-5">
+				<div className="font-bold my-2">
 					{ `${formatter.format(metadata.price)} Ar` }
 				</div>
+				<Link
+				className="w-full"
+				to={ `/property/listings?id=${metadata.id}` }
+				>
+					<ActionButton
+					title={ t("viewDetails") }
+					/>
+				</Link>
 			</div>
-		</Link>
+		</div>
 	);
 }
 
@@ -152,8 +127,9 @@ const Message: React.FC<MessageProps> = ({
 		}}
 		>
 			<div
-		  className="flex
-		  animate-from-bottom
+			className="flex
+			animate-from-bottom
+			px-4 md:px-7 
 			w-full"
 			style={{
 				justifyContent: side === "right" ? "flex-end" : "flex-start",
@@ -177,9 +153,15 @@ const Message: React.FC<MessageProps> = ({
 				</div>
 			</div>
 			<div
-			className="max-w-[70%] flex-none
+			className="xl:max-w-[70%] flex-none
 			py-3
-			flex flex-wrap gap-3
+			px-4
+			gap-3
+			overflow-x-scroll
+			flex items-center justify-start
+			xl:grid xl:grid-cols-3 xl:grid-rows-1
+			xl:w-auto
+			w-full
 			"
 			>
 				{
@@ -206,7 +188,7 @@ type MessageType = {
 const AIPage: React.FC = () => {
 	const [chatValue, setChatValue] = useState<string>("");
 	const [messageData, setMessageData] = useState<MessageType[]>([
-		{ value: "I found those links.", side: "left", metadata: [ exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI ] }
+		// { value: "I found those links.", side: "left", metadata: [ exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI ] }
 	]);
 
 	const [canSend, setCanSend] = useState<boolean>(true);
@@ -304,7 +286,7 @@ const AIPage: React.FC = () => {
 		<div className="flex flex-col-reverse items-center justify-start
 			overflow-y-scroll
 			gap-3
-			px-4 md:px-7 xl:px-64
+			xl:px-64
 			relative
 			w-full h-screen"
 		>
