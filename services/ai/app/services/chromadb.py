@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated: 2026/02/02 09:04:28 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/04 09:21:14 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ import chromadb
 import json
 import re
 
-from app.models import PostModel
+from app.models import PostModel, metaData
 from app.services.embedding import embeddingService
 
 class ChromadbService:
@@ -76,7 +76,7 @@ class ChromadbService:
         if data.features:
             metadata["features"] = json.dumps(data.features)
         if data.photos:
-            metadata["photos"] = data.photos
+            metadata["photos"] = data.photos[0]
 
         await target_collection.add(
             ids=[data.id],
@@ -108,7 +108,7 @@ class ChromadbService:
         if data.features:
             metadata["features"] = json.dumps(data.features)
         if data.photos:
-            metadata["photos"] = data.photos
+            metadata["photos"] = data.photos[0]
 
         await to_find.upsert(
             ids=[data.id],
@@ -180,7 +180,6 @@ class ChromadbService:
         return result
 
     def get_parse_prompt(self):
-
         parse_prompt = """
         ROLE: You are a strict JSON generator for a real estate search engine.
 
@@ -289,8 +288,6 @@ class ChromadbService:
                 'datas': None
             }
         result = await self.query_in_collection("posts", search_text, 3, filters, id_ref)
-
-        print(f"Hello there: {result}")
         return result
 
     async def is_post_in_collection(self, collection_name, specific_ids):
@@ -335,10 +332,21 @@ class ChromadbService:
         return query
     
     def get_ids_from_query(self, query_result):
+        result: list[metaData] = []
 
         if query_result.get('ids') and len(query_result['ids']) > 0:
-            return query_result['ids'][0]
-        return []
+            for nb in range(len(query_result['ids'][0])):
+                curr_obj = metaData(
+                        id = query_result['ids'][0][nb],
+                        photos = query_result['metadatas'][0][nb].get("photos", ""),
+                        title = query_result['metadatas'][0][nb].get("title", ""),
+                        price = query_result['metadatas'][0][nb].get("price", 1.0),
+                        propertyType = query_result['metadatas'][0][nb].get("property_type", "house"),
+                        type = query_result['metadatas'][0][nb].get("post_type", "sale"),
+                        zone = query_result['metadatas'][0][nb].get("zone", "")
+                )
+                result.append(curr_obj)
+        return result
 
     #================= DEBUG Methods =========================
     async def get_all_in_collection(self, collection_name):

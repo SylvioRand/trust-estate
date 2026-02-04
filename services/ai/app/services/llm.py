@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:10 by aelison           #+#    #+#              #
-#    Updated: 2026/02/02 09:20:09 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/04 09:58:40 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ class LLMService:
     def __init__(self):
         self.url = config.LLM_API_URL
         self.key = config.LLM_API_KEY
-        self.model = config.LLM_MODEL
+        self.all_model = config.LLM_MODEL
 
     def format_for_llm(self, text):
         if not text or not text.get('ids'):
@@ -44,6 +44,7 @@ class LLMService:
             formatted_context += f"---\nPOST {i+1}:\n{doc}\nMetadata: {meta}\nID: {tmp_id}\n"
         
         return formatted_context
+
     def get_sources(self):
         prompt = """
         You are a precise data extractor.
@@ -101,6 +102,7 @@ class LLMService:
         """
 
         return rules
+
     def generate_header(self):
         headers = {
             "Authorization": "Bearer " + self.key,
@@ -108,68 +110,77 @@ class LLMService:
         }
         return headers
 
-    def generate_json(self, text, streaming, system_prompt=""):
+    def generate_json(self, text, streaming, model_to_use, system_prompt=""):
         mssg = []
 
         if system_prompt:
             mssg.append({"role": "system", "content": system_prompt})
         mssg.append({"role": "user", "content": text})
         data = {
-            "model": self.model,
+            "model": model_to_use,
             "messages": mssg ,
             "stream": streaming
         }
         return data
 
-    async def generate_stream_response(self, text, links, system_prompt=""):
-        async with httpx.AsyncClient() as client:
-            async with client.stream(
-                "POST",
-                url = self.url,
-                headers = self.generate_header(),
-                json = self.generate_json(text, True, system_prompt),
-                timeout = 130.0
-            ) as response:
-                if response.status_code != 200:
-                        error_details = await response.aread() 
-                        print(f"Error {response.status_code}: {error_details.decode()}")
-                response.raise_for_status()
-                async for word in response.aiter_lines():
-                    if not word:
-                        continue
-                    parse_line = word.strip()
+    async def parse_and_send(self, response, metadata):
+        async for word in response.aiter_lines():
+            if not word:
+                continue
+            parse_line = word.strip()
+            if parse_line == "data: [DONE]":
+                break
+            if parse_line.startswith("data: "):
+                parse_line = parse_line[6:]
+            try:
+                result = json.loads(parse_line)
+                content_exist = result.get("choices", [])
 
-                    if parse_line == "data: [DONE]":
-                        break
-                    if parse_line.startswith("data: "):
-                        parse_line = parse_line[6:]
+                if not content_exist:
+                    continue
+                content = result["choices"][0].get("delta", {}).get("content", "")
+                if content:
+                    yield json.dumps({"type": "content", "reply": content}) + "\n"
 
-                    try:
-                        result = json.loads(parse_line)
+            except json.JSONDecodeError:
+                continue
+        yield json.dumps({"type": "metadata", "metadata": [value.model_dump() for value in metadata]}) + "\n"
 
-                        content_exist = result.get("choices", [])
 
-                        if not content_exist:
+    async def generate_stream_response(self, text, metadata, system_prompt=""):
+        for model in self.all_model:
+            async with httpx.AsyncClient() as client:
+                async with client.stream(
+                    "POST",
+                    url = self.url,
+                    headers = self.generate_header(),
+                    json = self.generate_json(text, True, model, system_prompt),
+                    timeout = 130.0
+                ) as response:
+                    if response.status_code != 200:
+                            error_details = await response.aread() 
+                            print(f"Error {response.status_code} on model {model}: {error_details.decode()}")
                             continue
-                        content = result["choices"][0].get("delta", {}).get("content", "")
-                        if content:
-                            yield json.dumps({"type": "content", "reply": content}) + "\n"
-
-                    except json.JSONDecodeError:
-                        continue
-                yield json.dumps({"type": "metadata", "links": links}) + "\n"
-        
+                    response.raise_for_status()
+                    async for to_send in self.parse_and_send(response, metadata):
+                        yield to_send
 
     def generate_bloc_response(self, text, system_prompt=""):
-        response = httpx.post(
-            url = self.url,
-            headers = self.generate_header(),
-            json = self.generate_json(text, False, system_prompt),
-            timeout = 120.0
-        )
+        llm_response = ""
 
-        response.raise_for_status()
-        data = response.json()
-        llm_response = data["choices"][0]["message"]["content"]
+        for model in self.all_model:
+            response = httpx.post(
+                url = self.url,
+                headers = self.generate_header(),
+                json = self.generate_json(text, False, model, system_prompt),
+                timeout = 120.0
+            )
+            if response.status_code != 200:
+                error_details = response.aread() 
+                print(f"Error {response.status_code} on model {model}: {error_details.decode()}")
+                continue
+            response.raise_for_status()
+            data = response.json()
+            llm_response = data["choices"][0]["message"]["content"]
         return llm_response
 
