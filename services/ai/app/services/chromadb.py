@@ -276,9 +276,7 @@ class ChromadbService:
         return new_result
 
     async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
-        llm_parse_response = llm_service.generate_bloc_response(user_mssg, sys_prompt)
-
-        print(f"Hello there {llm_parse_response}")
+        llm_parse_response = await llm_service.generate_bloc_response(user_mssg, sys_prompt)
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}
@@ -295,8 +293,7 @@ class ChromadbService:
                 'uris': None,
                 'datas': None
             }
-        result = await self.query_in_collection("posts", search_text, 3, filters, id_ref)
-        print(f"Got result: {result}")
+        result = await self.query_in_collection("posts", search_text, 7, filters, id_ref)
         return result
 
     async def is_post_in_collection(self, collection_name, specific_ids):

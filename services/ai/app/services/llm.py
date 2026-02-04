@@ -174,7 +174,7 @@ class LLMService:
                         yield to_send
                     break
 
-    def generate_bloc_response(self, text, system_prompt=""):
+    async def generate_bloc_response(self, text, system_prompt=""):
         llm_response = ""
 
         for model in self.all_model:
@@ -185,7 +185,7 @@ class LLMService:
                 timeout = 120.0
             )
             if response.status_code != 200:
-                error_details = response.aread() 
+                error_details = await response.aread() 
                 print(f"Error {response.status_code} on model {model}: {error_details.decode()}")
                 continue
             response.raise_for_status()
