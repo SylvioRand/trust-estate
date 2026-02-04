@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:23 by aelison           #+#    #+#              #
-#    Updated: 2026/01/28 10:30:53 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/04 09:21:04 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,9 +22,19 @@ class RequestChat(BaseModel):
 class Description(BaseModel):
     description: str = "I have a beautiful house to sell, please buy it"
 
+class metaData(BaseModel):
+    id: str = "Failed"
+    photos: str = "Failed"
+    title: str = "Failed"
+    price: float = 1.0
+    propertyType: Literal['apartment', 'house', 'loft', 'land', 'commercial'] = "apartment"
+    type: Literal["sale", "rent"] = "sale"
+    zone: str = "Failed"
+
 class PostModel(BaseModel):
     id: str
     title: str = "Hello world"
+    photos: list[str] = []
     description: str = "Beautiful property"
     price: float = Field(default=100000, gt=0)
     type: Literal["sale", "rent"] = "sale"
@@ -61,6 +71,9 @@ class PostModel(BaseModel):
             features_to_list = [f"{k}: {v}" for k, v in self.features.items()] 
             all_features = ", ".join(features_to_list)
             values.append(f"Features: {all_features}")
+        if len(self.photos) > 0:
+            values.append(f"Photos: {self.photos[0]}")
+
         data = ". ".join(values) + "."
 
         return data

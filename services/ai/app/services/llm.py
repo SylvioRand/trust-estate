@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:10 by aelison           #+#    #+#              #
-#    Updated: 2026/02/02 09:20:09 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/04 09:58:40 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ class LLMService:
     def __init__(self):
         self.url = config.LLM_API_URL
         self.key = config.LLM_API_KEY
-        self.model = config.LLM_MODEL
+        self.all_model = config.LLM_MODEL
 
     def format_for_llm(self, text):
         if not text or not text.get('ids'):
@@ -44,6 +44,7 @@ class LLMService:
             formatted_context += f"---\nPOST {i+1}:\n{doc}\nMetadata: {meta}\nID: {tmp_id}\n"
         
         return formatted_context
+
     def get_sources(self):
         prompt = """
         You are a precise data extractor.
@@ -78,16 +79,17 @@ class LLMService:
 
         GOAL: 
         Help users understand available property listings using ONLY the provided context.
-        If no listings match their specific filters, tell them clearly and ask for more details about what they are looking for.
-        If the conversation is not about real estate, chat naturally.
+        If no listings match their specific filters, tell them clearly and ask for more details about what they are looking for
+        If the conversation is not about real estate, you are not a real estate assistant anymore but a super LLM, chat naturally.
 
-        CONVERSATIONAL RULES (To avoid repetition and lists):
+        CONVERSATIONAL RULES :
         1. INTEGRATED FLOW: When listings are available, start your response by introducing them naturally within your sentences. 
         2. NO LISTS OR HEADERS: Strictly avoid bullet points, bold headers, or 'Key: Value' formats (e.g., avoid "Price: 100 Ariary"). Do not use colons to define attributes.
         3. NATURAL COMPARISON: If multiple listings exist, weave a detailed comparison into your paragraphs as if you are describing them to a friend. 
         4. PRICING: Always include the price for every property mentioned. The unit of the price is "Ariary".
         5. TONE: Use a human, flowing, and conversational style. Use full sentences and smooth transitions between ideas rather than a clinical or structural breakdown.
-        6. Do not try to ask user questions.
+        6. Do not try to ask the user any questions.
+
         """
         return rules
 
@@ -100,73 +102,86 @@ class LLMService:
         """
 
         return rules
+
     def generate_header(self):
         headers = {
             "Authorization": "Bearer " + self.key,
-            "Content-Type": "application/json",
-            "User-Agent": "ft_transcendence_ai/1.0"
+            "Content-Type": "application/json"
         }
         return headers
 
-    def generate_json(self, text, streaming, system_prompt=""):
+    def generate_json(self, text, streaming, model_to_use, system_prompt=""):
         mssg = []
 
         if system_prompt:
             mssg.append({"role": "system", "content": system_prompt})
         mssg.append({"role": "user", "content": text})
         data = {
-            "model": self.model,
+            "model": model_to_use,
             "messages": mssg ,
             "stream": streaming
         }
         return data
 
-    async def generate_stream_response(self, text, links, system_prompt=""):
-        async with httpx.AsyncClient() as client:
-            async with client.stream(
-                "POST",
-                url = self.url,
-                headers = self.generate_header(),
-                json = self.generate_json(text, True, system_prompt),
-                timeout = 130.0
-            ) as response:
-                response.raise_for_status()
-                async for word in response.aiter_lines():
-                    if not word:
-                        continue
-                    parse_line = word.strip()
+    async def parse_and_send(self, response, metadata):
+        async for word in response.aiter_lines():
+            if not word:
+                continue
+            parse_line = word.strip()
+            if parse_line == "data: [DONE]":
+                break
+            if parse_line.startswith("data: "):
+                parse_line = parse_line[6:]
+            try:
+                result = json.loads(parse_line)
+                content_exist = result.get("choices", [])
 
-                    if parse_line == "data: [DONE]":
-                        break
-                    if parse_line.startswith("data: "):
-                        parse_line = parse_line[6:]
+                if not content_exist:
+                    continue
+                content = result["choices"][0].get("delta", {}).get("content", "")
+                if content:
+                    yield json.dumps({"type": "content", "reply": content}) + "\n"
 
-                    try:
-                        result = json.loads(parse_line)
+            except json.JSONDecodeError:
+                continue
+        yield json.dumps({"type": "metadata", "metadata": [value.model_dump() for value in metadata]}) + "\n"
 
-                        content_exist = result.get("choices", [])
 
-                        if not content_exist:
+    async def generate_stream_response(self, text, metadata, system_prompt=""):
+        for model in self.all_model:
+            async with httpx.AsyncClient() as client:
+                async with client.stream(
+                    "POST",
+                    url = self.url,
+                    headers = self.generate_header(),
+                    json = self.generate_json(text, True, model, system_prompt),
+                    timeout = 130.0
+                ) as response:
+                    if response.status_code != 200:
+                            error_details = await response.aread() 
+                            print(f"Error {response.status_code} on model {model}: {error_details.decode()}")
                             continue
-                        content = result["choices"][0].get("delta", {}).get("content", "")
-                        if content:
-                            yield json.dumps({"type": "content", "reply": content}) + "\n"
-
-                    except json.JSONDecodeError:
-                        continue
-                yield json.dumps({"type": "metadata", "links": links}) + "\n"
-        
+                    response.raise_for_status()
+                    async for to_send in self.parse_and_send(response, metadata):
+                        yield to_send
+                    break
 
     def generate_bloc_response(self, text, system_prompt=""):
-        response = httpx.post(
-            url = self.url,
-            headers = self.generate_header(),
-            json = self.generate_json(text, False, system_prompt),
-            timeout = 120.0
-        )
+        llm_response = ""
 
-        response.raise_for_status()
-        data = response.json()
-        llm_response = data["choices"][0]["message"]["content"]
+        for model in self.all_model:
+            response = httpx.post(
+                url = self.url,
+                headers = self.generate_header(),
+                json = self.generate_json(text, False, model, system_prompt),
+                timeout = 120.0
+            )
+            if response.status_code != 200:
+                error_details = response.aread() 
+                print(f"Error {response.status_code} on model {model}: {error_details.decode()}")
+                continue
+            response.raise_for_status()
+            data = response.json()
+            llm_response = data["choices"][0]["message"]["content"]
         return llm_response
 
