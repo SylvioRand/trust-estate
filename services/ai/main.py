@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/02/02 08:49:52 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/04 09:20:58 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -126,9 +126,6 @@ async def check_health():
 
 @app.post("/ai/chat/")
 async def chatbot(text: RequestChat):
-
-    await chromadb_service.get_all_in_collection("posts")
-
     user_mssg = text.message
     sys_prompt = chromadb_service.get_parse_prompt()
     context = None
@@ -179,7 +176,7 @@ async def deletePost(listingId: str, _: dict = Depends(check_keys)):
 
 @app.post("/ai/index")
 async def add_datas(to_update: PostModel, _: dict = Depends(check_keys)):
-
+    print(f"Check value: {to_update.photos}")
     result = await chromadb_service.add_to_collection("posts", to_update)
 
     return {
