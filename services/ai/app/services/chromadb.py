@@ -293,8 +293,7 @@ class ChromadbService:
                 'uris': None,
                 'datas': None
             }
-        result = await self.query_in_collection("posts", search_text, 3, filters, id_ref)
-        print(f"Got result: {result}")
+        result = await self.query_in_collection("posts", search_text, 7, filters, id_ref)
         return result
 
     async def is_post_in_collection(self, collection_name, specific_ids):
