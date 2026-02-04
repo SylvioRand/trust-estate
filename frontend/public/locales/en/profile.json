@@ -2,7 +2,8 @@
 	"noMyListings": "You have no listing published",
 	"buttons": {
 		"publish": "Publish",
-		"settings": "Settings"
+		"settings": "Settings",
+		"flagged": "Reviewed Listings"
 	},
 
 	"section": {
