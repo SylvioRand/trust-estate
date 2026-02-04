@@ -76,7 +76,8 @@ export class ListingService {
         take: query.limit,
         orderBy: { createdAt: 'desc' },
         include: {
-          stats: true
+          stats: true,
+          features: true
         }
       }),
       prisma.listing.count({ where }),
@@ -263,7 +264,8 @@ export class ListingService {
       where: { id },
       include: {
         features: true,
-        stats: true
+        stats: true,
+        reports: true
       }
     });
 
@@ -273,7 +275,11 @@ export class ListingService {
       where: { userId: listing.sellerId }
     });
 
-    return { listing, sellerStats };
+    let isReported = false;
+    if (listing.reports.length > 0 && listing.status == 'active')
+      isReported = true;
+
+    return { listing, sellerStats, isReported };
   }
 
   static async incrementViews(id: string) {

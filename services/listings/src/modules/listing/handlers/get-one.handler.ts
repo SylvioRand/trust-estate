@@ -8,7 +8,7 @@ import { ReservationClient } from "../../../infrastructure/reservation.client";
 export async function handleGetOne(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { id } = GetOneParamsSchema.parse(request.params);
-    const { listing, sellerStats } = await ListingService.getOne(id);
+    const { listing, sellerStats, isReported } = await ListingService.getOne(id);
 
     // Increment view count (fire and forget - don't wait for it)
     ListingService.incrementViews(id).catch(err =>
@@ -81,7 +81,8 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
       } : {},
       tags: listing.tags,
       createdAt: listing.createdAt.toISOString(),
-      updatedAt: listing.updatedAt.toISOString()
+      updatedAt: listing.updatedAt.toISOString(),
+      isReported: isReported
     };
 
     return reply.status(200).send(response);
