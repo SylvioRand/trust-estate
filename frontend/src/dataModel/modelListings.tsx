@@ -82,6 +82,7 @@ export type ListingsData = {
 		email: string,
 		memberSince: string
 	},
+	isReported: boolean;
 	sellerStats: SellerStatsDataType,
 	stats: {										// Visible uniquement si mine=true
 		views: number,
@@ -141,6 +142,7 @@ export const	dataExampleListingsData: ListingsData = {
 		reservations: 8,
 		feedbacks: 2
 	},
+	isReported: false,
 	tags: ["urgent", "discount", "exclusive"],
 	createdAt: "2025-01-10T08:00:00Z",
 	// updatedAt: "2025-01-12T14:30:00Z"
