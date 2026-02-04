@@ -55,7 +55,7 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 	setFetchedData,
 	t
 }) => {
-	const	{ isConnected } = useDataProvider();
+	const	{ isConnected, userData } = useDataProvider();
 	const	navigate = useNavigate();
 	const	refToComment: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement>(null);
 	const	refPopUpReport: RefObject<PopUpAPI | null> = useRef<PopUpAPI>(null);
@@ -66,6 +66,12 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 		"successfulRent",
 		"averageRating",
 	];
+	const	refPopUpModAction: RefObject<PopUpAPI | null> = useRef<PopUpAPI | null>(null);
+	const	[arePopUpModActionOpen, setArePopUpModActionOpen] = useState<boolean>(false);
+	const	[processingModAction, setProcessingModAction] = useState<boolean>(false);
+	const	refToReason: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement>(null);
+	const	refToMessageToSeller: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement>(null);
+	const	refToInternalNote: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement>(null);
 
 	const	handleOnSubmitReport = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -109,6 +115,48 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 		}
 	}
 
+	const	submitModAction = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		setProcessingModAction(true);
+
+
+		const	formData = new FormData(e.currentTarget);
+		const	data = Object.fromEntries(formData.entries());
+		
+		try {
+			const	response = await fetch(`/api/moderator/listings/${fetchedData.id}/action`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				credentials: "include",
+				body: JSON.stringify(data)
+			})
+
+			const	responseData = await response.json();
+
+			if (response.ok)
+				toast.success(t(`error:${responseData.message}`))
+			else
+			{
+				if (responseData.details) {
+					const details: Record<string, string[]> = responseData.details as Record<string, string[]>;
+					
+					for (const [key, value] of Object.entries(details)) {
+						for (let i = 0; i < value.length; i++)
+							toast.error(t(`error:${value[i]}`));
+					}
+				}
+			}
+		} catch (error) {
+			if (error instanceof Error && error.message !== "")
+				toast.error(t(`error:${error.message}`));
+		} finally {
+			setProcessingModAction(false);
+			refPopUpModAction.current?.close();
+		}
+	}
+
 	return (
 		<div
 		className="flex flex-col items-center justify-start
@@ -116,6 +164,14 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 		>
 			<ListingsHeader
 			postMenuContent={[
+				{
+					icon: "",
+					title: (userData?.role === "MODERATOR" && fetchedData.isReported === true ? t("section.actionButton.popup.modAction.title") : "IGNORE"),
+					func: () => {
+						setArePopUpModActionOpen(true);
+					},
+					color: "var(--color-blue-500)"
+				},
 				{
 					icon: "",
 					title: t("section.actionButton.popup.report.title"),
@@ -237,6 +293,74 @@ const	ClientListingsView: React.FC<ListingsViewProps> = ({
 					</form>
 				</PopUp>
 			}
+
+			{
+				arePopUpModActionOpen && <PopUp
+				title={ t("section.actionButton.popup.modAction.popup.title") }
+				onClose={ () => setArePopUpModActionOpen(false) }
+				ref={ refPopUpModAction }
+				>
+					<form
+					className="flex flex-col items-center justify-center
+					gap-3
+					w-full"
+					onSubmit={ submitModAction }>
+						<InputEnum
+						title={ t("section.actionButton.popup.modAction.popup.reason.title") }
+						name="action"
+						dataEnum={[
+							{ value: "block_temporary", title: t("section.actionButton.popup.modAction.popup.action.block_temporary") },
+							{ value: "archive_permanent", title: t("section.actionButton.popup.modAction.popup.action.archive_permanent") },
+							{ value: "request_clarification", title: t("section.actionButton.popup.modAction.popup.action.request_clarification") },
+							{ value: "reject_reports", title: t("section.actionButton.popup.modAction.popup.action.reject_reports") }
+						]}
+						/>
+						<TextArea
+						ref={ refToReason }
+						title={t("section.actionButton.popup.modAction.popup.reason.title")}
+						name="reason"
+						placeholder={t("section.actionButton.popup.modAction.popup.reason.placeholder")}
+						minLength={50}
+						maxLength={2000}
+						rows={3}
+						/>
+						<TextArea
+						ref={ refToMessageToSeller }
+						title={t("section.actionButton.popup.modAction.popup.messageToSeller.title")}
+						name="messageToSeller"
+						placeholder={t("section.actionButton.popup.modAction.popup.messageToSeller.placeholder")}
+						minLength={50}
+						maxLength={2000}
+						rows={3}
+						/>
+						<TextArea
+						ref={ refToInternalNote }
+						title={t("section.actionButton.popup.modAction.popup.internalNote.title")}
+						name="internalNote"
+						placeholder={t("section.actionButton.popup.modAction.popup.internalNote.placeholder")}
+						minLength={50}
+						maxLength={2000}
+						rows={3}
+						/>
+						<div
+						className="grid grid-cols-2 grid-rows-1 gap-3
+						w-full"
+						>
+							<ActionButton
+							title={ t("common:cancel") }
+							onClick={ () => refPopUpModAction.current?.close() }
+							/>
+							<ActionButton
+							title={ t("section.actionButton.popup.modAction.popup.submit") }
+							type="submit"
+							base_color="var(--color-accent)"
+							processing_action={ processingModAction }
+							/>
+						</div>
+					</form>
+				</PopUp>
+			}
+
 			<div className="w-full h-10 flex-none"></div>
 		</div>
 	)
