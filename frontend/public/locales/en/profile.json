@@ -1,4 +1,5 @@
 {
+	"noMyListings": "You have no listing published",
 	"buttons": {
 		"publish": "Publish",
 		"settings": "Settings"
