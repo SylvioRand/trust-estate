@@ -79,7 +79,7 @@ export class AuthClient {
       const response = await fetch(`${this.AUTH_SERVICE_URL}/users/${sellerId}/details`, {
         method: 'GET',
         headers: {
-          'x-internal-key': internalToken,
+          'x-internal-key': internalToken
         }
       });
 

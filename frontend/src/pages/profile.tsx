@@ -9,6 +9,7 @@ import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import type { ListingsTags, MyListingsData } from "../dataModel/modelListings";
 import { toast } from "react-toastify";
 import { TagsComponents } from "../components/TagsComponents";
+import Animate from "../components/Animate";
 
 interface	MyListingsBentoProps {
 	data: MyListingsData;
@@ -143,17 +144,17 @@ const	MyListingsBento: React.FC<MyListingsBentoProps> = ({
 }
 
 const ProfilePage: React.FC = () => {
-  const navigate = useNavigate();
-  const { userData, isConnected } = useDataProvider();
-  VerifyUsersState();
-  const { t } = useTranslation(["profile", "listings", "common", "error"]);
-  const	[myListings, setMyListings] = useState<MyListingsData[]>([]);
+	const navigate = useNavigate();
+	const { userData, isConnected } = useDataProvider();
+	VerifyUsersState();
+	const { t } = useTranslation(["profile", "listings", "common", "error"]);
+	const	[myListings, setMyListings] = useState<MyListingsData[]>([]);
 
-  // Redirect if user is not connected
-  if (isConnected !== null && isConnected === false)
+	// Redirect if user is not connected
+	if (isConnected !== null && isConnected === false)
 	navigate("/sign-in");
 
-  useEffect(() => {
+	useEffect(() => {
 	const	getMyData = async () => {
 		try {
 			const	response = await fetch('/api/listings/mine?limit=100', {
@@ -184,129 +185,139 @@ const ProfilePage: React.FC = () => {
 	};
 
 	getMyData();
-  }, []);
+	}, []);
 
-  return (
-    <div className="flex flex-col items-center justify-start
+	return (
+		<div className="flex flex-col items-center justify-start
 			px-4 md:px-7 xl:px-64
 			overflow-y-scroll
 			animate-fade-in
 			w-full h-screen"
-    >
-      <div className="w-full h-20 flex-none"></div>
+		>
+			<div className="w-full h-20 flex-none"></div>
 
-      <div className="w-full h-36
+			<div className="w-full h-36
 				flex-none
 				flex items-center justify-center
 				relative
 				overflow-hidden
 				drop-shadow-standard
 				rounded-xl"
-      >
-        <img
-          className="w-full h-full object-cover"
-          src="https://www.maxfosterphotography.com/images/xl/Radiant-Swirl.jpg"
-          alt="Abstract image"
-        />
-      </div>
+			>
+				<img
+					className="w-full h-full object-cover"
+					src="https://www.maxfosterphotography.com/images/xl/Radiant-Swirl.jpg"
+					alt="Abstract image"
+				/>
+			</div>
 
 
-      <div className="grid grid-cols-1 grid-rows-2
+			<div className="grid grid-cols-1 grid-rows-2
 				md:grid-cols-[1fr_auto] md:grid-rows-1
 				w-full"
-      >
-        <div className="flex flex-col items-center justify-center
+			>
+				<div className="flex flex-col items-center justify-center
 					p-2
 					md:p-4
 					w-full"
-        >
-          <div className="font-bold
+				>
+					<div className="font-bold
 						mr-auto"
-          >
-            {userData?.firstName + " " + (userData?.lastName ? userData.lastName : "")}
-          </div>
-          <div className="font-light
+					>
+						{userData?.firstName + " " + (userData?.lastName ? userData.lastName : "")}
+					</div>
+					<div className="font-light
 						whitespace-pre-line
 						mr-auto"
-          >
-            {
-              userData?.email + "\n"
-              + (userData?.phone ? userData.phone : "") + "\n\n"
-              + t("listings:section.contact.memberSince")
-              + " "
-              + CreateDateForMemberSince(userData?.createdAt)
-            }
-          </div>
-        </div>
-        <div className="grid grid-cols-1 grid-rows-2
-					md:grid-cols-2 md:grid-rows-1
+					>
+						{
+							userData?.email + "\n"
+							+ (userData?.phone ? userData.phone : "") + "\n\n"
+							+ t("listings:section.contact.memberSince")
+							+ " "
+							+ CreateDateForMemberSince(userData?.createdAt)
+						}
+					</div>
+				</div>
+				<div className="grid grid-cols-1 grid-rows-2
+					md:grid-cols-[auto_auto] md:grid-rows-1
 					place-items-start
 					p-2
 					md:p-4
 					gap-0
 					xl:gap-4"
-        >
-          <Link
-		  className="w-full"
-		  to="/profile/settings"
-          >
-            <ActionButton
-              icon=""
-              title={t("buttons.settings")}
-            />
-          </Link>
-          <ActionButton
-            icon="󰚧"
-            icon_size={22}
-            title={t("buttons.publish")}
-            onClick={
-              () => {
-                navigate("/profile/publish")
-              }
-            }
-          />
-        </div>
-      </div>
+				>
+					<Link
+			className="w-full"
+			to="/profile/settings"
+					>
+						<ActionButton
+							icon=""
+							title={t("buttons.settings")}
+						/>
+					</Link>
+					<ActionButton
+						icon={userData?.role === "MODERATOR" ? "" : "󰚧"}
+						icon_size={22}
+						title={ userData?.role === "MODERATOR" ? t("buttons.flagged") : t("buttons.publish")}
+						onClick={
+							() => {
+								if (userData?.role === "MODERATOR")
+									navigate("/profile/moderator/flagged")
+								else
+									navigate("/profile/publish")
+							}
+						}
+					/>
+				</div>
+			</div>
 
-      <div
-        className="w-full my-4"
-      >
-        <ContentDivider
-          line_color="linear-gradient(to left,
+			<div
+				className="w-full my-4"
+			>
+				<ContentDivider
+					line_color="linear-gradient(to left,
 					transparent,
 					var(--color-background) 10%,
 					var(--color-background) 90%,
 					transparent)"
-        />
-      </div>
+				/>
+			</div>
 
-	  {
+		{
 		myListings.length === 0 &&
 		<div>
 			{ t("noMyListings") }
 		</div>
-	  }
-	  <div
-	  className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] grid-rows-1
-	  gap-3
-	  xl:px-0
-	  w-full"
-	  >
-	  	{
+		}
+		<div
+		className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] grid-rows-1
+		gap-3
+		xl:px-0
+		w-full"
+		>
+			{
 			myListings && myListings.map((value: MyListingsData, index: number) => {
 				return (
-					<MyListingsBento
-					key={ index }
-					data={ value }
-					/>
+					<Animate
+					customStyle={{
+						width: "100%"
+					}}
+					delay={ `${100 * index}ms` }
+					>
+						<MyListingsBento
+						key={ index }
+						data={ value }
+						/>
+					</Animate>
 				);
 			})
 		}
-	  </div>
-	  <div
-	  className="w-full h-6 flex-none"></div>
-    </div>
-  );
+		</div>
+		<div
+		className="w-full h-6 flex-none"></div>
+		</div>
+	);
 }
 
 export default ProfilePage;
