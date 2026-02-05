@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/02/04 10:52:44 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/05 07:58:29 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -105,7 +105,7 @@ async def exception_handler(_: Request):
             status_code = status.HTTP_400_BAD_REQUEST,
             content = {
                 "status": "failure",
-                "reason": "invalid format provided",
+                "reason": "ai.wrong_format",
                 },
             )
 
@@ -146,7 +146,7 @@ async def chatbot(text: RequestChat):
                 status_code = 400,
                 content = {
                     "error": "error in chromadb",
-                    "message": "Error in chromadb"
+                    "message": "ai.chroma_general"
         }
     )
     try:
@@ -176,7 +176,7 @@ async def deletePost(listingId: str, _: dict = Depends(check_keys)):
                     status_code = 400,
                     content = {
                         "error": "chromadb failed to delete listing",
-                        "message": "chromadb failed to delete listing"
+                        "message": "ai.chroma_delete"
                     }
         )
     return {
@@ -192,7 +192,7 @@ async def add_datas(to_update: PostModel, _: dict = Depends(check_keys)):
                 status_code = 400,
                 content = {
                     "error": "chromadb failed to post listing",
-                    "message": "chromadb failed to post listing"
+                    "message": "ai.chroma_add"
                 }
     )
     return {
@@ -208,7 +208,7 @@ async def update_datas(to_update: PostModel, _: dict = Depends(check_keys)):
                 status_code = 400,
                 content = {
                     "error": "chromadb failed to update listing",
-                    "message": "chromadb failed to update listing"
+                    "message": "ai.chroma_modify"
                 }
     )
     return {
@@ -224,7 +224,7 @@ async def isListIndexed(listingId: str):
                 status_code = 400,
                 content = {
                     "error": "chromadb failed to get index",
-                    "message": "chromadb failed to get index"
+                    "message": "ai.chroma_get_data"
                 }
     )
 
@@ -253,10 +253,10 @@ async def generate_better_description(text: Description):
         )
     except (RequestError, TimeoutException):
         return JSONResponse(
-                status_code = 500,
+                status_code = 429,
                 content = {
                     "error": "llm_unavailable",
-                    "message": "global.500"
+                    "message": "ai.timeout"
                 }
         )
 
