@@ -315,7 +315,7 @@ const NavBar: React.FC = () => {
 		{ icon: "", title: t("button.home"), path: "/home" },
 		{ icon: "", icon_size: 22, title: t("button.property"), path: "/property" },
 		{ icon: "", icon_size: 34, title: t("button.ai"), path: "/ai" },
-		...(isConnected ? [{ icon: "󰕒", icon_size: 28, title: t("button.dashboard.title"), path: "/dashboard" }] : [])
+		...(isConnected ? [{ icon: "󰕒", icon_size: 28, title: t("button.dashboard.title"), path: "/dashboard" }] : [{ icon: "󰕒", icon_size: 28, title: t("button.dashboard.title"), path: "/dashboard" }])
 	];
 	const userNavButton: NavButtonProps[] = [
 		{ icon: "󰍂", icon_size: 28, title: t("button.signIn"), path: "/sign-in" },

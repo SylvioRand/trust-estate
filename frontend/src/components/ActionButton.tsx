@@ -17,6 +17,7 @@ interface ActionButtonProps {
 	padding?: string;
 	font_size?: string;
 	onClick?: () => void;
+	background_color?: string;
 }
 
 const ActionButton: React.FC<ActionButtonProps> = ({
@@ -33,7 +34,8 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 	accent_color = "var(--color-accent)",
 	padding = "p-3",
 	font_size = "16px",
-	onClick
+	onClick,
+	background_color = "var(--color-background)"
 }) => {
 	const [hovered, setHovered] = useState(false);
 	const animation: string = processing_action ? "var(--animate-spin)" : (hovered ? "var(--animate-jiggle)" : "none");
@@ -55,7 +57,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 			onPointerLeave={() => setHovered(false)}
 			style={{
 				pointerEvents: disabled ? "none" : "auto",
-				backgroundColor: disabled ? "color-mix(in srgb, var(--color-background) 25%, var(--color-foreground))" : hovered || processing_action ? "transparent" : base_color,
+				backgroundColor: disabled ? "color-mix(in srgb, var(--color-background) 25%, var(--color-foreground))" : hovered || processing_action ? "transparent" : background_color,
 				cursor: disabled ? "not-allowed" : "pointer",
 				flexDirection: icon_place === "left" ? "row" : "row-reverse",
 				borderRadius: "var(--radius-lg)",
