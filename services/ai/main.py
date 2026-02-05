@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/02/05 07:58:29 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/05 15:39:01 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -90,7 +90,7 @@ app = FastAPI(lifespan=lifespan)
 #Enable cross-origin (CORS)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["nginx:8080", "nginx:8443", "chromadb-service:8000", "https://localhost:8443", "http://localhost:8080"],
+    allow_origins=["nginx:8080", "nginx:8443", "chromadb-service:8000", "listings-service:3002", "https://localhost:8443", "http://localhost:8080"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "Authorization"],
