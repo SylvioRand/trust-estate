@@ -16,29 +16,32 @@ const DashboardPage: React.FC = () => {
     const ActiveComponent = currentItem?.component;
 
     return (
-        <div className="pt-[60px] md:pt-[100px] mb-20 px-4 text-background min-h-screen">
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-8">
-                <div className="w-full md:w-72 flex-none">
-                    <div className="bg-card-bg/30 rounded-3xl p-4 border border-highlight/20 flex flex-col gap-2 shadow-sm">
-                        <div className="px-4 py-2 mb-2">
-                            <h3 className="text-xs font-black uppercase tracking-widest opacity-40">Menu</h3>
+        <div className="bg-(--color-bg-dash) pt-[60px] lg:pt-[100px] mb-20 px-4 text-background min-h-screen transition-all duration-500">
+            <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8">
+                {/* SIDEBAR */}
+                <div className="w-full lg:w-60 flex-none">
+                    <div className="bg-card-bg/30 backdrop-blur-md rounded-2xl p-4 border border-highlight/20 flex flex-col gap-2 shadow-2xl">
+                        <div className="px-4 py-2 mb-2 border-b border-highlight/10">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Menu</h3>
                         </div>
                         {menuItems.map((item) => (
                             <button
                                 key={item.id}
                                 onClick={() => setActiveTab(item.id)}
-                                className={`w-full text-left px-6 py-4 rounded-xl transition-all duration-300 font-bold active:scale-95 ${activeTab === item.id
-                                    ? "bg-accent text-foreground shadow-lg scale-102"
+                                className={`w-full text-left px-5 py-3.5 rounded-xl transition-all duration-500 font-bold active:scale-95 group flex items-center gap-3 ${activeTab === item.id
+                                    ? "bg-accent text-foreground shadow-[0_0_20px_rgba(255,191,0,0.3)] scale-102"
                                     : "hover:bg-highlight/10 text-background/60 hover:text-background"
                                     }`}
                             >
+                                <span className={`transition-transform duration-500 ${activeTab === item.id ? "rotate-12 scale-110" : "group-hover:rotate-12"}`}>👁</span>
                                 {item.label}
                             </button>
                         ))}
                     </div>
                 </div>
 
-                <div className="flex-1 bg-card-bg/30 rounded-3xl p-6 md:p-10 border border-highlight/20 min-h-[600px] shadow-sm">
+                {/* CONTENT AREA */}
+                <div className="flex-1 bg-card-bg/30 backdrop-blur-md rounded-2xl p-4 sm:p-8 lg:p-10 border border-highlight/20 min-h-[600px] shadow-2xl overflow-hidden">
                     <header className="mb-10">
                         <h2 className="text-4xl font-black tracking-tight">
                             {currentItem?.label}
