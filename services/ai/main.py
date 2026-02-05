@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/02/04 10:52:44 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/05 15:39:01 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -90,10 +90,11 @@ app = FastAPI(lifespan=lifespan)
 #Enable cross-origin (CORS)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["nginx:8080", "nginx:8443", "chromadb-service:8000", "listings-service:3002", "https://localhost:8443", "http://localhost:8080"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "Authorization"],
+    max_age=600
 )
 # ====================== LLM cases ==================
 
@@ -105,7 +106,7 @@ async def exception_handler(_: Request):
             status_code = status.HTTP_400_BAD_REQUEST,
             content = {
                 "status": "failure",
-                "reason": "invalid format provided",
+                "reason": "ai.wrong_format",
                 },
             )
 
@@ -130,16 +131,25 @@ async def chatbot(text: RequestChat):
     sys_prompt = chromadb_service.get_parse_prompt()
     context = None
     chroma_reply = None
-
+    formated = None
+    id_found = None
     if text.context and len(text.context) > 0:
         context = text.context
-
-    if not context:
-        chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt)
-    else:
-        chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt, context)
-    formated = format_chroma_response(user_mssg, chroma_reply)
-    id_found = chromadb_service.get_ids_from_query(chroma_reply)
+    try:
+        if not context:
+            chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt)
+        else:
+            chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt, context)
+        formated = format_chroma_response(user_mssg, chroma_reply)
+        id_found = chromadb_service.get_ids_from_query(chroma_reply)
+    except Exception:
+        return JSONResponse(
+                status_code = 400,
+                content = {
+                    "error": "error in chromadb",
+                    "message": "ai.chroma_general"
+        }
+    )
     try:
         llm_response = llm_service.generate_stream_response(formated, id_found, llm_service.generate_rules())
 
@@ -160,39 +170,64 @@ async def chatbot(text: RequestChat):
 
 @app.delete("/ai/index/{listingId}")
 async def deletePost(listingId: str, _: dict = Depends(check_keys)):
-    result = await chromadb_service.remove_data_from_collection("posts", listingId)
-
-    if not result:
-        return JSONResponse(
-                status_code = 404,
-                content = {
-                    "error": "index_not_found",
-                    "message": "ai.listing_not_indexed"
-                }
+    try:
+        result = await chromadb_service.remove_data_from_collection("posts", listingId)
+    except Exception:
+            return JSONResponse(
+                    status_code = 400,
+                    content = {
+                        "error": "chromadb failed to delete listing",
+                        "message": "ai.chroma_delete"
+                    }
         )
     return {
-            "listingId": listingId
+        "success": result
     }
 
 @app.post("/ai/index")
 async def add_datas(to_update: PostModel, _: dict = Depends(check_keys)):
-    result = await chromadb_service.add_to_collection("posts", to_update)
-
+    try:
+        result = await chromadb_service.add_to_collection("posts", to_update)
+    except Exception:
+        return JSONResponse(
+                status_code = 400,
+                content = {
+                    "error": "chromadb failed to post listing",
+                    "message": "ai.chroma_add"
+                }
+    )
     return {
         "success": result
     }
 
 @app.put("/ai/index")
 async def update_datas(to_update: PostModel, _: dict = Depends(check_keys)):
-    result = await chromadb_service.update_in_collection("posts", to_update)
-
+    try:
+        result = await chromadb_service.update_in_collection("posts", to_update)
+    except Exception:
+        return JSONResponse(
+                status_code = 400,
+                content = {
+                    "error": "chromadb failed to update listing",
+                    "message": "ai.chroma_modify"
+                }
+    )
     return {
-        "success": result
+            "success": result
     }
 
 @app.get("/ai/index-status/{listingId}")
 async def isListIndexed(listingId: str):
-    result = await chromadb_service.is_post_in_collection("posts", listingId)
+    try:
+        result = await chromadb_service.is_post_in_collection("posts", listingId)
+    except Exception:
+        return JSONResponse(
+                status_code = 400,
+                content = {
+                    "error": "chromadb failed to get index",
+                    "message": "ai.chroma_get_data"
+                }
+    )
 
     return {
         "listingId": listingId,
@@ -219,10 +254,10 @@ async def generate_better_description(text: Description):
         )
     except (RequestError, TimeoutException):
         return JSONResponse(
-                status_code = 500,
+                status_code = 429,
                 content = {
                     "error": "llm_unavailable",
-                    "message": "global.500"
+                    "message": "ai.timeout"
                 }
         )
 

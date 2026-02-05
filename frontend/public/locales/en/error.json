@@ -1,10 +1,17 @@
 {
 	"ERROR": "An error was unfortunately encountered.",
 	"ai": {
+		"timeout": "Timeout: the ai take too long to response. Please wait a moment before trying again.",
 		"rate_limited_generate": "You’ve reached the rate limit. Please wait a moment before trying again.",
 		"success_generate": "Your description was successfully enhanced.",
 		"not_enough_data": "The provided description does not contain enough information to be enhanced. Please add more details and try again.",
-		"listing_not_indexed": "Listing not inside database."
+		"listing_not_indexed": "Listing not inside database.",
+		"wrong_format": "Error in the request format.",
+		"chroma_general": "The database chromadb got an issue.",
+		"chroma_delete": "The database chromadb could not delete the data.",
+		"chroma_add": "The database chromadb could not add the data.",
+		"chroma_modify": "The database chromadb could not update the data.",
+		"chroma_get_data": "The database chromadb could not found the request data."
 	},
 	"common": {
 		"validation_failed": "The provided data is invalid.",
