@@ -148,6 +148,31 @@
 						"warning": "Signaler une annonce vous permet d’alerter notre équipe de modération concernant un contenu qui pourrait être inexact, inapproprié ou ne pas respecter nos règles.",
 						"submit": "Envoyer"
 					}
+				},
+				"modAction": {
+					"title": "Action du modérateur",
+					"popup": {
+						"title": "Action du modérateur",
+						"action": {
+							"block_temporary": "Blocage temporaire",
+							"archive_permanent": "Archivage permanent",
+							"request_clarification": "Demande de clarification",
+							"reject_reports": "Rejeter le signalement"
+						},
+						"reason": {
+							"title": "Motif",
+							"placeholder": "Saisissez votre motif ici."
+						},
+						"messageToSeller": {
+							"title": "Message au vendeur",
+							"placeholder": "Saisissez votre message ici."
+						},
+						"internalNote": {
+							"title": "Note interne",
+							"placeholder": "Saisissez votre note ici."
+						},
+						"submit": "Envoyer"
+					}
 				}
 			}
 		},

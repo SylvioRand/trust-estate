@@ -19,7 +19,8 @@ const ListingSchema = z.object({
 const ReservationItemSchema = z.object({
     reservationId: z.string().uuid(),
     slot: z.string().datetime(),
-    status: z.enum(["pending", "confirmed", "cancelled"]),
+    status: z.enum(["pending", "confirmed", "cancelled", "rejected", "done"]),
+    cancelledBy: z.enum(["buyer", "seller", "system"]).optional().nullable(),
     createdAt: z.string(),
     listing: ListingSchema,
     buyer: BuyerSchema

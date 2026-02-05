@@ -52,7 +52,6 @@ const	TextArea: React.FC<TextAreaProps> = ({
 				p-2
 				rounded-md
 				shadow-standard
-				field-sizing-content
 				text-[14px]
 				font-light
 				resize-none"

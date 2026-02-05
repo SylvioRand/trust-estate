@@ -1,7 +1,9 @@
 {
+	"noMyListings": "Vous n’avez publié aucune annonce.",
 	"buttons": {
 		"publish": "Publier",
-		"settings": "Paramètres"
+		"settings": "Paramètres",
+		"flagged": "Annonces révisées"
 	},
 
 	"section": {

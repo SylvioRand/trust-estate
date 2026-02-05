@@ -14,7 +14,7 @@ export type UserModelData = {
   lastName: string,
   phone: string,
   phoneVerified: boolean,
-  role: "user" | "moderator",
+  role: "USER" | "MODERATOR",
   hasPassword: boolean,
   creditBalance: number,
   createdAt: string,
