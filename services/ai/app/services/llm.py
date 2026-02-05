@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:10 by aelison           #+#    #+#              #
-#    Updated: 2026/02/04 12:44:27 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/05 13:22:52 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -91,7 +91,7 @@ class LLMService:
             CONVERSATIONAL STYLE:
             - NO lists, NO bullet points, NO bold headers.
             - Use natural, flowing paragraphs as if talking to a friend.
-            - Always include the price in "Ariary" or "Ar".
+            - Always include the price in "Ariary" (The abreviate format is "Ar").
             - Do not ask the user any questions if listings were found.
         """
         return rules
