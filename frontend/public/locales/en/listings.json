@@ -154,6 +154,31 @@
 						"warning": "Reporting a listing lets you alert our moderation team about content that may be inaccurate, inappropriate, or in violation of our rules.",
 						"submit": "Submit"
 					}
+				},
+				"modAction": {
+					"title": "Moderator Action",
+					"popup": {
+						"title": "Moderator Action",
+						"action": {
+							"block_temporary": "Block Temporary",
+							"archive_permanent": "Archive Permanently",
+							"request_clarification": "Request Clarification",
+							"reject_reports": "Reject Report"
+						},
+						"reason": {
+							"title": "Reason",
+							"placeholder": "Enter your reason here."
+						},
+						"messageToSeller": {
+							"title": "Message to the seller",
+							"placeholder": "Enter your message here."
+						},
+						"internalNote": {
+							"title": "Internal Note",
+							"placeholder": "Enter your note here."
+						},
+						"submit": "Submit"
+					}
 				}
 			}
 		},

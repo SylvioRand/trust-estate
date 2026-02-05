@@ -28,6 +28,7 @@ import TermOfServicePage from './pages/term_of_service.tsx';
 import PrivacyPolicyPage from './pages/privacy_policy.tsx';
 import EditPage from './pages/edit.tsx';
 import DashboardPage from './pages/dashboard.tsx';
+import FlaggedPage from './pages/flaggedPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -93,6 +94,10 @@ const router = createBrowserRouter([
       {
         path: "/profile/settings",
         element: <SettingsPage />
+      },
+      {
+        path: "/profile/moderator/flagged",
+        element: <FlaggedPage />
       },
       {
         path: "/property/listings/edit",

@@ -21,6 +21,35 @@ export type SellerStatsDataType = {
 export type	PropertyType = "apartment" | "house" | "loft" | "land" | "commercial";
 export type	ParkingType = "garage" | "box" | "parking" | "none";
 
+export type MyListingsData = {
+	id: string;
+	propertyType: PropertyType;
+	title: string;
+	description: string;
+	price: number;
+	surface: number;
+	zone: string;
+	features: {
+		bedrooms: number,
+		bathrooms: number,
+		wc_separate: boolean,
+		wc: boolean,
+		pool: boolean,
+		parking_type: ParkingType, // Enum: garage, box, parking, none
+		garden_private: boolean,
+		water_access: boolean,
+		electricity_access: boolean
+	};
+	tags: ListingsTags[];
+	type: "sale" | "rent";
+	status: "active" | "blocked" | "archived";
+	isAvailable: boolean;
+	views: number;
+	reservations: number;
+	photos: string[];
+	createdAt: string;
+}
+
 export type ListingsData = {
 	id: string,
 	title: string,
@@ -53,6 +82,7 @@ export type ListingsData = {
 		email: string,
 		memberSince: string
 	},
+	isReported: boolean;
 	sellerStats: SellerStatsDataType,
 	stats: {										// Visible uniquement si mine=true
 		views: number,
@@ -112,6 +142,7 @@ export const	dataExampleListingsData: ListingsData = {
 		reservations: 8,
 		feedbacks: 2
 	},
+	isReported: false,
 	tags: ["urgent", "discount", "exclusive"],
 	createdAt: "2025-01-10T08:00:00Z",
 	// updatedAt: "2025-01-12T14:30:00Z"
