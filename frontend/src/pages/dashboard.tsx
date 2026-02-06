@@ -33,7 +33,9 @@ const DashboardPage: React.FC = () => {
                                     : "hover:bg-highlight/10 text-background/60 hover:text-background"
                                     }`}
                             >
-                                <span className={`transition-transform duration-500 ${activeTab === item.id ? "rotate-12 scale-110" : "group-hover:rotate-12"}`}>👁</span>
+                                <span className={`transition-transform duration-500 ${activeTab === item.id ? "rotate-12 scale-110" : "group-hover:rotate-12"}`}>
+                                    {item.id === "visits" ? "👁" : "📅"}
+                                </span>
                                 {item.label}
                             </button>
                         ))}
