@@ -41,7 +41,7 @@ export const GetMineListingsSchema = z.object({
   status: z.enum(['active', 'archived', 'blocked', 'all']).default('all'),
 
   page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
+  limit: z.coerce.number().int().min(1).max(100, "validation.listing.limit.too_high").default(20),
 });
 export type GetMineListingsQuery = z.infer<typeof GetMineListingsSchema>;
 

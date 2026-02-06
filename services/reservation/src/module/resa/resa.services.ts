@@ -88,8 +88,8 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 			throw new Error("slot_unavailable");
 		}
 
-		const slotStart = new Date(slotDate.getTime() - 30 * 60 * 1000); // 30 minutes avant
-		const slotEnd = new Date(slotDate.getTime() + 30 * 60 * 1000); // 30 minutes après
+		const slotStart = new Date(slotDate.getTime() - 30 * 60 * 1000);
+		const slotEnd = new Date(slotDate.getTime() + 30 * 60 * 1000);
 
 		const listingSlotTaken = await tx.reservation.findFirst({
 			where: {
@@ -196,7 +196,7 @@ export async function cancelReservation(app: FastifyInstance, userId: string, re
 		const time = new Date();
 		const total = reservation.slot.getTime() - time.getTime();
 
-		const minCancelTime = 30 * 60 * 1000; // 30 minutes
+		const minCancelTime = 30 * 60 * 1000;
 		if (total < minCancelTime)
 			throw new Error("cancellation_too_late");
 
@@ -209,8 +209,6 @@ export async function cancelReservation(app: FastifyInstance, userId: string, re
 			cancel = $Enums.CancelledBy.system;
 
 
-		// NEW RULE: Only refund if the SELLER or SYSTEM cancels.
-		// If the BUYER cancels their own reservation, they lose their credits.
 		if ((reservation.status === 'confirmed' || reservation.status === 'pending') && (cancel === $Enums.CancelledBy.seller || cancel === $Enums.CancelledBy.system)) {
 			await refundCredits(app, reservation.buyerId);
 		}
@@ -243,43 +241,89 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 		if (reservation.status !== "pending")
 			throw new Error("reservation_already_processed");
 
-		const slotStart = new Date(reservation.slot.getTime() - 60 * 60 * 1000);
-		const slotEnd = new Date(reservation.slot.getTime() + 60 * 60 * 1000);
+		const confirmedSlotStart = reservation.slot.getTime();
+		const confirmedSlotEnd = reservation.slot.getTime() + 30 * 60 * 1000;
 
-		const conflictingReservation = await tx.reservation.findFirst({
+		const existingConfirmed = await tx.reservation.findFirst({
 			where: {
 				OR: [
 					{ sellerId: userId },
 					{ buyerId: userId }
 				],
 				reservationId: { not: reservationId },
-				slot: {
-					gte: slotStart,
-					lte: slotEnd
-				},
 				status: 'confirmed'
 			}
 		});
 
-		if (conflictingReservation) {
-			throw new Error("seller_slot_unavailable");
+		if (existingConfirmed) {
+			const existingStart = existingConfirmed.slot.getTime();
+			const existingEnd = existingStart + 30 * 60 * 1000;
+
+			if (existingStart < confirmedSlotEnd && existingEnd > confirmedSlotStart) {
+				throw new Error("seller_slot_unavailable");
+			}
 		}
 
-		await tx.reservation.updateMany({
+		const allPendingReservations = await tx.reservation.findMany({
 			where: {
-				sellerId: userId,
 				reservationId: { not: reservationId },
-				slot: {
-					gte: slotStart,
-					lte: slotEnd
-				},
 				status: 'pending'
-			},
-			data: {
-				status: 'rejected',
-				rejectedAt: new Date()
 			}
 		});
+
+		const listingConflicts = allPendingReservations.filter(r => {
+			if (r.listingId !== reservation.listingId) return false;
+
+			if (r.buyerId === reservation.buyerId) return true;
+
+			const otherStart = r.slot.getTime();
+			const otherEnd = otherStart + 30 * 60 * 1000;
+
+			return otherStart < confirmedSlotEnd && otherEnd > confirmedSlotStart;
+		});
+
+		if (listingConflicts.length > 0) {
+			await tx.reservation.updateMany({
+				where: {
+					reservationId: { in: listingConflicts.map(r => r.reservationId) }
+				},
+				data: {
+					status: 'rejected',
+					rejectedAt: new Date()
+				}
+			});
+
+			for (const conflict of listingConflicts) {
+				await refundCredits(app, conflict.buyerId);
+			}
+		}
+
+		const buyerConflicts = allPendingReservations.filter(r => {
+			if (r.buyerId !== reservation.buyerId) return false;
+			if (r.listingId === reservation.listingId) return false; // Déjà traité avec les listingsConflicts
+
+			const otherStart = r.slot.getTime();
+			const otherEnd = otherStart + 30 * 60 * 1000;
+
+			return otherStart < confirmedSlotEnd && otherEnd > confirmedSlotStart;
+		});
+
+		if (buyerConflicts.length > 0) {
+			await tx.reservation.updateMany({
+				where: {
+					reservationId: { in: buyerConflicts.map(r => r.reservationId) }
+				},
+				data: {
+					status: 'cancelled',
+					cancelledAt: new Date(),
+					cancelledBy: 'system'
+				}
+			});
+
+			for (const conflict of buyerConflicts) {
+				await refundCredits(app, conflict.buyerId);
+			}
+		}
 
 		const data = await tx.reservation.update({
 			where: { reservationId },
@@ -485,7 +529,6 @@ async function refundCredits(app: FastifyInstance, buyerId: string) {
 		}
 	} catch (error: any) {
 		app.log.error({ error }, 'Failed to refund credits');
-		// We don't necessarily want to crash the whole process if refund fails, but log it
 	}
 }
 export async function deleteUserData(app: FastifyInstance, userId: string) {
