@@ -38,3 +38,27 @@ export const ReservationsResponseSchema = z.object({
 
 export type ReservationsResponse = z.infer<typeof ReservationsResponseSchema>;
 export type Reservation = z.infer<typeof ReservationItemSchema>;
+
+const VisitItemSchema = z.object({
+    reservationId: z.string().uuid(),
+    listingId: z.string().uuid(),
+    buyerId: z.string().uuid(),
+    sellerId: z.string().uuid(),
+    status: z.enum(["pending", "confirmed", "cancelled", "rejected", "done"]),
+    slot: z.string().datetime(),
+    confirmedAt: z.string().datetime().nullable(),
+    rejectedAt: z.string().datetime().nullable(),
+    cancelledAt: z.string().datetime().nullable(),
+    cancelledBy: z.enum(["buyer", "seller", "system"]).nullable(),
+    doneAt: z.string().datetime().nullable(),
+    sellerContactVisible: z.boolean(),
+    feedbackEligible: z.boolean(),
+    feedbackGiven: z.boolean(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    feedbacks: z.any().nullable()
+});
+
+export const VisitsResponseSchema = z.array(VisitItemSchema);
+export type VisitsResponse = z.infer<typeof VisitsResponseSchema>;
+export type Visit = z.infer<typeof VisitItemSchema>;
