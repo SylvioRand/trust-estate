@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { FlaggedListingsQuerySchema } from "../moderator.schema";
 import { ModeratorServices } from "../moderator.service";
+import { ZodError } from "zod";
 
 export async function Flaghandler(request: FastifyRequest, reply: FastifyReply) {
 
@@ -16,6 +17,13 @@ export async function Flaghandler(request: FastifyRequest, reply: FastifyReply) 
         reply.status(200).send(result);
     }
     catch (error) {
+        if (error instanceof ZodError) {
+            reply.status(400).send({
+                error: "invalid_query_parameters",
+                details: error.message
+            });
+            return;
+        }
         reply.status(500).send(error);
     }
 }

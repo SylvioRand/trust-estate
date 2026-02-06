@@ -442,7 +442,7 @@ const ReservationsSection: React.FC = () => {
     const fetchReservations = async (showLoading = true) => {
         if (showLoading) setLoading(true);
         try {
-            let url = `/api/reservations/seller/me?page=${page}&limit=3`;
+            let url = `/api/reservations/seller/me?page=${page}&limit=10`;
             if (selection !== 'all')
                 url += `&status=${selection}`;
 
