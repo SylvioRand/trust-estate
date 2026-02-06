@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated: 2026/02/04 10:53:08 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/06 10:53:11 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,26 @@ import re
 
 from app.models import PostModel, metaData
 from app.services.embedding import embeddingService
+
+def sort_obj(obj, field, is_minimum):
+    tmp = []
+    value = None
+
+    for i in range(len(obj['ids'][0])):
+        tmp.append({
+            "id": obj['ids'][0][i],
+            "metadata": obj['metadatas'][0][i],
+            "document": obj['documents'][0][i]
+        })
+
+    if is_minimum == "min":
+        value = min(tmp, key= lambda x: x['metadata'][field])
+    else:
+        value = max(tmp, key= lambda x: x['metadata'][field])
+
+    if value:
+        print(f"Cacahuete et domino value: {value}")
+    return value
 
 class ChromadbService:
     def __init__(self):
@@ -202,33 +222,39 @@ class ChromadbService:
         "Ambodivona", "Ambodivonakely", "Ambohidroa", "Ambohimanandray", "Andranomena", "Avaratetezana", "Anosibe Zaivola", "Antsararay", "Avaratanana", "Autre quartier"
 ]
         RULES:
-        1. OUTPUT: Return ONLY a valid JSON object. No prose.
+        1. OUTPUT: Return ONLY a valid JSON object. No prose, no explanations, no "Je suppose que...".
         2. FILTERS: Only use "price", "zone", "post_type", "property_type", "surface".
-        3. ZONE NORMALIZATION: 
-        - If the user mentions a location, map it to the closest match in the VALID ZONES list.
-        - Fix typos (e.g., "Pariis" -> "Paris") and handle case-sensitivity.
-        - If the zone is NOT in the list and you don't recognize it, keep the user's spelling but capitalize the first letter.
-        4. PROPERTY_TYPE: Map to 'apartment', 'house', 'loft', 'land', or 'commercial'. 
-        5. POST_TYPE: Map to 'sale' or 'rent'. Omit if not specified.
-        6. NUMBERS: Use ChromaDB operators ($gt, $lt, $eq, $gte, $lte) for price/surface. Ensure they are positive integers.
-        7. SEARCH_TEXT: Include keywords (e.g., "3 bedrooms", "garden"). If a property_type is identified, include it here too.
+        3. ZONE NORMALIZATION: Map to VALID ZONES or capitalize first letter.
+        4. PROPERTY_TYPE: Map to 'apartment', 'house', 'loft', 'land', or 'commercial'.
+        5. POST_TYPE: Map to 'sale' or 'rent'.
+        6. NUMBERS: Use ChromaDB operators ONLY for specific numbers provided by the user. 
+        DO NOT invent values (e.g., no placeholder $lt: 1000000).
+        7. SEARCH_TEXT: Always include keywords (e.g., "house", "3 bedrooms").
+        8. NB_CONTEXT & SORTING (Priority Rule):
+            - If user asks for "cheapest," "most expensive," or "min/max":
+                Set nb_context to -1.
+                Set sort_by: {"field": "price" or "surface", "content": "min" or "max"}.
+            - Else if a number is mentioned: Set nb_context to that number (Max 7), sort_by to null.
+            - Else: Set nb_context to 7, sort_by to null.
+        9. STRUCTURE: nb_context must be -1 if sort_by is active. sort_by must be null otherwise.
 
         STRUCTURE:
         {
-        "isAbout_real_estate": boolean,
-        "search_text": "string",
-        "filters": { ... }
+            "isAbout_real_estate": boolean,
+            "nb_context": number,
+            "sort_by": { "field": "price"|"surface"|null, "content": "min"|"max"|null },
+            "search_text": string,
+            "filters": {}
         }
 
         EXAMPLES:
-        User: "Apartement at Pariis"
+        User: "L'annonce la moins chère"
         {
             "isAbout_real_estate": true,
-            "search_text": "apartment",
-            "filters": {
-                "zone": "Paris",
-                "property_type": "apartment"
-            }
+            "nb_context": -1,
+            "sort_by": { "field": "price", "content": "min" },
+            "search_text": "moins chère",
+            "filters": {}
         }
         """
         return parse_prompt
@@ -277,12 +303,25 @@ class ChromadbService:
 
     async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
         llm_parse_response = await llm_service.generate_bloc_response(user_mssg, sys_prompt)
+
+        print(f"Hello there {llm_parse_response}")
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}
         search_text = datas.get("search_text", user_mssg)
         filters = datas.get("filters", None)
         searched = datas.get("isAbout_real_estate", False)
+        nb_context = datas.get("nb_context", 0)
+        do_sort = False
+        
+
+        if nb_context < 0:
+            do_sort = True
+            tmp = self.collections.get("posts")
+            if tmp:
+                nb_context = await tmp.count()
+            else:
+                nb_context = 10
 
         if not searched:
             return {
@@ -293,7 +332,25 @@ class ChromadbService:
                 'uris': None,
                 'datas': None
             }
-        result = await self.query_in_collection("posts", search_text, 7, filters, id_ref)
+        result = await self.query_in_collection("posts", search_text, nb_context, filters, id_ref)
+        if do_sort:
+            new_result = []
+            get_sorted = datas.get('sort_by')
+            sorted_field_value = get_sorted.get("field", "")
+            sorted_content_value = get_sorted.get("content", "")
+
+            print(f"field: {sorted_field_value}")
+            print(f"content: {sorted_content_value}")
+            print(f"Object: {result}")
+            result_sorted = sort_obj(result, sorted_field_value, sorted_content_value)
+            # sorted_result = {
+            #         'ids': [].append(result_sorted),
+            #         'distances': [],
+            #         'metadatas': [],
+            #         'documents': [],
+            #         'uris': None,
+            #         'datas': None
+            # }
         return result
 
     async def is_post_in_collection(self, collection_name, specific_ids):

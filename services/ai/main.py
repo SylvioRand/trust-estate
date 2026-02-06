@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/02/05 15:39:01 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/06 09:59:37 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,7 @@ import asyncio
 import httpx
 import jwt
 
+# from app.utils import *
 from app.config import config
 from app.services.llm import LLMService
 from app.models import Description, RequestChat, PostModel
@@ -42,6 +43,7 @@ def format_chroma_response(user_mssg, chroma_text):
         formated += "None"
     formated += "USER INPUT:\n" + user_mssg
     return formated
+
 
 async def check_keys(x_internal_key: str = Header(None)):
     if not x_internal_key:
