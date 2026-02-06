@@ -20,7 +20,7 @@ export async function listReservation(request: FastifyRequest, reply: FastifyRep
 			return reply.status(409).send({
 				"error": "slot_unavailable",
 				"message": "reservation.slot_unavailable"
-		});
+			});
 		else
 			return reply.status(500).send({
 				"error": "internal_server_error",
@@ -69,6 +69,11 @@ export async function createSlot(request: FastifyRequest<{ Body: ReservationInte
 			return reply.status(403).send({
 				"error": "cannot_reserve_own_listing",
 				"message": "reservation.cannot_reserve_own"
+			});
+		else if (error.message.includes("already_reserved_this_listing"))
+			return reply.status(409).send({
+				"error": "already_reserved_this_listing",
+				"message": "reservation.already_reserved"
 			});
 		else if (error.message.includes("slot_unavailable"))
 			return reply.status(409).send({
@@ -197,7 +202,7 @@ export async function confirmReservation(request: FastifyRequest<
 			return reply.status(409).send({
 				"error": "slot_unavailable",
 				"message": "reservation.slot_unavailable"
-		});
+			});
 		else if (error.message === "insufficient_credits")
 			return reply.status(402).send({
 				"error": "insufficient_credits",

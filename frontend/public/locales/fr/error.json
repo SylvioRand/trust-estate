@@ -152,6 +152,7 @@
 		"created_success": "La réservation a été envoyée. Un crédit a été déduit.",
 		"confirmed_success": "La réservation a été confirmée.",
 		"cannot_reserve_own": "Vous ne pouvez pas réserver votre propre annonce.",
+		"already_reserved": "Vous avez déjà une réservation en cours pour cette annonce.",
 		"slot_unavailable": "Le créneau sélectionné n’est pas disponible.",
 		"cancellation_too_late": "L’annulation n’est pas autorisée moins de deux heures avant le rendez-vous.",
 		"permission_denied": "Vous pouvez uniquement annuler vos propres réservations.",
@@ -176,7 +177,7 @@
 		"insufficient_credits_reservation": "Le solde est insuffisant pour effectuer une réservation (1 crédit requis).",
 		"transaction_failed": "Le paiement a échoué. Veuillez vérifier votre solde Mobile Money.",
 		"rate_limited_recharge": "Trop de tentatives de recharge. Un maximum de trois par heure est autorisé.",
-		"service_unavailable": "Le service de paiement est actuellement indisponible. Veuillez réessayer plus tard.",
+		"service_unavailable": "Le service de paiement est actuellement indisponible. Veuillez réessayer plus tard."
 	},
 	"moderator": {
 		"forbidden": {

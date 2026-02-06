@@ -159,6 +159,7 @@
 		"created_success": "The reservation has been sent. One credit has been deducted.",
 		"confirmed_success": "The reservation has been confirmed.",
 		"cannot_reserve_own": "You cannot reserve your own listing.",
+		"already_reserved": "You already have a pending reservation for this listing.",
 		"slot_unavailable": "The selected slot is unavailable.",
 		"cancellation_too_late": "Cancellation is not allowed less than two hours before the appointment.",
 		"permission_denied": "You may only cancel your own reservations.",

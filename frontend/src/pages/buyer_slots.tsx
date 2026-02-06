@@ -132,7 +132,8 @@ const BuyerSlotsPage: React.FC = () => {
         setShowConfirmation(false);
       } else {
         const errorData = await response.json();
-        toast.error(t("errors.failed", "Erreur lors de la réservation : ") + (errorData.message || "Unknown error"));
+        const errorMessage = errorData.message ? t(`error:${errorData.message}`) : t("errors.failed", "Erreur lors de la réservation");
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error("Reservation error:", error);
