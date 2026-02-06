@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:10 by aelison           #+#    #+#              #
-#    Updated: 2026/02/05 13:22:52 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/06 14:24:29 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -191,5 +191,6 @@ class LLMService:
             response.raise_for_status()
             data = response.json()
             llm_response = data["choices"][0]["message"]["content"]
-        return llm_response
+            return llm_response
+        return ""
 

@@ -257,6 +257,9 @@ class ChromadbService:
             - Else if a number is mentioned: Set nb_context to that number (Max 7), sort_by to null.
             - Else: Set nb_context to 7, sort_by to null.
         9. STRUCTURE: nb_context must be -1 if sort_by is active. sort_by must be null otherwise.
+        10. TYPO RESILIENCE: Be highly forgiving of typos in superlatives.
+        Specifically, "la mois cher" or "le plus moin cher" must always be interpreted as "cheapest" (field: price, content: min).
+        Do not assume the user wants the "most expensive" unless they explicitly say "plus cher".
 
         STRUCTURE:
         {
