@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated: 2026/02/06 10:53:11 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/06 14:07:53 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,10 +33,30 @@ def sort_obj(obj, field, is_minimum):
         value = min(tmp, key= lambda x: x['metadata'][field])
     else:
         value = max(tmp, key= lambda x: x['metadata'][field])
-
-    if value:
-        print(f"Cacahuete et domino value: {value}")
     return value
+
+def rewrap_as_chromadb_query_format(obj):
+    if not obj:
+        return {
+            'ids': [],
+            'distances': [],
+            'metadatas': [],
+            'documents': [],
+            'uris': None,
+            'datas': None
+    }
+    if isinstance(obj, dict):
+        obj = [obj]
+    return {
+            'ids': [[item['id'] for item in obj]],
+            'metadatas': [[item['metadata'] for item in obj]],
+            'documents': [[item['document'] for item in obj]],
+            'distances': [[0.0 for _ in obj]],
+            'embeddings': None,
+            'uris': None,
+            'datas': None
+    }
+
 
 class ChromadbService:
     def __init__(self):
@@ -256,6 +276,14 @@ class ChromadbService:
             "search_text": "moins chère",
             "filters": {}
         }
+        User: "donne moi l'annonce la mois cher"  <-- (Intentional typo)
+        {
+            "isAbout_real_estate": true,
+            "nb_context": -1,
+            "sort_by": { "field": "price", "content": "min" },
+            "search_text": "moins chère",
+            "filters": {}
+        }
         """
         return parse_prompt
 
@@ -303,8 +331,6 @@ class ChromadbService:
 
     async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
         llm_parse_response = await llm_service.generate_bloc_response(user_mssg, sys_prompt)
-
-        print(f"Hello there {llm_parse_response}")
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}
@@ -313,8 +339,16 @@ class ChromadbService:
         searched = datas.get("isAbout_real_estate", False)
         nb_context = datas.get("nb_context", 0)
         do_sort = False
+        if not searched:
+            return {
+                    'ids': [],
+                    'distances': [],
+                    'metadatas': [],
+                    'documents': [],
+                    'uris': None,
+                    'datas': None
+            }
         
-
         if nb_context < 0:
             do_sort = True
             tmp = self.collections.get("posts")
@@ -323,34 +357,14 @@ class ChromadbService:
             else:
                 nb_context = 10
 
-        if not searched:
-            return {
-                'ids': [],
-                'distances': [],
-                'metadatas': [],
-                'documents': [],
-                'uris': None,
-                'datas': None
-            }
         result = await self.query_in_collection("posts", search_text, nb_context, filters, id_ref)
         if do_sort:
-            new_result = []
             get_sorted = datas.get('sort_by')
             sorted_field_value = get_sorted.get("field", "")
             sorted_content_value = get_sorted.get("content", "")
-
-            print(f"field: {sorted_field_value}")
-            print(f"content: {sorted_content_value}")
-            print(f"Object: {result}")
-            result_sorted = sort_obj(result, sorted_field_value, sorted_content_value)
-            # sorted_result = {
-            #         'ids': [].append(result_sorted),
-            #         'distances': [],
-            #         'metadatas': [],
-            #         'documents': [],
-            #         'uris': None,
-            #         'datas': None
-            # }
+            get_sort_value = sort_obj(result, sorted_field_value, sorted_content_value)
+            sorted_result = rewrap_as_chromadb_query_format(get_sort_value)
+            return sorted_result
         return result
 
     async def is_post_in_collection(self, collection_name, specific_ids):
