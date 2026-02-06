@@ -125,6 +125,20 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 			throw new Error("cannot_reserve_own_listing");
 		}
 
+		const existingReservationSameListing = await tx.reservation.findFirst({
+			where: {
+				buyerId: userId,
+				listingId: listingId,
+				status: {
+					in: ['pending', 'confirmed']
+				}
+			}
+		});
+
+		if (existingReservationSameListing) {
+			throw new Error("already_reserved_this_listing");
+		}
+
 		await debitCredits(app, userId);
 
 		const reservation = await tx.reservation.create({
@@ -274,8 +288,6 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 		const listingConflicts = allPendingReservations.filter(r => {
 			if (r.listingId !== reservation.listingId) return false;
 
-			if (r.buyerId === reservation.buyerId) return true;
-
 			const otherStart = r.slot.getTime();
 			const otherEnd = otherStart + 30 * 60 * 1000;
 
@@ -300,7 +312,7 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 
 		const buyerConflicts = allPendingReservations.filter(r => {
 			if (r.buyerId !== reservation.buyerId) return false;
-			if (r.listingId === reservation.listingId) return false; // Déjà traité avec les listingsConflicts
+			if (r.listingId === reservation.listingId) return false;
 
 			const otherStart = r.slot.getTime();
 			const otherEnd = otherStart + 30 * 60 * 1000;
