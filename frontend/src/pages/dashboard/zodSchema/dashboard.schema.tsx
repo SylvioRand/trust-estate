@@ -59,6 +59,14 @@ const VisitItemSchema = z.object({
     feedbacks: z.any().nullable()
 });
 
-export const VisitsResponseSchema = z.array(VisitItemSchema);
+export const VisitsResponseSchema = z.object({
+    reservations: z.array(ReservationItemSchema),
+    pagination: z.object({
+        page: z.number(),
+        limit: z.number(),
+        totalMatching: z.number(),
+        totalPages: z.number()
+    })
+});
 export type VisitsResponse = z.infer<typeof VisitsResponseSchema>;
 export type Visit = z.infer<typeof VisitItemSchema>;
