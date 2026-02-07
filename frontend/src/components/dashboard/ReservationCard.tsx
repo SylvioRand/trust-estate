@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { type Reservation } from "../../pages/dashboard/zodSchema/dashboard.schema";
 import ActionButton from "../ActionButton";
 import PopUp from "../PopUp";
@@ -13,6 +14,7 @@ interface ReservationCardProps {
 }
 
 const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatusUpdate, role }) => {
+    const { t, i18n } = useTranslation("dashboard");
     const [pendingAction, setPendingAction] = useState<{
         type: string;
         label: string;
@@ -23,11 +25,13 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatus
     const [isUpdating, setIsUpdating] = useState(false);
     const { status, cancelledBy, listing, buyer, slot, reservationId } = reservation;
 
+    const currentLang = i18n.language.startsWith('fr') ? 'fr-FR' : (i18n.language.startsWith('es') ? 'es-ES' : 'en-US');
+
     const dateObj = new Date(slot);
-    const dateParts = dateObj.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }).split(' ');
+    const dateParts = dateObj.toLocaleDateString(currentLang, { day: 'numeric', month: 'short' }).split(' ');
     const formattedDate = `${dateParts[0]} ${dateParts[1].slice(0, 3).toUpperCase()}.`;
-    const formattedTime = dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const fullDate = dateObj.toLocaleDateString('fr-FR', {
+    const formattedTime = dateObj.toLocaleTimeString(currentLang, { hour: '2-digit', minute: '2-digit' });
+    const fullDate = dateObj.toLocaleDateString(currentLang, {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
@@ -35,7 +39,7 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatus
     });
 
     const isSeller = role === "seller";
-    const partyLabel = isSeller ? "Visiteur" : "Vendeur";
+    const partyLabel = isSeller ? t("card.labels.visitor") : t("card.labels.seller");
 
     return (
         <div className="group relative flex flex-col lg:flex-row w-full bg-(--color-card-bg-dash) backdrop-blur-[2px] rounded-2xl border border-(--color-content-dash)/10 hover:border-accent/40 transition-all duration-300 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
@@ -57,7 +61,7 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatus
                 <div className="flex flex-col gap-1.5 w-full min-w-0">
                     <div className="flex items-center gap-2 opacity-50">
                         <span className="w-3 h-px bg-(--color-content-dash)" />
-                        <p className="text-(--color-content-dash) text-[9px] uppercase font-bold tracking-[0.2em]">Propriété</p>
+                        <p className="text-(--color-content-dash) text-[9px] uppercase font-bold tracking-[0.2em]">{t("card.labels.property")}</p>
                     </div>
                     <h2 className="text-(--color-content-dash) font-bold text-xl lg:text-lg leading-tight line-clamp-2 lg:line-clamp-1">
                         {listing.title}
@@ -118,11 +122,11 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatus
                             {status === "pending" && (
                                 <>
                                     <IconActionButton
-                                        label="Rejeter"
+                                        label={t("card.actions.reject")}
                                         onClick={() => setPendingAction({
                                             type: "reject",
-                                            label: "Rejeter",
-                                            description: "Êtes-vous sûr de vouloir rejeter ce rendez-vous ? Cette action est irréversible.",
+                                            label: t("card.actions.reject"),
+                                            description: t("card.popup.descriptions.reject"),
                                             color: "#ef4467",
                                             icon: "✕"
                                         })}
@@ -134,11 +138,11 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatus
                                         }
                                     />
                                     <IconActionButton
-                                        label="Confirmer"
+                                        label={t("card.actions.confirm")}
                                         onClick={() => setPendingAction({
                                             type: "confirm",
-                                            label: "Confirmer",
-                                            description: "En confirmant ce rendez-vous, vous vous engagez à être disponible au créneau choisi.",
+                                            label: t("card.actions.confirm"),
+                                            description: t("card.popup.descriptions.confirm"),
                                             color: "#10b981",
                                             icon: "✓"
                                         })}
@@ -153,11 +157,11 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatus
                             )}
                             {status === "confirmed" && (
                                 <IconActionButton
-                                    label="Annuler RDV"
+                                    label={t("card.actions.cancel")}
                                     onClick={() => setPendingAction({
                                         type: "cancel",
-                                        label: "Annuler",
-                                        description: "Êtes-vous sûr de vouloir annuler ce rendez-vous ? Un message sera envoyé au client.",
+                                        label: t("card.actions.cancel"),
+                                        description: t("card.popup.descriptions.cancelSeller"),
                                         color: "#ef4467",
                                         icon: "✕"
                                     })}
@@ -174,11 +178,11 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatus
                         <>
                             {(status === "pending" || status === "confirmed") && (
                                 <IconActionButton
-                                    label="Annuler ma demande"
+                                    label={t("card.actions.cancelRequest")}
                                     onClick={() => setPendingAction({
                                         type: "cancel",
-                                        label: "Annuler",
-                                        description: "Êtes-vous sûr de vouloir annuler votre demande de visite ? Le vendeur en sera informé.",
+                                        label: t("card.actions.cancel"),
+                                        description: t("card.popup.descriptions.cancelBuyer"),
                                         color: "#ef4467",
                                         icon: "✕"
                                     })}
@@ -197,21 +201,21 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatus
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span className="text-[8px] font-black uppercase tracking-tighter italic">Histo</span>
+                            <span className="text-[8px] font-black uppercase tracking-tighter italic">{t("card.labels.history")}</span>
                         </div>
                     )}
                 </div>
             </div>
             {pendingAction && (
                 <PopUp
-                    title={`${pendingAction.label} ${isSeller ? "la réservation" : "ma visite"}`}
+                    title={isSeller ? t("card.popup.titleReservation", { action: pendingAction.label }) : t("card.popup.titleVisit", { action: pendingAction.label })}
                     onClose={() => setPendingAction(null)}
                 >
                     <div className="flex flex-col gap-6 p-2 text-background">
                         <div className="flex flex-col gap-2">
 
                             <p className="text-sm font-bold uppercase tracking-widest opacity-60">
-                                Détails du rendez-vous
+                                {t("card.popup.details")}
                             </p>
                             <div className="flex items-center gap-3">
                                 <span className="text-2xl">📅</span>
@@ -236,7 +240,7 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatus
                         <div className="flex gap-4 mt-2 w-full">
                             <div className="flex-1">
                                 <ActionButton
-                                    title="Retour"
+                                    title={t("card.actions.back")}
                                     padding="p-4"
                                     base_color="var(--color-darktone)"
                                     accent_color="var(--color-background)"
@@ -245,7 +249,7 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatus
                             </div>
                             <div className="flex-1">
                                 <ActionButton
-                                    title={isUpdating ? "Traitement..." : pendingAction.label}
+                                    title={isUpdating ? t("card.actions.processing") : pendingAction.label}
                                     icon={isUpdating ? "" : pendingAction.icon}
                                     processing_action={isUpdating}
                                     padding="p-4"

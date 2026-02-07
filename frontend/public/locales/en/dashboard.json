@@ -1,0 +1,50 @@
+{
+    "filters": {
+        "all": "All",
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "rejected": "Rejected",
+        "cancelled": "Cancelled",
+        "cancelledBy": "Cancelled by {{actor}}",
+        "done": "Done"
+    },
+    "sections": {
+        "visits": {
+            "count": "{{count}} visits found",
+            "empty": "No visits found.",
+            "viewAll": "See all visits"
+        },
+        "reservations": {
+            "count": "{{count}} reservations found",
+            "empty": "No reservations found for this filter.",
+            "viewAll": "See all reservations"
+        }
+    },
+    "card": {
+        "labels": {
+            "property": "Property",
+            "visitor": "Visitor",
+            "seller": "Seller",
+            "history": "History"
+        },
+        "actions": {
+            "reject": "Reject",
+            "confirm": "Confirm",
+            "cancel": "Cancel",
+            "cancelRequest": "Cancel my request",
+            "back": "Back",
+            "processing": "Processing..."
+        },
+        "popup": {
+            "titleReservation": "{{action}} the reservation",
+            "titleVisit": "{{action}} my visit",
+            "details": "Appointment details",
+            "descriptions": {
+                "reject": "Are you sure you want to reject this appointment? This action is irreversible.",
+                "confirm": "By confirming this appointment, you commit to being available at the chosen time slot.",
+                "cancelSeller": "Are you sure you want to cancel this appointment? A message will be sent to the client.",
+                "cancelBuyer": "Are you sure you want to cancel your visit request? The seller will be informed."
+            }
+        }
+    }
+}

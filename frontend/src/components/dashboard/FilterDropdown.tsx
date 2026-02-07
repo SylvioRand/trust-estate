@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 const filterValue = ["all", "pending", "confirmed", "rejected", "cancelled", "done"];
 
@@ -10,6 +11,7 @@ interface FilterDropdownProps {
 }
 
 const FilterDropdown: React.FC<FilterDropdownProps> = ({ selection, setSelection, isOpen, setIsOpen }) => {
+    const { t } = useTranslation("dashboard");
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -29,7 +31,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selection, setSelection
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-[150px] text-white border-2 border-transparent hover:border-accent/20 px-4 py-2 rounded-lg transition duration-300 flex items-center justify-between bg-[#121212]"
             >
-                <span className="capitalize">{selection}</span>
+                <span className="capitalize">{t(`filters.${selection}`)}</span>
                 <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 9-7 7-7-7" />
                 </svg>
@@ -50,7 +52,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selection, setSelection
                                     : "text-gray-700 hover:bg-gray-50"
                                     }`}
                             >
-                                {filter}
+                                {t(`filters.${filter}`)}
                             </button>
                         ))}
                     </div>

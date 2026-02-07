@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { VisitsResponseSchema, type Reservation } from "./zodSchema/dashboard.schema";
 import { ZodError } from "zod";
 import LoadingPage from "../loading";
@@ -7,6 +8,7 @@ import FilterDropdown from "../../components/dashboard/FilterDropdown";
 import ReservationCard from "../../components/dashboard/ReservationCard";
 
 const VisitsSection: React.FC = () => {
+    const { t } = useTranslation("dashboard");
     const [selection, setSelection] = useState("all");
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -60,14 +62,16 @@ const VisitsSection: React.FC = () => {
                 credentials: 'include'
             });
             if (response.ok) {
-                toast.success(`Demande ${action === 'cancel' ? 'annulée' : action} avec succès`);
+                toast.success(t("notifications.updateSuccess", { defaultValue: "Action effectuée avec succès" }));
                 await fetchVisits(false);
             } else {
                 const errorData = await response.json();
-                toast.error(errorData.message || "Une erreur est survenue");
+                console.error("Status update error:", errorData);
+                toast.error(t("notifications.updateError", { defaultValue: "Une erreur est survenue lors de la mise à jour." }));
             }
-        } catch (error) {
-            toast.error("Erreur réseau");
+        } catch (err) {
+            console.error("Status update error:", err);
+            toast.error(t("notifications.updateError", { defaultValue: "Une erreur est survenue lors de la mise à jour." }));
         }
     };
 
@@ -89,7 +93,7 @@ const VisitsSection: React.FC = () => {
                     isOpen={isOpen} setIsOpen={setIsOpen}
                 />
                 <span className="text-sm opacity-50 font-light">
-                    {totalMatching} visites trouvées
+                    {t("sections.visits.count", { count: totalMatching })}
                 </span>
             </div>
 
@@ -107,9 +111,15 @@ const VisitsSection: React.FC = () => {
                             ))}
                         </div>
                         {totalPages > 1 && (
-                            <div className="flex items-center justify-center gap-2 mt-8">
-                                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="w-10 h-10 flex items-center justify-center rounded-lg bg-background/5 hover:bg-background/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-xl font-bold">‹</button>
-                                <div className="flex gap-1">
+                            <div className="flex justify-center items-center gap-4 mt-8 pb-4">
+                                <button
+                                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                                    disabled={page === 1}
+                                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-background/5 hover:bg-background/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-xl font-bold"
+                                >
+                                    ‹
+                                </button>
+                                <div className="flex gap-2">
                                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
                                         <button key={n} onClick={() => setPage(n)} className={`w-10 h-10 rounded-lg transition-colors ${page === n ? "bg-accent text-white font-bold" : "bg-background/5 hover:bg-background/10"}`}>{n}</button>
                                     ))}
@@ -126,12 +136,14 @@ const VisitsSection: React.FC = () => {
                     </>
                 ) : (
                     <div className="w-full h-64 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-3xl gap-4">
-                        <p className="text-xl font-light opacity-50 italic">Aucune visite trouvée.</p>
+                        <p className="text-xl font-light opacity-50 italic">
+                            {t("sections.visits.empty")}
+                        </p>
                         <button
                             onClick={() => setSelection('all')}
                             className="text-accent text-sm font-bold uppercase tracking-widest hover:underline"
                         >
-                            Voir toutes les visites
+                            {t("sections.visits.viewAll")}
                         </button>
                     </div>
                 )}
