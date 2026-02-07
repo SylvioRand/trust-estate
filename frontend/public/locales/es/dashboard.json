@@ -1,0 +1,50 @@
+{
+    "filters": {
+        "all": "Todos",
+        "pending": "Pendiente",
+        "confirmed": "Confirmado",
+        "rejected": "Rechazado",
+        "cancelled": "Cancelado",
+        "cancelledBy": "Cancelado por {{actor}}",
+        "done": "Terminado"
+    },
+    "sections": {
+        "visits": {
+            "count": "{{count}} visitas encontradas",
+            "empty": "No se encontraron visitas.",
+            "viewAll": "Ver todas las visitas"
+        },
+        "reservations": {
+            "count": "{{count}} reservas encontradas",
+            "empty": "No se encontraron reservas para este filtro.",
+            "viewAll": "Ver todas las reservas"
+        }
+    },
+    "card": {
+        "labels": {
+            "property": "Propiedad",
+            "visitor": "Visitante",
+            "seller": "Vendedor",
+            "history": "Historial"
+        },
+        "actions": {
+            "reject": "Rechazar",
+            "confirm": "Confirmar",
+            "cancel": "Cancelar",
+            "cancelRequest": "Cancelar mi solicitud",
+            "back": "Atrás",
+            "processing": "Procesando..."
+        },
+        "popup": {
+            "titleReservation": "{{action}} la reserva",
+            "titleVisit": "{{action}} mi visita",
+            "details": "Detalles de la cita",
+            "descriptions": {
+                "reject": "¿Está seguro de que desea rechazar esta cita? Esta acción es irreversible.",
+                "confirm": "Al confirmar esta cita, se compromete a estar disponible en el horario elegido.",
+                "cancelSeller": "¿Está seguro de que desea cancelar esta cita? Se enviará un mensaje al cliente.",
+                "cancelBuyer": "¿Está seguro de que desea cancelar su solicitud de visita? El vendedor será informado."
+            }
+        }
+    }
+}

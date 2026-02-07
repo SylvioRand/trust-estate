@@ -10,7 +10,7 @@
 			"title": "Dashboard",
 			"tabs": {
 				"visits": "My Visits",
-				"reservations": "My Reservations"
+				"reservations": "Received Reservations"
 			}
 		},
 		"signIn": "Sign In",

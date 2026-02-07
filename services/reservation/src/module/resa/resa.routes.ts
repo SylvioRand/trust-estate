@@ -4,8 +4,11 @@ import { CheckSlotInterface, FilterReservationsInterface, ReservationIdInterface
 import { CheckSlotSchema, FilterReservationsSchema, GetReservationSchema, ReservationIdSchema, ReservationSchema, StatusListingSchema } from "./resa.schema";
 
 export async function reservationRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
-	app.get("/reservations/mine",
-		{preHandler: app.authentication}, resaControllers.listReservation);
+	app.get<{ Querystring: FilterReservationsInterface }>("/reservations/mine",
+		{
+			schema: FilterReservationsSchema,
+			preHandler: app.authentication
+		}, resaControllers.listReservation);
 
 	app.post<{ Body: ReservationInterface }>("/reservations",
 		{
@@ -13,7 +16,7 @@ export async function reservationRoutes(app: FastifyInstance, options: FastifyPl
 			preHandler: app.authentication
 		}, resaControllers.createSlot);
 
-	app.get<{Querystring: {id: string}}>("/reservations/get-slot",
+	app.get<{ Querystring: { id: string } }>("/reservations/get-slot",
 		{
 			schema: GetReservationSchema,
 			preHandler: app.authentication
@@ -25,41 +28,41 @@ export async function reservationRoutes(app: FastifyInstance, options: FastifyPl
 			schema: ReservationIdSchema,
 			preHandler: app.authentication
 		}, resaControllers.deleteReservation);
-	
+
 	app.patch<{ Params: ReservationIdInterface }>("/reservations/:id/cancel",
 		{
 			schema: ReservationIdSchema,
 			preHandler: app.authentication
 		}, resaControllers.cancelReservation);
-	
-	app.patch< {Params: ReservationIdInterface }>("/reservations/:id/confirm",
+
+	app.patch<{ Params: ReservationIdInterface }>("/reservations/:id/confirm",
 		{
 			schema: ReservationIdSchema,
 			preHandler: app.authentication
 		}, resaControllers.confirmReservation);
-	
-	app.patch< {Params: ReservationIdInterface }>("/reservations/:id/reject",
+
+	app.patch<{ Params: ReservationIdInterface }>("/reservations/:id/reject",
 		{
 			schema: ReservationIdSchema,
 			preHandler: app.authentication
 		}, resaControllers.rejectReservation);
-	app.patch< {Params: ReservationIdInterface }>("/reservations/:id/done",
+	app.patch<{ Params: ReservationIdInterface }>("/reservations/:id/done",
 		{
 			schema: ReservationIdSchema,
 			preHandler: app.authentication
 		}, resaControllers.doneReservation);
-	app.get<{Querystring: StatusInterface}>("/reservations/internal/status", 
+	app.get<{ Querystring: StatusInterface }>("/reservations/internal/status",
 		{
 			schema: StatusListingSchema,
 			preHandler: app.internalAuthentication
 		}, resaControllers.statusListing);
 
-	app.get<{Querystring: CheckSlotInterface}>("/reservations/check-slot",
+	app.get<{ Querystring: CheckSlotInterface }>("/reservations/check-slot",
 		{
 			schema: CheckSlotSchema,
 			preHandler: app.authentication
 		}, resaControllers.checkSlot);
-	app.get<{Querystring: FilterReservationsInterface}>("/reservations/seller/me", {
+	app.get<{ Querystring: FilterReservationsInterface }>("/reservations/seller/me", {
 		schema: FilterReservationsSchema,
 		preHandler: app.authentication
 	}, resaControllers.getSellerReservations);
@@ -67,5 +70,5 @@ export async function reservationRoutes(app: FastifyInstance, options: FastifyPl
 
 export async function deleteData(app: FastifyInstance, options: FastifyPluginOptions) {
 	app.delete("/internal/delete/data",
-		{preHandler: app.internalAuthentication}, resaControllers.requestDeleteData);
+		{ preHandler: app.internalAuthentication }, resaControllers.requestDeleteData);
 }
