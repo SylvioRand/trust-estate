@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ReservationsResponseSchema, type Reservation } from "./zodSchema/dashboard.schema";
 import { ZodError } from "zod";
 import LoadingPage from "../loading";
@@ -7,6 +8,7 @@ import FilterDropdown from "../../components/dashboard/FilterDropdown";
 import ReservationCard from "../../components/dashboard/ReservationCard";
 
 const ReservationsSection: React.FC = () => {
+    const { t } = useTranslation("dashboard");
     const [selection, setSelection] = useState("all");
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -61,15 +63,16 @@ const ReservationsSection: React.FC = () => {
             });
 
             if (response.ok) {
-                toast.success(`Réservation ${action === 'confirm' ? 'confirmée' : action === 'reject' ? 'rejetée' : 'annulée'} avec succès`);
+                toast.success(t("notifications.updateSuccess", { defaultValue: "Action effectuée avec succès" }));
                 await fetchReservations(false);
             } else {
                 const errorData = await response.json();
-                toast.error(errorData.message || "Une erreur est survenue lors de la mise à jour");
+                console.error("Status update error:", errorData);
+                toast.error(t("notifications.updateError", { defaultValue: "Une erreur est survenue lors de la mise à jour." }));
             }
         } catch (error) {
             console.error("Update error:", error);
-            toast.error("Erreur réseau lors de la mise à jour");
+            toast.error(t("notifications.updateError", { defaultValue: "Erreur réseau lors de la mise à jour" }));
         }
     };
 
@@ -95,7 +98,7 @@ const ReservationsSection: React.FC = () => {
                     setIsOpen={setIsOpen}
                 />
                 <span className="text-sm opacity-50 font-light">
-                    {totalMatching} reservations trouvées
+                    {t("sections.reservations.count", { count: totalMatching })}
                 </span>
             </div>
 
@@ -115,7 +118,7 @@ const ReservationsSection: React.FC = () => {
 
 
                         {totalPages > 1 && (
-                            <div className="flex items-center justify-center gap-2 mt-8">
+                            <div className="flex justify-center items-center gap-4 mt-8 pb-4">
                                 <button
                                     onClick={() => setPage(p => Math.max(1, p - 1))}
                                     disabled={page === 1}
@@ -124,7 +127,7 @@ const ReservationsSection: React.FC = () => {
                                     ‹
                                 </button>
 
-                                <div className="flex gap-1">
+                                <div className="flex gap-2">
                                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
                                         <button
                                             key={n}
@@ -151,12 +154,14 @@ const ReservationsSection: React.FC = () => {
                     </>
                 ) : (
                     <div className="w-full h-64 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-3xl gap-4">
-                        <p className="text-xl font-light opacity-50 italic">Aucune réservation trouvée pour ce filtre.</p>
+                        <p className="text-xl font-light opacity-50 italic">
+                            {t("sections.reservations.empty")}
+                        </p>
                         <button
                             onClick={() => setSelection('all')}
                             className="text-accent text-sm font-bold uppercase tracking-widest hover:underline"
                         >
-                            Voir toutes les réservations
+                            {t("sections.reservations.viewAll")}
                         </button>
                     </div>
                 )}

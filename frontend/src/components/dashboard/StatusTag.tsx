@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface StatusTagProps {
     status: string;
@@ -7,7 +8,8 @@ interface StatusTagProps {
 }
 
 const StatusTag: React.FC<StatusTagProps> = ({ status, cancelledBy, className = "" }) => {
-    const config: Record<string, { bg: string; text: string; border: string; dot: string; label?: string }> = {
+    const { t } = useTranslation("dashboard");
+    const config: Record<string, { bg: string; text: string; border: string; dot: string }> = {
         pending: {
             bg: "bg-amber-50 dark:bg-amber-400/10",
             text: "text-amber-700 dark:text-amber-500",
@@ -30,8 +32,7 @@ const StatusTag: React.FC<StatusTagProps> = ({ status, cancelledBy, className = 
             bg: "bg-gray-100 dark:bg-gray-400/10",
             text: "text-gray-600 dark:text-gray-400",
             border: "border-gray-300 dark:border-gray-400/20",
-            dot: "bg-gray-500",
-            label: cancelledBy ? `cancelled by ${cancelledBy}` : "cancelled"
+            dot: "bg-gray-500"
         },
         done: {
             bg: "bg-green-50 dark:bg-green-400/10",
@@ -42,7 +43,11 @@ const StatusTag: React.FC<StatusTagProps> = ({ status, cancelledBy, className = 
     };
 
     const active = config[status] || config.pending;
-    const label = active.label || status;
+
+    let label = t(`filters.${status}`);
+    if (status === "cancelled" && cancelledBy) {
+        label = t("filters.cancelledBy", { actor: cancelledBy === "buyer" ? t("card.labels.visitor") : t("card.labels.seller") });
+    }
 
     return (
         <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border-2 ${active.bg} ${active.border} w-fit shadow-sm ${className}`}>
