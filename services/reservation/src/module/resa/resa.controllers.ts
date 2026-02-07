@@ -3,8 +3,9 @@ import type { UserInterface } from "../../interfaces/config.interface";
 import * as resaServices from "./resa.services"
 import type { CheckSlotInterface, ListingInterface, ReservationIdInterface, ReservationInterface, StatusInterface, FilterReservationsInterface } from "./resa.interface";
 
-export async function listReservation(request: FastifyRequest, reply: FastifyReply) {
+export async function listReservation(request: FastifyRequest<{ Querystring: FilterReservationsInterface }>, reply: FastifyReply) {
 	const user = (request as any).user as UserInterface;
+	const { status, page = 1, limit = 10 } = request.query;
 
 	if (!user)
 		return reply.status(401).send({
@@ -13,19 +14,27 @@ export async function listReservation(request: FastifyRequest, reply: FastifyRep
 		});
 
 	try {
-		const reservation = await resaServices.getAllUserReservation(request.server, user.id);
-		return reply.status(200).send(reservation);
-	} catch (error: any) {
-		if (error.message === "slot_unavailable")
-			return reply.status(409).send({
-				"error": "slot_unavailable",
-				"message": "reservation.slot_unavailable"
+		const result = await resaServices.getReservationsByBuyerId(request.server, user.id, status, page, limit);
+
+		return reply.status(200).send({
+			reservations: result.reservations,
+			pagination: {
+				page,
+				limit,
+				totalMatching: result.totalMatching,
+				totalPages: Math.ceil(result.totalMatching / limit)
+			}
 		});
-		else
-			return reply.status(500).send({
-				"error": "internal_server_error",
-				"message": "common.internal_server_error"
+	} catch (error: any) {
+		if (error.message === "reservations_not_found")
+			return reply.status(404).send({
+				"error": "reservations_not_found",
+				"message": "reservations.not_found"
 			});
+		return reply.status(500).send({
+			"error": "internal_server_error",
+			"message": "common.internal_server_error"
+		});
 	}
 }
 
@@ -69,6 +78,11 @@ export async function createSlot(request: FastifyRequest<{ Body: ReservationInte
 			return reply.status(403).send({
 				"error": "cannot_reserve_own_listing",
 				"message": "reservation.cannot_reserve_own"
+			});
+		else if (error.message.includes("already_reserved_this_listing"))
+			return reply.status(409).send({
+				"error": "already_reserved_this_listing",
+				"message": "reservation.already_reserved"
 			});
 		else if (error.message.includes("slot_unavailable"))
 			return reply.status(409).send({
@@ -197,7 +211,7 @@ export async function confirmReservation(request: FastifyRequest<
 			return reply.status(409).send({
 				"error": "slot_unavailable",
 				"message": "reservation.slot_unavailable"
-		});
+			});
 		else if (error.message === "insufficient_credits")
 			return reply.status(402).send({
 				"error": "insufficient_credits",

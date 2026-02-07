@@ -125,6 +125,20 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 			throw new Error("cannot_reserve_own_listing");
 		}
 
+		const existingReservationSameListing = await tx.reservation.findFirst({
+			where: {
+				buyerId: userId,
+				listingId: listingId,
+				status: {
+					in: ['pending', 'confirmed']
+				}
+			}
+		});
+
+		if (existingReservationSameListing) {
+			throw new Error("already_reserved_this_listing");
+		}
+
 		await debitCredits(app, userId);
 
 		const reservation = await tx.reservation.create({
@@ -274,8 +288,6 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 		const listingConflicts = allPendingReservations.filter(r => {
 			if (r.listingId !== reservation.listingId) return false;
 
-			if (r.buyerId === reservation.buyerId) return true;
-
 			const otherStart = r.slot.getTime();
 			const otherEnd = otherStart + 30 * 60 * 1000;
 
@@ -300,7 +312,7 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 
 		const buyerConflicts = allPendingReservations.filter(r => {
 			if (r.buyerId !== reservation.buyerId) return false;
-			if (r.listingId === reservation.listingId) return false; // Déjà traité avec les listingsConflicts
+			if (r.listingId === reservation.listingId) return false;
 
 			const otherStart = r.slot.getTime();
 			const otherEnd = otherStart + 30 * 60 * 1000;
@@ -753,6 +765,54 @@ export async function getReservationsBySellerId(
 		createdAt: reservation.createdAt,
 		listing: await getListingData(app, reservation.listingId, sellerId, token),
 		buyer: await getUserData(app, reservation.buyerId, token)
+	})));
+
+	return {
+		reservations: formattedReservations,
+		totalMatching
+	};
+}
+
+export async function getReservationsByBuyerId(
+	app: FastifyInstance,
+	buyerId: string,
+	status?: string | string[],
+	page: number = 1,
+	limit: number = 10
+): Promise<{ reservations: ReservationDetailsInterface[], totalMatching: number }> {
+	const where: Prisma.ReservationWhereInput = {
+		buyerId,
+		...(status ? { status: Array.isArray(status) ? { in: status as $Enums.ReservationStatus[] } : status as $Enums.ReservationStatus } : {})
+	};
+
+	const [reservations, totalMatching] = await Promise.all([
+		app.prisma.reservation.findMany({
+			where,
+			skip: (page - 1) * limit,
+			take: limit,
+			orderBy: { createdAt: 'desc' }
+		}),
+		app.prisma.reservation.count({ where })
+	]);
+
+	if (!reservations)
+		throw new Error("reservations_not_found");
+
+	const internalToken = await import('jsonwebtoken');
+	const token = internalToken.default.sign(
+		{ service: 'reservation-service', userId: buyerId },
+		app.config.INTERNAL_KEY_SECRET,
+		{ algorithm: 'HS256', expiresIn: '30s' }
+	);
+
+	const formattedReservations = await Promise.all(reservations.map(async (reservation: any) => ({
+		reservationId: reservation.reservationId,
+		slot: reservation.slot,
+		status: reservation.status,
+		cancelledBy: reservation.cancelledBy,
+		createdAt: reservation.createdAt,
+		listing: await getListingData(app, reservation.listingId, buyerId, token),
+		buyer: await getUserData(app, reservation.sellerId, token) // We pass seller data as 'buyer' to reuse frontend structures if needed, or we can adapt frontend
 	})));
 
 	return {
