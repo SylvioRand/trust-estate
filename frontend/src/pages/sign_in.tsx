@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import SimpleInput, { PasswordInput } from "../components/Input";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { type APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
@@ -16,6 +16,8 @@ const SignInPage: React.FC = () => {
 	const [errorPassword, setErrorPassword] = useState<string[]>([]);
 	const [googleProcessing, setgoogleProcessing] = useState<boolean>(false);
 	const { isConnected } = useDataProvider();
+
+	const location = useLocation();
 
 	// if connected, redirect to the profile of the user
 	if (isConnected !== null && isConnected === true)
@@ -63,10 +65,18 @@ const SignInPage: React.FC = () => {
 
 			setErrorEmail([]);
 			setErrorPassword([]);
-			if (window.history.length > 1) {
-				navigate(-1);
+			const from = location.state?.from;
+
+			if (from) {
+				navigate(from, { replace: true });
 			} else {
-				navigate("/home");
+				const canGoBack = window.history.state && window.history.state.idx > 0;
+
+				if (canGoBack) {
+					navigate(-1);
+				} else {
+					navigate("/home", { replace: true });
+				}
 			}
 		} catch (error) {
 			if (error instanceof Error && error.message !== "")
@@ -77,8 +87,14 @@ const SignInPage: React.FC = () => {
 	}
 
 	const triggerGoogleLogin = () => {
+		const from = location.state?.from;
 		setgoogleProcessing(true);
-		window.location.href = '/api/auth/google';
+		if (from) {
+			console.log("Fallback: ", from);
+			window.location.href = '/api/auth/google?fallback=' + from;
+		}
+		else
+			window.location.href = '/api/auth/google';
 		setgoogleProcessing(false);
 	};
 
