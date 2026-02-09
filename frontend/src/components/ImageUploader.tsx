@@ -13,39 +13,34 @@ export interface ImageUploaderHandle {
 	resetFiles: () => void;
 }
 
-export const	MAX_IMG = 10;
+export const MAX_IMG = 10;
 
-const	ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
+const ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 	({ dataToPreview = [], setDataToPreview, inputRef = null }, ref) => {
-		const	{ t } = useTranslation(["publish", "error"]);
-		const	[files, setFiles] = useState<File[]>([]);
-		const	[isDisabled, setIsDisabled] = useState<boolean>(false);
-		const	handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-			const	allowedTypes: string[] = ["image/jpeg", "image/png", "image/webp"]
-			const	validFiles: File[] = [...files];
-			const	tmp: string[] = [...dataToPreview];
-			
-			if (e.target.files)
-			{
-				for (let i = 0; i < e.target.files.length; i++)
-				{
-					const	file: File = e.target.files[i];
+		const { t } = useTranslation(["publish", "error"]);
+		const [files, setFiles] = useState<File[]>([]);
+		const [isDisabled, setIsDisabled] = useState<boolean>(false);
+		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+			const allowedTypes: string[] = ["image/jpeg", "image/png", "image/webp"]
+			const validFiles: File[] = [...files];
+			const tmp: string[] = [...dataToPreview];
 
-					if (validFiles.length >= MAX_IMG)
-					{
+			if (e.target.files) {
+				for (let i = 0; i < e.target.files.length; i++) {
+					const file: File = e.target.files[i];
+
+					if (validFiles.length >= MAX_IMG) {
 						toast.error(t("error:validation.listing.photos.max_count"));
-						break ;
+						break;
 					}
 
-					if (file.size > (5 * 1024 * 1024))
-					{
-						toast.error(file.name + ": " + t( "error:validation.file.too_large"));
-						continue ;
+					if (file.size > (5 * 1024 * 1024)) {
+						toast.error(file.name + ": " + t("error:validation.file.too_large"));
+						continue;
 					}
-					if (!allowedTypes.includes(file.type))
-					{
+					if (!allowedTypes.includes(file.type)) {
 						toast.error(file.name + ": " + t("error:validation.file.invalid_format"));
-						continue ;
+						continue;
 					}
 					validFiles.push(file);
 					tmp.push(URL.createObjectURL(file));
@@ -54,9 +49,8 @@ const	ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 
 			setFiles(validFiles);
 			setDataToPreview(tmp);
-			if (inputRef?.current)
-			{
-				const	dataTransfer = new DataTransfer();
+			if (inputRef?.current) {
+				const dataTransfer = new DataTransfer();
 
 				validFiles.forEach((file: File) => {
 					dataTransfer.items.add(file);
@@ -66,13 +60,12 @@ const	ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 		};
 
 		const handleRemoveFiles = (index: number) => {
-			console.log("handleRemoveFiles called");
 			URL.revokeObjectURL(dataToPreview[index]);
 			const newFiles = files.filter((_, i) => i !== index);
 
 
 			// need to set the value of the inputRef Filelist here to sync it with the state
-			let	newFileList = new DataTransfer();
+			let newFileList = new DataTransfer();
 			newFiles.forEach((file) => {
 				newFileList.items.add(file);
 			})
@@ -94,7 +87,7 @@ const	ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 				if (inputRef?.current) inputRef.current.value = "";
 			},
 		}));
-		
+
 		useEffect(() => {
 			setIsDisabled(files.length >= MAX_IMG);
 		}, [files, setIsDisabled]);
@@ -113,9 +106,9 @@ const	ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 					className="flex items-center justify-center gap-3
 						absolute
 						w-full h-full"
-						style={{
-							opacity: isDisabled ? "25%" : "100%",
-						}}
+					style={{
+						opacity: isDisabled ? "25%" : "100%",
+					}}
 				>
 					<div className="font-icon text-2xl">󰐕</div>
 					<div className="font-light text-sm">
@@ -131,11 +124,11 @@ const	ImageUploader = forwardRef<ImageUploaderHandle, ImageUploaderProps>(
 					type="file"
 					accept="image/*"
 					multiple
-					onChange={ handleChange }
+					onChange={handleChange}
 					style={{
 						cursor: isDisabled ? "not-allowed" : "pointer"
 					}}
-					disabled={ isDisabled }
+					disabled={isDisabled}
 				/>
 			</div>
 		);

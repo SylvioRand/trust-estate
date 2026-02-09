@@ -16,22 +16,22 @@ import type { APIResponse } from "./sign_up";
 import { TagsComponents } from "../components/TagsComponents";
 import PopUp, { type PopUpAPI } from "../components/PopUp";
 
-const	EditPage: React.FC = () => {
-	const	{ isConnected } = useDataProvider();
-	const	{ t } = useTranslation(["edit", "error", "common"]);
-	const	navigate = useNavigate();
-	const	[searchParams] = useSearchParams();
-	const	listingID = searchParams.get("id");
-	const	refToDescription: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement | null>(null);
-	const	[errorTitle, setErrorTitle] = useState<string[]>([]);
-	const	[errorPrice, setErrorPrice] = useState<string[]>([]);
-	const	[errorArea, setErrorArea] = useState<string[]>([]);
-	const	[errorBedrooms, setErrorBedrooms] = useState<string[]>([]);
-	const	[errorBathrooms, setErrorBathrooms] = useState<string[]>([]);
-	const	[uploadButtonProcessing, setUploadButtonProcessing] = useState<boolean>(false);
-	const	[isUploadDisabled, setIsUploadDisabled] = useState<boolean>(false);
-	const	[processingDescriptionEnhancement, setProcessingDescriptionEnhancement] = useState<boolean>(false);
-	const	formRef: RefObject<HTMLFormElement | null> = useRef<HTMLFormElement | null>(null);
+const EditPage: React.FC = () => {
+	const { isConnected } = useDataProvider();
+	const { t } = useTranslation(["edit", "error", "common"]);
+	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
+	const listingID = searchParams.get("id");
+	const refToDescription: RefObject<HTMLTextAreaElement | null> = useRef<HTMLTextAreaElement | null>(null);
+	const [errorTitle, setErrorTitle] = useState<string[]>([]);
+	const [errorPrice, setErrorPrice] = useState<string[]>([]);
+	const [errorArea, setErrorArea] = useState<string[]>([]);
+	const [errorBedrooms, setErrorBedrooms] = useState<string[]>([]);
+	const [errorBathrooms, setErrorBathrooms] = useState<string[]>([]);
+	const [uploadButtonProcessing, setUploadButtonProcessing] = useState<boolean>(false);
+	const [isUploadDisabled, setIsUploadDisabled] = useState<boolean>(false);
+	const [processingDescriptionEnhancement, setProcessingDescriptionEnhancement] = useState<boolean>(false);
+	const formRef: RefObject<HTMLFormElement | null> = useRef<HTMLFormElement | null>(null);
 
 	const [activeTags, setActiveTags] = useState<ListingsTags[]>([]);
 	const [openPopupAddTags, setOpenPopupAddTags] = useState<boolean>(false);
@@ -50,12 +50,12 @@ const	EditPage: React.FC = () => {
 	if (!isConnected)
 		navigate("/sign-in");
 
-	const	handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		
+
 		setUploadButtonProcessing(true);
-		const	formData = new FormData(e.currentTarget);
-		const	data = Object.fromEntries(formData.entries());
+		const formData = new FormData(e.currentTarget);
+		const data = Object.fromEntries(formData.entries());
 
 		const dataObj = {
 			"type": data.type as ("sale" | "rent"),
@@ -66,21 +66,21 @@ const	EditPage: React.FC = () => {
 			"surface": Number(data.surface) as number,
 			"zone": data.zone as string,
 			"features": {
-			"bedrooms": Number(data.bedrooms) as number,
-			"bathrooms": Number(data.bathrooms) as number,
-			"wc": data.wc === "true",
-			"wc_separate": data.wc_separate === "true",
-			"parking_type": data.parking_type as ("garage" | "box" | "parking" | "none"),
-			"garden_private": data.garden_private === "true",
-			"pool": data.pool === "true",
-			"water_access": data.water_access === "true",
-			"electricity_access": data.electricity_access === "true"
+				"bedrooms": Number(data.bedrooms) as number,
+				"bathrooms": Number(data.bathrooms) as number,
+				"wc": data.wc === "true",
+				"wc_separate": data.wc_separate === "true",
+				"parking_type": data.parking_type as ("garage" | "box" | "parking" | "none"),
+				"garden_private": data.garden_private === "true",
+				"pool": data.pool === "true",
+				"water_access": data.water_access === "true",
+				"electricity_access": data.electricity_access === "true"
 			},
 			"tags": activeTags
 		}
 
 		try {
-			const	response = await fetch(`/api/listings/${listingID}`, {
+			const response = await fetch(`/api/listings/${listingID}`, {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json"
@@ -89,15 +89,13 @@ const	EditPage: React.FC = () => {
 				body: JSON.stringify(dataObj)
 			})
 
-			const	responseData = await response.json();
+			const responseData = await response.json();
 
-			if (response.ok)
-			{
+			if (response.ok) {
 				toast.success(t(`error:listing.change_saved`));
 				navigate(`/property/listings?id=${listingID}`);
 			}
-			else
-			{
+			else {
 				if (responseData.details) {
 					const details: Record<string, string[]> = responseData.details as Record<string, string[]>;
 
@@ -121,29 +119,29 @@ const	EditPage: React.FC = () => {
 
 		return (
 			<button
-			className="transition-colors duration-300
+				className="transition-colors duration-300
 					flex items-center justify-start
 					rounded-md
 					w-full
 					cursor-pointer
 					p-2"
-			type="button"
-			onPointerEnter={() => setHovered(true)}
-			onPointerLeave={() => setHovered(false)}
-			style={{
-				backgroundColor: hovered ? "var(--color-midtone)" : "transparent"
-			}}
-			onClick={() => {
-				if (!activeTags.find((value: ListingsTags) => value === tags, tags)) {
-				const newValue: ListingsTags[] = activeTags;
+				type="button"
+				onPointerEnter={() => setHovered(true)}
+				onPointerLeave={() => setHovered(false)}
+				style={{
+					backgroundColor: hovered ? "var(--color-midtone)" : "transparent"
+				}}
+				onClick={() => {
+					if (!activeTags.find((value: ListingsTags) => value === tags, tags)) {
+						const newValue: ListingsTags[] = activeTags;
 
-				newValue.push(tags);
-				setActiveTags(newValue);
-				}
-				addTagsPopupRef.current?.close() // request a close call
-			}}
+						newValue.push(tags);
+						setActiveTags(newValue);
+					}
+					addTagsPopupRef.current?.close() // request a close call
+				}}
 			>
-				{ title }
+				{title}
 			</button>
 		);
 	}
@@ -158,34 +156,34 @@ const	EditPage: React.FC = () => {
 
 			setProcessingDescriptionEnhancement(true);
 			try {
-			const dataToSend = {
-				"description": refToDescription.current.value
-			}
-			const response = await fetch("/api/ai/generate", {
-				method: "POST",
-				headers: {
-				"Content-type": "application/json"
-				},
-				body: JSON.stringify(dataToSend)
-			})
+				const dataToSend = {
+					"description": refToDescription.current.value
+				}
+				const response = await fetch("/api/ai/generate", {
+					method: "POST",
+					headers: {
+						"Content-type": "application/json"
+					},
+					body: JSON.stringify(dataToSend)
+				})
 
-			const responseData = await response.json();
+				const responseData = await response.json();
 
-			if (response.ok && responseData.reply !== "")
-				refToDescription.current!.value = responseData.reply;
-			else
-				throw new Error(responseData?.message);
-			toast.success(t("error:ai.success_generate"));
+				if (response.ok && responseData.reply !== "")
+					refToDescription.current!.value = responseData.reply;
+				else
+					throw new Error(responseData?.message);
+				toast.success(t("error:ai.success_generate"));
 			} catch (error) {
-			if (error instanceof Error && error.message !== "")
-				toast.error(t(`error:${error.message}`));
+				if (error instanceof Error && error.message !== "")
+					toast.error(t(`error:${error.message}`));
 			} finally {
 				setProcessingDescriptionEnhancement(false);
 			}
 		}
 	}
 
-	function	findByKey(obj: any, targetKey: string): string {
+	function findByKey(obj: any, targetKey: string): string {
 		if (obj === null || typeof obj !== "object")
 			return "";
 		if (targetKey in obj) {
@@ -193,7 +191,7 @@ const	EditPage: React.FC = () => {
 		}
 
 		for (const key in obj) {
-			const	value = obj[key];
+			const value = obj[key];
 
 			if (typeof value === "object") {
 				const found = findByKey(value, targetKey);
@@ -206,49 +204,43 @@ const	EditPage: React.FC = () => {
 	}
 
 	useEffect(() => {
-		const	fetchListingsData = async () => {
-			let	responseData: ListingsData | APIResponse | null = null;
+		const fetchListingsData = async () => {
+			let responseData: ListingsData | APIResponse | null = null;
 			try {
 				if (!formRef.current)
 					navigate("/home");
 				if (listingID === null)
 					navigate("/property");
 
-				const	response = await fetch(`/api/listings/${listingID}`, {
+				const response = await fetch(`/api/listings/${listingID}`, {
 					method: "GET",
 					credentials: "include"
 				});
-				
+
 				responseData = await response.json();
-				if (response.ok)
-				{
-					const	dataFromBack = responseData as ListingsData;
+				if (response.ok) {
+					const dataFromBack = responseData as ListingsData;
 					setActiveTags(dataFromBack.tags);
 
 					// NOTE: assign a default value to all the input matching with the current state of the metadata.
 					// I still can't use fetchedData since it will be updated in the next render so
 					// I just use responseData directly
-					if (responseData && formRef.current?.elements)
-					{
-						const	elements = formRef.current?.elements;
-						
-						for (const el of elements)
-						{
+					if (responseData && formRef.current?.elements) {
+						const elements = formRef.current?.elements;
+
+						for (const el of elements) {
 							if (
 								el instanceof HTMLInputElement
 								|| el instanceof HTMLTextAreaElement
 								|| el instanceof HTMLSelectElement
-							)
-							{
-								// console.log(el.name, ": ", findByKey(responseData, el.name));
+							) {
 								el.value = findByKey(responseData, el.name);
 							}
 						}
 					}
 				}
-				else
-				{
-					const	errorData = responseData as APIResponse;
+				else {
+					const errorData = responseData as APIResponse;
 					throw new Error(errorData.message);
 				}
 			} catch (error) {
@@ -266,7 +258,7 @@ const	EditPage: React.FC = () => {
 
 	return (
 		<div
-		className="flex flex-col items-center justify-start
+			className="flex flex-col items-center justify-start
 		px-4 md:px-7 xl:px-64
 		overflow-y-scroll
 		w-full h-screen"
@@ -278,27 +270,27 @@ const	EditPage: React.FC = () => {
 					place-items-center
 					w-full"
 			>
-			<Link
-				to={ `/property/listings?id=${listingID}` }
-			>
-				<ActionButton
-				icon=""
-				title={t("buttons.goBackToListing")}
-				/>
-			</Link>
-			<div
-				className="w-full"
-			>
-				<ContentDivider
-				line_color="linear-gradient(to right,var(--color-background) 80%,transparent)"
-				/>
-			</div>
+				<Link
+					to={`/property/listings?id=${listingID}`}
+				>
+					<ActionButton
+						icon=""
+						title={t("buttons.goBackToListing")}
+					/>
+				</Link>
+				<div
+					className="w-full"
+				>
+					<ContentDivider
+						line_color="linear-gradient(to right,var(--color-background) 80%,transparent)"
+					/>
+				</div>
 			</div>
 
 			<form
-			ref={ formRef }
-			onSubmit={ handleOnSubmit }
-			className="flex flex-col items-center justify-start
+				ref={formRef}
+				onSubmit={handleOnSubmit}
+				className="flex flex-col items-center justify-start
 			gap-3
 			w-full"
 			>
@@ -317,13 +309,13 @@ const	EditPage: React.FC = () => {
 						w-full"
 				>
 					<TextArea
-					ref={refToDescription}
-					title={t("form.description.title")}
-					name="description"
-					placeholder={t("form.description.placeholder")}
-					minLength={50}
-					maxLength={2000}
-					rows={5}
+						ref={refToDescription}
+						title={t("form.description.title")}
+						name="description"
+						placeholder={t("form.description.placeholder")}
+						minLength={50}
+						maxLength={2000}
+						rows={5}
 					/>
 					<div className="absolute -top-1 right-0
 								px-2
@@ -331,22 +323,22 @@ const	EditPage: React.FC = () => {
 								select-none
 								flex items-center justify-center gap-2"
 					>
-					<div className="font-icon text-lg origin-center"
-						style={{
-						animation: processingDescriptionEnhancement ? "var(--animate-spin)" : "none"
-						}}
-					>
-						{processingDescriptionEnhancement ? "󱥸" : ""}
-					</div>
-					<button className="font-light text-sm
+						<div className="font-icon text-lg origin-center"
+							style={{
+								animation: processingDescriptionEnhancement ? "var(--animate-spin)" : "none"
+							}}
+						>
+							{processingDescriptionEnhancement ? "󱥸" : ""}
+						</div>
+						<button className="font-light text-sm
 									transition-colors duration-200
 									cursor-pointer
 									hover:underline hover:text-accent"
-						type="button"
-						onClick={enhanceDescription}
-					>
-						{t("form.description.buttons.enhance")}
-					</button>
+							type="button"
+							onClick={enhanceDescription}
+						>
+							{t("form.description.buttons.enhance")}
+						</button>
 					</div>
 				</div>
 				<SimpleInput
@@ -386,112 +378,112 @@ const	EditPage: React.FC = () => {
 							w-full"
 				>
 					<SimpleInput
-					icon="󰋣"
-					title={t("form.bedrooms.title")}
-					name="bedrooms"
-					type="decimal"
-					minLength={1}
-					maxLength={3}
-					placeholder={t("form.bedrooms.placeholder")}
-					error={errorBedrooms}
+						icon="󰋣"
+						title={t("form.bedrooms.title")}
+						name="bedrooms"
+						type="decimal"
+						minLength={1}
+						maxLength={3}
+						placeholder={t("form.bedrooms.placeholder")}
+						error={errorBedrooms}
 					/>
 
 					<SimpleInput
-					icon="󱠘"
-					title={t("form.bathrooms.title")}
-					name="bathrooms"
-					type="decimal"
-					minLength={1}
-					maxLength={3}
-					placeholder={t("form.bathrooms.placeholder")}
-					error={errorBathrooms}
+						icon="󱠘"
+						title={t("form.bathrooms.title")}
+						name="bathrooms"
+						type="decimal"
+						minLength={1}
+						maxLength={3}
+						placeholder={t("form.bathrooms.placeholder")}
+						error={errorBathrooms}
 					/>
 
 					<InputEnum
-					title={t("form.propertyType.title")}
-					name="propertyType"
-					dataEnum={[
-						{ value: "apartment", title: t("form.propertyType.apartment") },
-						{ value: "house", title: t("form.propertyType.house") },
-						{ value: "loft", title: t("form.propertyType.loft") },
-						{ value: "land", title: t("form.propertyType.land") },
-						{ value: "commercial", title: t("form.propertyType.commercial") }
-					]}
+						title={t("form.propertyType.title")}
+						name="propertyType"
+						dataEnum={[
+							{ value: "apartment", title: t("form.propertyType.apartment") },
+							{ value: "house", title: t("form.propertyType.house") },
+							{ value: "loft", title: t("form.propertyType.loft") },
+							{ value: "land", title: t("form.propertyType.land") },
+							{ value: "commercial", title: t("form.propertyType.commercial") }
+						]}
 					/>
 
 					<InputEnum
-					title={t("form.type.title")}
-					name="type"
-					dataEnum={[
-						{ value: "sale", title: t("form.type.sale") },
-						{ value: "rent", title: t("form.type.rent") }
-					]}
+						title={t("form.type.title")}
+						name="type"
+						dataEnum={[
+							{ value: "sale", title: t("form.type.sale") },
+							{ value: "rent", title: t("form.type.rent") }
+						]}
 					/>
 
 					<InputEnum
-					title={t("form.wc_separate.title")}
-					name="wc_separate"
-					dataEnum={InputEnumDataBoolean}
+						title={t("form.wc_separate.title")}
+						name="wc_separate"
+						dataEnum={InputEnumDataBoolean}
 					/>
 
 					<InputEnum
-					title={t("form.parking_type.title")}
-					name="parking_type"
-					dataEnum={[
-						{ value: "none", title: t("form.parking_type.none.title") },
-						{ value: "garage", title: t("form.parking_type.garage.title") },
-						{ value: "box", title: t("form.parking_type.box.title") },
-						{ value: "parking", title: t("form.parking_type.parking.title") }
-					]}
+						title={t("form.parking_type.title")}
+						name="parking_type"
+						dataEnum={[
+							{ value: "none", title: t("form.parking_type.none.title") },
+							{ value: "garage", title: t("form.parking_type.garage.title") },
+							{ value: "box", title: t("form.parking_type.box.title") },
+							{ value: "parking", title: t("form.parking_type.parking.title") }
+						]}
 					/>
 
 					<InputEnum
-					title={t("form.garden_private.title")}
-					name="garden_private"
-					dataEnum={InputEnumDataBoolean}
+						title={t("form.garden_private.title")}
+						name="garden_private"
+						dataEnum={InputEnumDataBoolean}
 					/>
 
 					<InputEnum
-					title={t("form.pool.title")}
-					name="pool"
-					dataEnum={InputEnumDataBoolean}
+						title={t("form.pool.title")}
+						name="pool"
+						dataEnum={InputEnumDataBoolean}
 					/>
 
 					<InputEnum
-					title={t("form.water_access.title")}
-					name="water_access"
-					dataEnum={InputEnumDataBoolean}
+						title={t("form.water_access.title")}
+						name="water_access"
+						dataEnum={InputEnumDataBoolean}
 					/>
 
 					<InputEnum
-					title={t("form.electricity_access.title")}
-					name="electricity_access"
-					dataEnum={InputEnumDataBoolean}
+						title={t("form.electricity_access.title")}
+						name="electricity_access"
+						dataEnum={InputEnumDataBoolean}
 					/>
 				</div>
 
 				{
 					openPopupAddTags && <PopUp
-					ref={addTagsPopupRef}
-					title={t("tags.add.popup.title")}
-					onClose={() => setOpenPopupAddTags(false)}
+						ref={addTagsPopupRef}
+						title={t("tags.add.popup.title")}
+						onClose={() => setOpenPopupAddTags(false)}
 					>
-					<div className="flex flex-col items-start justify-center gap-1
+						<div className="flex flex-col items-start justify-center gap-1
 									w-full"
-					>
-						<AddTagsButton
-						tags="urgent"
-						title={t("tags.add.popup.value.urgent")}
-						/>
-						<AddTagsButton
-						tags="exclusive"
-						title={t("tags.add.popup.value.exclusive")}
-						/>
-						<AddTagsButton
-						tags="discount"
-						title={t("tags.add.popup.value.discount")}
-						/>
-					</div>
+						>
+							<AddTagsButton
+								tags="urgent"
+								title={t("tags.add.popup.value.urgent")}
+							/>
+							<AddTagsButton
+								tags="exclusive"
+								title={t("tags.add.popup.value.exclusive")}
+							/>
+							<AddTagsButton
+								tags="discount"
+								title={t("tags.add.popup.value.discount")}
+							/>
+						</div>
 					</PopUp>
 				}
 
@@ -501,25 +493,25 @@ const	EditPage: React.FC = () => {
 					<div className="flex items-center justify-start
 								w-full"
 					>
-					<div className="font-inter font-bold text-[14px]">
-						{t("tags.title")}
-					</div>
+						<div className="font-inter font-bold text-[14px]">
+							{t("tags.title")}
+						</div>
 					</div>
 					<div className="flex flex-wrap
 							place-items-center gap-x-3 gap-y-6
 							mt-4
 							w-full">
-					{
-						activeTags && activeTags.length > 0 && activeTags.map((value: ListingsTags, index: number) => {
-						return (
-							<div
-							key={index}
-							className="relative"
-							>
-							<TagsComponents
-								tags={value}
-							/>
-							<button className="absolute -top-3 -right-3
+						{
+							activeTags && activeTags.length > 0 && activeTags.map((value: ListingsTags, index: number) => {
+								return (
+									<div
+										key={index}
+										className="relative"
+									>
+										<TagsComponents
+											tags={value}
+										/>
+										<button className="absolute -top-3 -right-3
 													shadow-standard
 													bg-foreground
 													w-8 h-8
@@ -527,21 +519,21 @@ const	EditPage: React.FC = () => {
 													cursor-pointer
 													hover:text-red-500
 													transition-colors duration-200"
-								onClick={() => {
-								setActiveTags(activeTags.filter((tags: ListingsTags) => tags !== value));
-								}}
-								type="button"
-							>
-								<div className="font-icon text-2xl"
-								>
-								
-								</div>
-							</button>
-							</div>
-						);
-						})
-					}
-					<button className="flex items-center justify-center
+											onClick={() => {
+												setActiveTags(activeTags.filter((tags: ListingsTags) => tags !== value));
+											}}
+											type="button"
+										>
+											<div className="font-icon text-2xl"
+											>
+												
+											</div>
+										</button>
+									</div>
+								);
+							})
+						}
+						<button className="flex items-center justify-center
 									gap-3
 									border border-background/25
 									rounded-md
@@ -549,31 +541,31 @@ const	EditPage: React.FC = () => {
 									select-none
 									cursor-pointer
 									px-4 py-1"
-						onClick={() => setOpenPopupAddTags(true)}
-						type="button"
-					>
-						<div className="font-light text-sm">
-						{t("tags.add.title")}
-						</div>
-						<div className="font-icon text-2xl">
-						󰐕
-						</div>
-					</button>
+							onClick={() => setOpenPopupAddTags(true)}
+							type="button"
+						>
+							<div className="font-light text-sm">
+								{t("tags.add.title")}
+							</div>
+							<div className="font-icon text-2xl">
+								󰐕
+							</div>
+						</button>
 					</div>
 				</div>
 
 				<div
-				className="flex items-center justify-end
+					className="flex items-center justify-end
 				mt-4
 				w-full"
 				>
 					<div>
 						<ActionButton
-						icon="󰆓"
-						title={ t("buttons.save") }
-						type="submit"
-						processing_action={ uploadButtonProcessing }
-						disabled={ isUploadDisabled }
+							icon="󰆓"
+							title={t("buttons.save")}
+							type="submit"
+							processing_action={uploadButtonProcessing}
+							disabled={isUploadDisabled}
 						/>
 					</div>
 				</div>

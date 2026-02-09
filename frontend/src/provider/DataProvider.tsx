@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { DataContext } from "./DataContext";
 import type { APIResponse } from "../pages/sign_up";
+import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 interface DataProviderProps {
 	children: React.ReactNode;
@@ -27,6 +29,7 @@ const DataProvider: React.FC<DataProviderProps> = ({
 	const [isConnected, setIsConnected] = useState<boolean | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [userData, setUserData] = useState<UserModelData | null>(null);
+	const { t } = useTranslation("error");
 
 	useEffect(() => {
 		const checkAuth = async () => {
@@ -60,13 +63,13 @@ const DataProvider: React.FC<DataProviderProps> = ({
 						return;
 					}
 					if (errorData.error === "email_not_verified") {
-						console.log("Provider HERE");
 						return;
 					}
 				}
 
-			} catch (err) {
-				console.error("Auth check failed:", err);
+			} catch (error) {
+				if (error instanceof Error && error.message !== "")
+					toast.error(t(`error:${error.message}`))
 			}
 		};
 

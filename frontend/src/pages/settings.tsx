@@ -178,9 +178,8 @@ const SettingsPage: React.FC = () => {
 			}
 			toast.success(t(`error:${responseData?.message ?? "success"}`));
 		} catch (error) {
-			if (error instanceof Error) {
+			if (error instanceof Error && error.message !== "") {
 				toast.error(t(`error:${error.message}`))
-				console.error("SettingsPage: handleChangePassword: ", t(`error:${error.message}`));
 			}
 		} finally {
 			setIsProcessingPasswordChange(false);
@@ -204,8 +203,8 @@ const SettingsPage: React.FC = () => {
 				throw new Error(t("error:auth.not_authenticated_user}"))
 
 		} catch (error) {
-			if (error instanceof Error)
-				console.error("SettingsPage: handleLogOut: ", error.message);
+			if (error instanceof Error && error.message !== "")
+				toast.error(t(`error:${error.message}`));
 		} finally {
 			navigate("/home");
 			setIsConnected(false);
@@ -244,9 +243,8 @@ const SettingsPage: React.FC = () => {
 			setIsConnected(false);
 			navigate("/sign-in");
 		} catch (error) {
-			if (error instanceof Error) {
+			if (error instanceof Error && error.message !== "") {
 				toast.error(t(`error:${error.message}`))
-				console.error("SettingsPage: handleAccountDeletion: ", t(`error:${error.message}`));
 			}
 		} finally {
 			setProcessingAccountDeletion(false);
@@ -291,9 +289,8 @@ const SettingsPage: React.FC = () => {
 			);
 
 		} catch (error) {
-			if (error instanceof Error) {
+			if (error instanceof Error && error.message !== "") {
 				toast.error(t(`error:${error.message}`))
-				console.error("SettingsPage: handleAddPassword: ", t(`error:${error.message}`));
 			}
 		} finally {
 			setProcessingAddPassword(false);

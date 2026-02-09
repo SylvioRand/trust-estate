@@ -65,8 +65,9 @@ const EmailSentPage: React.FC = () => {
 				method: "POST",
 				credentials: "include"
 			});
-		} catch (e) {
-			console.error("EmailSentPage: handleOnLogOut: error logging out.");
+		} catch (error) {
+			if (error instanceof Error && error.message !== "")
+				toast.error(t(`error:${error.message}`));
 		} finally {
 			navigate("/home");
 			setProcessLogOut(false);
