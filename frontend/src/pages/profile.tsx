@@ -283,8 +283,25 @@ const ProfilePage: React.FC = () => {
 
 			{
 				myListings.length === 0 &&
-				<div>
-					{t("noMyListings")}
+				<div
+					className="flex flex-col items-center justify-center
+					w-full"
+				>
+					<div
+						className="flex items-center justify-center
+						w-48 aspect-square
+						relative"
+					>
+						<div
+							className="font-icon text-[256px]
+							absolute"
+						>
+							
+						</div>
+					</div>
+					<div className="font-light">
+						{t("noMyListings")}
+					</div>
 				</div>
 			}
 			<div
