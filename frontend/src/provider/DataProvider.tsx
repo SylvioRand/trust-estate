@@ -2,31 +2,31 @@ import React, { useEffect, useState } from "react";
 import { DataContext } from "./DataContext";
 import type { APIResponse } from "../pages/sign_up";
 
-interface	DataProviderProps {
+interface DataProviderProps {
 	children: React.ReactNode;
 }
 
 export type UserModelData = {
-  id: string,
-  email: string,
-  emailVerified: string,
-  firstName: string,
-  lastName: string,
-  phone: string,
-  phoneVerified: boolean,
-  role: "USER" | "MODERATOR",
-  hasPassword: boolean,
-  creditBalance: number,
-  createdAt: string,
-  updatedAt: string
+	id: string,
+	email: string,
+	emailVerified: boolean,
+	firstName: string,
+	lastName: string,
+	phone: string,
+	phoneVerified: boolean,
+	role: "USER" | "MODERATOR",
+	hasPassword: boolean,
+	creditBalance: number,
+	createdAt: string,
+	updatedAt: string
 }
 
-const	DataProvider: React.FC<DataProviderProps> = ({
+const DataProvider: React.FC<DataProviderProps> = ({
 	children
 }) => {
-	const	[isConnected, setIsConnected] = useState<boolean | null>(null);
-	const	[isLoading, setIsLoading] = useState<boolean>(false);
-	const	[userData, setUserData] = useState<UserModelData | null>(null);
+	const [isConnected, setIsConnected] = useState<boolean | null>(null);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [userData, setUserData] = useState<UserModelData | null>(null);
 
 	useEffect(() => {
 		const checkAuth = async () => {
@@ -38,10 +38,10 @@ const	DataProvider: React.FC<DataProviderProps> = ({
 					credentials: "include", // Envoie les cookies automatiquement
 				});
 
-				const	responseData = await response.json();
-				
+				const responseData = await response.json();
+
 				if (response.ok) {
-					const	serverResponse = responseData as UserModelData;
+					const serverResponse = responseData as UserModelData;
 
 					setIsConnected(true);
 
@@ -54,7 +54,7 @@ const	DataProvider: React.FC<DataProviderProps> = ({
 
 				if (response.status === 403) {
 					const errorData = responseData as APIResponse;
-					
+
 					setIsConnected(true);
 					if (errorData.error === "phone_number_not_verified") {
 						return;
@@ -82,7 +82,7 @@ const	DataProvider: React.FC<DataProviderProps> = ({
 				setUserData
 			}}
 		>
-			{ children }
+			{children}
 		</DataContext.Provider>
 	);
 }
