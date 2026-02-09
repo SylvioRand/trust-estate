@@ -6,7 +6,23 @@
 	"false": "No",
 	"noLimit": "Ninguno",
 	"all": "Todos",
-	"digitOnly": "Solo se permiten números.",
-	"minBiggerMax": "Min no puede ser mayor que max.",
-	"maxSmallerMin": "Max no puede ser menor que min."
+	"digitOnly": "Solo se permiten dígitos",
+	"minBiggerMax": "El mínimo no puede ser mayor que el máximo",
+	"maxSmallerMin": "El máximo no puede ser menor que el mínimo",
+	"month": "Por mes",
+	"cancel": "Cancelar",
+	"viewDetails": "Ver detalles",
+	"viewListing": "Ver anuncio",
+	"propertyType": {
+		"apartment": "Apartamento",
+		"house": "Casa",
+		"loft": "Loft",
+		"land": "Terreno",
+		"commercial": "Comercial"
+	},
+	"tags": {
+		"urgent": "Urgente",
+		"exclusive": "Exclusivo",
+		"discount": "Descuento"
+	}
 }
