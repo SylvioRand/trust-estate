@@ -1,0 +1,50 @@
+{
+    "filters": {
+        "all": "Tous",
+        "pending": "En attente",
+        "confirmed": "Confirmés",
+        "rejected": "Rejetés",
+        "cancelled": "Annulés",
+        "cancelledBy": "Annulé par {{actor}}",
+        "done": "Terminés"
+    },
+    "sections": {
+        "visits": {
+            "count": "{{count}} visites trouvées",
+            "empty": "Aucune visite trouvée.",
+            "viewAll": "Voir toutes les visites"
+        },
+        "reservations": {
+            "count": "{{count}} réservations trouvées",
+            "empty": "Aucune réservation trouvée pour ce filtre.",
+            "viewAll": "Voir toutes les réservations"
+        }
+    },
+    "card": {
+        "labels": {
+            "property": "Propriété",
+            "visitor": "Visiteur",
+            "seller": "Vendeur",
+            "history": "Histo"
+        },
+        "actions": {
+            "reject": "Rejeter",
+            "confirm": "Confirmer",
+            "cancel": "Annuler",
+            "cancelRequest": "Annuler ma demande",
+            "back": "Retour",
+            "processing": "Traitement..."
+        },
+        "popup": {
+            "titleReservation": "{{action}} la réservation",
+            "titleVisit": "{{action}} ma visite",
+            "details": "Détails du rendez-vous",
+            "descriptions": {
+                "reject": "Êtes-vous sûr de vouloir rejeter ce rendez-vous ? Cette action est irréversible.",
+                "confirm": "En confirmant ce rendez-vous, vous vous engagez à être disponible au créneau choisi.",
+                "cancelSeller": "Êtes-vous sûr de vouloir annuler ce rendez-vous ? Un message sera envoyé au client.",
+                "cancelBuyer": "Êtes-vous sûr de vouloir annuler votre demande de visite ? Le vendeur en sera informé."
+            }
+        }
+    }
+}
