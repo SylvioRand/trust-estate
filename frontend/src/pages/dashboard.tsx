@@ -3,12 +3,13 @@ import { useTranslation } from "react-i18next";
 import VisitsSection from "./dashboard/VisitsSection";
 import ReservationsSection from "./dashboard/ReservationsSection";
 import useDataProvider from "../provider/useDataProvider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 const DashboardPage: React.FC = () => {
   const { t } = useTranslation("nav");
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<string>("visits");
   VerifyUsersState()
   const { isConnected } = useDataProvider();

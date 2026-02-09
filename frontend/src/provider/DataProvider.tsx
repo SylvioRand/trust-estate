@@ -3,6 +3,7 @@ import { DataContext } from "./DataContext";
 import type { APIResponse } from "../pages/sign_up";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface DataProviderProps {
 	children: React.ReactNode;
@@ -30,6 +31,8 @@ const DataProvider: React.FC<DataProviderProps> = ({
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [userData, setUserData] = useState<UserModelData | null>(null);
 	const { t } = useTranslation("error");
+	const location = useLocation();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const checkAuth = async () => {
@@ -50,6 +53,9 @@ const DataProvider: React.FC<DataProviderProps> = ({
 
 					// NOTE: use the response and populate the data.
 					setUserData(serverResponse);
+					const from = location.state?.from;
+					if (from)
+						navigate(from, { replace: true });
 					return;
 				}
 

@@ -144,7 +144,9 @@ export async function resendEmailVerification(request: FastifyRequest, reply: Fa
 	}
 }
 
-export async function loginOauth(request: FastifyRequest, reply: FastifyReply) {
+export async function loginOauth(request: FastifyRequest<{ Querystring: { fallback?: string } }>, reply: FastifyReply) {
+	const { fallback } = request.query;
+
 	const params = new URLSearchParams({
 		client_id: request.server.config.GOOGLE_CLIENT_ID,
 		redirect_uri: request.server.config.REDIRECT_URI,
@@ -153,16 +155,15 @@ export async function loginOauth(request: FastifyRequest, reply: FastifyReply) {
 		access_type: 'offline',
 		prompt: 'consent',
 		include_granted_scopes: 'true',
-		state: 'state_parameter_passthrough_value'
+		state: fallback || 'state_parameter_passthrough_value'
 	});
 
 	return reply.redirect(`${request.server.config.AUTH_URL}?${params.toString()}`)
 }
 
-export async function googleCallback(request: FastifyRequest<{ Querystring: { code: string, error:string } }>, reply: FastifyReply) {
-	const { code } = request.query;
-	const { error } = request.query
-	
+export async function googleCallback(request: FastifyRequest<{ Querystring: { code: string, error: string, state: string } }>, reply: FastifyReply) {
+	const { code, error, state } = request.query;
+
 	if (error && error === "access_denied")
 		return (reply.redirect(`${request.server.config.FRONTEND_URL}/sign-in`));
 
@@ -171,14 +172,19 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 			"error": "invalid_credentials",
 			"message": "auth.invalid_credentials"
 		});
-	
+
 
 	try {
 		const userData = await authServices.getUserInfo(request.server, code);
 		const user = await authServices.createOrUpdateUserAccount(request.server, userData);
 		await generateAccessToken(request, reply, user);
 
-		return (reply.redirect(`${request.server.config.FRONTEND_URL}/home?auth_google=success`));
+		let redirectUrl = `${request.server.config.FRONTEND_URL}/home?auth_google=success`;
+		if (state && state !== 'state_parameter_passthrough_value') {
+			redirectUrl = `${request.server.config.FRONTEND_URL}${state}?auth_google=success`;
+		}
+
+		return (reply.redirect(redirectUrl));
 	} catch (error: any) {
 		if (error.message === "Invalid credential")
 			return reply.status(400).send({
@@ -286,7 +292,7 @@ export async function verificationUserRole(request: FastifyRequest, reply: Fasti
 	}
 };
 
-export async function changeUserPermission(request: FastifyRequest<{Body: changePermissionInterface}>, reply: FastifyReply) {
+export async function changeUserPermission(request: FastifyRequest<{ Body: changePermissionInterface }>, reply: FastifyReply) {
 	const user = request.user as UserInterface;
 	const userId = request.body.id;
 	const permission = request.body.role;
@@ -308,17 +314,17 @@ export async function changeUserPermission(request: FastifyRequest<{Body: change
 	} catch (error: any) {
 		if (error.message === "User not found")
 			return reply.status(404).send({
-				"error":"user_not_found",
+				"error": "user_not_found",
 				"message": "auth.unauthorized"
 			});
 		else if (error.message === "admin_required")
 			return reply.status(401).send({
-				"error":"permission_denied",
+				"error": "permission_denied",
 				"message": "auth.unauthorized"
 			});
 		else if (error.message === "Can't assign this role")
 			return reply.status(401).send({
-				"error":"permission_denied",
+				"error": "permission_denied",
 				"message": "auth.unauthorized"
 			})
 		return reply.status(500).send({

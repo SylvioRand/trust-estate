@@ -32,7 +32,11 @@ import FlaggedPage from './pages/flaggedPage.tsx';
 
 const router = createBrowserRouter([
   {
-    element: <MainLayout />,
+    element: (
+      <DataProvider>
+        <MainLayout />
+      </DataProvider>
+    ),
     children: [
       {
         path: "/sign-in",
@@ -134,9 +138,7 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <DataProvider>
-        <RouterProvider router={router} />
-      </DataProvider>
+      <RouterProvider router={router} />
     </GoogleOAuthProvider>
   </React.StrictMode>,
 );
