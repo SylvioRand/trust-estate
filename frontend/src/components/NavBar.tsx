@@ -192,10 +192,10 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 					}
 
 					{
-						isConnected === true &&
+						isConnected === true && userData &&
 						<MobileNavButton
 							icon=""
-							title={userData?.email ?? "notDefinedUserdataEmail"}
+							title={userData.email}
 							path="/profile"
 						/>
 					}
@@ -386,12 +386,12 @@ const NavBar: React.FC = () => {
 						}
 
 						{
-							isConnected === true &&
+							isConnected === true && userData &&
 							<div className="flex items-center justify-center gap-3 h-full">
 								<NavigationButton
 									icon=""
 									icon_size={32}
-									title={userData?.email ?? "NotdefinedUserDataEmail"}
+									title={userData.email}
 									path="/profile"
 								/>
 							</div>
