@@ -53,7 +53,6 @@ const SignUpPage: React.FC = () => {
 				},
 				body: JSON.stringify(data)
 			})
-			console.log("DEBUG: ", JSON.stringify(data));
 
 			const responseData = await response.json();
 
@@ -107,7 +106,8 @@ const SignUpPage: React.FC = () => {
 			navigate("/email-sent");
 
 		} catch (error) {
-			console.error("Error: ", error);
+			if (error instanceof Error && error.message !== "")
+				toast.error(t(`error:${error.message}`))
 		} finally {
 			setProcessSignUp(false);
 		}

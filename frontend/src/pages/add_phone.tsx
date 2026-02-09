@@ -56,8 +56,9 @@ const AddPhonePage: React.FC = () => {
 			navigate("/home");
 
 		}
-		catch (e) {
-			console.error(e);
+		catch (error) {
+			if (error instanceof Error && error.message !== "")
+				toast.error(t(`error:${error.message}`))
 		} finally {
 			setProcessingSubmit(false);
 		}
