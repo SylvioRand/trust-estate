@@ -1,81 +1,82 @@
 {
-    "noResult": "Sin resultados",
-    "rangeError": "Hay un error en sus valores, por favor corríjalos e inténtelo de nuevo.",
-    "buttons": {
-        "page": {
-            "previous": "Página anterior",
-            "next": "Página siguiente"
-        },
-        "filter": {
-            "title": "Filtrar",
-            "priceRange": {
-                "title": "Rango de precio (Ar)",
-                "min": "Mínimo",
-                "max": "Máximo"
-            },
-            "areaRange": {
-                "title": "Rango de superficie (m2)",
-                "min": "Mínimo",
-                "max": "Máximo"
-            },
-            "bedroomRange": {
-                "title": "Número de dormitorios",
-                "min": "Mínimo",
-                "max": "Máximo"
-            },
-            "bathroomRange": {
-                "title": "Número de baños",
-                "min": "Mínimo",
-                "max": "Máximo"
-            },
-            "parkingType": {
-                "title": "Tipo de estacionamiento",
-                "garage": "Garaje",
-                "box": "Box",
-                "parking": "Parking"
-            },
-            "gardenPrivate": {
-                "title": "Jardín"
-            },
-            "waterAccess": {
-                "title": "Agua"
-            },
-            "electricityAccess": {
-                "title": "Electricidad"
-            },
-            "pool": {
-                "title": "Piscina"
-            },
-            "apply": "Aplicar filtro",
-            "contract": {
-                "title": "Contrato",
-                "none": "Ninguno",
-                "sale": "En venta",
-                "rent": "En alquiler"
-            },
-            "area": {
-                "title": "Zona",
-                "none": "Todas"
-            },
-            "propertyType": {
-                "title": "Tipo de propiedad",
-                "none": "Todas",
-                "apartment": "Apartamento",
-                "house": "Casa",
-                "loft": "Loft",
-                "land": "Terreno",
-                "commercial": "Local comercial"
-            },
-            "tag": {
-                "title": "Etiqueta",
-                "urgent": "Urgente",
-                "exclusive": "Exclusivo",
-                "discount": "Descuento"
-            },
-            "location": {
-                "title": "Ubicación",
-                "none": "Todas"
-            }
-        }
-    }
+	"noResult": "Sin resultados",
+	"rangeError": "Hay un error en sus valores, por favor corríjalos e inténtelo de nuevo.",
+	"buttons": {
+		"page": {
+			"previous": "Página anterior",
+			"next": "Página siguiente"
+		},
+		"filter": {
+			"title": "Filtrar",
+			"clear": "Borrar Filtros",
+			"priceRange": {
+				"title": "Rango de precio (Ar)",
+				"min": "Mínimo",
+				"max": "Máximo"
+			},
+			"areaRange": {
+				"title": "Rango de superficie (m2)",
+				"min": "Mínimo",
+				"max": "Máximo"
+			},
+			"bedroomRange": {
+				"title": "Número de dormitorios",
+				"min": "Mínimo",
+				"max": "Máximo"
+			},
+			"bathroomRange": {
+				"title": "Número de baños",
+				"min": "Mínimo",
+				"max": "Máximo"
+			},
+			"parkingType": {
+				"title": "Tipo de estacionamiento",
+				"garage": "Garaje",
+				"box": "Box",
+				"parking": "Parking"
+			},
+			"gardenPrivate": {
+				"title": "Jardín"
+			},
+			"waterAccess": {
+				"title": "Agua"
+			},
+			"electricityAccess": {
+				"title": "Electricidad"
+			},
+			"pool": {
+				"title": "Piscina"
+			},
+			"apply": "Aplicar filtro",
+			"contract": {
+				"title": "Contrato",
+				"none": "Ninguno",
+				"sale": "En venta",
+				"rent": "En alquiler"
+			},
+			"area": {
+				"title": "Zona",
+				"none": "Todas"
+			},
+			"propertyType": {
+				"title": "Tipo de propiedad",
+				"none": "Todas",
+				"apartment": "Apartamento",
+				"house": "Casa",
+				"loft": "Loft",
+				"land": "Terreno",
+				"commercial": "Local comercial"
+			},
+			"tag": {
+				"title": "Etiqueta",
+				"urgent": "Urgente",
+				"exclusive": "Exclusivo",
+				"discount": "Descuento"
+			},
+			"location": {
+				"title": "Ubicación",
+				"none": "Todas"
+			}
+		}
+	}
 }
