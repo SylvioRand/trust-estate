@@ -159,14 +159,19 @@ export async function loginOauth(request: FastifyRequest, reply: FastifyReply) {
 	return reply.redirect(`${request.server.config.AUTH_URL}?${params.toString()}`)
 }
 
-export async function googleCallback(request: FastifyRequest<{ Querystring: { code: string } }>, reply: FastifyReply) {
+export async function googleCallback(request: FastifyRequest<{ Querystring: { code: string, error:string } }>, reply: FastifyReply) {
 	const { code } = request.query;
+	const { error } = request.query
+	
+	if (error && error === "access_denied")
+		return (reply.redirect(`${request.server.config.FRONTEND_URL}/sign-in`));
 
 	if (!code)
 		return reply.status(400).send({
 			"error": "invalid_credentials",
 			"message": "auth.invalid_credentials"
 		});
+	
 
 	try {
 		const userData = await authServices.getUserInfo(request.server, code);
