@@ -447,8 +447,25 @@ const PropertyPage: React.FC = () => {
 			{
 				isFetchingData === false && dataToDisplay.length === 0 &&
 				<div
-					className="font-light">
-					{t("no_result")}
+					className="flex flex-col items-center justify-center
+					w-full h-full"
+				>
+					<div
+						className="flex items-center justify-center
+						select-none
+						w-48 aspect-square
+						relative"
+					>
+						<div
+							className="font-icon text-[256px]
+							absolute"
+						>
+							
+						</div>
+					</div>
+					<div className="font-light">
+						{t("noResult")}
+					</div>
 				</div>
 			}
 

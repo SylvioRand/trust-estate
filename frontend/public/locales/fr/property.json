@@ -1,5 +1,5 @@
 {
-	"no_result": "Aucun Résultat",
+	"noResult": "Aucun Résultat",
 	"rangeError": "Il y a une erreur dans vos valeurs, veuillez les corriger et réessayer.",
 	"buttons": {
 		"filter": {
