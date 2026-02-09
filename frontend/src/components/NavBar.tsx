@@ -398,6 +398,9 @@ const NavBar: React.FC = () => {
 
 					<select
 						name="langage"
+						style={{
+							backgroundColor: "transparent"
+						}}
 						onChange={(e) => {
 							i18n.changeLanguage(e.target.value);
 						}
