@@ -71,6 +71,17 @@
 	--animate-random-translation: random_translation 60s ease-in-out infinite;
 }
 
+select {
+	background-color: var(--color-foreground);
+	color: var(--color-background);
+}
+
+/* option {
+	background-color: #111;
+	color: white;
+} */
+
+
 /* summary {
 	all: unset;
 }
