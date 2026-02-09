@@ -2,10 +2,21 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import VisitsSection from "./dashboard/VisitsSection";
 import ReservationsSection from "./dashboard/ReservationsSection";
+import useDataProvider from "../provider/useDataProvider";
+import { useNavigate } from "react-router-dom";
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 const DashboardPage: React.FC = () => {
   const { t } = useTranslation("nav");
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>("visits");
+  VerifyUsersState()
+  const { isConnected } = useDataProvider();
+  ``
+  if (isConnected !== null && isConnected === false) {
+    console.log("isConnected? -> ", isConnected);
+    navigate("/sign-in", { state: { from: location.pathname } });
+  }
 
   const menuItems = [
     { id: "visits", label: t("button.dashboard.tabs.visits"), component: <VisitsSection /> },
