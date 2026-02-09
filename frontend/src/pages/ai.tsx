@@ -194,8 +194,6 @@ const AIPage: React.FC = () => {
 	const [canSend, setCanSend] = useState<boolean>(true);
 	const { t } = useTranslation(["ai", "error", "common"]);
 
-	VerifyUsersState();
-
 	const handleSendButton = async () => {
 		if (!chatValue.trim() || !canSend)
 			return;

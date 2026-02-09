@@ -1,5 +1,5 @@
 {
-    "no_result": "Sin resultados",
+    "noResult": "Sin resultados",
     "rangeError": "Hay un error en sus valores, por favor corríjalos e inténtelo de nuevo.",
     "buttons": {
         "page": {

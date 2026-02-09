@@ -1,16 +1,18 @@
 {
-    "buttons": {
-        "publish": "Publicar",
-        "settings": "Ajustes"
-    },
+	"noMyListings": "No tienes ninguna publicación",
+	"buttons": {
+		"publish": "Publicar",
+		"settings": "Configuración",
+		"flagged": "Publicaciones revisadas"
+	},
 
-    "section": {
-        "favorites": {
-            "title": "Favoritos"
-        },
+	"section": {
+		"favorites": {
+			"title": "Favoritos"
+		},
 
-        "myListings": {
-            "title": "Mis anuncios"
-        }
-    }
+		"myListings": {
+			"title": "Mis publicaciones"
+		}
+	}
 }

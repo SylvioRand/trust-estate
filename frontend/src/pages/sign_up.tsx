@@ -212,9 +212,13 @@ const SignUpPage: React.FC = () => {
 						pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
 					/>
 					<div
-						className="text-left font-light text-[12px]"
+						className="flex items-center justify-start w-full"
 					>
-						{t("form.password.notice")}
+						<div
+							className="text-left font-light text-[12px]"
+						>
+							{t("form.password.notice")}
+						</div>
 					</div>
 
 					<div className="mt-2 w-full">

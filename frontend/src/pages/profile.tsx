@@ -285,6 +285,7 @@ const ProfilePage: React.FC = () => {
 				myListings.length === 0 &&
 				<div
 					className="flex flex-col items-center justify-center
+					select-none
 					w-full"
 				>
 					<div
