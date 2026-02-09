@@ -453,10 +453,12 @@ const SettingsPage: React.FC = () => {
 								error={errorNewPassword}
 								pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
 							/>
-							<div
-								className="text-left font-light text-[12px]"
-							>
-								{t("signUp:form.password.notice")}
+							<div className="flex items-center justify-start w-full">
+								<div
+									className="text-left font-light text-[12px]"
+								>
+									{t("signUp:form.password.notice")}
+								</div>
 							</div>
 							<div className="flex items-center justify-end
 								w-full"
@@ -487,10 +489,12 @@ const SettingsPage: React.FC = () => {
 								error={errorAddPassword}
 								pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
 							/>
-							<div
-								className="text-left font-light text-[12px]"
-							>
-								{t("signUp:form.password.notice")}
+							<div className="flex items-center justify-start w-full">
+								<div
+									className="text-left font-light text-[12px]"
+								>
+									{t("signUp:form.password.notice")}
+								</div>
 							</div>
 							<div
 								className="grid grid-cols-[1fr_auto] grid-rows-1

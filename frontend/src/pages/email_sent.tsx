@@ -20,8 +20,8 @@ const EmailSentPage: React.FC = () => {
 	VerifyUsersState();
 	if (isConnected !== null && isConnected === false)
 		navigate("/sign-in");
-	if (isConnected !== null && isConnected === true && userData && userData.emailVerified === true)
-		navigate("/home");
+	// if (isConnected !== null && isConnected === true && userData && userData.emailVerified === true)
+	// 	navigate("/home");
 	const handleOnResend = async () => {
 		setProcessResend(true);
 
