@@ -77,7 +77,7 @@ const PublishPage: React.FC = () => {
 	const [isUploadDisabled, setIsUploadDisabled] = useState<boolean>(false);
 	const navigate = useNavigate();
 
-	const [activeTags, setActiveTags] = useState<ListingsTags[]>(["urgent", "exclusive", "discount"]);
+	const [activeTags, setActiveTags] = useState<ListingsTags[]>([]);
 	const [openPopupAddTags, setOpenPopupAddTags] = useState<boolean>(false);
 	const addTagsPopupRef = useRef<PopUpAPI>(null);
 
