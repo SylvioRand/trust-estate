@@ -14,6 +14,7 @@ import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 interface FilterProps {
 	t: TFunction<["property", "error", "common"]>;
+	defaultZone: string;
 	setDataToDisplay: Dispatch<SetStateAction<PropertyDataType[]>>;
 	setIsFetchingData: Dispatch<SetStateAction<boolean>>;
 	setLastFilter: Dispatch<SetStateAction<string>>;
@@ -25,6 +26,7 @@ interface FilterProps {
 const Filter: React.FC<FilterProps> = ({
 	t,
 	setDataToDisplay,
+	defaultZone,
 	setIsFetchingData,
 	setLastFilter,
 	setPage,
@@ -113,7 +115,7 @@ const Filter: React.FC<FilterProps> = ({
 		}
 	};
 
-	const	formRef: RefObject<HTMLFormElement | null> = useRef<HTMLFormElement | null>(null);
+	const formRef: RefObject<HTMLFormElement | null> = useRef<HTMLFormElement | null>(null);
 
 	return (
 		<div className="fixed bottom-0
@@ -124,34 +126,34 @@ const Filter: React.FC<FilterProps> = ({
 		overflow-y-scroll
 		transition-discrete duration-300
 		bg-foreground"
-		style={{
-			height: isOpen ? "90%" : "0%"
-		}}
+			style={{
+				height: isOpen ? "90%" : "0%"
+			}}
 		>
 			<div
-			className="fixed bottom-7 right-7 z-1
+				className="fixed bottom-7 right-7 z-1
 			rounded-full"
 			>
 				<button
-				className="grid grid-cols-[auto_1fr] grid-rows-1 gap-1 place-items-center
+					className="grid grid-cols-[auto_1fr] grid-rows-1 gap-1 place-items-center
 				rounded-full
 				shadow-standard
 				p-2
 				cursor-pointer
 				border border-background/25
 				transition-all duration-200"
-				style={{
-					backgroundColor: isOpen ? "var(--color-accent)" : "var(--color-foreground)",
-					color: isOpen ? "black" : "var(--color-background)",
-				}}
-				onClick={ () => setIsOpen(isOpen ? false : true) }
+					style={{
+						backgroundColor: isOpen ? "var(--color-accent)" : "var(--color-foreground)",
+						color: isOpen ? "black" : "var(--color-background)",
+					}}
+					onClick={() => setIsOpen(isOpen ? false : true)}
 				>
 
 					<div
-					className="flex items-center justify-center"
+						className="flex items-center justify-center"
 					>
 						<div
-						className="font-icon text-2xl
+							className="font-icon text-2xl
 						w-6 h-6
 						-translate-y-[0.2rem]"
 						>
@@ -159,20 +161,20 @@ const Filter: React.FC<FilterProps> = ({
 						</div>
 					</div>
 					<div
-					className="mr-[0.2rem]"
+						className="mr-[0.2rem]"
 					>
-						{ t("buttons.filter.title") }
+						{t("buttons.filter.title")}
 					</div>
 				</button>
 
 			</div>
 			<form
-			className="flex flex-col items-center justify-start gap-3
+				className="flex flex-col items-center justify-start gap-3
 			overflow-y-scroll
 			p-4 xl:p-7
 			w-full"
-			onSubmit={applyFilters}
-			ref={ formRef }
+				onSubmit={applyFilters}
+				ref={formRef}
 			>
 				<InputEnum
 					title={t("buttons.filter.contract.title")}
@@ -264,6 +266,7 @@ const Filter: React.FC<FilterProps> = ({
 				<InputEnum
 					title={t("buttons.filter.location.title")}
 					name="zone"
+					defaultValue={defaultZone}
 					dataEnum={[
 						{ value: "none", title: t("buttons.filter.location.none") },
 						...ZONE_ENUM
@@ -271,7 +274,7 @@ const Filter: React.FC<FilterProps> = ({
 				/>
 
 				<div
-				className="flex items-center justify-start
+					className="flex items-center justify-start
 				gap-3
 				my-2
 				w-full"
@@ -307,7 +310,7 @@ const PageButton: React.FC<PageButtonProps> = ({
 }) => {
 	return (
 		<button
-		className="border border-background/25
+			className="border border-background/25
 		flex items-center justify-center
 		z-1
 		p-2 rounded-md
@@ -319,28 +322,28 @@ const PageButton: React.FC<PageButtonProps> = ({
 				opacity: disabled ? "42%" : "100%",
 				pointerEvents: disabled ? "none" : "auto"
 			}}
-			onClick={ onClick }
+			onClick={onClick}
 		>
 			<div
-			className="font-icon text-3xl">
-				{ icon }
+				className="font-icon text-3xl">
+				{icon}
 			</div>
 		</button>
 	);
 }
 
 const PropertyPage: React.FC = () => {
-	const	{ t } = useTranslation(["property", "error", "common"]);
+	const { t } = useTranslation(["property", "error", "common"]);
 
-	const	[dataToDisplay, setDataToDisplay] = useState<PropertyDataType[]>([]);
-	const	[isFetchingData, setIsFetchingData] = useState<boolean>(false);
-	const	[page, setPage] = useState<number>(1);
-	const	[maxPage, setMaxPage] = useState<number>(1);
-	const	[lastFilter, setLastFilter] = useState<string>("");
-	const	arePreviousDisabled: boolean = page === 1;
-	const	areNextDisabled: boolean = page === maxPage;
-	const	[searchParams] = useSearchParams();
-	const	zone: string | null = searchParams.get("zone");
+	const [dataToDisplay, setDataToDisplay] = useState<PropertyDataType[]>([]);
+	const [isFetchingData, setIsFetchingData] = useState<boolean>(false);
+	const [page, setPage] = useState<number>(1);
+	const [maxPage, setMaxPage] = useState<number>(1);
+	const [lastFilter, setLastFilter] = useState<string>("");
+	const arePreviousDisabled: boolean = page === 1;
+	const areNextDisabled: boolean = page === maxPage;
+	const [searchParams] = useSearchParams();
+	const zone: string | null = searchParams.get("zone");
 
 	const getDataFromBackend = async () => {
 		setIsFetchingData(true);
@@ -392,6 +395,7 @@ const PropertyPage: React.FC = () => {
 			<Filter
 				t={t}
 				setDataToDisplay={setDataToDisplay}
+				defaultZone={zone ?? "none"}
 				setIsFetchingData={setIsFetchingData}
 				setLastFilter={setLastFilter}
 				page={page}
@@ -466,15 +470,15 @@ const PropertyPage: React.FC = () => {
 			}
 
 			<div
-			className="w-full h-14 flex-none">
+				className="w-full h-14 flex-none">
 			</div>
 
 			<div
-			className="fixed bottom-0
+				className="fixed bottom-0
 			w-full h-24"
 			>
 				<div
-				className="flex items-center justify-start
+					className="flex items-center justify-start
 				px-7
 				md:justify-center
 				relative
@@ -482,7 +486,7 @@ const PropertyPage: React.FC = () => {
 				w-full h-full"
 				>
 					<div
-					className="absolute top-0 left-0
+						className="absolute top-0 left-0
 					bg-linear-to-t from-foreground to-transparent
 					w-full h-full"
 					>

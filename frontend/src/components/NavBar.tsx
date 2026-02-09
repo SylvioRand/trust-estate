@@ -1,13 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n/i18n";
-import ActionButton from "./ActionButton";
 import useDataProvider from "../provider/useDataProvider";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
-import type { UserModelData } from "../provider/DataProvider";
-import type { APIResponse } from "../pages/sign_up";
 
 interface NavButtonProps {
 	icon: string;
@@ -372,7 +369,7 @@ const NavBar: React.FC = () => {
 						hidden"
 					>
 						{
-							(isConnected === false || isConnected === null) && userNavButton.map((value: NavButtonProps, index: number) => {
+							(isConnected === false || isConnected === null || userData === null) && userNavButton.map((value: NavButtonProps, index: number) => {
 								return (
 									<NavigationButton
 										key={index}
