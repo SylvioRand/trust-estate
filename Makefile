@@ -1,6 +1,21 @@
-.PHONY: all build up down clean logs restart status dev rebuild
+.PHONY: all build up down clean logs restart status dev rebuild db-sync seed certs reload-listings reload-nginx reload-reservation reload-credits reload-ai reload-chromadb reload-auth check run-no-ai
 
-# Détection automatique de la commande docker compose
+define PrintWarning
+	printf "[\033[33m WARNING \033[0m]: $(1)\n"
+endef
+
+define PrintInfo
+	printf "[\033[34m INFO \033[0m]: $(1)\n"
+endef
+
+define PrintError
+	printf "[\033[31m ERROR \033[0m]: $(1)\n"
+endef
+
+define PrintSuccess
+	printf "[\033[32m SUCCESS \033[0m]: $(1)\n"
+endef
+
 DOCKER_COMPOSE := $(shell \
 	if docker compose version >/dev/null 2>&1; then \
 		echo "docker compose"; \
@@ -10,135 +25,106 @@ DOCKER_COMPOSE := $(shell \
 		echo "docker compose"; \
 	fi)
 
-# Variable pour Docker Buildkit
 export DOCKER_BUILDKIT=0
 
-# Default target: build and run everything
 all: certs build up db-sync
-	@echo ""
-	@echo "✅ Trust Estate is running!"
-	@echo "🌐 Frontend: https://localhost:8443"
-	@echo "🐳 Using: $(DOCKER_COMPOSE)"
-	@echo ""
+	@$(call PrintInfo,Casa is running)
+	@$(call PrintInfo,Entrypoint: https://localhost:8443)
+	@$(call PrintInfo,Using: $(DOCKER_COMPOSE))
 
-# Synchronize Prisma schemas with database
 db-sync:
-	@echo "⏳ Waiting for auth service to be ready (migrations complete)..."
-	@# Attendre que trust-estate-auth soit healthy
+	@$(call PrintInfo,Waiting for auth service to be ready)
 	@until docker inspect --format='{{.State.Health.Status}}' trust-estate-auth 2>/dev/null | grep -q "healthy"; do \
-		echo "   ... waiting for auth service ..."; \
+		$(call PrintInfo,Still processing ...); \
 		sleep 2; \
 	done
-	@echo "✅ Auth service is ready! Proceeding with listings sync..."
-	@echo "🔄 Synchronizing Prisma schemas with database..."
-	@echo "   -> Pushing listings schema..."
-	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=listings" npx -y prisma@6.19.1 db push --accept-data-loss
-	@echo "   -> Pushing auth schema..."
-	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx -y prisma@6.19.1 db push --accept-data-loss
-	@echo "   -> Pushing reservation schema..."
-	@cd services/reservation && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=reservation" npx -y prisma@6.19.1 db push --accept-data-loss
-	@echo "✅ Database schemas synchronized!"
+	@$(call PrintSuccess,Auth service is ready)
+	@$(call PrintInfo,Synchronizing Prisma schemas with database ...)
 
-# Seed the database with test data
+	@$(call PrintInfo, -> Pushing listings schema ...)
+	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=listings" npx -y prisma@6.19.1 db push --accept-data-loss > /dev/null 2>&1 || \
+		($(call PrintError,Failed pushing listings schema); exit 1)
+	@$(call PrintInfo, -> Pushing auth schema ...)
+	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx -y prisma@6.19.1 db push --accept-data-loss > /dev/null 2>&1 || \
+		($(call PrintError,Failed pushing auth schema); exit 1)
+	@$(call PrintInfo, -> Pushing reservation schema ...)
+	@cd services/reservation && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=reservation" npx -y prisma@6.19.1 db push --accept-data-loss > /dev/null 2>&1 || \
+		($(call PrintError,Failed pushing reservation schema); exit 1)
+	@$(call PrintSuccess,Database schemas synchronized)
+
 seed:
-	@echo "🌱 Seeding database..."
-	@echo "   -> Seeding Auth (Admin account)..."
-	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx tsx prisma/seed.ts
-	@echo "   -> Seeding Listings (Test data)..."
-	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=listings" npm run seed
-	@echo "✅ Seeding complete!"
+	@$(call PrintInfo,Seeding database ...)
+	@$(call PrintInfo, -> Seeding Auth (Admin Account) ...)
+	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx tsx prisma/seed.ts > /dev/null 2>&1 || \
+		($(call PrintError,Failed seeding auth); exit 1)
+	@$(call PrintInfo, -> Seeding Listings (Test Data) ...)
+	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=listings" npm run seed > /dev/null 2>&1 || \
+		($(call PrintError,Failed seeding listings); exit 1)
+	@$(call PrintSuccess,Seeding complete)
 
-# Build all containers
 build:
-	@echo "🔨 Building containers with $(DOCKER_COMPOSE)..."
-	$(DOCKER_COMPOSE) build
+	@$(call PrintInfo, -> Building containers with $(DOCKER_COMPOSE) ...)
+	@$(DOCKER_COMPOSE) build > /dev/null 2>&1 || ($(call PrintError,Build failed); exit 1)
+	@$(call PrintSuccess,Containers built)
 
-# Rebuild without cache (use only when needed)
 rebuild:
-	@echo "🔨 Rebuilding containers without cache..."
-	$(DOCKER_COMPOSE) build --no-cache
+	@$(call PrintInfo, -> Rebuilding containers without cache ...)
+	@$(DOCKER_COMPOSE) build --no-cache > /dev/null 2>&1 || ($(call PrintError,Rebuild failed); exit 1)
+	@$(call PrintSuccess,Containers rebuilt)
 
-# Start all services
 up: certs
-	@echo "🚀 Starting services..."
-	$(DOCKER_COMPOSE) up -d
+	@$(call PrintInfo,Starting services ...)
+	@$(DOCKER_COMPOSE) up -d > /dev/null 2>&1 || ($(call PrintError,Failed to start services); exit 1)
+	@$(call PrintSuccess,Services started)
 
-# Stop all services
 down:
-	@echo "🛑 Stopping services..."
-	$(DOCKER_COMPOSE) down
+	@$(call PrintInfo,Stopping services ...)
+	@$(DOCKER_COMPOSE) down > /dev/null 2>&1 || ($(call PrintError,Failed to stop services); exit 1)
+	@$(call PrintSuccess,Services stopped)
 
-# Clean everything (containers, images, volumes)
 clean:
-	@echo "🧹 Cleaning up everything (images, volumes, data)..."
-	$(DOCKER_COMPOSE) down -v --rmi local
-	@echo "✅ Cleanup complete"
+	@$(call PrintInfo,Cleaning up everything ...)
+	@$(DOCKER_COMPOSE) down -v --rmi local > /dev/null 2>&1 || ($(call PrintError,Cleanup failed); exit 1)
+	@$(call PrintSuccess,Cleanup complete)
 
-# View logs
 logs:
-	$(DOCKER_COMPOSE) logs -f
+	@$(DOCKER_COMPOSE) logs -f
 
-# Restart services
 restart: down up
 
-# Check status
 status:
-	$(DOCKER_COMPOSE) ps
+	@$(DOCKER_COMPOSE) ps
 
-# Development mode: build and start with logs
 dev: build
-	@echo "🔧 Starting in development mode..."
-	$(DOCKER_COMPOSE) up
+	@$(call PrintInfo,Starting in development mode ...)
+	@$(DOCKER_COMPOSE) up > /dev/null 2>&1 || ($(call PrintError,Failed to start dev mode); exit 1)
+	@$(call PrintSuccess,Development mode started)
 
-# Fast reload for listings service only
-reload-listings:
-	@echo "🔄 Reloading listings service..."
-	$(DOCKER_COMPOSE) up -d --build listings-service
+reload-%:
+	@$(call PrintInfo,Reloading $* service ...)
+	@$(DOCKER_COMPOSE) up -d --build $*-service > /dev/null 2>&1 || ($(call PrintError,Failed to reload $*); exit 1)
+	@$(call PrintSuccess,$* service reloaded)
 
-# Fast reload for nginx service only
-reload-nginx:
-	@echo "🔄 Reloading nginx service..."
-	$(DOCKER_COMPOSE) up -d --build nginx
-
-reload-reservation:
-	@echo "🔄 Reloading reservation service..."
-	$(DOCKER_COMPOSE) up -d --build reservations-service
-
-reload-credits:
-	@echo "🔄 Reloading credits service..."
-	$(DOCKER_COMPOSE) up -d --build credits-service
-
-reload-ai:
-	@echo "🔄 Reloading ai service..."
-	$(DOCKER_COMPOSE) up -d --build ai-service
-
-reload-chromadb:
-	@echo "🔄 Reloading chromadb service..."
-	$(DOCKER_COMPOSE) up -d --build chromadb-service
-
-reload-auth:
-	@echo "🔄 Reloading chromadb service..."
-	$(DOCKER_COMPOSE) up -d --build auth-service
-
-# Show which docker compose command is being used
 check:
-	@echo "🐳 Docker Compose command: $(DOCKER_COMPOSE)"
-	@$(DOCKER_COMPOSE) version
+	@$(call PrintInfo,Docker Compose command: $(DOCKER_COMPOSE))
+	@$(DOCKER_COMPOSE) version > /dev/null 2>&1
 
-# Generate SSL certificates locally
 certs:
-	@echo "🔐 Checking SSL certificates..."
+	@$(call PrintInfo,Checking SSL certificates ...)
 	@mkdir -p nginx/certs
 	@if [ ! -f nginx/certs/server.key ] || [ ! -f nginx/certs/server.crt ]; then \
-		echo "⚙️  Generating self-signed certificates..."; \
+		$(call PrintInfo,Generating self-signed certificates ...); \
 		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-		-keyout nginx/certs/server.key \
-		-out nginx/certs/server.crt \
-		-subj "/C=MG/ST=Antananarivo/L=Antananarivo/O=TrustEstate/OU=Dev/CN=localhost"; \
-		echo "✅ Certificates generated in nginx/certs/"; \
+			-keyout nginx/certs/server.key \
+			-out nginx/certs/server.crt \
+			-subj "/C=MG/ST=Antananarivo/L=Antananarivo/O=TrustEstate/OU=Dev/CN=localhost" > /dev/null 2>&1 || \
+			($(call PrintError,Failed generating certificates); exit 1); \
+		$(call PrintSuccess,Certificates generated); \
 	else \
-		echo "✅ Certificates already exist."; \
+		$(call PrintSuccess,Certificates already exist); \
 	fi
 
-run-no-ai:
-	DOCKER_BUILDKIT=0 docker compose up -d --build nginx auth-service listings-service reservations-service db credits-service
+# run-no-ai:
+# 	@DOCKER_BUILDKIT=0 docker compose up -d --build nginx auth-service listings-service reservations-service db credits-service > /dev/null 2>&1 || \
+# 	($(call PrintError,Failed to start services); exit 1)
+# 	@$(call PrintSuccess,Services started without AI)
