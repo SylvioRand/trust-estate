@@ -34,7 +34,8 @@
         },
         "password": {
             "label": "Contraseña",
-            "placeholder": "************"
+            "placeholder": "************",
+	    "notice": "Use al menos 12 caracteres con mayúsculas, minúsculas, números y un carácter especial."
         }
     },
 

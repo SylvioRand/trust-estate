@@ -1,5 +1,12 @@
 {
 	"buttons": {
-		"goBackToListing": "Volver al anuncio"
-	}
+		"goBackToListing": "Volver à la lista",
+		"reserve": "Reservar este turno"
+	},
+	"timezoneNote": "Todas las horas corresponden a Madagascar (GMT+3)",
+	"pleaseSelectDate": "Por favor, seleccione una fecha",
+	"slotsAvailable": "cupos disponibles",
+	"morning": "Mañana",
+	"afternoon": "Tarde",
+	"evening": "Noche"
 }

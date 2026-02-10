@@ -69,7 +69,7 @@ const SettingsPage: React.FC = () => {
 	const { userData, isConnected, setIsConnected } = useDataProvider();
 	VerifyUsersState();
 
-	const { t } = useTranslation(["settings", "error"]);
+	const { t } = useTranslation(["settings", "error", "signUp"]);
 
 	// Redirect if user is not connected
 	if (isConnected !== null && isConnected === false)
@@ -116,15 +116,14 @@ const SettingsPage: React.FC = () => {
 
 				if (errorData.details) {
 					const details: Record<string, string[]> = errorData.details as Record<string, string[]>;
-					
+
 					for (const [key, value] of Object.entries(details)) {
 						for (let i = 0; i < value.length; i++)
 							toast.error(t(`error:${value[i]}`));
 					}
 				}
 				if (response.status === 400) {
-					if (errorData.details)
-					{
+					if (errorData.details) {
 						if (errorData.details.firstName)
 							setErrorFirstName(errorData.details.firstName as string[]);
 						if (errorData.details.lastName)
@@ -179,9 +178,8 @@ const SettingsPage: React.FC = () => {
 			}
 			toast.success(t(`error:${responseData?.message ?? "success"}`));
 		} catch (error) {
-			if (error instanceof Error) {
+			if (error instanceof Error && error.message !== "") {
 				toast.error(t(`error:${error.message}`))
-				console.error("SettingsPage: handleChangePassword: ", t(`error:${error.message}`));
 			}
 		} finally {
 			setIsProcessingPasswordChange(false);
@@ -205,8 +203,8 @@ const SettingsPage: React.FC = () => {
 				throw new Error(t("error:auth.not_authenticated_user}"))
 
 		} catch (error) {
-			if (error instanceof Error)
-				console.error("SettingsPage: handleLogOut: ", error.message);
+			if (error instanceof Error && error.message !== "")
+				toast.error(t(`error:${error.message}`));
 		} finally {
 			navigate("/home");
 			setIsConnected(false);
@@ -245,9 +243,8 @@ const SettingsPage: React.FC = () => {
 			setIsConnected(false);
 			navigate("/sign-in");
 		} catch (error) {
-			if (error instanceof Error) {
+			if (error instanceof Error && error.message !== "") {
 				toast.error(t(`error:${error.message}`))
-				console.error("SettingsPage: handleAccountDeletion: ", t(`error:${error.message}`));
 			}
 		} finally {
 			setProcessingAccountDeletion(false);
@@ -292,18 +289,16 @@ const SettingsPage: React.FC = () => {
 			);
 
 		} catch (error) {
-			if (error instanceof Error) {
+			if (error instanceof Error && error.message !== "") {
 				toast.error(t(`error:${error.message}`))
-				console.error("SettingsPage: handleAddPassword: ", t(`error:${error.message}`));
 			}
 		} finally {
 			setProcessingAddPassword(false);
 		}
 	}
 
-	function	downloadGDPR()
-	{
-		const	data = {
+	function downloadGDPR() {
+		const data = {
 			"user": {
 				"id": userData?.id,
 				"email": userData?.email,
@@ -319,12 +314,12 @@ const SettingsPage: React.FC = () => {
 			}
 		};
 
-		const	json = JSON.stringify(data, null, 2);
-		const	blob = new Blob([json], {
+		const json = JSON.stringify(data, null, 2);
+		const blob = new Blob([json], {
 			type: "application/json"
 		});
-		const	url = URL.createObjectURL(blob);
-		const	link = document.createElement("a");
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement("a");
 		link.href = url;
 		link.download = "CASAGDPRData.json";
 		link.click();
@@ -458,6 +453,13 @@ const SettingsPage: React.FC = () => {
 								error={errorNewPassword}
 								pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
 							/>
+							<div className="flex items-center justify-start w-full">
+								<div
+									className="text-left font-light text-[12px]"
+								>
+									{t("signUp:form.password.notice")}
+								</div>
+							</div>
 							<div className="flex items-center justify-end
 								w-full"
 							>
@@ -487,6 +489,13 @@ const SettingsPage: React.FC = () => {
 								error={errorAddPassword}
 								pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
 							/>
+							<div className="flex items-center justify-start w-full">
+								<div
+									className="text-left font-light text-[12px]"
+								>
+									{t("signUp:form.password.notice")}
+								</div>
+							</div>
 							<div
 								className="grid grid-cols-[1fr_auto] grid-rows-1
 							w-full"
@@ -514,7 +523,7 @@ const SettingsPage: React.FC = () => {
 					<SettingsButton
 						icon="󰇚"
 						title={t("section.settings.downloadGDPR")}
-						onClick={ () => downloadGDPR() }
+						onClick={() => downloadGDPR()}
 					/>
 					<SettingsButton
 						icon=""

@@ -1,19 +1,21 @@
 import React from "react";
 
-export type	InputEnumData = {
+export type InputEnumData = {
 	value: string;
 	title: string;
 }
 
-interface	InputEnumProps {
+interface InputEnumProps {
 	title: string;
 	name: string;
+	defaultValue?: string;
 	dataEnum: InputEnumData[];
 }
 
-const	InputEnum: React.FC<InputEnumProps> = ({
+const InputEnum: React.FC<InputEnumProps> = ({
 	title = "Title",
 	name = "InputEnumName",
+	defaultValue = "",
 	dataEnum = []
 }) => {
 
@@ -26,7 +28,7 @@ const	InputEnum: React.FC<InputEnumProps> = ({
 				w-full"
 			>
 				<div className="font-bold text-[14px]">
-					{ title }
+					{title}
 				</div>
 			</div>
 			<select
@@ -37,16 +39,17 @@ const	InputEnum: React.FC<InputEnumProps> = ({
 				rounded-md
 				shadow-standard
 				"
-				name={ name }
+				name={name}
+				defaultValue={defaultValue}
 			>
 				{
 					dataEnum.length > 0 && dataEnum.map((value: InputEnumData, index: number) => {
 						return (
 							<option
-								key={ index }
-								value={ value.value }
+								key={index}
+								value={value.value}
 							>
-								{ value.title }
+								{value.title}
 							</option>
 						);
 					})

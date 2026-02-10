@@ -28,8 +28,8 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 	type = "button",
 	disabled = false,
 	processing_action = false,
-	text_color="var(--color-foreground)",
-	text_color_hover="var(--color-foreground)",
+	text_color = "var(--color-foreground)",
+	text_color_hover = "var(--color-foreground)",
 	base_color = "var(--color-background)",
 	accent_color = "var(--color-accent)",
 	padding = "p-3",
@@ -57,11 +57,10 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 			onPointerLeave={() => setHovered(false)}
 			style={{
 				pointerEvents: disabled ? "none" : "auto",
-				backgroundColor: disabled ? "color-mix(in srgb, var(--color-background) 25%, var(--color-foreground))" : hovered || processing_action ? "transparent" : background_color,
+				backgroundColor: disabled ? "color-mix(in srgb, var(--color-background) 25%, var(--color-foreground))" : hovered || processing_action ? "transparent" : base_color,
 				cursor: disabled ? "not-allowed" : "pointer",
 				flexDirection: icon_place === "left" ? "row" : "row-reverse",
 				borderRadius: "var(--radius-lg)",
-				// borderRadius: hovered || processing_action ? "var(--radius-4xl)" : "var(--radius-lg)",
 				filter: hovered || processing_action ? `drop-shadow(0px 0px 3px ${accent_color})` : "drop-shadow(0px 7px 7px rgba(0,0,0,0.25))"
 			}}
 			onClick={() => {
@@ -99,9 +98,9 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 				icon &&
 				<div className="pt-[0.1rem] z-1
 				transition-colors duration-300"
-				style={{
-					color: hovered || processing_action ? text_color_hover : text_color,
-				}}>
+					style={{
+						color: hovered || processing_action ? text_color_hover : text_color,
+					}}>
 					{title}
 				</div>
 			}

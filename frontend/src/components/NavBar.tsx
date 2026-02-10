@@ -1,13 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n/i18n";
-import ActionButton from "./ActionButton";
 import useDataProvider from "../provider/useDataProvider";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
-import type { UserModelData } from "../provider/DataProvider";
-import type { APIResponse } from "../pages/sign_up";
 
 interface NavButtonProps {
 	icon: string;
@@ -192,10 +189,10 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 					}
 
 					{
-						isConnected === true &&
+						isConnected === true && userData &&
 						<MobileNavButton
 							icon=""
-							title={userData?.email ?? "notDefinedUserdataEmail"}
+							title={userData.email}
 							path="/profile"
 						/>
 					}
@@ -315,8 +312,7 @@ const NavBar: React.FC = () => {
 		{ icon: "", title: t("button.home"), path: "/home" },
 		{ icon: "", icon_size: 22, title: t("button.property"), path: "/property" },
 		{ icon: "", icon_size: 34, title: t("button.ai"), path: "/ai" },
-		...(isConnected ? [{ icon: "󰕒", icon_size: 28, title: t("button.dashboard.title"), path: "/dashboard" }] : [{ icon: "󰕒", icon_size: 28, title: t("button.dashboard.title"), path: "/dashboard" }])
-	];
+		...(isConnected ? [{ icon: "󰕒", icon_size: 28, title: t("button.dashboard.title"), path: "/dashboard" }] : [])];
 	const userNavButton: NavButtonProps[] = [
 		{ icon: "󰍂", icon_size: 28, title: t("button.signIn"), path: "/sign-in" },
 		{ icon: "󰆓", icon_size: 24, title: t("button.signUp"), path: "/sign-up" }
@@ -372,7 +368,7 @@ const NavBar: React.FC = () => {
 						hidden"
 					>
 						{
-							(isConnected === false || isConnected === null) && userNavButton.map((value: NavButtonProps, index: number) => {
+							(isConnected === false || isConnected === null || userData === null) && userNavButton.map((value: NavButtonProps, index: number) => {
 								return (
 									<NavigationButton
 										key={index}
@@ -386,12 +382,12 @@ const NavBar: React.FC = () => {
 						}
 
 						{
-							isConnected === true &&
+							isConnected === true && userData &&
 							<div className="flex items-center justify-center gap-3 h-full">
 								<NavigationButton
 									icon=""
 									icon_size={32}
-									title={userData?.email ?? "NotdefinedUserDataEmail"}
+									title={userData.email}
 									path="/profile"
 								/>
 							</div>
@@ -402,6 +398,9 @@ const NavBar: React.FC = () => {
 
 					<select
 						name="langage"
+						style={{
+							backgroundColor: "transparent"
+						}}
 						onChange={(e) => {
 							i18n.changeLanguage(e.target.value);
 						}
