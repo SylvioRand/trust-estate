@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated: 2026/02/06 14:07:53 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/10 07:25:41 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -251,14 +251,18 @@ class ChromadbService:
         DO NOT invent values (e.g., no placeholder $lt: 1000000).
         7. SEARCH_TEXT: Always include keywords (e.g., "house", "3 bedrooms").
         8. NB_CONTEXT & SORTING (Priority Rule):
-            - If user asks for "cheapest," "most expensive," or "min/max":
+            IF the user asks for "cheapest/most expensive" AND provides NO other filters (no zone, no property type, etc.):
                 Set nb_context to -1.
-                Set sort_by: {"field": "price" or "surface", "content": "min" or "max"}.
-            - Else if a number is mentioned: Set nb_context to that number (Max 7), sort_by to null.
-            - Else: Set nb_context to 7, sort_by to null.
+                Set sort_by: {"field": "price", "content": "min"|"max"}.
+            IF the user asks for "cheapest/most expensive" BUT includes additional filters (e.g., "at Ivandry", "a house", etc.):
+                Set nb_context to 7.
+                Set sort_by: {"field": "price", "content": "min"|"max"}.
+                set SEARCH_TEXT to the additional filters ONLY
+            ELSE IF a specific number of results is mentioned: Set nb_context to that number (Max 7), sort_by to null.
+            DEFAULT: Set nb_context to 7, sort_by to null.
         9. STRUCTURE: nb_context must be -1 if sort_by is active. sort_by must be null otherwise.
         10. TYPO RESILIENCE: Be highly forgiving of typos in superlatives.
-        Specifically, "la mois cher" or "le plus moin cher" must always be interpreted as "cheapest" (field: price, content: min).
+        Specifically, anything similar to "la mois cher" or "le plus moin cher" or "le mois chers" must always be interpreted as "cheapest" (field: price, content: min).
         Do not assume the user wants the "most expensive" unless they explicitly say "plus cher".
 
         STRUCTURE:
@@ -334,6 +338,7 @@ class ChromadbService:
 
     async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
         llm_parse_response = await llm_service.generate_bloc_response(user_mssg, sys_prompt)
+        print(f"DEBUGGING format send by LLM: {llm_parse_response}")
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}
@@ -341,7 +346,7 @@ class ChromadbService:
         filters = datas.get("filters", None)
         searched = datas.get("isAbout_real_estate", False)
         nb_context = datas.get("nb_context", 0)
-        do_sort = False
+        sort_by = datas.get("sort_by", None)
         if not searched:
             return {
                     'ids': [],
@@ -353,7 +358,6 @@ class ChromadbService:
             }
         
         if nb_context < 0:
-            do_sort = True
             tmp = self.collections.get("posts")
             if tmp:
                 nb_context = await tmp.count()
@@ -361,7 +365,8 @@ class ChromadbService:
                 nb_context = 10
 
         result = await self.query_in_collection("posts", search_text, nb_context, filters, id_ref)
-        if do_sort:
+        if sort_by and sort_by.get("field"):
+            print(f"Sorting elements: {result}")
             get_sorted = datas.get('sort_by')
             sorted_field_value = get_sorted.get("field", "")
             sorted_content_value = get_sorted.get("content", "")
