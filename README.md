@@ -172,9 +172,9 @@ A secured public API for interacting with the database.
 - Rate limiting
 - Public documentation
 - At least 5 endpoints, including:
-	- `GET    /api/{resource}`
-	- `POST   /api/{resource}`
-	- `PUT    /api/{resource}`
+	- `GET /api/{resource}`
+	- `POST /api/{resource}`
+	- `PUT /api/{resource}`
 	- `DELETE /api/{resource}`
 ### 2. Advanced Permission System
 A role-based access control (RBAC) system.
