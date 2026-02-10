@@ -135,6 +135,8 @@ async def chatbot(text: RequestChat):
     chroma_reply = None
     formated = None
     id_found = None
+
+    await chromadb_service.get_all_in_collection("posts")
     if text.context and len(text.context) > 0:
         context = text.context
     try:
