@@ -159,7 +159,7 @@ const Message: React.FC<MessageProps> = ({
 			gap-3
 			overflow-x-scroll
 			flex items-center justify-start
-			xl:grid xl:grid-cols-3 xl:grid-rows-1
+			xl:flex xl:flex-wrap
 			xl:w-auto
 			w-full
 			"
@@ -188,7 +188,7 @@ type MessageType = {
 const AIPage: React.FC = () => {
 	const [chatValue, setChatValue] = useState<string>("");
 	const [messageData, setMessageData] = useState<MessageType[]>([
-		// { value: "I found those links.", side: "left", metadata: [ exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI ] }
+		// { value: "I found those links.", side: "left", metadata: [exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI] }
 	]);
 
 	const [canSend, setCanSend] = useState<boolean>(true);
