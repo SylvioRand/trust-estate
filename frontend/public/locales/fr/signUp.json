@@ -34,7 +34,8 @@
 		},
 		"password": {
 			"label": "Mot de passe",
-			"placeholder": "************"
+			"placeholder": "************",
+			"notice": "Utilisez au moins 12 caractères avec des majuscules, des minuscules, des chiffres et un caractère spécial."
 		}
 	},
 

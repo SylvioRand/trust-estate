@@ -11,42 +11,33 @@ import { useEffect } from "react";
 import { fr, enUS } from "date-fns/locale";
 
 
-// const CommonPart: React.FC<{ listingID: string }> = ({ listingID }) => {
-//   const { t } = useTranslation("buyerSlots");
+const CommonPart: React.FC<{ listingID: string }> = ({ listingID }) => {
+  const { t } = useTranslation("buyerSlots");
 
-//   return (
-//     <div
-//       className="flex flex-col items-center justify-center
-// 		px-4 md:px-7 xl:px-64
-// 		w-full"
-//     >
-//       <div className="w-full h-18 flex-none"></div>
-
-//       <div className="grid grid-cols-[auto_1fr] grid-rows-1
-//       place-items-center
-//       mb-4
-//       w-full"
-//       >
-//         <Link
-//           to={`/property/listings?id=${listingID}`}
-//         >
-//           <ActionButton
-//             icon=""
-//             title={t("buttons.goBackToListing")}
-//           />
-//         </Link>
-//         <div
-//           className="w-full"
-//         >
-//           <ContentDivider
-//             line_color="linear-gradient(to right,var(--color-background) 80%,transparent)"
-//           />
-//         </div>
-//       </div>
-//     </div>
-
-//   )
-// }
+  return (
+    <div className="grid grid-cols-[auto_1fr] grid-rows-1
+      place-items-center
+      mb-4
+      w-full"
+    >
+      <Link
+        to={`/property/listings?id=${listingID}`}
+      >
+        <ActionButton
+          icon=""
+          title={t("buttons.goBackToListing")}
+        />
+      </Link>
+      <div
+        className="w-full"
+      >
+        <ContentDivider
+          line_color="linear-gradient(to right,var(--color-background) 80%,transparent)"
+        />
+      </div>
+    </div>
+  )
+}
 
 interface AvailabilitySlot {
   day: string;
@@ -71,10 +62,8 @@ const BuyerSlotsPage: React.FC = () => {
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [isConfirming, setIsConfirming] = useState<boolean>(false);
   const url = `/api/reservations/get-slot?id=${listingID}`;
-  //url = "http://127.0.0.1:3658/m1/1162080-1155411-default/api/reservations/get-slot"; // mock
 
   useEffect(() => {
-    console.log("url: ", url);
     const fetchSlots = async () => {
       try {
         const response = await fetch(url, {
@@ -83,28 +72,21 @@ const BuyerSlotsPage: React.FC = () => {
         });
 
         if (!response.ok) {
-          console.error("Error fetching data: ", response);
           setLoading(false);
           return;
         }
 
         const data: AvailabilityData = await response.json();
-        console.log("Slots data:", data);
 
         const dates = data.availability.map(slot => new Date(slot.day));
         setAvailableDates(dates);
         setAvailability(data);
-        console.log("data[0].slots: ", data.availability[0]?.slots);
-        console.log("data[0].day: ", data.availability[0]?.day);
-        console.log("Available dates:", dates);
 
       } catch (error) {
-        console.error("Fetch error:", error);
       } finally {
         setLoading(false);
       }
     };
-    console.log("Here we are");
 
     fetchSlots();
   }, [url]);
@@ -136,7 +118,6 @@ const BuyerSlotsPage: React.FC = () => {
         toast.error(errorMessage);
       }
     } catch (error) {
-      console.error("Reservation error:", error);
       toast.error(t("errors.network", "Erreur réseau lors de la réservation"));
     } finally {
       setIsConfirming(false);
@@ -165,217 +146,219 @@ const BuyerSlotsPage: React.FC = () => {
           />
         </div>
       </div>
-
     )
+
   return (
-    <div className="pt-[60px] md:pt-[100px] mb-20 px-4 text-background">
-      <div className="max-w-6xl mx-auto rounded-3xl shadow-2xl flex flex-col md:flex-row gap-0 bg-card-bg overflow-hidden border border-highlight/20 transition-colors duration-300">
-        <div className="p-6 md:p-10 border-b md:border-b-0 md:border-r border-highlight/20 flex justify-center bg-background/5">
-          <DayPicker
-            locale={calendarLocale}
-            animate
-            mode="single"
-            selected={selected}
-            onSelect={(date) => {
-              console.log("Date sélectionnée :\n", date);
-              setSelected(date);
-              setSelectedSlot(undefined);
-            }}
-            startMonth={minDate}
-            endMonth={maxDate}
-            disabled={(date) => {
-              const isOutOfRange = date < minDate || date > maxDate;
-              const isNotAvailable = !availableDates.some(availableDate =>
-                availableDate.toDateString() === date.toDateString()
-              );
-              return isOutOfRange || isNotAvailable;
-            }}
-            modifiers={{
-              available: availableDates
-            }}
-            formatters={{
-              formatCaption: (month) => {
-                const formatted = month.toLocaleDateString(i18n.language, {
-                  month: 'long',
-                  year: 'numeric'
-                });
-                return formatted.charAt(0).toUpperCase() + formatted.slice(1);
-              }
-            }}
-
-            classNames={{
-              chevron: "fill-background",
-            }}
-            modifiersClassNames={{
-              available: "text-background font-semibold rounded-4xl m-7 hover:bg-accent hover:text-foreground",
-              selected: "bg-accent text-foreground",
-              disabled: "text-background/20 line-through cursor-not-allowed",
-            }}
-            footer={
-              <div className="pt-2 text-background/40 text-[11px] tracking-tighter border-t border-highlight/30 mt-4">
-                Madagascar (GMT+3)
-              </div>
-            }
-          />
-        </div>
-        {!selected ? (
-          <div className="flex flex-col items-center justify-center w-full p-10 min-h-[300px] text-center">
-            <h3 className="text-xl font-bold text-background/30">
-              {t("pleaseSelectDate", "Veuillez sélectionner une date")}
-            </h3>
-          </div>
-        ) : (
-          <div className="flex flex-col w-full p-6 md:p-10">
-            <div>
-              <h3 className="text-3xl font-black text-background">
-                {(() => {
-                  const label = selected?.toLocaleDateString(i18n.language, {
-                    weekday: 'long',
+    <div className="flex justify-center w-full">
+      <div className=" w-full max-w-[1425px] pt-[60px] md:pt-[100px] mb-20 px-4 text-background">
+        <CommonPart listingID={listingID} />
+        <div className="w-full mx-auto rounded-3xl shadow-2xl flex flex-col md:flex-row gap-0 bg-card-bg  overflow-hidden border border-highlight/20 transition-colors duration-300">
+          <div className="p-6 md:p-10 border-b md:border-b-0 md:border-r border-highlight/20 flex justify-center bg-background/5">
+            <DayPicker
+              locale={calendarLocale}
+              animate
+              mode="single"
+              selected={selected}
+              onSelect={(date) => {
+                setSelected(date);
+                setSelectedSlot(undefined);
+              }}
+              startMonth={minDate}
+              endMonth={maxDate}
+              disabled={(date) => {
+                const isOutOfRange = date < minDate || date > maxDate;
+                const isNotAvailable = !availableDates.some(availableDate =>
+                  availableDate.toDateString() === date.toDateString()
+                );
+                return isOutOfRange || isNotAvailable;
+              }}
+              modifiers={{
+                available: availableDates
+              }}
+              formatters={{
+                formatCaption: (month) => {
+                  const formatted = month.toLocaleDateString(i18n.language, {
                     month: 'long',
-                    day: 'numeric'
+                    year: 'numeric'
                   });
-                  return label ? label.charAt(0).toUpperCase() + label.slice(1) : "";
-                })()}
+                  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+                }
+              }}
+
+              classNames={{
+                chevron: "fill-background",
+              }}
+              modifiersClassNames={{
+                available: "text-background font-semibold rounded-4xl m-7 hover:bg-accent hover:text-foreground",
+                selected: "bg-accent text-foreground",
+                disabled: "text-background/20 line-through cursor-not-allowed",
+              }}
+              footer={
+                <div className="pt-2 text-background/40 text-[11px] tracking-tighter border-t border-highlight/30 mt-4">
+                  Madagascar (GMT+3)
+                </div>
+              }
+            />
+          </div>
+          {!selected ? (
+            <div className="flex flex-col items-center justify-center w-full p-10 min-h-[300px] text-center">
+              <h3 className="text-xl font-bold text-background/30">
+                {t("pleaseSelectDate", "Veuillez sélectionner une date")}
               </h3>
-              <p className="text-base text-background/60 mt-1">
-                {
-                  availability?.availability.filter(
-                    slot => new Date(slot.day).toDateString() === selected?.toDateString()
-                  ).flatMap(s => s.slots).length || 0
-                } {t("slotsAvailable", "créneaux disponibles")}
-              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col w-full p-6 md:p-10">
+              <div>
+                <h3 className="text-3xl font-black text-background">
+                  {(() => {
+                    const label = selected?.toLocaleDateString(i18n.language, {
+                      weekday: 'long',
+                      month: 'long',
+                      day: 'numeric'
+                    });
+                    return label ? label.charAt(0).toUpperCase() + label.slice(1) : "";
+                  })()}
+                </h3>
+                <p className="text-base text-background/60 mt-1">
+                  {
+                    availability?.availability.filter(
+                      slot => new Date(slot.day).toDateString() === selected?.toDateString()
+                    ).flatMap(s => s.slots).length || 0
+                  } {t("slotsAvailable", "créneaux disponibles")}
+                </p>
 
-              <div className="mt-8">
-                {(() => {
-                  const daySlots = (availability?.availability
-                    .filter(slot => new Date(slot.day).toDateString() === selected?.toDateString())
-                    .flatMap(slot => slot.slots)
-                    .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())) || [];
+                <div className="mt-8">
+                  {(() => {
+                    const daySlots = (availability?.availability
+                      .filter(slot => new Date(slot.day).toDateString() === selected?.toDateString())
+                      .flatMap(slot => slot.slots)
+                      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())) || [];
 
-                  const morning = daySlots.filter(time => new Date(time).getHours() < 12);
-                  const afternoon = daySlots.filter(time => new Date(time).getHours() >= 12 && new Date(time).getHours() < 18);
-                  const evening = daySlots.filter(time => new Date(time).getHours() >= 18);
+                    const morning = daySlots.filter(time => new Date(time).getHours() < 12);
+                    const afternoon = daySlots.filter(time => new Date(time).getHours() >= 12 && new Date(time).getHours() < 18);
+                    const evening = daySlots.filter(time => new Date(time).getHours() >= 18);
 
-                  const renderSection = (title: string, icon: string, slots: string[]) => {
-                    if (slots.length === 0) return null;
+                    const renderSection = (title: string, icon: string, slots: string[]) => {
+                      if (slots.length === 0) return null;
+                      return (
+                        <div className="mb-10">
+                          <div className="flex items-center gap-2 mb-4 text-background/80">
+                            <span className="text-xl">{icon}</span>
+                            <h4 className="text-sm font-bold uppercase tracking-widest">{title}</h4>
+                          </div>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {slots.map((timeISO, index) => {
+                              const timeLabel = new Date(timeISO).toLocaleTimeString(undefined, {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                              });
+                              return (
+                                <button
+                                  key={index}
+                                  onClick={() => setSelectedSlot(timeISO)}
+                                  className={`px-4 py-4 border rounded-2xl transition-all duration-300 font-bold text-base shadow-sm active:scale-95 ${selectedSlot === timeISO
+                                    ? "bg-accent text-foreground border-accent shadow-lg scale-105"
+                                    : "border-highlight/40 bg-highlight/10 text-background hover:bg-highlight/20 hover:border-accent/50 hover:shadow-md"
+                                    }`}
+                                >
+                                  {timeLabel}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    };
+
                     return (
-                      <div className="mb-10">
-                        <div className="flex items-center gap-2 mb-4 text-background/80">
-                          <span className="text-xl">{icon}</span>
-                          <h4 className="text-sm font-bold uppercase tracking-widest">{title}</h4>
+                      <>
+                        {renderSection(t("morning", "Matin"), "🌅", morning)}
+                        {renderSection(t("afternoon", "Après-midi"), "☀️", afternoon)}
+                        {renderSection(t("evening", "Soir"), "🌙", evening)}
+
+                        <div className="mt-10 pt-14 border-t border-highlight/30">
+                          <ActionButton
+                            title={t("buttons.reserve", "Réserver ce créneau")}
+                            icon=""
+                            padding="p-7"
+                            font_size="text-[20px]"
+                            icon_size={28}
+                            disabled={!selectedSlot}
+                            onClick={() => setShowConfirmation(true)}
+                          />
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                          {slots.map((timeISO, index) => {
-                            const timeLabel = new Date(timeISO).toLocaleTimeString(undefined, {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              hour12: false
-                            });
-                            return (
-                              <button
-                                key={index}
-                                onClick={() => setSelectedSlot(timeISO)}
-                                className={`px-4 py-4 border rounded-2xl transition-all duration-300 font-bold text-base shadow-sm active:scale-95 ${selectedSlot === timeISO
-                                  ? "bg-accent text-foreground border-accent shadow-lg scale-105"
-                                  : "border-highlight/40 bg-highlight/10 text-background hover:bg-highlight/20 hover:border-accent/50 hover:shadow-md"
-                                  }`}
-                              >
-                                {timeLabel}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
+                      </>
                     );
-                  };
-
-                  return (
-                    <>
-                      {renderSection(t("morning", "Matin"), "🌅", morning)}
-                      {renderSection(t("afternoon", "Après-midi"), "☀️", afternoon)}
-                      {renderSection(t("evening", "Soir"), "🌙", evening)}
-
-                      <div className="mt-10 pt-14 border-t border-highlight/30">
-                        <ActionButton
-                          title={t("buttons.reserve", "Réserver ce créneau")}
-                          icon=""
-                          padding="p-7"
-                          font_size="text-[20px]"
-                          icon_size={28}
-                          disabled={!selectedSlot}
-                          onClick={() => setShowConfirmation(true)}
-                        />
-                      </div>
-                    </>
-                  );
-                })()}
+                  })()}
+                </div>
               </div>
             </div>
-          </div>
+          )}
+        </div>
+        {showConfirmation && (
+          <PopUp
+            title={t("confirmationTitle", "Confirmer la réservation")}
+            onClose={() => !isConfirming && setShowConfirmation(false)}
+          >
+            <div className="flex flex-col gap-6 p-2 text-background">
+              <div className="flex flex-col gap-2">
+                <p className="text-sm font-bold uppercase tracking-widest opacity-60">
+                  {t("dateAndTime", "Date et heure")}
+                </p>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">📅</span>
+                  <p className="text-lg font-black">
+                    {selected?.toLocaleDateString(i18n.language, {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">⏰</span>
+                  <p className="text-lg font-black">
+                    {selectedSlot && new Date(selectedSlot).toLocaleTimeString(i18n.language, {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-accent/10 p-4 rounded-2xl border border-accent/20">
+                <p className="text-xs leading-relaxed opacity-80">
+                  {t("confirmationNotice", "En confirmant, une demande de visite sera envoyée au propriétaire. Vous pourrez suivre l'état de votre demande dans vos réservations.")}
+                </p>
+              </div>
+
+              <div className="flex gap-4 mt-2 w-full">
+                <div className="flex-1">
+                  <ActionButton
+                    title={t("buttons.cancel", "Annuler")}
+                    padding="p-4"
+                    base_color="var(--color-darktone)"
+                    accent_color="var(--color-background)"
+                    onClick={() => setShowConfirmation(false)}
+                    disabled={isConfirming}
+                  />
+                </div>
+                <div className="flex-1">
+                  <ActionButton
+                    title={isConfirming ? t("buttons.loading", "En cours...") : t("buttons.confirm", "Confirmer")}
+                    icon={isConfirming ? "⏳" : ""}
+                    padding="p-4"
+                    onClick={handleConfirm}
+                    disabled={isConfirming}
+                  />
+                </div>
+              </div>
+            </div>
+          </PopUp>
         )}
       </div>
-      {showConfirmation && (
-        <PopUp
-          title={t("confirmationTitle", "Confirmer la réservation")}
-          onClose={() => !isConfirming && setShowConfirmation(false)}
-        >
-          <div className="flex flex-col gap-6 p-2 text-background">
-            <div className="flex flex-col gap-2">
-              <p className="text-sm font-bold uppercase tracking-widest opacity-60">
-                {t("dateAndTime", "Date et heure")}
-              </p>
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">📅</span>
-                <p className="text-lg font-black">
-                  {selected?.toLocaleDateString(i18n.language, {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">⏰</span>
-                <p className="text-lg font-black">
-                  {selectedSlot && new Date(selectedSlot).toLocaleTimeString(i18n.language, {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-accent/10 p-4 rounded-2xl border border-accent/20">
-              <p className="text-xs leading-relaxed opacity-80">
-                {t("confirmationNotice", "En confirmant, une demande de visite sera envoyée au propriétaire. Vous pourrez suivre l'état de votre demande dans vos réservations.")}
-              </p>
-            </div>
-
-            <div className="flex gap-4 mt-2 w-full">
-              <div className="flex-1">
-                <ActionButton
-                  title={t("buttons.cancel", "Annuler")}
-                  padding="p-4"
-                  base_color="var(--color-darktone)"
-                  accent_color="var(--color-background)"
-                  onClick={() => setShowConfirmation(false)}
-                  disabled={isConfirming}
-                />
-              </div>
-              <div className="flex-1">
-                <ActionButton
-                  title={isConfirming ? t("buttons.loading", "En cours...") : t("buttons.confirm", "Confirmer")}
-                  icon={isConfirming ? "⏳" : ""}
-                  padding="p-4"
-                  onClick={handleConfirm}
-                  disabled={isConfirming}
-                />
-              </div>
-            </div>
-          </div>
-        </PopUp>
-      )}
     </div>
   );
 };

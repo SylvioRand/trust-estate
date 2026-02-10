@@ -1,129 +1,192 @@
 {
-    "brand": {
-        "name": "CASA"
-    },
+	"brand": {
+		"name": "CASA"
+	},
 
-    "yes": "Sí",
-    "no": "No",
+	"yes": "Sí",
+	"no": "No",
 
-    "viewDetails": "Ver detalles",
-    "areaUnit": "m2",
+	"viewDetails": "Ver detalles",
+	"areaUnit": "ft²",
 
-    "section": {
-        "listingType": {
-            "rent": "Alquiler",
-            "sale": "En venta"
-        },
+	"status": {
+		"active": "Activo",
+		"archived": "Archivado",
+		"blocked": "Bloqueado",
+		"available": "Disponible",
+		"unavailable": "No disponible"
+	},
 
-        "features": {
-            "bedrooms": "Habitaciones",
-            "bathrooms": "Baños",
-            "area": "Superficie",
-            "parking_type": "Estacionamiento",
-            "water_access": "Agua",
-            "electricity_access": "Electricidad",
-            "garden_private": "Jardín",
-            "wc_separate": "Aseo independiente"
-        },
+	"section": {
+		"header": {
+			"propertyType": {
+				"apartment": "Apartamento",
+				"house": "Casa",
+				"loft": "Loft",
+				"land": "Terreno",
+				"commercial": "Comercial"
+			}
+		},
+		"listingType": {
+			"rent": "En alquiler",
+			"sale": "En venta"
+		},
+		"features": {
+			"title": "Características",
+			"bedrooms": "Dormitorio",
+			"bathrooms": "Baño",
+			"area": "ft²"
+		},
+		"equipments": {
+			"title": "Servicios",
+			"parking_type": "Estacionamiento",
+			"garden_private": "Jardín",
+			"wc": "Aseo",
+			"pool": "Piscina",
+			"electricity_access": {
+				"title": "Acceso a electricidad",
+				"true": "Esta propiedad tiene acceso a electricidad.",
+				"false": "Esta propiedad no tiene acceso a electricidad."
+			},
+			"water_access": {
+				"title": "Acceso a agua",
+				"true": "Esta propiedad tiene acceso a agua.",
+				"false": "Esta propiedad no tiene acceso a agua."
+			}
+		},
+		"description": {
+			"title": "Descripción"
+		},
+		"quickButtons": {
+			"favorites": "Favoritos",
+			"report": "Reportar",
+			"scheduleVisit": "Programar una visita",
+			"visitSlot": "Horario de visita",
+			"editPost": "Editar publicación"
+		},
 
-        "description": {
-            "title": "Descripción"
-        },
+		"tags": {
+			"urgent": "Urgente",
+			"exclusive": "Exclusivo",
+			"discount": "Descuento"
+		},
 
-        "quickButtons": {
-            "favorites": "Favoritos",
-            "report": "Reportar",
-            "visit": "Programar una visita",
-            "visitSlot": "Horarios de visita",
-            "editPost": "Editar publicación"
-        },
+		"contact": {
+			"title": "Contacto",
+			"memberSince": "Miembro desde"
+		},
 
-        "tags": {
-            "urgent": "Urgente",
-            "exclusive": "Exclusivo",
-            "discount": "Descuento"
-        },
+		"post": {
+			"title": "Publicación",
+			"publicationDate": "Publicado el",
+			"updateDate": "Actualizado el"
+		},
 
-        "contact": {
-            "title": "Contacto",
-            "memberSince": "Miembro desde"
-        },
+		"stats": {
+			"title": "Estadísticas del vendedor",
 
-        "post": {
-            "title": "Publicación",
-            "publicationDate": "Publicado el",
-            "updateDate": "Actualizado el",
+			"sellerStats": {
+				"successfulSales": "Propiedades vendidas",
+				"successfulRent": "Propiedades alquiladas",
+				"averageRating": "Calificación"
+			}
+		},
+		
+		"actionButton": {
+			"popup": {
+				"title": "Acciones de la publicación",
+				"edit": {
+					"title": "Editar"
+				},
+				"archive": {
+					"title": "Archivar",
+					"popup": {
+						"title": "Archivar publicación",
+						"warning": "Archivar esta publicación es permanente y no se puede deshacer. Una vez archivada, la publicación se eliminará de la vista pública y no podrá restaurarse. Asegúrese de que realmente desea archivar esta publicación antes de continuar.",
+						"continue": "Archivar publicación",
+						"success": "Su publicación fue archivada."
+					}
+				},
+				"mark": {
+					"sold": {
+						"title": "Marcar como vendida"
+					},
+					"rented": {
+						"title": "Marcar como alquilada"
+					},
+					"popup": {
+						"sale": {
+							"title": "Marcar como vendida",
+							"warning": "Marcar esta propiedad como vendida es permanente y no se puede deshacer.",
+							"continue": "Marcar"
+						},
+						"rent": {
+							"title": "Marcar como alquilada",
+							"warning": "Marcar esta propiedad como alquilada puede revertirse más adelante si es necesario.",
+							"continue": "Marcar"
+						}
+					}
+				},
+				"unmark": {
+					"title": "Marcar como disponible",
+					"popup": {
+						"title": "Marcar como disponible",
+						"warning": "Marcar esta publicación como disponible nuevamente la hará visible para otros usuarios. Una vez reactivada, la propiedad aparecerá en los resultados de búsqueda y podrá ser vista y contactada por usuarios interesados.",
+						"continue": "Desmarcar"
+					}
+				},
+				"report": {
+					"title": "Reportar",
+					"popup": {
+						"title": "Reportar publicación",
+						"reason": {
+							"title": "Motivo",
+							"fraud": "Fraude",
+							"spam": "Spam",
+							"incorrect_info": "Información incorrecta",
+							"inappropriate": "Inapropiado"
+						},
+						"comment": {
+							"title": "Comentario",
+							"placeholder": "Ingrese su comentario aquí."
+						},
+						"warning": "Reportar una publicación le permite alertar a nuestro equipo de moderación sobre contenido que puede ser inexacto, inapropiado o que infrinja nuestras normas.",
+						"submit": "Enviar"
+					}
+				},
+				"modAction": {
+					"title": "Acción del moderador",
+					"popup": {
+						"title": "Acción del moderador",
+						"action": {
+							"block_temporary": "Bloqueo temporal",
+							"archive_permanent": "Archivar permanentemente",
+							"request_clarification": "Solicitar aclaración",
+							"reject_reports": "Rechazar reporte"
+						},
+						"reason": {
+							"title": "Motivo",
+							"placeholder": "Ingrese el motivo aquí."
+						},
+						"messageToSeller": {
+							"title": "Mensaje al vendedor",
+							"placeholder": "Ingrese su mensaje aquí."
+						},
+						"internalNote": {
+							"title": "Nota interna",
+							"placeholder": "Ingrese su nota aquí."
+						},
+						"submit": "Enviar"
+					}
+				}
+			}
+		},
 
-            "availability": {
-                "status": {
-                    "available": "Esta oferta está disponible.",
-                    "not_available": "Esta oferta ya no está disponible."
-                },
-
-                "buttons": {
-                    "rented": "No disponible",
-                    "sold": "Vendido",
-                    "markRented": "Marcar como alquilado",
-                    "markSold": "Marcar como vendido"
-                },
-
-                "popup": {
-                    "markRented": {
-                        "title": "Alquilado",
-                        "explanation": "Al marcar la publicación como alquilada, solo podrá desmarcarla después de 1 mes desde el momento del cambio.",
-                        "accept": "Marcar como alquilado"
-                    },
-                    "unmarkRented": {
-                        "title": "Volver al mercado",
-                        "explanation": "Desmarcar esta publicación la volverá a mostrar en el feed de otros usuarios. ¿Desea continuar?",
-                        "accept": "Desmarcar"
-                    },
-                    "markSold": {
-                        "title": "Vendido",
-                        "explanation": "Al marcar la publicación como vendida, no podrá deshacer este proceso. ¿Está seguro de continuar?",
-                        "accept": "Marcar como vendido"
-                    }
-                }
-            },
-
-            "archive": {
-                "buttons": {
-                    "title": "Archivar",
-                    "disabled": "Esta publicación está archivada"
-                },
-
-                "popup": {
-                    "title": "Archivar publicación",
-                    "warning": "La publicación archivada no será visible para otros usuarios.\nEsta acción no se puede deshacer.\n¿Está seguro?",
-                    "continue": "Archivar ahora"
-                }
-            }
-        },
-
-        "stats": {
-            "title": "Estadísticas del vendedor",
-
-            "sellerStats": {
-                "totalListings": "Anuncios",
-                "activeListings": "En el mercado",
-                "successfulSales": "Propiedades vendidas",
-                "successfulRents": "Propiedades alquiladas",
-                "averageRating": "Calificación",
-                "responseRate": "Tasa de respuesta"
-            }
-        },
-
-        "postStats": {
-            "title": "Estadísticas de la publicación",
-            "views": "Vistas",
-            "reservations": "Reservas",
-            "feedbacks": "Comentarios"
-        },
-
-        "pictures": {
-            "buttons": {
-                "seeMore": "Ver más"
-            }
-        }
-    }
+		"postStats": {
+			"title": "Estadísticas de la publicación",
+			"views": "Vistas",
+			"reservations": "Reservas",
+			"feedbacks": "Comentarios"
+		}
+	}
 }

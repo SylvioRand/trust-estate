@@ -1,179 +1,192 @@
 {
-    "ERROR": "Lamentablemente, se ha producido un error.",
-    "ai": {
-        "rate_limited_generate": "Ha alcanzado el límite de solicitudes. Por favor, espere un momento antes de volver a intentarlo.",
-        "success_generate": "Su descripción se ha mejorado con éxito.",
-        "not_enough_data": "La descripción proporcionada no contiene suficiente información para ser mejorada. Por favor, añada más detalles e inténtelo de nuevo."
-    },
-    "common": {
-        "validation_failed": "Los datos proporcionados no son válidos.",
-        "rate_limited": "Demasiadas solicitudes. Por favor, inténtelo de nuevo más tarde.",
-        "unauthorized": "Se requiere autenticación.",
-        "internal_server_error": "Se ha producido un error interno del servidor."
-    },
-    "auth": {
-        "verification_email_sent": "Se ha enviado un correo electrónico de verificación.",
-        "verification_email_sent_if_exists": "Se ha enviado un correo electrónico de verificación si la cuenta existe.",
-        "email_already_exists": "Esta dirección de correo electrónico ya está en uso.",
-        "phone_already_exists": "Este número de teléfono ya está en uso.",
-        "account_activated_bonus": "La cuenta se ha activado con éxito. Se han otorgado cinco créditos.",
-        "verification_token_invalid": "El enlace de verificación no es válido o ha caducado.",
-        "reset_password_email_sent": "Si la dirección de correo electrónico existe, se ha enviado un enlace de restablecimiento.",
-        "password_reset_success": "La contraseña se ha actualizado con éxito.",
-        "reset_token_invalid": "El enlace de restablecimiento no es válido o ha caducado.",
-        "email_verification_required": "Se requiere la verificación del correo electrónico antes de iniciar sesión.",
-        "invalid_credentials": "El correo electrónico o la contraseña son incorrectos.",
-        "login_max_attempts_exceeded": "Demasiados intentos de inicio de sesión. La cuenta ha sido bloqueada temporalmente.",
-        "logout_success": "Ha cerrado sesión con éxito.",
-        "phone_update_success": "El número de teléfono se ha actualizado con éxito.",
-        "invalid_or_expired_token": "El token no es válido o ha caducado.",
-        "password_add_success": "La contraseña se ha añadido con éxito.",
-        "password_update_success": "La contraseña se ha actualizado con éxito.",
-        "info_update_success": "Su información se ha actualizado con éxito.",
-        "not_authenticated_user": "Usuario no autenticado.",
-        "forgot_pass_user_not_found": "No hay ningún usuario asociado a este correo electrónico.",
-        "passwordAndConfirmationIsDifferent": "Las dos contraseñas no coinciden."
-    },
-    "validation": {
-        "email": {
-            "invalid_format": "El formato del correo electrónico no es válido.",
-            "too_long": "El correo electrónico no debe superar los 255 caracteres."
-        },
-        "firstname": {
-            "too_short": "El nombre debe tener al menos 2 caracteres.",
-            "too_long": "El nombre no debe superar los 50 caracteres.",
-            "invalid_chars": "El nombre solo puede contener letras y espacios."
-        },
-        "lastname": {
-            "too_short": "El apellido debe tener al menos 2 caracteres.",
-            "too_long": "El apellido no debe superar los 50 caracteres.",
-            "invalid_chars": "El apellido solo puede contener letras y espacios."
-        },
-        "phone": {
-            "invalid_format": "El formato del número de teléfono no es válido (+261 32/33/34/38 seguido de 7 dígitos)."
-        },
-        "password": {
-            "too_short": "La contraseña debe tener al menos 8 caracteres.",
-            "too_long": "La contraseña no debe superar los 128 caracteres.",
-            "missing_uppercase": "La contraseña debe contener al menos una letra mayúscula.",
-            "missing_lowercase": "La contraseña debe contener al menos una letra minúscula.",
-            "missing_digit": "La contraseña debe contener al menos un número."
-        },
-        "file": {
-            "too_large": "El archivo supera el tamaño máximo permitido de 5 MB.",
-            "invalid_format": "El formato del archivo no es compatible."
-        },
-        "listing": {
-            "zone": {
-                "invalid_value": "Se ha enviado una zona no válida al servidor."
-            },
-            "photos": {
-                "min_count": "Se requiere un mínimo de 3 imágenes.",
-                "max_count": "Se permite un máximo de 10 imágenes."
-            },
-            "price": {
-                "positive": "El precio debe ser un valor positivo."
-            },
-            "title": {
-                "too_long": "El título no debe superar los 100 caracteres."
-            },
-            "description": {
-                "too_long": "La descripción no debe superar los 2000 caracteres."
-            },
-            "schedule": {
-                "invalid_day": "El día debe estar entre 0 (domingo) y 6 (sábado).",
-                "invalid_time": "El formato de la hora no es válido (HH:mm)."
-            },
-            "status": {
-                "invalid": "El valor del estado no es válido."
-            },
-            "report_reason": {
-                "invalid": "El motivo del reporte no es válido."
-            },
-            "report_comment": {
-                "too_short": "El comentario es demasiado corto (mínimo 10 caracteres).",
-                "too_long": "El comentario es demasiado largo (máximo 500 caracteres)."
-            }
-        },
-        "uuid": {
-            "invalid": "El formato del UUID no es válido."
-        },
-        "reservation": {
-            "slot": {
-                "invalid_format": "El formato de la fecha no es válido (se espera ISO 8601).",
-                "past_or_too_soon": "El horario seleccionado debe ser al menos dos horas en el futuro."
-            }
-        },
-        "feedback": {
-            "rating": {
-                "range": "La calificación debe estar entre 1 y 5."
-            },
-            "comment": {
-                "too_short": "El comentario es demasiado corto.",
-                "too_long": "El comentario es demasiado largo."
-            }
-        },
-        "payment": {
-            "amount": {
-                "positive": "El monto debe ser un valor positivo.",
-                "min": "El monto mínimo requerido es de 1 crédito."
-            },
-            "provider": {
-                "invalid": "El proveedor de pago no es válido."
-            }
-        },
-        "moderator": {
-            "action": {
-                "invalid": "La acción solicitada no es válida."
-            },
-            "reason": {
-                "too_short": "El motivo proporcionado es demasiado corto.",
-                "too_long": "El motivo proporcionado es demasiado largo."
-            }
-        }
-    },
-    "listing": {
-        "not_found": "No se encontró el anuncio.",
-        "publish_success": "El anuncio se ha publicado con éxito.",
-        "limit_reached": "Se ha alcanzado el límite máximo de 10 anuncios activos.",
-        "permission_denied": "Solo puede modificar sus propios anuncios.",
-        "renew_success": "El anuncio se ha renovado por 30 días.",
-        "availability_updated": "La disponibilidad se ha actualizado.",
-        "report_success": "El reporte se ha enviado con éxito.",
-        "already_reported": "Este anuncio ya ha sido reportado."
-    },
-    "reservation": {
-        "slot_already_reserved": "El horario seleccionado ya está reservado.",
-        "created_success": "La reserva ha sido enviada. Se ha deducido un crédito.",
-        "confirmed_success": "La reserva ha sido confirmada.",
-        "cannot_reserve_own": "No puede reservar su propio anuncio.",
-        "slot_unavailable": "El horario seleccionado no está disponible.",
-        "cancellation_too_late": "No se permite la cancelación con menos de dos horas de antelación.",
-        "permission_denied": "Solo puede cancelar sus propias reservas.",
-        "not_found": "No se encontró la reserva.",
-        "already_processed": "Esta reserva ya ha sido procesada.",
-        "permission_denied_confirmation": "Solo el vendedor puede confirmar esta reserva.",
-        "permission_denied_rejection": "Solo el vendedor puede rechazar esta reserva."
-    },
-    "feedback": {
-        "created_success": "La opinión se ha registrado con éxito.",
-        "already_exists": "Ya se ha dejado una opinión para esta visita.",
-        "reservation_not_done": "Solo se puede dejar una opinión después de la visita."
-    },
-    "payment": {
-        "insufficient_credits_publish": "Saldo de créditos insuficiente para publicar el anuncio.",
-        "insufficient_credits_renew": "Saldo insuficiente para renovar el anuncio (se requieren 0.5 créditos).",
-        "insufficient_credits_reservation": "Saldo insuficiente para realizar una reserva (se requiere 1 crédito).",
-        "transaction_failed": "El pago ha fallado. Por favor, compruebe su saldo de Mobile Money.",
-        "rate_limited_recharge": "Demasiados intentos de recarga. Se permite un máximo de tres por hora."
-    },
-    "moderator": {
-        "forbidden": {
-            "moderator_only": "El acceso está reservado a los moderadores."
-        },
-        "action_applied_successfully": "La acción se ha aplicado con éxito y el vendedor ha sido notificado."
-    },
-    "global": {
-        "500": "Se ha producido un error interno del servidor. Inténtelo de nuevo en un momento."
-    }
+	"ERROR": "Lamentablemente se produjo un error.",
+	"ai": {
+		"timeout": "Tiempo de espera agotado: la IA tarda demasiado en responder. Por favor, espere un momento antes de intentarlo de nuevo.",
+		"rate_limited_generate": "Has alcanzado el límite de solicitudes. Por favor, espera un momento antes de intentarlo de nuevo.",
+		"success_generate": "Tu descripción se ha mejorado correctamente.",
+		"not_enough_data": "La descripción proporcionada no contiene suficiente información para ser mejorada. Añade más detalles e inténtalo de nuevo.",
+		"listing_not_indexed": "El anuncio no está en la base de datos.",
+		"wrong_format": "Error en el formato de la solicitud.",
+		"chroma_general": "La base de datos chromadb tuvo un problema.",
+		"chroma_delete": "La base de datos chromadb no pudo eliminar los datos.",
+		"chroma_add": "La base de datos chromadb no pudo agregar los datos.",
+		"chroma_modify": "La base de datos chromadb no pudo actualizar los datos.",
+		"chroma_get_data": "La base de datos chromadb no pudo encontrar los datos solicitados."
+	},
+	"common": {
+		"validation_failed": "Los datos proporcionados no son válidos.",
+		"rate_limited": "Demasiadas solicitudes. Por favor, inténtalo de nuevo más tarde.",
+		"unauthorized": "Se requiere autenticación.",
+		"internal_server_error": "Ocurrió un error interno del servidor."
+	},
+	"auth": {
+		"verification_email_sent": "Se ha enviado un correo electrónico de verificación.",
+		"verification_email_sent_if_exists": "Se ha enviado un correo electrónico de verificación si la cuenta existe.",
+		"email_already_exists": "Esta dirección de correo electrónico ya está en uso.",
+		"phone_already_exists": "Este número de teléfono ya está en uso.",
+		"account_activated_bonus": "La cuenta se ha activado correctamente. Se han otorgado cinco créditos.",
+		"verification_token_invalid": "El enlace de verificación no es válido o ha expirado.",
+		"reset_password_email_sent": "Si la dirección de correo electrónico existe, se ha enviado un enlace de restablecimiento.",
+		"password_reset_success": "La contraseña se ha actualizado correctamente.",
+		"reset_token_invalid": "El enlace de restablecimiento no es válido o ha expirado.",
+		"email_verification_required": "Se requiere verificación de correo electrónico antes de iniciar sesión.",
+		"invalid_credentials": "La dirección de correo electrónico o la contraseña son incorrectas.",
+		"login_max_attempts_exceeded": "Demasiados intentos de inicio de sesión. La cuenta ha sido bloqueada temporalmente.",
+		"logout_success": "Has cerrado sesión correctamente.",
+		"phone_update_success": "El número de teléfono se ha actualizado correctamente.",
+		"invalid_or_expired_token": "El token no es válido o ha expirado.",
+		"password_add_success": "Tu contraseña se ha añadido correctamente.",
+		"password_update_success": "Tu contraseña se ha actualizado correctamente.",
+		"info_update_success": "Tu información se ha actualizado correctamente.",
+		"not_authenticated_user": "El usuario no está autenticado.",
+		"forgot_pass_user_not_found": "No hay ningún usuario asociado a esta dirección de correo electrónico.",
+		"passwordAndConfirmationIsDifferent": "Las dos contraseñas no coinciden."
+	},
+	"validation": {
+		"email": {
+			"invalid_format": "El formato de la dirección de correo electrónico no es válido.",
+			"too_long": "La dirección de correo electrónico no debe superar los 255 caracteres."
+		},
+		"firstname": {
+			"too_short": "El nombre debe contener al menos 3 caracteres.",
+			"too_long": "El nombre no debe superar los 50 caracteres.",
+			"invalid_chars": "El nombre solo puede contener letras y espacios."
+		},
+		"lastname": {
+			"too_short": "El apellido debe contener al menos 3 caracteres.",
+			"too_long": "El apellido no debe superar los 50 caracteres.",
+			"invalid_chars": "El apellido solo puede contener letras y espacios."
+		},
+		"phone": {
+			"invalid_format": "El formato del número de teléfono no es válido (+261 32/33/34/38 seguido de 7 dígitos)."
+		},
+		"password": {
+			"too_short": "La contraseña debe contener al menos 8 caracteres.",
+			"too_long": "La contraseña no debe superar los 128 caracteres.",
+			"missing_uppercase": "La contraseña debe contener al menos una letra mayúscula.",
+			"missing_lowercase": "La contraseña debe contener al menos una letra minúscula.",
+			"missing_digit": "La contraseña debe contener al menos un dígito."
+		},
+		"file": {
+			"too_large": "El archivo supera el tamaño máximo permitido de 5 MB.",
+			"invalid_format": "El formato del archivo no es compatible."
+		},
+		"listing": {
+			"zone": {
+				"invalid_value": "Se envió una zona no válida al back-end."
+			},
+			"photos": {
+				"min_count": "Se requiere un mínimo de 3 imágenes.",
+				"max_count": "Se permite un máximo de 10 imágenes."
+			},
+			"price": {
+				"positive": "El precio debe ser un valor positivo."
+			},
+			"title": {
+				"too_long": "El título no debe superar los 100 caracteres."
+			},
+			"description": {
+				"too_long": "La descripción no debe superar los 2000 caracteres."
+			},
+			"schedule": {
+				"invalid_day": "El día debe estar entre 0 (domingo) y 6 (sábado).",
+				"invalid_time": "El formato de la hora no es válido (HH:mm)."
+			},
+			"status": {
+				"invalid": "El valor del estado no es válido."
+			},
+			"report_reason": {
+				"invalid": "El motivo del reporte no es válido."
+			},
+			"report_comment": {
+				"too_short": "El comentario es demasiado corto (mínimo 10 caracteres).",
+				"too_long": "El comentario es demasiado largo (máximo 500 caracteres)."
+			}
+		},
+		"uuid": {
+			"invalid": "El formato del UUID no es válido."
+		},
+		"reservation": {
+			"slot": {
+				"invalid_format": "El formato de la fecha no es válido (se espera ISO 8601).",
+				"past_or_too_soon": "El horario seleccionado debe estar en el futuro por al menos dos horas."
+			}
+		},
+		"feedback": {
+			"rating": {
+				"range": "La calificación debe estar entre 1 y 5."
+			},
+			"comment": {
+				"too_short": "El comentario es demasiado corto.",
+				"too_long": "El comentario es demasiado largo."
+			}
+		},
+		"payment": {
+			"amount": {
+				"positive": "El monto debe ser un valor positivo.",
+				"min": "El monto mínimo requerido es 1 crédito."
+			},
+			"provider": {
+				"invalid": "El proveedor de pago no es válido."
+			}
+		},
+		"moderator": {
+			"action": {
+				"invalid": "La acción solicitada no es válida."
+			},
+			"reason": {
+				"too_short": "El motivo proporcionado es demasiado corto.",
+				"too_long": "El motivo proporcionado es demasiado largo."
+			}
+		}
+	},
+	"listing": {
+		"not_found": "No se pudo encontrar el anuncio.",
+		"publish_success": "El anuncio se ha publicado correctamente.",
+		"limit_reached": "Se ha alcanzado el límite máximo de 10 anuncios activos.",
+		"permission_denied": "Solo puedes modificar tus propios anuncios.",
+		"renew_success": "El anuncio se ha renovado por 30 días.",
+		"availability_updated": "La disponibilidad se ha actualizado.",
+		"report_success": "El reporte se ha enviado correctamente.",
+		"already_reported": "Este anuncio ya ha sido reportado.",
+		"marked_as_sold": "Este anuncio fue marcado como vendido.",
+		"marked_as_rented": "Este anuncio fue marcado como alquilado.",
+		"made_available": "Este anuncio fue marcado como disponible.",
+		"change_saved": "El anuncio se ha actualizado."
+	},
+	"reservation": {
+		"slot_already_reserved": "El horario seleccionado ya está reservado.",
+		"created_success": "La reserva ha sido enviada. Se ha descontado un crédito.",
+		"confirmed_success": "La reserva ha sido confirmada.",
+		"cannot_reserve_own": "No puedes reservar tu propio anuncio.",
+		"already_reserved": "Ya tienes una reserva pendiente para este anuncio.",
+		"slot_unavailable": "El horario seleccionado no está disponible.",
+		"cancellation_too_late": "La cancelación no está permitida con menos de dos horas antes de la cita.",
+		"permission_denied": "Solo puedes cancelar tus propias reservas.",
+		"not_found": "No se pudo encontrar la reserva.",
+		"already_processed": "Esta reserva ya ha sido procesada.",
+		"permission_denied_confirmation": "Solo el vendedor puede confirmar esta reserva.",
+		"permission_denied_rejection": "Solo el vendedor puede rechazar esta reserva."
+	},
+	"feedback": {
+		"created_success": "La opinión se ha registrado correctamente.",
+		"already_exists": "La opinión ya ha sido enviada para esta visita.",
+		"reservation_not_done": "La opinión solo puede enviarse después de la visita."
+	},
+	"payment": {
+		"insufficient_credits_publish": "No hay créditos suficientes para publicar el anuncio.",
+		"insufficient_credits_renew": "No hay saldo suficiente para renovar el anuncio (se requieren 0.5 créditos).",
+		"insufficient_credits_reservation": "No hay saldo suficiente para realizar una reserva (se requiere 1 crédito).",
+		"transaction_failed": "El pago falló. Por favor, verifica tu saldo de Mobile Money.",
+		"rate_limited_recharge": "Demasiados intentos de recarga. Se permite un máximo de tres por hora."
+	},
+	"moderator": {
+		"forbidden": {
+			"moderator_only": "El acceso está restringido a los moderadores."
+		},
+		"action_applied_successfully": "La acción se ha aplicado correctamente y el vendedor ha sido notificado."
+	},
+	"global": {
+		"500": "Ocurrió un error interno del servidor. Inténtalo de nuevo en un momento."
+	}
 }

@@ -19,7 +19,7 @@ import { type PropertyType } from "../dataModel/modelListings";
 import { Link } from "react-router-dom";
 import ActionButton from "../components/ActionButton";
 
-type	MetadataAI = {
+type MetadataAI = {
 	photos: string,
 	title: string,
 	price: number,
@@ -30,7 +30,7 @@ type	MetadataAI = {
 }
 
 // TO REMOVE
-const	exampleMetadataAI: MetadataAI = {
+const exampleMetadataAI: MetadataAI = {
 	photos: "https://images.unsplash.com/photo-1564703048291-bcf7f001d83d?q=80&w=1530&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
 	title: "A little heaven in earth",
 	price: 2500000000,
@@ -40,19 +40,19 @@ const	exampleMetadataAI: MetadataAI = {
 	zone: "Analakely"
 }
 
-interface	MetadataComponentsProps {
+interface MetadataComponentsProps {
 	metadata: MetadataAI
 }
 
-const	MetadataComponents: React.FC<MetadataComponentsProps> = ({
+const MetadataComponents: React.FC<MetadataComponentsProps> = ({
 	metadata
 }) => {
-	const	formatter = new Intl.NumberFormat("de-DE");
-	const	{ t } = useTranslation("common");
+	const formatter = new Intl.NumberFormat("de-DE");
+	const { t } = useTranslation("common");
 
 	return (
 		<div
-		className="grid grid-cols-1 grid-rows-[auto_1fr]
+			className="grid grid-cols-1 grid-rows-[auto_1fr]
 		min-w-60 max-w-60
 		gap-2
 		rounded-2xl
@@ -62,42 +62,42 @@ const	MetadataComponents: React.FC<MetadataComponentsProps> = ({
 		flex-none"
 		>
 			<div
-			className="w-full aspect-square"
+				className="w-full aspect-square"
 			>
 				<img
-				className="rounded-2xl
+					className="rounded-2xl
 				w-full h-full object-cover"
-				src={ metadata.photos }
-				alt="Picture of a house"
+					src={metadata.photos}
+					alt="Picture of a house"
 				/>
 			</div>
 			<div
-			className="flex flex-col items-start justify-center
+				className="flex flex-col items-start justify-center
 			px-2
 			mb-2
 			text-left
 			w-full"
 			>
 				<div
-				className="font-higuen font-bold text-lg truncate max-w-full"
+					className="font-higuen font-bold text-lg truncate max-w-full"
 				>
-					{ metadata.title }
+					{metadata.title}
 				</div>
 				<div
-				className="flex items-center justify-center gap-1
+					className="flex items-center justify-center gap-1
 				text-sm"
 				>
-					<div className="font-icon"></div><div className="truncate max-w-50">{ `${t(`propertyType.${metadata.propertyType}`)}, ${metadata.zone}` }</div>
+					<div className="font-icon"></div><div className="truncate max-w-50">{`${t(`propertyType.${metadata.propertyType}`)}, ${metadata.zone}`}</div>
 				</div>
 				<div className="font-bold my-2">
-					{ `${formatter.format(metadata.price)} Ar` }
+					{`${formatter.format(metadata.price)} Ar`}
 				</div>
 				<Link
-				className="w-full"
-				to={ `/property/listings?id=${metadata.id}` }
+					className="w-full"
+					to={`/property/listings?id=${metadata.id}`}
 				>
 					<ActionButton
-					title={ t("viewDetails") }
+						title={t("viewDetails")}
 					/>
 				</Link>
 			</div>
@@ -118,23 +118,23 @@ const Message: React.FC<MessageProps> = ({
 }) => {
 	return (
 		<div
-		className="animate-fade-in
+			className="animate-fade-in
 		flex flex-col items-start justify-center
 		gap-3
 		w-full"
-		style={{
-		  animationDuration: "50ms"
-		}}
+			style={{
+				animationDuration: "50ms"
+			}}
 		>
 			<div
-			className="flex
+				className="flex
 			animate-from-bottom
 			px-4 md:px-7 
 			w-full"
-			style={{
-				justifyContent: side === "right" ? "flex-end" : "flex-start",
-			animationDuration: "50ms"
-			}}
+				style={{
+					justifyContent: side === "right" ? "flex-end" : "flex-start",
+					animationDuration: "50ms"
+				}}
 			>
 				<div className="rounded-xl
 			  max-w-[70%]
@@ -153,7 +153,7 @@ const Message: React.FC<MessageProps> = ({
 				</div>
 			</div>
 			<div
-			className="xl:max-w-[70%] flex-none
+				className="xl:max-w-[70%] flex-none
 			py-3
 			px-4
 			gap-3
@@ -168,8 +168,8 @@ const Message: React.FC<MessageProps> = ({
 					metadata.map((value: MetadataAI, index: number) => {
 						return (
 							<MetadataComponents
-							key={ index }
-							metadata={ value }
+								key={index}
+								metadata={value}
 							/>
 						);
 					})
@@ -193,8 +193,6 @@ const AIPage: React.FC = () => {
 
 	const [canSend, setCanSend] = useState<boolean>(true);
 	const { t } = useTranslation(["ai", "error", "common"]);
-
-	VerifyUsersState();
 
 	const handleSendButton = async () => {
 		if (!chatValue.trim() || !canSend)
@@ -265,7 +263,7 @@ const AIPage: React.FC = () => {
 						setMessageData((prev) => {
 							return (
 								prev.map((value: MessageProps, index: number) => {
-									return (index === 0 ? {...value, metadata: data.metadata} : value);
+									return (index === 0 ? { ...value, metadata: data.metadata } : value);
 								})
 							)
 						})
@@ -299,11 +297,11 @@ const AIPage: React.FC = () => {
 					if (value.value === "ERROR: IA PART: " && value.side === "left")
 						return (
 							<div
-							className="flex items-center justify-start
+								className="flex items-center justify-start
 							w-full"
 							>
 								<div
-								className="flex items-center justify-center gap-3
+									className="flex items-center justify-center gap-3
 								rounded-xl
 								p-3
 								shadow-standard
@@ -311,36 +309,36 @@ const AIPage: React.FC = () => {
 								outline-solid outline-1 outline-red-500/50"
 								>
 									<div
-									className="flex items-center justify-center">
+										className="flex items-center justify-center">
 										<div
-										className="font-icon text-4xl text-red-500 animate-pulse"
-										style={{
-											textShadow: "0px 0px 4px color-mix(in srgb, var(--color-red-500) 75%, transparent)"
-										}}
+											className="font-icon text-4xl text-red-500 animate-pulse"
+											style={{
+												textShadow: "0px 0px 4px color-mix(in srgb, var(--color-red-500) 75%, transparent)"
+											}}
 										>
 											
 										</div>
 									</div>
 									<div
-									className="font-light
+										className="font-light
 									text-sm">
-										{ t("error:ERROR") }
+										{t("error:ERROR")}
 									</div>
 								</div>
 							</div>
-					);
+						);
 					if (value.value === "")
 						return (
 							<div
-							className="flex items-center justify-start
+								className="flex items-center justify-start
 							w-full"
 							>
 								<div
-								className="font-light
+									className="font-light
 								text-sm
 								animate-fade-in"
 								>
-			   						{ t("message.processing") }
+									{t("message.processing")}
 								</div>
 							</div>
 						);
@@ -357,11 +355,11 @@ const AIPage: React.FC = () => {
 
 			<div className="w-full h-20 flex-none"></div>
 			<div
-			className="fixed bottom-0 left-0
+				className="fixed bottom-0 left-0
 			bg-linear-to-t from-foreground to-transparent
 			w-full h-24"
 			>
-				
+
 			</div>
 			<div className="fixed bottom-8
 				px-4 md:px-7 xl:px-64
@@ -400,7 +398,7 @@ const AIPage: React.FC = () => {
 							cursor-pointer
 							select-none
 							w-8 h-8"
-							disabled={!canSend}
+							disabled={!canSend || chatValue === ""}
 							onClick={handleSendButton}
 						>
 							<div className="font-icon text-3xl
