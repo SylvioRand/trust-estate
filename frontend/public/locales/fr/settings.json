@@ -61,6 +61,8 @@
 			"title": "Paramètres",
 			"downloadGDPR": "Télécharger mes informations GDPR",
 			"deleteAccount": "Supprimer mon compte",
+			"termOfService": "Conditions d’utilisation",
+			"privacyPolicy": "Politique de confidentialité",
 			"logout": "Se déconnecter",
 			"popup": {
 				"deleteAccount": {

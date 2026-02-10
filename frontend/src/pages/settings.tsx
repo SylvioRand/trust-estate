@@ -537,6 +537,27 @@ const SettingsPage: React.FC = () => {
 						hover_color="var(--color-red-500)"
 						onClick={handleLogOut}
 					/>
+					<Link
+						className="w-full"
+						to="/privacy-policy"
+					>
+						<SettingsButton
+							icon="󱤟"
+							title={t("section.settings.privacyPolicy")}
+							onClick={() => { }}
+						/>
+					</Link>
+
+					<Link
+						className="w-full"
+						to="/term-of-services"
+					>
+						<SettingsButton
+							icon=""
+							title={t("section.settings.termOfService")}
+							onClick={() => { }}
+						/>
+					</Link>
 				</div>
 			</BoxSection>
 
