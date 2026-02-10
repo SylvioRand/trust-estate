@@ -10,7 +10,7 @@
 //                                                                            //
 // ************************************************************************** //
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
 import { useTranslation } from "react-i18next";
 import Markdown from 'react-markdown';
@@ -18,6 +18,7 @@ import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import { type PropertyType } from "../dataModel/modelListings";
 import { Link } from "react-router-dom";
 import ActionButton from "../components/ActionButton";
+import Animate from "../components/Animate";
 
 type MetadataAI = {
 	photos: string,
@@ -280,6 +281,13 @@ const AIPage: React.FC = () => {
 		}
 	}
 
+	useEffect(() => {
+		if (chatValue === "")
+			setCanSend(false);
+		else
+			setCanSend(true);
+	}, [chatValue]);
+
 	return (
 		<div className="flex flex-col-reverse items-center justify-start
 			overflow-y-scroll
@@ -398,7 +406,10 @@ const AIPage: React.FC = () => {
 							cursor-pointer
 							select-none
 							w-8 h-8"
-							disabled={!canSend || chatValue === ""}
+							style={{
+								opacity: canSend === true ? "100%" : "25%"
+							}}
+							disabled={!canSend}
 							onClick={handleSendButton}
 						>
 							<div className="font-icon text-3xl
