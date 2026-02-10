@@ -61,6 +61,8 @@
 			"title": "Settings",
 			"downloadGDPR": "Download GDPR",
 			"deleteAccount": "Delete your account",
+			"termOfService": "Terms of Service",
+			"privacyPolicy": "Privacy Policy",
 			"logout": "Log out",
 
 			"popup": {
