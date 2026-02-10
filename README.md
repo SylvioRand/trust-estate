@@ -164,7 +164,6 @@ Database system:
 ## Modules
 
 ## Major Modules
-
 ### 1. Public API
 A secured public API for interacting with the database.
 
@@ -177,7 +176,6 @@ A secured public API for interacting with the database.
 	- `POST   /api/{resource}`
 	- `PUT    /api/{resource}`
 	- `DELETE /api/{resource}`
----
 ### 2. Advanced Permission System
 A role-based access control (RBAC) system.
 
@@ -185,7 +183,6 @@ A role-based access control (RBAC) system.
 - Full user management (CRUD operations)
 - Role management (admin, user, guest, moderator, etc.)
 - Conditional views and actions based on user roles
----
 ### 3. Retrieval-Augmented Generation (RAG) System
 An AI-powered question–answering system built on contextual retrieval.
 
@@ -198,7 +195,6 @@ An AI-powered question–answering system built on contextual retrieval.
 - Assigned to **aelison**
 - Implemented using **ChromaDB**
 - Experimentation with multiple system prompts for optimal RAG behavior
----
 ### 4. LLM System Interface
 A unified interface for interacting with Large Language Models.
 
@@ -219,7 +215,6 @@ A scalable backend architecture built with independent services.
 - Loosely coupled services with clear responsibilities
 - Communication via REST APIs and/or message queues
 - Each service follows the single-responsibility principle
----
 ## Minor Modules
 
 ### Frontend & Backend Stack
