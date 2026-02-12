@@ -9,7 +9,7 @@ export default function MainLayout() {
 			relative"
 		>
 			<ToastContainer
-				position="bottom-center"
+				position="bottom-right"
 				hideProgressBar
 				style={{
 					padding: "1rem"
@@ -19,8 +19,8 @@ export default function MainLayout() {
 					borderWidth: "1px",
 					borderColor: "color-mix(in srgb, var(--color-background) 25%, transparent)",
 					borderRadius: "var(--radius-xl)",
-					fontSize: "12px"
-
+					fontSize: "12px",
+					marginBottom: "0.75rem"
 				}}
 			/>
 
