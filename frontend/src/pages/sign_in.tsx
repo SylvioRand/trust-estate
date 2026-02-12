@@ -55,11 +55,11 @@ const SignInPage: React.FC = () => {
 					setErrorEmail([t(errorData.message)])
 					setErrorPassword([t(errorData.message)])
 					toast.error(t("error:" + errorData.message));
-					throw new Error("Invalid credentials");
+					throw new Error("");
 				}
 				else if (response.status === 429) {
 					toast.error(t("error:" + errorData.message));
-					throw new Error("Rate Limiting");
+					throw new Error("");
 				}
 			}
 
