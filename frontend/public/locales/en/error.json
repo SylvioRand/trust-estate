@@ -4,7 +4,7 @@
 		"timeout": "Timeout: the ai take too long to response. Please wait a moment before trying again.",
 		"rate_limited_generate": "You’ve reached the rate limit. Please wait a moment before trying again.",
 		"success_generate": "Your description was successfully enhanced.",
-		"not_enough_data": "The provided description does not contain enough information to be enhanced. Please add more details and try again.",
+		"not_enough_data": "The provided description does not contain enough information to be enhanced. At least 200 characters are required. Please add more details and try again.",
 		"listing_not_indexed": "Listing not inside database.",
 		"wrong_format": "Error in the request format.",
 		"chroma_general": "The database chromadb got an issue.",
