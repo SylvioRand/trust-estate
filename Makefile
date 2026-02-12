@@ -1,4 +1,4 @@
-.PHONY: all build up down clean logs restart status dev rebuild db-sync seed certs reload-listings reload-nginx reload-reservation reload-credits reload-ai reload-chromadb reload-auth check run-no-ai
+.PHONY: all build up down clean logs restart status dev rebuild db-sync seed certs reload-% check run-no-ai
 
 define PrintWarning
 	printf "[\033[33m WARNING \033[0m]: $(1)\n"
@@ -63,7 +63,7 @@ seed:
 	@$(call PrintSuccess,Seeding complete)
 
 build:
-	@$(call PrintInfo, -> Building containers with $(DOCKER_COMPOSE) ...)
+	@$(call PrintInfo, -> Building containers with $(DOCKER_COMPOSE)(This can take a while) ...)
 	@$(DOCKER_COMPOSE) build > /dev/null 2>&1 || ($(call PrintError,Build failed); exit 1)
 	@$(call PrintSuccess,Containers built)
 
@@ -102,7 +102,8 @@ dev: build
 
 reload-%:
 	@$(call PrintInfo,Reloading $* service ...)
-	@$(DOCKER_COMPOSE) up -d --build $*-service > /dev/null 2>&1 || ($(call PrintError,Failed to reload $*); exit 1)
+	@$(DOCKER_COMPOSE) up -d --build $* > /dev/null 2>&1 || \
+		($(call PrintError,Failed to reload $*); exit 1)
 	@$(call PrintSuccess,$* service reloaded)
 
 check:
