@@ -157,7 +157,7 @@ const BuyerSlotsPage: React.FC = () => {
     )
 
   return (
-    <div className="flex justify-center w-full">
+    <div className="flex justify-center w-full bg-foreground">
       <div className=" w-full max-w-[1425px] pt-[60px] md:pt-[100px] mb-20 px-4 text-background">
         <CommonPart listingID={listingID} />
         <div className="w-full mx-auto rounded-3xl shadow-2xl flex flex-col md:flex-row gap-0 bg-card-bg  overflow-hidden border border-highlight/20 transition-colors duration-300">
