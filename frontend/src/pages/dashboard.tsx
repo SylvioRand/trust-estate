@@ -13,7 +13,7 @@ const DashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("visits");
   VerifyUsersState()
   const { isConnected } = useDataProvider();
-  ``
+
   if (isConnected !== null && isConnected === false) {
     console.log("isConnected? -> ", isConnected);
     navigate("/sign-in", { state: { from: location.pathname } });

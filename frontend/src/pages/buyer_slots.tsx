@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
 import { useState } from "react";
@@ -9,7 +9,8 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { useEffect } from "react";
 import { fr, enUS } from "date-fns/locale";
-
+import useDataProvider from "../provider/useDataProvider";
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 const CommonPart: React.FC<{ listingID: string }> = ({ listingID }) => {
   const { t } = useTranslation("buyerSlots");
@@ -62,8 +63,17 @@ const BuyerSlotsPage: React.FC = () => {
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [isConfirming, setIsConfirming] = useState<boolean>(false);
   const url = `/api/reservations/get-slot?id=${listingID}`;
+  const navigate = useNavigate();
+  const location = useLocation();
+  VerifyUsersState()
+  const { isConnected } = useDataProvider();
 
   useEffect(() => {
+    console.log("location.pathname = ", location.pathname, "\n");
+    if (isConnected !== null && isConnected === false) {
+      console.log("isConnected? -> ", isConnected);
+      navigate("/sign-in", { state: { from: location.pathname + location.search } });
+    }
     const fetchSlots = async () => {
       try {
         const response = await fetch(url, {
@@ -89,7 +99,7 @@ const BuyerSlotsPage: React.FC = () => {
     };
 
     fetchSlots();
-  }, [url]);
+  }, [url, isConnected, navigate, location.pathname, location.search]);
 
   const handleConfirm = async () => {
     if (!selectedSlot || !availability?.sellerId) return;
