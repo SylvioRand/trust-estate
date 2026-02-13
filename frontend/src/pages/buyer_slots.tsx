@@ -97,7 +97,7 @@ const BuyerSlotsPage: React.FC = () => {
     };
 
     fetchSlots();
-  }, [url, isConnected, navigate, location.pathname, location.search]);
+  }, [url, isConnected, navigate, location.pathname, location.search, showConfirmation]);
 
   const handleConfirm = async () => {
     if (!selectedSlot || !availability?.sellerId) return;
