@@ -40,7 +40,8 @@
 		"info_update_success": "Your information was successfully updated.",
 		"not_authenticated_user": "User are not authenticated.",
 		"forgot_pass_user_not_found": "No user is associated with this email address.",
-		"passwordAndConfirmationIsDifferent": "The two password doesn't match."
+		"passwordAndConfirmationIsDifferent": "The two password doesn't match.",
+		"user_permission_updated_successfully": "User permissions have been successfully updated."
 	},
 	"validation": {
 		"email": {
@@ -166,15 +167,21 @@
 		"not_found": "The reservation could not be found.",
 		"already_processed": "This reservation has already been processed.",
 		"permission_denied_confirmation": "Only the seller may confirm this reservation.",
-		"permission_denied_rejection": "Only the seller may reject this reservation."
+		"permission_denied_rejection": "Only the seller may reject this reservation.",
+		"not_completed": "The visit has not yet taken place and therefore cannot be rated."
 	},
 	"feedback": {
 		"created_success": "The feedback has been successfully recorded.",
 		"already_exists": "Feedback has already been submitted for this visit.",
-		"reservation_not_done": "Feedback may only be submitted after the visit."
+		"reservation_not_done": "Feedback may only be submitted after the visit.",
+		"feedback_not_eligible": "You may only leave feedback for reservations you have made.",
+		"invalid_rating": "The provided rating is invalid.",
+		"invalid_comment_length": "The comment length is invalid.",
+		"feedback_not_found": "The feedback could not be found."
 	},
 	"payment": {
 		"insufficient_credits_publish": "There are insufficient credits to publish the listing.",
+		"service_unavailable": "The payment service is currently unavailable. Please try again later.",
 		"insufficient_credits_renew": "There is insufficient balance to renew the listing (0.5 credit required).",
 		"insufficient_credits_reservation": "There is insufficient balance to make a reservation (1 credit required).",
 		"transaction_failed": "The payment failed. Please verify your Mobile Money balance.",
