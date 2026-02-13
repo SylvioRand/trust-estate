@@ -181,7 +181,8 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 
 		let redirectUrl = `${request.server.config.FRONTEND_URL}/home?auth_google=success`;
 		if (state && state !== 'state_parameter_passthrough_value') {
-			redirectUrl = `${request.server.config.FRONTEND_URL}${state}?auth_google=success`;
+			const separator = state.includes('?') ? '&' : '?';
+			redirectUrl = `${request.server.config.FRONTEND_URL}${state}${separator}auth_google=success`;
 		}
 
 		return (reply.redirect(redirectUrl));

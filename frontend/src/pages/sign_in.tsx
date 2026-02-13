@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SimpleInput, { PasswordInput } from "../components/Input";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
@@ -19,9 +19,12 @@ const SignInPage: React.FC = () => {
 
 	const location = useLocation();
 
-	// if connected, redirect to the profile of the user
-	if (isConnected !== null && isConnected === true)
-		navigate("/profile");
+	useEffect(() => {
+		if (isConnected === true) {
+			const from = location.state?.from || "/profile";
+			navigate(from, { replace: true });
+		}
+	}, [isConnected, navigate, location.state?.from]);
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -68,6 +71,7 @@ const SignInPage: React.FC = () => {
 			const from = location.state?.from;
 
 			if (from) {
+				console.log("from = ", from); // TODO remove
 				navigate(from, { replace: true });
 			} else {
 				const canGoBack = window.history.state && window.history.state.idx > 0;
@@ -91,7 +95,7 @@ const SignInPage: React.FC = () => {
 		setgoogleProcessing(true);
 		if (from) {
 			console.log("Fallback: ", from);
-			window.location.href = '/api/auth/google?fallback=' + from;
+			window.location.href = '/api/auth/google?fallback=' + encodeURIComponent(from);
 		}
 		else
 			window.location.href = '/api/auth/google';
