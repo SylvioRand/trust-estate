@@ -69,9 +69,7 @@ const BuyerSlotsPage: React.FC = () => {
   const { isConnected } = useDataProvider();
 
   useEffect(() => {
-    console.log("location.pathname = ", location.pathname, "\n");
     if (isConnected !== null && isConnected === false) {
-      console.log("isConnected? -> ", isConnected);
       navigate("/sign-in", { state: { from: location.pathname + location.search } });
     }
     const fetchSlots = async () => {

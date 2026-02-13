@@ -71,7 +71,6 @@ const SignInPage: React.FC = () => {
 			const from = location.state?.from;
 
 			if (from) {
-				console.log("from = ", from); // TODO remove
 				navigate(from, { replace: true });
 			} else {
 				const canGoBack = window.history.state && window.history.state.idx > 0;
@@ -94,7 +93,6 @@ const SignInPage: React.FC = () => {
 		const from = location.state?.from;
 		setgoogleProcessing(true);
 		if (from) {
-			console.log("Fallback: ", from);
 			window.location.href = '/api/auth/google?fallback=' + encodeURIComponent(from);
 		}
 		else
