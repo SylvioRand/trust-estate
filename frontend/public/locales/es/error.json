@@ -39,8 +39,9 @@
 		"password_update_success": "Tu contraseña se ha actualizado correctamente.",
 		"info_update_success": "Tu información se ha actualizado correctamente.",
 		"not_authenticated_user": "El usuario no está autenticado.",
-		"forgot_pass_user_not_found": "No hay ningún usuario asociado con esta dirección de correo electrónico.",
-		"passwordAndConfirmationIsDifferent": "Las dos contraseñas no coinciden."
+		"forgot_pass_user_not_found": "No hay ningún usuario asociado a esta dirección de correo electrónico.",
+		"passwordAndConfirmationIsDifferent": "Las dos contraseñas no coinciden.",
+		"user_permission_updated_successfully": "Los permisos del usuario se han actualizado correctamente."
 	},
 	"validation": {
 		"email": {
@@ -166,18 +167,24 @@
 		"not_found": "No se pudo encontrar la reserva.",
 		"already_processed": "Esta reserva ya ha sido procesada.",
 		"permission_denied_confirmation": "Solo el vendedor puede confirmar esta reserva.",
-		"permission_denied_rejection": "Solo el vendedor puede rechazar esta reserva."
+		"permission_denied_rejection": "Solo el vendedor puede rechazar esta reserva.",
+		"not_completed": "La visita aún no ha tenido lugar y por lo tanto no puede ser calificada."
 	},
 	"feedback": {
-		"created_success": "El comentario se ha registrado correctamente.",
-		"already_exists": "Ya se ha enviado un comentario para esta visita.",
-		"reservation_not_done": "Solo se pueden enviar comentarios después de la visita."
+		"created_success": "La opinión se ha registrado correctamente.",
+		"already_exists": "La opinión ya ha sido enviada para esta visita.",
+		"reservation_not_done": "La opinión solo puede enviarse después de la visita.",
+		"feedback_not_eligible": "Solo puedes dejar una opinión para las reservas que has realizado.",
+		"invalid_rating": "La calificación proporcionada es inválida.",
+		"invalid_comment_length": "La longitud del comentario es inválida.",
+		"feedback_not_found": "La opinión no se pudo encontrar."
 	},
 	"payment": {
-		"insufficient_credits_publish": "No hay suficientes créditos para publicar el anuncio.",
-		"insufficient_credits_renew": "No hay saldo suficiente para renovar el anuncio (se requiere 0,5 créditos).",
-		"insufficient_credits_reservation": "No hay saldo suficiente para hacer una reserva (se requiere 1 crédito).",
-		"transaction_failed": "El pago falló. Por favor, verifica el saldo de tu Mobile Money.",
+		"insufficient_credits_publish": "No hay créditos suficientes para publicar el anuncio.",
+		"service_unavailable": "El servicio de pago no está disponible. Por favor, inténtalo más tarde.",
+		"insufficient_credits_renew": "No hay saldo suficiente para renovar el anuncio (se requieren 0.5 créditos).",
+		"insufficient_credits_reservation": "No hay saldo suficiente para realizar una reserva (se requiere 1 crédito).",
+		"transaction_failed": "El pago falló. Por favor, verifica tu saldo de Mobile Money.",
 		"rate_limited_recharge": "Demasiados intentos de recarga. Se permite un máximo de tres por hora."
 	},
 	"moderator": {
