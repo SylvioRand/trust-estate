@@ -146,11 +146,11 @@ We used slack to communicate with the team.
 
 ## Technical stack
 
-Frontend technogies: 
+Frontend technogies: **React**
 
-Backend technologies: 
+Backend technologies: **Fastify**, **FastAPI**
 
-Database system: 
+Database system: **PostgresSQL**
 
 
 ## Database schema
@@ -219,7 +219,7 @@ A scalable backend architecture built with independent services.
 
 ### Frontend & Backend Stack
 - Frontend framework: **React**
-- Backend framework: **Express**
+- Backend framework: **Fastify**, **FastAPI**
 - Database ORM: **Prisma ORM** with **PostgreSQL**
 
 ### Platform Features
