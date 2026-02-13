@@ -6,6 +6,7 @@ import PopUp from "../PopUp";
 import StatusTag from "./StatusTag";
 import StatusAvatar from "./StatusAvatar";
 import IconActionButton from "./IconActionButton";
+import { Link } from "react-router-dom";
 
 interface ReservationCardProps {
     reservation: Reservation;
@@ -46,8 +47,9 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatus
             <div className="absolute inset-0 bg-linear-to-r from-accent/0 via-accent/2 to-accent/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
             <div className="relative p-6 lg:p-5 flex flex-col lg:flex-row items-center gap-5 lg:w-[35%] bg-white/1">
-                {/* Miniature Image */}
-                <div className="relative w-full lg:w-24 h-48 lg:h-24 rounded-xl overflow-hidden shadow-md border border-(--color-content-dash)/15 shrink-0">
+                <Link
+                    to={`/property/listings?id=${listing.id}`}
+                    className="relative w-full lg:w-24 h-48 lg:h-24 rounded-xl overflow-hidden shadow-md border border-(--color-content-dash)/15 shrink-0 transition-transform hover:scale-[1.02] active:scale-[0.98]">
                     {listing.photos?.[0] ? (
                         <img src={listing.photos[0]} alt={listing.title} className="w-full h-full object-cover" />
                     ) : (
@@ -56,16 +58,18 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ reservation, onStatus
                     <div className="absolute top-3 left-3 lg:hidden">
                         <StatusTag status={status} cancelledBy={cancelledBy} />
                     </div>
-                </div>
+                </Link>
 
                 <div className="flex flex-col gap-1.5 w-full min-w-0">
                     <div className="flex items-center gap-2 opacity-50">
                         <span className="w-3 h-px bg-(--color-content-dash)" />
                         <p className="text-(--color-content-dash) text-[9px] uppercase font-bold tracking-[0.2em]">{t("card.labels.property")}</p>
                     </div>
-                    <h2 className="text-(--color-content-dash) font-bold text-xl lg:text-lg leading-tight line-clamp-2 lg:line-clamp-1">
-                        {listing.title}
-                    </h2>
+                    <Link to={`/property/listings?id=${listing.id}`} className="hover:text-accent transition-colors">
+                        <h2 className="text-(--color-content-dash) font-bold text-xl lg:text-lg leading-tight line-clamp-2 lg:line-clamp-1">
+                            {listing.title}
+                        </h2>
+                    </Link>
                     <div className="flex flex-col gap-1 mt-1">
                         <p className="text-(--color-accent-dash) font-black text-base tracking-tighter">{listing.price.toLocaleString()} Ar</p>
                         <div className="flex items-center gap-1 opacity-50 text-(--color-content-dash)">
