@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, type ChangeEvent } from "react";
 
 export type InputEnumData = {
 	value: string;
@@ -9,15 +9,18 @@ interface InputEnumProps {
 	title: string;
 	name: string;
 	defaultValue?: string;
+	startValue?: string;
 	dataEnum: InputEnumData[];
 }
 
 const InputEnum: React.FC<InputEnumProps> = ({
 	title = "Title",
 	name = "InputEnumName",
-	defaultValue = "",
+	defaultValue = "none",
+	startValue = "",
 	dataEnum = []
 }) => {
+	const	 [value, setValue] = useState<string>(startValue || defaultValue);
 
 	return (
 		<div className="flex flex-col items-center justify-center
@@ -40,7 +43,8 @@ const InputEnum: React.FC<InputEnumProps> = ({
 				shadow-standard
 				"
 				name={name}
-				defaultValue={defaultValue}
+				onChange={ (e: ChangeEvent<HTMLSelectElement>) => setValue(e.currentTarget.value) }
+				value={value}
 			>
 				{
 					dataEnum.length > 0 && dataEnum.map((value: InputEnumData, index: number) => {
