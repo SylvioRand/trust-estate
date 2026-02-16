@@ -73,6 +73,17 @@
 			"invalid_format": "The file format is not supported."
 		},
 		"listing": {
+			"page": {
+				"invalid_value": "The page must be a number.",
+				"integer": "The page must be an integer.",
+				"too_low": "The page must be at least 1."
+			},
+			"limit": {
+				"invalid_value": "The limit must be a number.",
+				"integer": "The limit must be an integer",
+				"too_low": "The limit must be at least 1.",
+				"too_high": "The limit must not exceed 100."
+			},
 			"zone": {
 				"invalid_value": "An invalid zone was passed to the back-end."
 			},
@@ -81,17 +92,47 @@
 				"max_count": "A maximum of 10 images is allowed."
 			},
 			"price": {
-				"positive": "The price must be a positive value."
+				"invalid_value": "The price must be a number.",
+				"integer": "The price must be an integer.",
+				"too_low": "The price must be at least 1.",
+				"too_high": "The price must not exceed 2147483647."
 			},
+			"price_range_invalid": "The price range is invalid.",
+			"surface": {
+				"invalid_value": "The surface must be a number.",
+				"too_low": "The surface must be at least 1.",
+				"too_high": "The surface must not exceed 2147483647."
+			},
+			"surface_range_invalid": "The surface range is invalid.",
+			"bedroom": {
+				"invalid_value": "The bedroom must be a number.",
+				"integer": "The bedroom must be an integer.",
+				"positive": "The bedroom must be a positive number.",
+				"too_high": "The bedroom must not exceed 2147483647."
+			},
+			"bedroom_range_invalid": "The bedroom range is invalid.",
+			"bathroom": {
+				"invalid_value": "The bathroom must be a number.",
+				"integer": "The bathroom must be an integer.",
+				"positive": "The bathroom must be a positive number.",
+				"too_high": "The bathroom must not exceed 2147483647."
+			},
+			"bathroom_range_invalid": "The bathroom range is invalid.",
 			"title": {
+				"too_short": "The title must contain at least 3 characters.",
 				"too_long": "The title must not exceed 100 characters."
 			},
 			"description": {
+				"too_short": "The description must contain at least 200 characters",
 				"too_long": "The description must not exceed 2000 characters."
 			},
 			"schedule": {
 				"invalid_day": "The day must be between 0 (Sunday) and 6 (Saturday).",
-				"invalid_time": "The time format is invalid (HH:mm)."
+				"invalid_time": "The time format is invalid (HH:mm).",
+				"invalid_range": "The end time must be after the start time."
+			},
+			"date": {
+				"invalid_format": "The date format is invalid (YYYY-MM-DD expected)."
 			},
 			"status": {
 				"invalid": "The status value is invalid."

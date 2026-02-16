@@ -31,7 +31,7 @@ export async function handleGetSellerStats(request: FastifyRequest, reply: Fasti
     if (error instanceof z.ZodError) {
       return reply.status(400).send({
         error: "validation_failed",
-        details: error.issues
+        details: error.issues.map(issue => issue.message)
       });
     }
     console.error(error);

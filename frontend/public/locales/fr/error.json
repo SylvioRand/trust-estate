@@ -72,6 +72,17 @@
 			"invalid_format": "Le format du fichier n'est pas pris en charge."
 		},
 		"listing": {
+			"page": {
+				"invalid_value": "La page doit être un nombre.",
+				"integer": "La page doit être un entier.",
+				"too_low": "La page doit être au moins 1."
+			},
+			"limit": {
+				"invalid_value": "La limite doit être un nombre.",
+				"integer": "La limite doit être un entier.",
+				"too_low": "La limite doit être au moins 1.",
+				"too_high": "La limite ne doit pas dépasser 100."
+			},
 			"zone": {
 				"invalid_value": "Une zone invalide a été envoyée au back-end."
 			},
@@ -80,17 +91,47 @@
 				"max_count": "Un maximum de 10 images est autorisé."
 			},
 			"price": {
-				"positive": "Le prix doit être une valeur positive."
+				"invalid_value": "Le prix doit être un nombre.",
+				"integer": "Le prix doit être un entier.",
+				"too_low": "Le prix doit être au moins 1.",
+				"too_high": "Le prix ne doit pas dépasser 2147483647."
 			},
+			"price_range_invalid": "La plage de prix est invalide.",
+			"surface": {
+				"invalid_value": "La surface doit être un nombre.",
+				"too_low": "La surface doit être au moins 1.",
+				"too_high": "La surface ne doit pas dépasser 2147483647."
+			},
+			"surface_range_invalid": "La plage de surface est invalide.",
+			"bedroom": {
+				"invalid_value": "Le nombre de chambres doit être un nombre.",
+				"integer": "Le nombre de chambres doit être un entier.",
+				"positive": "Le nombre de chambres doit être positif.",
+				"too_high": "Le nombre de chambres ne doit pas dépasser 2147483647."
+			},
+			"bedroom_range_invalid": "La plage du nombre de chambres est invalide.",
+			"bathroom": {
+				"invalid_value": "Le nombre de salles de bain doit être un nombre.",
+				"integer": "Le nombre de salles de bain doit être un entier.",
+				"positive": "Le nombre de salles de bain doit être positif.",
+				"too_high": "Le nombre de salles de bain ne doit pas dépasser 2147483647."
+			},
+			"bathroom_range_invalid": "La plage du nombre de salles de bain est invalide.",
 			"title": {
+				"too_short": "Le titre doit contenir au moins 3 caractères.",
 				"too_long": "Le titre ne doit pas dépasser 100 caractères."
 			},
 			"description": {
+				"too_short": "La description doit contenir au moins 200 caractères.",
 				"too_long": "La description ne doit pas dépasser 2000 caractères."
 			},
 			"schedule": {
 				"invalid_day": "Le jour doit être compris entre 0 (dimanche) et 6 (samedi).",
-				"invalid_time": "Le format de l'heure est invalide (HH:mm)."
+				"invalid_time": "Le format de l'heure est invalide (HH:mm).",
+				"invalid_range": "L'heure de fin doit être après l'heure de début."
+			},
+			"date": {
+				"invalid_format": "Le format de la date est invalide (AAAA-MM-JJ attendu)."
 			},
 			"status": {
 				"invalid": "La valeur du statut est invalide."

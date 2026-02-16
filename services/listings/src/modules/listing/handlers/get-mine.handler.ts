@@ -13,17 +13,12 @@ export async function handleGetMine(request: FastifyRequest, reply: FastifyReply
 
         const formattedData = result.listings.map(listing => ({
             id: listing.id,
-            propertyType: listing.propertyType,
             title: listing.title,
-            description: listing.description,
             price: listing.price,
-            surface: listing.surface,
-            zone: listing.zone,
-            features: listing.features,
-            tags: listing.tags,
             type: listing.type,
             status: listing.status,
             isAvailable: listing.isAvailable,
+            tags: listing.tags,
             views: listing.stats?.views || 0,
             reservations: listing.stats?.reservations || 0,
             photos: listing.photos.map((p: string) => `/uploads/${p}`),
@@ -33,7 +28,7 @@ export async function handleGetMine(request: FastifyRequest, reply: FastifyReply
         return reply.send({
             data: formattedData,
             stats: result.stats,
-            pagination: {
+            pagination: {           // Add to contract if needed 
                 page: query.page,
                 limit: query.limit,
                 totalMatching: result.countMatching,
@@ -45,7 +40,7 @@ export async function handleGetMine(request: FastifyRequest, reply: FastifyReply
         if (error instanceof ZodError) {
             return reply.status(400).send({
                 error: "validation_failed",
-                details: error.issues
+                details: error.issues.map(issue => issue.message)
             });
         }
         console.error(error);

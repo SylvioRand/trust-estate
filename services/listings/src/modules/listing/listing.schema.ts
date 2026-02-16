@@ -1,4 +1,4 @@
-import { uuid, z } from 'zod';
+import { z } from 'zod';
 import zonesData from '../../shared/zones.json';
 import { ReportReason } from '@prisma/client';
 
@@ -10,18 +10,52 @@ const ZoneSchema = z.enum(validZone, {
 export const PublishListingSchema = z.object({
   type: z.enum(['sale', 'rent']),
   propertyType: z.enum(['apartment', 'house', 'loft', 'land', 'commercial']),
-
-  title: z.string().min(10, { message: 'validation.listing.title.too_short' }).max(100, { message: 'validation.listing.title.too_long' }),
-  description: z.string().min(50, { message: 'validation.listing.description.too_short' }).max(2000, { message: 'validation.listing.description.too_long' }),
-
-  price: z.number().int().positive({ message: 'validation.listing.price.positive' }).max(999_999_999_999),
-  surface: z.number().int().positive().max(10_000),
-
+  title: z.string().min(3,
+    "validation.listing.title.too_short"
+  ).max(100,
+    "validation.listing.title.too_long"
+  ),
+  description: z.string().min(200,
+    "validation.listing.description.too_short"
+  ).max(2000,
+    "validation.listing.description.too_long"
+  ),
+  price: z.number(
+    "validation.listing.price.invalid_value"
+  ).int(
+    "validation.listing.price.integer"
+  ).min(1,
+    "validation.listing.price.too_low"
+  ).max(2147483647,
+    "validation.listing.price.too_high"
+  ),
+  surface: z.number(
+    "validation.listing.surface.invalid_value"
+  ).min(1,
+    "validation.listing.surface.too_low"
+  ).max(2147483647,
+    "validation.listing.surface.too_high"
+  ),
   zone: ZoneSchema,
-
   features: z.object({
-    bedrooms: z.number().int().min(0),
-    bathrooms: z.number().int().min(0),
+    bedrooms: z.number(
+      "validation.listing.bedroom.invalid_value"
+    ).int(
+      "validation.listing.bedroom.integer"
+    ).positive(
+      "validation.listing.bedroom.positive"
+    ).max(2147483647,
+      "validation.listing.bedroom.too_high"
+    ),
+    bathrooms: z.number(
+      "validation.listing.bathroom.invalid_value"
+    ).int(
+      "validation.listing.bathroom.integer"
+    ).positive(
+      "validation.listing.bathroom.positive"
+    ).max(2147483647,
+      "validation.listing.bathroom.too_high"
+    ),
     wc: z.boolean(),
     wc_separate: z.boolean(),
     parking_type: z.enum(['none', 'garage', 'box', 'parking']),
@@ -30,7 +64,6 @@ export const PublishListingSchema = z.object({
     water_access: z.boolean(),
     electricity_access: z.boolean(),
   }),
-
   tags: z.array(z.enum(['urgent', 'exclusive', 'discount'])).default([])
 }).strict();
 export type PropertyListing = z.infer<typeof PublishListingSchema>;
@@ -40,8 +73,23 @@ export type PropertyListing = z.infer<typeof PublishListingSchema>;
 export const GetMineListingsSchema = z.object({
   status: z.enum(['active', 'archived', 'blocked', 'all']).default('all'),
 
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100, "validation.listing.limit.too_high").default(20),
+  page: z.coerce.number(
+    "validation.listing.page.invalid_value"
+  ).int(
+    "validation.listing.page.integer"
+  ).min(1,
+    "validation.listing.page.too_low"
+  ).default(1),
+
+  limit: z.coerce.number(
+    "validation.listing.limit.invalid_value"
+  ).int(
+    "validation.listing.limit.integer"
+  ).min(1,
+    "validation.listing.limit.too_low"
+  ).max(100,
+    "validation.listing.limit.too_high"
+  ).default(20),
 });
 export type GetMineListingsQuery = z.infer<typeof GetMineListingsSchema>;
 
@@ -51,14 +99,74 @@ export const SearchListingsSchema = z.object({
   type: z.enum(['sale', 'rent']).optional(),
   propertyType: z.enum(['apartment', 'house', 'loft', 'land', 'commercial']).optional(),
 
-  minPrice: z.coerce.number().optional(),
-  maxPrice: z.coerce.number().optional(),
-  minSurface: z.coerce.number().optional(),
-  maxSurface: z.coerce.number().optional(),
-  minBedRoom: z.coerce.number().optional(),
-  maxBedRoom: z.coerce.number().optional(),
-  minBathRoom: z.coerce.number().optional(),
-  maxBathRoom: z.coerce.number().optional(),
+  minPrice: z.coerce.number(
+    "validation.listing.price.invalid_value"
+  ).int(
+    "validation.listing.price.integer"
+  ).min(1,
+    "validation.listing.price.too_low"
+  ).max(2147483647,
+    "validation.listing.price.too_high"
+  ).optional(),
+  maxPrice: z.coerce.number(
+    "validation.listing.price.invalid_value"
+  ).int(
+    "validation.listing.price.integer"
+  ).min(1,
+    "validation.listing.price.too_low"
+  ).max(2147483647,
+    "validation.listing.price.too_high"
+  ).optional(),
+  minSurface: z.coerce.number(
+    "validation.listing.surface.invalid_value"
+  ).min(1,
+    "validation.listing.surface.too_low"
+  ).max(2147483647,
+    "validation.listing.surface.too_high"
+  ).optional(),
+  maxSurface: z.coerce.number(
+    "validation.listing.surface.invalid_value"
+  ).min(1,
+    "validation.listing.surface.too_low"
+  ).max(2147483647,
+    "validation.listing.surface.too_high"
+  ).optional(),
+  minBedRoom: z.coerce.number(
+    "validation.listing.bedroom.invalid_value"
+  ).int(
+    "validation.listing.bedroom.integer"
+  ).positive(
+    "validation.listing.bedroom.positive"
+  ).max(2147483647,
+    "validation.listing.bedroom.too_high"
+  ).optional(),
+  maxBedRoom: z.coerce.number(
+    "validation.listing.bedroom.invalid_value"
+  ).int(
+    "validation.listing.bedroom.integer"
+  ).positive(
+    "validation.listing.bedroom.positive"
+  ).max(2147483647,
+    "validation.listing.bedroom.too_high"
+  ).optional(),
+  minBathRoom: z.coerce.number(
+    "validation.listing.bathroom.invalid_value"
+  ).int(
+    "validation.listing.bathroom.integer"
+  ).positive(
+    "validation.listing.bathroom.positive"
+  ).max(2147483647,
+    "validation.listing.bathroom.too_high"
+  ).optional(),
+  maxBathRoom: z.coerce.number(
+    "validation.listing.bathroom.invalid_value"
+  ).int(
+    "validation.listing.bathroom.integer"
+  ).positive(
+    "validation.listing.bathroom.positive"
+  ).max(2147483647,
+    "validation.listing.bathroom.too_high"
+  ).optional(),
   parkingType: z.preprocess((val) => {
     if (typeof val === 'string') return [val];
     return val;
@@ -73,15 +181,29 @@ export const SearchListingsSchema = z.object({
   }, z.array(z.enum(['urgent', 'exclusive', 'discount'])).optional()),
   zone: ZoneSchema.optional(),
 
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
+  page: z.coerce.number(
+    "validation.listing.page.invalid_value"
+  ).int(
+    "validation.listing.page.integer"
+  ).min(1,
+    "validation.listing.page.too_low"
+  ).default(1),
+  limit: z.coerce.number(
+    "validation.listing.limit.invalid_value"
+  ).int(
+    "validation.listing.limit.integer"
+  ).min(1,
+    "validation.listing.limit.too_low"
+  ).max(100,
+    "validation.listing.limit.too_high"
+  ).default(20),
 }).refine((data) => {
   if (data.minPrice !== undefined && data.maxPrice !== undefined) {
     return data.minPrice <= data.maxPrice;
   }
   return true;
 }, {
-  message: "validation.listing.search.price_range_invalid",
+  message: "validation.listing.price_range_invalid",
   path: ["minPrice"]
 }).refine((data) => {
   if (data.minSurface !== undefined && data.maxSurface !== undefined) {
@@ -89,7 +211,7 @@ export const SearchListingsSchema = z.object({
   }
   return true;
 }, {
-  message: "validation.listing.search.surface_range_invalid",
+  message: "validation.listing.surface_range_invalid",
   path: ["minSurface"]
 }).refine((data) => {
   if (data.minBedRoom !== undefined && data.maxBedRoom !== undefined) {
@@ -97,7 +219,7 @@ export const SearchListingsSchema = z.object({
   }
   return true;
 }, {
-  message: "validation.listing.search.bedroom_range_invalid",
+  message: "validation.listing.bedroom_range_invalid",
   path: ["minBedRoom"]
 }).refine((data) => {
   if (data.minBathRoom !== undefined && data.maxBathRoom !== undefined) {
@@ -105,7 +227,7 @@ export const SearchListingsSchema = z.object({
   }
   return true;
 }, {
-  message: "validation.listing.search.bathroom_range_invalid",
+  message: "validation.listing.bathroom_range_invalid",
   path: ["minBathRoom"]
 });
 export type SearchListingsQuery = z.infer<typeof SearchListingsSchema>;
@@ -140,8 +262,8 @@ export const ReportListingSchema = z.object({
     message: 'validation.listing.report_reason.invalid'
   }),
   comment: z.string()
-    .min(10, { message: 'validation.listing.report_comment.too_short' })
-    .max(500, { message: 'validation.listing.report_comment.too_long' })
+    .min(10, "validation.listing.report_comment.too_short")
+    .max(500, "validation.listing.report_comment.too_long")
     .optional()
 }).strict();
 export type ReportListing = z.infer<typeof ReportListingSchema>;
@@ -162,9 +284,21 @@ const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
 export const UpdateAvailabilitySchema = z.object({
   weeklySchedule: z.array(
     z.object({
-      dayOfWeek: z.number().int({ message: 'validation.listing.schedule.invalid_day' }).min(0, { message: 'validation.listing.schedule.invalid_day' }).max(6, { message: 'validation.listing.schedule.invalid_day' }),
-      startTime: z.string().regex(timeRegex, { message: "validation.listing.schedule.invalid_time" }),
-      endTime: z.string().regex(timeRegex, { message: "validation.listing.schedule.invalid_time" }),
+      dayOfWeek: z.number(
+        "validation.listing.schedule.invalid_day"
+      ).int(
+        "validation.listing.schedule.invalid_day"
+      ).min(0,
+        "validation.listing.schedule.invalid_day"
+      ).max(6,
+        "validation.listing.schedule.invalid_day"
+      ),
+      startTime: z.string().regex(timeRegex,
+        "validation.listing.schedule.invalid_time"
+      ),
+      endTime: z.string().regex(timeRegex,
+        "validation.listing.schedule.invalid_time"
+      ),
     })
   )
     .refine((data) => {
@@ -186,7 +320,7 @@ export type UpdateavailabilityType = z.infer<typeof UpdateAvailabilitySchema>;
 
 
 export const GetSlotsQuerySchema = z.object({
-  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "validation.invalid_date_format"),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "validation.listing.date.invalid_format"),
   days: z.coerce.number().int().min(1).max(14).default(7) // On limite à 14 jours par exemple
 });
 export type GetSlotsQuery = z.infer<typeof GetSlotsQuerySchema>;

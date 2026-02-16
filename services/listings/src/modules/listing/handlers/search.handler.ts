@@ -6,7 +6,6 @@ import { ZodError } from "zod";
 export async function handleSearch(request: FastifyRequest, reply: FastifyReply) {
   try {
     const query = SearchListingsSchema.parse(request.query);
-    console.log("query: ", query);
     const result = await ListingService.searchListings(query);
 
     const currentUser = (request as any).user;
@@ -32,7 +31,7 @@ export async function handleSearch(request: FastifyRequest, reply: FastifyReply)
       pagination: {
         page: query.page,
         limit: query.limit,
-        totalMatching: result.countMatching, // Add to contract if needed
+        totalMatching: result.countMatching,
         totalPages: Math.ceil(result.countMatching / query.limit)
       }
     });
@@ -41,7 +40,7 @@ export async function handleSearch(request: FastifyRequest, reply: FastifyReply)
     if (error instanceof ZodError) {
       return reply.status(400).send({
         error: "validation_failed",
-        details: error.issues
+        details: error.issues.map(issue => issue.message)
       });
     }
     console.error(error);
