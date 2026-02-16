@@ -7,8 +7,10 @@ import ActionButton from "../components/ActionButton";
 import type { SlotsData } from "../dataModel/modelSlots";
 import i18n from "../i18n/i18n";
 import { toast } from "react-toastify";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import ContentDivider from "../components/ContentDivider";
+import useDataProvider from "../provider/useDataProvider";
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 interface AddSlotsButtonProps {
 	t: TFunction<"slots">;
@@ -293,15 +295,26 @@ const SellerSlotsPage: React.FC = () => {
 
 	const [initialData, setInitialData] = useState<SlotsData[]>(fetchedSlots.map(s => ({ ...s })));
 	const dataChanged: boolean = areSlotsEqual(fetchedSlots, initialData);
-	//const [areSaving, setAreSaving] = useState<boolean>(false);
 	const [areProcessingSave, setAreProcessingSave] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(true);
+	const navigate = useNavigate();
+	const location = useLocation();
+	VerifyUsersState()
+	const { isConnected } = useDataProvider();
 
-	// get the id inside the query
 	const [searchParams] = useSearchParams();
 	const listingID = searchParams.get("id");
 
 	useEffect(() => {
+		if (isConnected) {
+			console.log("user is connected here\n");
+			setTimeout(() => {
+				console.log("user is connected here\n");
+			}, 10000);
+		}
+		if (isConnected !== null && isConnected === false) {
+			navigate("/sign-in", { state: { from: location.pathname + location.search } });
+		}
 		if (!listingID) return;
 
 		const fetchAvailability = async () => {
@@ -328,7 +341,7 @@ const SellerSlotsPage: React.FC = () => {
 		};
 
 		fetchAvailability();
-	}, [listingID]);
+	}, [listingID, isConnected, location, navigate]);
 
 	const handleSaving = async () => {
 		if (!listingID) return;
