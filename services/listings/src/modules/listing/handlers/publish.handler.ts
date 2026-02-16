@@ -97,7 +97,7 @@ function handleError(error: any, reply: FastifyReply) {
       zodIssues.forEach((err: any) => {
         const field = err.path.join('.');
         if (!details[field]) details[field] = [];
-        details[field].push(`validation.listing.${field}.${err.code}`);
+        details[field].push(err.message);
       });
     }
 

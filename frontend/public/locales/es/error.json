@@ -73,6 +73,17 @@
 			"invalid_format": "El formato del archivo no es compatible."
 		},
 		"listing": {
+			"page": {
+				"invalid_value": "La página debe ser un número.",
+				"integer": "La página debe ser un entero.",
+				"too_low": "La página debe ser al menos 1."
+			},
+			"limit": {
+				"invalid_value": "El límite debe ser un número.",
+				"integer": "El límite debe ser un entero.",
+				"too_low": "El límite debe ser al menos 1.",
+				"too_high": "El límite no debe exceder los 100."
+			},
 			"zone": {
 				"invalid_value": "Se pasó una zona inválida al backend."
 			},
@@ -81,17 +92,47 @@
 				"max_count": "Se permite un máximo de 10 imágenes."
 			},
 			"price": {
-				"positive": "El precio debe ser un valor positivo."
+				"invalid_value": "El precio debe ser un número.",
+				"integer": "El precio debe ser un entero.",
+				"too_low": "El precio debe ser al menos 1.",
+				"too_high": "El precio no debe exceder los 2147483647."
 			},
+			"price_range_invalid": "El rango de precios es inválido.",
+			"surface": {
+				"invalid_value": "La superficie debe ser un número.",
+				"too_low": "La superficie debe ser al menos 1.",
+				"too_high": "La superficie no debe exceder los 2147483647."
+			},
+			"surface_range_invalid": "El rango de superficie es inválido.",
+			"bedroom": {
+				"invalid_value": "El número de habitaciones debe ser un número.",
+				"integer": "El número de habitaciones debe ser un entero.",
+				"positive": "El número de habitaciones debe ser un número positivo.",
+				"too_high": "El número de habitaciones no debe exceder 2147483647."
+			},
+			"bedroom_range_invalid": "El rango de habitaciones es inválido.",
+			"bathroom": {
+				"invalid_value": "El número de baños debe ser un número.",
+				"integer": "El número de baños debe ser un entero.",
+				"positive": "El número de baños debe ser un número positivo.",
+				"too_high": "El número de baños no debe exceder 2147483647."
+			},
+			"bathroom_range_invalid": "El rango de baños es inválido.",
 			"title": {
+				"too_short": "El título debe contener al menos 3 caracteres.",
 				"too_long": "El título no debe exceder los 100 caracteres."
 			},
 			"description": {
+				"too_short": "La descripción debe contener al menos 200 caracteres.",
 				"too_long": "La descripción no debe exceder los 2000 caracteres."
 			},
 			"schedule": {
 				"invalid_day": "El día debe estar entre 0 (domingo) y 6 (sábado).",
-				"invalid_time": "El formato de hora es inválido (HH:mm)."
+				"invalid_time": "El formato de hora es inválido (HH:mm).",
+				"invalid_range": "La hora de finalización debe ser posterior a la de inicio."
+			},
+			"date": {
+				"invalid_format": "El formato de fecha es inválido (se espera AAAA-MM-DD)."
 			},
 			"status": {
 				"invalid": "El valor del estado es inválido."
