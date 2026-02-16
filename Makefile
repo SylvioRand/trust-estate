@@ -41,31 +41,31 @@ db-sync:
 	@$(call PrintSuccess,Auth service is ready)
 	@$(call PrintInfo,Synchronizing Prisma schemas with database ...)
 
-	@$(call PrintInfo, -> Pushing listings schema ...)
+	@$(call PrintInfo,Pushing listings schema ...)
 	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=listings" npx -y prisma@6.19.1 db push --accept-data-loss > /dev/null 2>&1 || \
 		($(call PrintError,Failed pushing listings schema); exit 1)
-	@$(call PrintInfo, -> Pushing auth schema ...)
+	@$(call PrintInfo,Pushing auth schema ...)
 	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx -y prisma@6.19.1 db push --accept-data-loss > /dev/null 2>&1 || \
 		($(call PrintError,Failed pushing auth schema); exit 1)
-	@$(call PrintInfo, -> Pushing reservation schema ...)
+	@$(call PrintInfo,Pushing reservation schema ...)
 	@cd services/reservation && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=reservation" npx -y prisma@6.19.1 db push --accept-data-loss > /dev/null 2>&1 || \
 		($(call PrintError,Failed pushing reservation schema); exit 1)
 	@$(call PrintSuccess,Database schemas synchronized)
 
 seed:
 	@$(call PrintInfo,Seeding database ...)
-	@$(call PrintInfo, -> Seeding Auth (Admin Account) ...)
+	@$(call PrintInfo,Seeding Auth (Admin Account) ...)
 	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx tsx prisma/seed.ts > /dev/null 2>&1 || \
 		($(call PrintError,Failed seeding auth); exit 1)
 	@$(call PrintSuccess,Seeding complete)
 
 build:
-	@$(call PrintInfo, -> Building containers with $(DOCKER_COMPOSE)(This can take a while) ...)
+	@$(call PrintInfo,Building containers with $(DOCKER_COMPOSE)(This can take a while) ...)
 	@$(DOCKER_COMPOSE) build > /dev/null 2>&1 || ($(call PrintError,Build failed); exit 1)
 	@$(call PrintSuccess,Containers built)
 
 rebuild:
-	@$(call PrintInfo, -> Rebuilding containers without cache ...)
+	@$(call PrintInfo,Rebuilding containers without cache ...)
 	@$(DOCKER_COMPOSE) build --no-cache > /dev/null 2>&1 || ($(call PrintError,Rebuild failed); exit 1)
 	@$(call PrintSuccess,Containers rebuilt)
 
