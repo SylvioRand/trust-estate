@@ -10,7 +10,6 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
     const { id } = GetOneParamsSchema.parse(request.params);
     const { listing, sellerStats, isReported } = await ListingService.getOne(id);
 
-    // Increment view count (fire and forget - don't wait for it)
     ListingService.incrementViews(id).catch(err =>
       console.error('Failed to increment views:', err)
     );
@@ -22,7 +21,6 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
     if (currentUser?.id && !isMine) {
       const status = await ReservationClient.getReservationStatus(listing.id, currentUser.id);
       confirmedReservation = status.confirmed;
-      console.log("confirmedReservation: ", confirmedReservation);
     }
 
     const sellerVisible = isMine || confirmedReservation;
@@ -102,7 +100,6 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
       });
     }
 
-    // Default error
     return reply.status(500).send({
       "error": "internal_server_error",
       "message": "An unexpected error occurred"

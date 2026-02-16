@@ -321,7 +321,7 @@ export type UpdateavailabilityType = z.infer<typeof UpdateAvailabilitySchema>;
 
 export const GetSlotsQuerySchema = z.object({
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "validation.listing.date.invalid_format"),
-  days: z.coerce.number().int().min(1).max(14).default(7) // On limite à 14 jours par exemple
+  days: z.coerce.number().int().min(1).max(14).default(7)
 });
 export type GetSlotsQuery = z.infer<typeof GetSlotsQuerySchema>;
 

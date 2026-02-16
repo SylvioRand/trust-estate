@@ -10,7 +10,6 @@ export async function getAvailability(request: FastifyRequest, reply: FastifyRep
 
     const listing = await ListingService.getAvailability(availabilityParams);
 
-    // 1. Check if it's an internal call (e.g. from Reservation Service)
     const internalKey = request.headers['x-internal-key'];
     const secret = process.env.INTERNAL_KEY_SECRET || "INTERNAL_KEY";
     let isInternal = false;
@@ -20,11 +19,9 @@ export async function getAvailability(request: FastifyRequest, reply: FastifyRep
         jwt.verify(internalKey as string, secret);
         isInternal = true;
       } catch (error) {
-        // Invalid key, but maybe it's the owner?
       }
     }
 
-    // 2. Check if it's the owner
     const currentUser = (request as any).user;
     const isOwner = currentUser?.id === listing.sellerId;
 

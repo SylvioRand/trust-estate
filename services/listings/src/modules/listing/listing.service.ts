@@ -199,7 +199,6 @@ export class ListingService {
   }
 
   static async archiveListing(id: string, sellerId: string, data: ArchiveListingData) {
-    // 1. Vérification propriété
     const listing = await prisma.listing.findUnique({ where: { id } });
 
     if (!listing) throw new Error('listing.not_found');
@@ -378,7 +377,6 @@ export class ListingService {
     if (listing.status === 'archived' || !listing.isAvailable) throw new Error('listing.already_completed');
 
     return await prisma.$transaction(async (tx) => {
-      // 1. Marquer l'annonce comme vendue/louée et non disponible
       const updated = await tx.listing.update({
         where: { id: listingId },
         data: {
@@ -388,7 +386,6 @@ export class ListingService {
         }
       });
 
-      // 2. Mettre à jour les compteurs du vendeur
       await tx.sellerStats.update({
         where: { userId: sellerId },
         data: {
