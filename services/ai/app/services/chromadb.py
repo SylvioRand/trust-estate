@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated: 2026/02/10 07:25:41 by aelison          ###   ########.fr        #
+#    Updated:    2026-02-16 09:59:11 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -275,13 +275,16 @@ class ChromadbService:
         }
 
         EXAMPLES:
-        User: "L'annonce la moins chère"
+        User: "hello, i am looking for a house at ivandry"
         {
             "isAbout_real_estate": true,
-            "nb_context": -1,
-            "sort_by": { "field": "price", "content": "min" },
-            "search_text": "moins chère",
-            "filters": {}
+            "nb_context": 7,
+            "sort_by": { "field": null, "content": null },
+            "search_text": "house",
+            "filters": {
+                "property_type": "house",
+                "zone": "Ivandry"
+            }
         }
         User: "donne moi l'annonce la mois cher"  <-- (Intentional typo)
         {
@@ -365,8 +368,8 @@ class ChromadbService:
                 nb_context = 10
 
         result = await self.query_in_collection("posts", search_text, nb_context, filters, id_ref)
+        print(f"Result of query: {result}")
         if sort_by and sort_by.get("field"):
-            print(f"Sorting elements: {result}")
             get_sorted = datas.get('sort_by')
             sorted_field_value = get_sorted.get("field", "")
             sorted_content_value = get_sorted.get("content", "")

@@ -550,7 +550,7 @@ const SettingsPage: React.FC = () => {
 
 					<Link
 						className="w-full"
-						to="/term-of-services"
+						to="/terms-of-service"
 					>
 						<SettingsButton
 							icon=""

@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SimpleInput, { PasswordInput } from "../components/Input";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
@@ -24,9 +24,22 @@ const SignUpPage: React.FC = () => {
 	const [errorFirstName, setErrorFirstName] = useState<string[]>([]);
 	const [errorLastName, setErrorLastName] = useState<string[]>([]);
 	const [errorPassword, setErrorPassword] = useState<string[]>([]);
-	const { setIsConnected } = useDataProvider();
+
+	const { isConnected, setIsConnected } = useDataProvider();
+
+	const location = useLocation();
+
+	useEffect(() => {
+		if (isConnected === true) {
+			const from = location.state?.from || "/profile";
+			navigate(from, { replace: true });
+		}
+	}, [isConnected, navigate, location.state?.from]);
 
 	VerifyUsersState();
+
+	if (isConnected !== null && isConnected === false)
+		navigate("/profile");
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -235,7 +248,7 @@ const SignUpPage: React.FC = () => {
 						{t("legal.accept")}{" "}
 						<span
 							className="underline cursor-pointer font-bold"
-							onClick={() => navigate("/term-of-services")}
+							onClick={() => navigate("/terms-of-service")}
 						>
 							{t("legal.terms")}
 						</span>{" "}
