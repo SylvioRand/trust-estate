@@ -116,7 +116,7 @@ const router = createBrowserRouter([
         element: <BuyerSlotsPage />
       },
       {
-        path: "/term-of-services",
+        path: "/terms-of-service",
         element: <TermOfServicePage />
       },
       {

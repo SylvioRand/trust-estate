@@ -57,9 +57,6 @@ seed:
 	@$(call PrintInfo, -> Seeding Auth (Admin Account) ...)
 	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx tsx prisma/seed.ts > /dev/null 2>&1 || \
 		($(call PrintError,Failed seeding auth); exit 1)
-	@$(call PrintInfo, -> Seeding Listings (Test Data) ...)
-	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=listings" npm run seed > /dev/null 2>&1 || \
-		($(call PrintError,Failed seeding listings); exit 1)
 	@$(call PrintSuccess,Seeding complete)
 
 build:

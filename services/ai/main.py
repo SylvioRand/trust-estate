@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated: 2026/02/06 14:24:31 by aelison          ###   ########.fr        #
+#    Updated:    2026-02-16 09:51:48 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -136,7 +136,6 @@ async def chatbot(text: RequestChat):
     formated = None
     id_found = None
 
-    await chromadb_service.get_all_in_collection("posts")
     if text.context and len(text.context) > 0:
         context = text.context
     try:
@@ -272,4 +271,5 @@ async def generate_better_description(text: Description):
                     "error": "llm_unavailable",
                     "message": "global.500"
                 }
+
         )
