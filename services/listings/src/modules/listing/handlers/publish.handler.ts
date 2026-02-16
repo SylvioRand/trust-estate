@@ -6,6 +6,7 @@ import fs from 'fs';
 import { pipeline } from 'stream/promises';
 import { ListingService } from "../listing.service";
 import { AIClient } from "../../../infrastructure/ai.client";
+import { creditClient } from "../../../infrastructure/credit.client";
 
 const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp"];
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
@@ -21,7 +22,7 @@ export async function handlePublish(request: FastifyRequest, reply: FastifyReply
     const validatedData = PublishListingSchema.parse(listingData);
 
     try {
-      //await creditClient.debit(user.id); // uncomment to debit credits
+      await creditClient.debit(user.id);
     } catch (debitError: any) {
       console.error("❌ Credit debit failed, rolling back listing creation:", debitError);
       throw debitError;
@@ -87,7 +88,6 @@ function cleanupFiles(files: string[]) {
 function handleError(error: any, reply: FastifyReply) {
   console.error("❌ Publish Error:", error);
 
-  // Erreurs de validation Zod
   if (error instanceof ZodError) {
     const details: Record<string, string[]> = {};
 
@@ -104,7 +104,6 @@ function handleError(error: any, reply: FastifyReply) {
     return reply.status(400).send({ details });
   }
 
-  // Erreurs spécifiques
   if (error.message === 'validation.listing.data_required') {
     return reply.status(400).send({
       details: { data: ['validation.listing.data_required'] }
@@ -130,7 +129,6 @@ function handleError(error: any, reply: FastifyReply) {
     });
   }
 
-  // Erreur générique
   return reply.status(400).send({
     error: error.message || 'validation.unknown_error'
   });

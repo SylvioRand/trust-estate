@@ -15,8 +15,6 @@ export class ReservationClient { // TODO ajust after reservation-service done
       }
     );
 
-    console.log("internalToken = ", internalToken);
-
     try {
       const response = await fetch(`${this.RESERVATION_SERVICE_URL}/reservation/internal/status?listingId=${listingId}&userId=${userId}`, {
         method: 'GET',
