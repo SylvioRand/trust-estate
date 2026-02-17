@@ -38,9 +38,6 @@ const SignUpPage: React.FC = () => {
 
 	VerifyUsersState();
 
-	if (isConnected !== null && isConnected === false)
-		navigate("/profile");
-
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
