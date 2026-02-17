@@ -1,4 +1,4 @@
-.PHONY: all build up down clean logs restart status dev rebuild db-sync seed certs reload-% check run-no-ai
+.PHONY: all build install up down clean logs restart status dev rebuild db-sync seed certs reload-% check run-no-ai
 
 define PrintWarning
 	printf "[\033[33m WARNING \033[0m]: $(1)\n"
@@ -32,6 +32,13 @@ all: certs build up db-sync
 	@$(call PrintInfo,Entrypoint: https://localhost:8443)
 	@$(call PrintInfo,Using: $(DOCKER_COMPOSE))
 
+install:
+	@$(call PrintInfo,Installing modules ...)
+	@cd services/listings && npm install > build_logs.txt 2>&1 || ($(call PrintError,Failed to install listings service.); exit 1)
+	@cd services/auth && npm install > build_logs.txt 2>&1 || ($(call PrintError,Failed to install auth service.); exit 1)
+	@cd services/reservation && npm install > build_logs.txt 2>&1 || ($(call PrintError,Failed to install reservation service.); exit 1)
+	@$(call PrintSuccess,Installation Complete)
+
 db-sync:
 	@$(call PrintInfo,Waiting for auth service to be ready)
 	@until docker inspect --format='{{.State.Health.Status}}' trust-estate-auth 2>build_logs.txt | grep -q "healthy"; do \
@@ -59,7 +66,7 @@ seed:
 		($(call PrintError,Failed seeding auth); exit 1)
 	@$(call PrintSuccess,Seeding complete)
 
-build:
+build: install
 	@$(call PrintInfo,Building containers with $(DOCKER_COMPOSE)(This can take a while) ...)
 	@$(DOCKER_COMPOSE) build > build_logs.txt 2>&1 || ($(call PrintError,Build failed); exit 1)
 	@$(call PrintSuccess,Containers built)
