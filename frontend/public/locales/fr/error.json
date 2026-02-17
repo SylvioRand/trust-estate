@@ -17,7 +17,9 @@
 		"validation_failed": "Les données fournies sont invalides.",
 		"rate_limited": "Trop de requêtes. Veuillez réessayer plus tard.",
 		"unauthorized": "Authentification requise.",
-		"internal_server_error": "Une erreur interne du serveur est survenue."
+		"internal_server_error": "Une erreur interne du serveur est survenue.",
+		"listing_server_error": "Le service d'annonces est temporairement indisponible.",
+		"auth_server_error": "Le service d'authentification est temporairement indisponible."
 	},
 	"auth": {
 		"verification_email_sent": "Un e-mail de vérification a été envoyé.",
@@ -40,7 +42,10 @@
 		"info_update_success": "Vos informations ont été mises à jour avec succès.",
 		"not_authenticated_user": "L'utilisateur n'est pas authentifié.",
 		"forgot_pass_user_not_found": "Aucun utilisateur n'est associé à cette adresse e-mail.",
-		"passwordAndConfirmationIsDifferent": "Les deux mots de passe ne correspondent pas."
+		"passwordAndConfirmationIsDifferent": "Les deux mots de passe ne correspondent pas.",
+		"user_permission_updated_successfully": "Les permissions de l'utilisateur ont été mises à jour avec succès.",
+		"verification_failed": "La vérification de l'authentification a échoué.",
+		"credit_service_error": "Le service de crédits est temporairement indisponible."
 	},
 	"validation": {
 		"email": {
@@ -142,7 +147,9 @@
 			"report_comment": {
 				"too_short": "Le commentaire est trop court (minimum 10 caractères).",
 				"too_long": "Le commentaire est trop long (maximum 500 caractères)."
-			}
+			},
+			"data_required": "Les données de l'annonce sont requises.",
+			"duplicate_data_field": "Champ de données dupliqué détecté."
 		},
 		"uuid": {
 			"invalid": "Le format UUID est invalide."
@@ -193,33 +200,62 @@
 		"marked_as_sold": "Cette annonce a été marquée comme vendue.",
 		"marked_as_rented": "Cette annonce a été marquée comme louée.",
 		"made_available": "Cette annonce a été marquée comme disponible.",
-		"change_saved": "L'annonce a été mise à jour."
+		"change_saved": "L'annonce a été mise à jour.",
+		"already_archived": "Cette annonce est déjà archivée.",
+		"cannot_report_own": "Vous ne pouvez pas signaler votre propre annonce.",
+		"already_completed": "Cette annonce a déjà été finalisée.",
+		"stats_not_found": "Les statistiques de cette annonce n'ont pas pu être trouvées."
 	},
 	"reservation": {
 		"slot_already_reserved": "Le créneau sélectionné est déjà réservé.",
 		"created_success": "La réservation a été envoyée. Un crédit a été déduit.",
 		"confirmed_success": "La réservation a été confirmée.",
 		"cannot_reserve_own": "Vous ne pouvez pas réserver votre propre annonce.",
+		"cannot_reserve_own_listing": "Vous ne pouvez pas réserver votre propre annonce.",
 		"already_reserved": "Vous avez déjà une réservation en attente pour cette annonce.",
+		"already_reserved_this_listing": "Vous avez déjà une réservation en attente pour cette annonce.",
 		"slot_unavailable": "Le créneau sélectionné n'est pas disponible.",
+		"seller_slot_unavailable": "Le créneau sélectionné par le vendeur n'est pas disponible.",
 		"cancellation_too_late": "L'annulation n'est pas autorisée moins de deux heures avant le rendez-vous.",
 		"permission_denied": "Vous ne pouvez annuler que vos propres réservations.",
 		"not_found": "La réservation n'a pas pu être trouvée.",
+		"reservation_not_found": "La réservation n'a pas pu être trouvée.",
+		"reservations_not_found": "Aucune réservation n'a été trouvée.",
 		"already_processed": "Cette réservation a déjà été traitée.",
+		"reservation_already_processed": "Cette réservation a déjà été traitée.",
 		"permission_denied_confirmation": "Seul le vendeur peut confirmer cette réservation.",
-		"permission_denied_rejection": "Seul le vendeur peut refuser cette réservation."
+		"permission_denied_rejection": "Seul le vendeur peut refuser cette réservation.",
+		"not_completed": "La visite n'a pas encore eu lieu et ne peut donc pas être évaluée.",
+		"reservation_not_confirmed": "Cette réservation n'a pas encore été confirmée.",
+		"reservation_not_completed": "La visite n'a pas encore été effectuée."
 	},
 	"feedback": {
 		"created_success": "Le commentaire a été enregistré avec succès.",
 		"already_exists": "Un commentaire a déjà été envoyé pour cette visite.",
-		"reservation_not_done": "Les commentaires ne peuvent être envoyés qu'après la visite."
+		"feedback_already_exists": "Un commentaire a déjà été envoyé pour cette visite.",
+		"reservation_not_done": "Les commentaires ne peuvent être envoyés qu'après la visite.",
+		"feedback_not_eligible": "Vous ne pouvez laisser un commentaire que pour les réservations que vous avez effectuées.",
+		"invalid_rating": "La note fournie est invalide.",
+		"invalid_comment_length": "La longueur du commentaire est invalide.",
+		"feedback_not_found": "Le commentaire n'a pas pu être trouvé."
 	},
 	"payment": {
 		"insufficient_credits_publish": "Crédits insuffisants pour publier l'annonce.",
+		"service_unavailable": "Le service de paiement est actuellement indisponible. Veuillez réessayer plus tard.",
 		"insufficient_credits_renew": "Solde insuffisant pour renouveler l'annonce (0,5 crédit requis).",
 		"insufficient_credits_reservation": "Solde insuffisant pour effectuer une réservation (1 crédit requis).",
+		"insufficient_credits": "Vous avez des crédits insuffisants pour cette opération.",
 		"transaction_failed": "Le paiement a échoué. Veuillez vérifier le solde de votre Mobile Money.",
-		"rate_limited_recharge": "Trop de tentatives de recharge. Un maximum de trois par heure est autorisé."
+		"rate_limited_recharge": "Trop de tentatives de recharge. Un maximum de trois par heure est autorisé.",
+		"balance_not_found": "Votre solde de crédits n'a pas pu être trouvé."
+	},
+	"user": {
+		"user_not_found": "Utilisateur non trouvé."
+	},
+	"credit": {
+		"insufficient_credits": "Vous avez des crédits insuffisants pour cette opération.",
+		"unauthorized": "Vous n'êtes pas autorisé à accéder à ce service de crédits.",
+		"verification_failed": "La vérification des crédits a échoué."
 	},
 	"moderator": {
 		"forbidden": {

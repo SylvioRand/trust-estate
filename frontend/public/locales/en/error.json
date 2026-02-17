@@ -2,7 +2,7 @@
 	"ERROR": "An error was unfortunately encountered.",
 	"ai": {
 		"timeout": "Timeout: the ai take too long to response. Please wait a moment before trying again.",
-		"rate_limited_generate": "You’ve reached the rate limit. Please wait a moment before trying again.",
+		"rate_limited_generate": "You've reached the rate limit. Please wait a moment before trying again.",
 		"success_generate": "Your description was successfully enhanced.",
 		"not_enough_data": "The provided description does not contain enough information to be enhanced. At least 200 characters are required. Please add more details and try again.",
 		"listing_not_indexed": "Listing not inside database.",
@@ -17,7 +17,9 @@
 		"validation_failed": "The provided data is invalid.",
 		"rate_limited": "Too many requests. Please try again later.",
 		"unauthorized": "Authentication is required.",
-		"internal_server_error": "An internal server error occurred."
+		"internal_server_error": "An internal server error occurred.",
+		"listing_server_error": "The listing service is temporarily unavailable.",
+		"auth_server_error": "The authentication service is temporarily unavailable."
 	},
 	"auth": {
 		"verification_email_sent": "A verification email has been sent.",
@@ -41,7 +43,9 @@
 		"not_authenticated_user": "User are not authenticated.",
 		"forgot_pass_user_not_found": "No user is associated with this email address.",
 		"passwordAndConfirmationIsDifferent": "The two password doesn't match.",
-		"user_permission_updated_successfully": "User permissions have been successfully updated."
+		"user_permission_updated_successfully": "User permissions have been successfully updated.",
+		"verification_failed": "Authentication verification failed.",
+		"credit_service_error": "The credit service is temporarily unavailable."
 	},
 	"validation": {
 		"email": {
@@ -143,7 +147,9 @@
 			"report_comment": {
 				"too_short": "The comment is too short (minimum 10 characters).",
 				"too_long": "The comment is too long (maximum 500 characters)."
-			}
+			},
+			"data_required": "Listing data is required.",
+			"duplicate_data_field": "Duplicate data field detected."
 		},
 		"uuid": {
 			"invalid": "The UUID format is invalid."
@@ -194,26 +200,39 @@
 		"marked_as_sold": "This listing was marked as sold.",
 		"marked_as_rented": "This listing was marked as rented.",
 		"made_available": "This listing was marked as available.",
-		"change_saved": "The listing was updated."
+		"change_saved": "The listing was updated.",
+		"already_archived": "This listing is already archived.",
+		"cannot_report_own": "You cannot report your own listing.",
+		"already_completed": "This listing has already been completed.",
+		"stats_not_found": "Statistics for this listing could not be found."
 	},
 	"reservation": {
 		"slot_already_reserved": "The selected slot is already reserved.",
 		"created_success": "The reservation has been sent. One credit has been deducted.",
 		"confirmed_success": "The reservation has been confirmed.",
 		"cannot_reserve_own": "You cannot reserve your own listing.",
+		"cannot_reserve_own_listing": "You cannot reserve your own listing.",
 		"already_reserved": "You already have a pending reservation for this listing.",
+		"already_reserved_this_listing": "You already have a pending reservation for this listing.",
 		"slot_unavailable": "The selected slot is unavailable.",
+		"seller_slot_unavailable": "The seller's selected slot is unavailable.",
 		"cancellation_too_late": "Cancellation is not allowed less than two hours before the appointment.",
 		"permission_denied": "You may only cancel your own reservations.",
 		"not_found": "The reservation could not be found.",
+		"reservation_not_found": "The reservation could not be found.",
+		"reservations_not_found": "No reservations were found.",
 		"already_processed": "This reservation has already been processed.",
+		"reservation_already_processed": "This reservation has already been processed.",
 		"permission_denied_confirmation": "Only the seller may confirm this reservation.",
 		"permission_denied_rejection": "Only the seller may reject this reservation.",
-		"not_completed": "The visit has not yet taken place and therefore cannot be rated."
+		"not_completed": "The visit has not yet taken place and therefore cannot be rated.",
+		"reservation_not_confirmed": "This reservation has not been confirmed yet.",
+		"reservation_not_completed": "The visit has not been completed yet."
 	},
 	"feedback": {
 		"created_success": "The feedback has been successfully recorded.",
 		"already_exists": "Feedback has already been submitted for this visit.",
+		"feedback_already_exists": "Feedback has already been submitted for this visit.",
 		"reservation_not_done": "Feedback may only be submitted after the visit.",
 		"feedback_not_eligible": "You may only leave feedback for reservations you have made.",
 		"invalid_rating": "The provided rating is invalid.",
@@ -225,8 +244,18 @@
 		"service_unavailable": "The payment service is currently unavailable. Please try again later.",
 		"insufficient_credits_renew": "There is insufficient balance to renew the listing (0.5 credit required).",
 		"insufficient_credits_reservation": "There is insufficient balance to make a reservation (1 credit required).",
+		"insufficient_credits": "You have insufficient credits for this operation.",
 		"transaction_failed": "The payment failed. Please verify your Mobile Money balance.",
-		"rate_limited_recharge": "Too many recharge attempts. A maximum of three per hour is allowed."
+		"rate_limited_recharge": "Too many recharge attempts. A maximum of three per hour is allowed.",
+		"balance_not_found": "Your credit balance could not be found."
+	},
+	"user": {
+		"user_not_found": "User not found."
+	},
+	"credit": {
+		"insufficient_credits": "You have insufficient credits for this operation.",
+		"unauthorized": "You are not authorized to access this credit service.",
+		"verification_failed": "Credit verification failed."
 	},
 	"moderator": {
 		"forbidden": {

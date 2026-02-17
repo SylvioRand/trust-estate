@@ -17,7 +17,9 @@
 		"validation_failed": "Los datos proporcionados son inválidos.",
 		"rate_limited": "Demasiadas solicitudes. Por favor, inténtalo más tarde.",
 		"unauthorized": "Se requiere autenticación.",
-		"internal_server_error": "Ocurrió un error interno del servidor."
+		"internal_server_error": "Ocurrió un error interno del servidor.",
+		"listing_server_error": "El servicio de anuncios no está disponible temporalmente.",
+		"auth_server_error": "El servicio de autenticación no está disponible temporalmente."
 	},
 	"auth": {
 		"verification_email_sent": "Se ha enviado un correo electrónico de verificación.",
@@ -41,7 +43,9 @@
 		"not_authenticated_user": "El usuario no está autenticado.",
 		"forgot_pass_user_not_found": "No hay ningún usuario asociado a esta dirección de correo electrónico.",
 		"passwordAndConfirmationIsDifferent": "Las dos contraseñas no coinciden.",
-		"user_permission_updated_successfully": "Los permisos del usuario se han actualizado correctamente."
+		"user_permission_updated_successfully": "Los permisos del usuario se han actualizado correctamente.",
+		"verification_failed": "La verificación de autenticación falló.",
+		"credit_service_error": "El servicio de créditos no está disponible temporalmente."
 	},
 	"validation": {
 		"email": {
@@ -143,7 +147,9 @@
 			"report_comment": {
 				"too_short": "El comentario es demasiado corto (mínimo 10 caracteres).",
 				"too_long": "El comentario es demasiado largo (máximo 500 caracteres)."
-			}
+			},
+			"data_required": "Se requieren los datos del anuncio.",
+			"duplicate_data_field": "Campo de datos duplicado detectado."
 		},
 		"uuid": {
 			"invalid": "El formato de UUID es inválido."
@@ -194,26 +200,39 @@
 		"marked_as_sold": "Este anuncio se ha marcado como vendido.",
 		"marked_as_rented": "Este anuncio se ha marcado como alquilado.",
 		"made_available": "Este anuncio se ha marcado como disponible.",
-		"change_saved": "El anuncio ha sido actualizado."
+		"change_saved": "El anuncio ha sido actualizado.",
+		"already_archived": "Este anuncio ya está archivado.",
+		"cannot_report_own": "No puedes reportar tu propio anuncio.",
+		"already_completed": "Este anuncio ya ha sido finalizado.",
+		"stats_not_found": "No se pudieron encontrar las estadísticas de este anuncio."
 	},
 	"reservation": {
 		"slot_already_reserved": "La franja seleccionada ya está reservada.",
 		"created_success": "La reserva se ha enviado. Se ha deducido un crédito.",
 		"confirmed_success": "La reserva ha sido confirmada.",
 		"cannot_reserve_own": "No puedes reservar tu propio anuncio.",
+		"cannot_reserve_own_listing": "No puedes reservar tu propio anuncio.",
 		"already_reserved": "Ya tienes una reserva pendiente para este anuncio.",
+		"already_reserved_this_listing": "Ya tienes una reserva pendiente para este anuncio.",
 		"slot_unavailable": "La franja seleccionada no está disponible.",
+		"seller_slot_unavailable": "La franja seleccionada por el vendedor no está disponible.",
 		"cancellation_too_late": "No se permite cancelar menos de dos horas antes de la cita.",
 		"permission_denied": "Solo puedes cancelar tus propias reservas.",
 		"not_found": "No se pudo encontrar la reserva.",
+		"reservation_not_found": "No se pudo encontrar la reserva.",
+		"reservations_not_found": "No se encontraron reservas.",
 		"already_processed": "Esta reserva ya ha sido procesada.",
+		"reservation_already_processed": "Esta reserva ya ha sido procesada.",
 		"permission_denied_confirmation": "Solo el vendedor puede confirmar esta reserva.",
 		"permission_denied_rejection": "Solo el vendedor puede rechazar esta reserva.",
-		"not_completed": "La visita aún no ha tenido lugar y por lo tanto no puede ser calificada."
+		"not_completed": "La visita aún no ha tenido lugar y por lo tanto no puede ser calificada.",
+		"reservation_not_confirmed": "Esta reserva aún no ha sido confirmada.",
+		"reservation_not_completed": "La visita aún no ha sido completada."
 	},
 	"feedback": {
 		"created_success": "La opinión se ha registrado correctamente.",
 		"already_exists": "La opinión ya ha sido enviada para esta visita.",
+		"feedback_already_exists": "La opinión ya ha sido enviada para esta visita.",
 		"reservation_not_done": "La opinión solo puede enviarse después de la visita.",
 		"feedback_not_eligible": "Solo puedes dejar una opinión para las reservas que has realizado.",
 		"invalid_rating": "La calificación proporcionada es inválida.",
@@ -225,8 +244,18 @@
 		"service_unavailable": "El servicio de pago no está disponible. Por favor, inténtalo más tarde.",
 		"insufficient_credits_renew": "No hay saldo suficiente para renovar el anuncio (se requieren 0.5 créditos).",
 		"insufficient_credits_reservation": "No hay saldo suficiente para realizar una reserva (se requiere 1 crédito).",
+		"insufficient_credits": "Tienes créditos insuficientes para esta operación.",
 		"transaction_failed": "El pago falló. Por favor, verifica tu saldo de Mobile Money.",
-		"rate_limited_recharge": "Demasiados intentos de recarga. Se permite un máximo de tres por hora."
+		"rate_limited_recharge": "Demasiados intentos de recarga. Se permite un máximo de tres por hora.",
+		"balance_not_found": "No se pudo encontrar tu saldo de créditos."
+	},
+	"user": {
+		"user_not_found": "Usuario no encontrado."
+	},
+	"credit": {
+		"insufficient_credits": "Tienes créditos insuficientes para esta operación.",
+		"unauthorized": "No estás autorizado para acceder a este servicio de créditos.",
+		"verification_failed": "La verificación de créditos falló."
 	},
 	"moderator": {
 		"forbidden": {
