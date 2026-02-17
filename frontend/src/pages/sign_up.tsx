@@ -71,11 +71,11 @@ const SignUpPage: React.FC = () => {
 
 				if (errorData.error === "email_exists") {
 					setErrorEmail([errorData.message]);
-					throw new Error("Email already in used.");
+					throw new Error("auth.email_already_exists");
 				}
 				else if (errorData.error === "phone_exists") {
 					setErrorPhone([errorData.message]);
-					throw new Error("Phone already in used.");
+					throw new Error("auth.phone_already_exists");
 				}
 				else if (errorData.error === "validation_failed") {
 					if (errorData.details && typeof errorData.details === "object") {
@@ -108,7 +108,7 @@ const SignUpPage: React.FC = () => {
 				}
 				else if (errorData.error === "rate_limited") {
 					toast.error(t(errorData.message));
-					throw new Error("Rate Limited.");
+					throw new Error("common.rate_limited");
 				}
 			}
 
@@ -185,6 +185,7 @@ const SignUpPage: React.FC = () => {
 							name="firstName"
 							placeholder={t("form.firstName.placeholder")}
 							minLength={3}
+							maxLength={50}
 							error={errorFirstName}
 						/>
 
@@ -192,6 +193,7 @@ const SignUpPage: React.FC = () => {
 							title={t("form.lastName.label")}
 							name="lastName"
 							minLength={3}
+							maxLength={50}
 							placeholder={t("form.lastName.placeholder")}
 							error={errorLastName}
 						/>
@@ -202,6 +204,7 @@ const SignUpPage: React.FC = () => {
 						name="phone"
 						nameCountryCode="phoneCountryCode"
 						placeholder="XX XX XXX XX"
+						maxLength={9}
 						error={errorPhone}
 					/>
 

@@ -22,6 +22,7 @@
 		"auth_server_error": "Le service d'authentification est temporairement indisponible."
 	},
 	"auth": {
+		"invalid_request": "Requête invalide.",
 		"verification_email_sent": "Un e-mail de vérification a été envoyé.",
 		"verification_email_sent_if_exists": "Un e-mail de vérification a été envoyé si le compte existe.",
 		"email_already_exists": "Cette adresse e-mail est déjà utilisée.",
@@ -46,6 +47,7 @@
 		"user_permission_updated_successfully": "Les permissions de l'utilisateur ont été mises à jour avec succès.",
 		"verification_failed": "La vérification de l'authentification a échoué.",
 		"credit_service_error": "Le service de crédits est temporairement indisponible."
+		"unauthorized": "Acción no autorizada."
 	},
 	"validation": {
 		"email": {

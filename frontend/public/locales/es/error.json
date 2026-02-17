@@ -22,6 +22,7 @@
 		"auth_server_error": "El servicio de autenticación no está disponible temporalmente."
 	},
 	"auth": {
+		"invalid_request": "Solicitud inválida.",
 		"verification_email_sent": "Se ha enviado un correo electrónico de verificación.",
 		"verification_email_sent_if_exists": "Se ha enviado un correo electrónico de verificación si la cuenta existe.",
 		"email_already_exists": "Esta dirección de correo electrónico ya está en uso.",
@@ -46,6 +47,7 @@
 		"user_permission_updated_successfully": "Los permisos del usuario se han actualizado correctamente.",
 		"verification_failed": "La verificación de autenticación falló.",
 		"credit_service_error": "El servicio de créditos no está disponible temporalmente."
+		"unauthorized": "Action non autorisée."
 	},
 	"validation": {
 		"email": {
