@@ -7,20 +7,20 @@ import MyListingsView from "./my_listings_view";
 import ClientListingsView from "./client_listings_view";
 import { TagsComponents } from "../components/TagsComponents";
 
-interface	NavigatePictureButtonProps {
+interface NavigatePictureButtonProps {
 	icon: string;
 	customStyle: CSSProperties;
 	onClick: () => void;
 	disabled: boolean;
 }
 
-const	NavigatePictureButton: React.FC<NavigatePictureButtonProps> = ({
+const NavigatePictureButton: React.FC<NavigatePictureButtonProps> = ({
 	icon = "X",
 	customStyle = {},
 	onClick,
 	disabled = false
 }) => {
-	const	buttonStyle: string = "font-icon text-4xl\
+	const buttonStyle: string = "font-icon text-4xl\
 	absolute\
 	z-1\
 	bg-foreground\
@@ -33,41 +33,40 @@ const	NavigatePictureButton: React.FC<NavigatePictureButtonProps> = ({
 
 	return (
 		<button
-		className={ buttonStyle }
-		style={{
-			pointerEvents: disabled ? "none" : "auto",
-			opacity: disabled ? "0%" : "100%",
-			...customStyle
-		}}
-		onClick={ onClick }
+			className={buttonStyle}
+			style={{
+				pointerEvents: disabled ? "none" : "auto",
+				opacity: disabled ? "0%" : "100%",
+				...customStyle
+			}}
+			onClick={onClick}
 		>
-			{ icon }
+			{icon}
 		</button>
 	)
 }
 
-const	ListingsPage: React.FC = () => {
-	const	{ t } = useTranslation(["listings", "error", "common"]);
-	const	[fetchedData, setFetchedData] = useState<ListingsData | null>(null);
-	const	[ searchParams ] = useSearchParams();
-	const	listingsID = searchParams.get("id");
-	const	[currentPictures, setCurrentPictures] = useState<number>(0);
-	const	navigate = useNavigate();
+const ListingsPage: React.FC = () => {
+	const { t } = useTranslation(["listings", "error", "common"]);
+	const [fetchedData, setFetchedData] = useState<ListingsData | null>(null);
+	const [searchParams] = useSearchParams();
+	const listingsID = searchParams.get("id");
+	const [currentPictures, setCurrentPictures] = useState<number>(0);
+	const navigate = useNavigate();
 
 	useEffect(() => {
-		const	fetchListingsData = async () => {
+		const fetchListingsData = async () => {
 			try {
 				if (listingsID === null)
 					navigate("/property");
 
-				const	response = await fetch(`/api/listings/${listingsID}`, {
+				const response = await fetch(`/api/listings/${listingsID}`, {
 					method: "GET",
 					credentials: "include"
 				});
-				
-				const	responseData = await response.json();
-				if (response.ok)
-				{
+
+				const responseData = await response.json();
+				if (response.ok) {
 					setFetchedData(responseData);
 				}
 				else
@@ -83,7 +82,7 @@ const	ListingsPage: React.FC = () => {
 
 	return (
 		<div
-		className="grid grid-cols-1 grid-rows-[auto_1fr]
+			className="grid grid-cols-1 grid-rows-[auto_1fr]
 		xl:px-64
 		transition-discrete duration-300
 		animate-fade-in
@@ -94,12 +93,12 @@ const	ListingsPage: React.FC = () => {
 			{
 				fetchedData === null &&
 				<div
-				className="flex items-center justify-center
+					className="flex items-center justify-center
 				h-full
 				w-full"
 				>
 					<div
-					className="font-icon text-4xl animate-spin"
+						className="font-icon text-4xl animate-spin"
 					>
 						󱥸
 					</div>
@@ -109,7 +108,7 @@ const	ListingsPage: React.FC = () => {
 			{
 				fetchedData !== null &&
 				<div
-				className="flex flex-col items-center justify-start
+					className="flex flex-col items-center justify-start
 				xl:grid xl:grid-cols-[1fr_50%] xl:grid-rows-1
 				gap-3
 				overflow-y-scroll
@@ -118,7 +117,7 @@ const	ListingsPage: React.FC = () => {
 				>
 
 					<div
-					className="w-full min-h-75
+						className="w-full min-h-75
 					xl:h-full
 					order-1
 					xl:order-2
@@ -136,22 +135,22 @@ const	ListingsPage: React.FC = () => {
 						>
 							{
 								window.innerWidth >= 1024 && fetchedData.photos.map((value: string, index: number) => {
-									const	factor: number = index - currentPictures;
+									const factor: number = index - currentPictures;
 
 									return (
 										<img
-										key={ index }
-										className="w-full h-full object-cover
+											key={index}
+											className="w-full h-full object-cover
 										absolute
 										rounded-t-4xl
 										xl:rounded-none
 										ease-in-out
 										transition-transform duration-500"
-										style={{
-											transform: `translateX(${100 * factor}%)`
-										}}
-										src={ value }
-										alt="House Pictures"
+											style={{
+												transform: `translateX(${100 * factor}%)`
+											}}
+											src={value}
+											alt="House Pictures"
 										/>
 									);
 								})
@@ -159,56 +158,56 @@ const	ListingsPage: React.FC = () => {
 
 							{
 								window.innerWidth < 1024 && fetchedData.photos.map((value: string, index: number) => {
-									const	active: boolean = currentPictures === index;
+									const active: boolean = currentPictures === index;
 
 									return (
 										<img
-										key={ index }
-										className="w-full h-full object-cover
+											key={index}
+											className="w-full h-full object-cover
 										absolute
 										rounded-t-4xl
 										ease-in-out
 										transition-transform duration-500
 										shadow-standard
 										xl:rounded-t-none xl:rounded-r-4xl"
-										style={{
-											transform: active ? "none" : "translateY(200%)"
-										}}
-										src={ value }
-										alt="House Pictures"
+											style={{
+												transform: active ? "none" : "translateY(200%)"
+											}}
+											src={value}
+											alt="House Pictures"
 										/>
 									);
 								})
 							}
 
 							<NavigatePictureButton
-							icon=""
-							customStyle={{
-								left: 16
-							}}
-							onClick={ () => setCurrentPictures(currentPictures > 0 ? currentPictures - 1 : fetchedData.photos.length - 1)}
-							disabled={ currentPictures === 0 }
+								icon=""
+								customStyle={{
+									left: 16
+								}}
+								onClick={() => setCurrentPictures(currentPictures > 0 ? currentPictures - 1 : fetchedData.photos.length - 1)}
+								disabled={currentPictures === 0}
 							/>
 
 							<NavigatePictureButton
-							icon=""
-							customStyle={{
-								right: 16
-							}}
-							disabled={ currentPictures === fetchedData.photos.length - 1 }
-							onClick={ () => setCurrentPictures(currentPictures === fetchedData.photos.length - 1 ? 1 : currentPictures + 1)}
+								icon=""
+								customStyle={{
+									right: 16
+								}}
+								disabled={currentPictures === fetchedData.photos.length - 1}
+								onClick={() => setCurrentPictures(currentPictures === fetchedData.photos.length - 1 ? 1 : currentPictures + 1)}
 							/>
 
 							<div
-							className="absolute top-4 left-4
+								className="absolute top-4 left-4
 							flex flex-wrap gap-3
 							w-full">
 								{
 									fetchedData.tags && fetchedData.tags.map((value: ListingsTags, index: number) => {
 										return (
 											<TagsComponents
-											key={ index }
-											tags={ value }
+												key={index}
+												tags={value}
 											/>
 										);
 									})
@@ -218,7 +217,7 @@ const	ListingsPage: React.FC = () => {
 					</div>
 
 					<div
-					className="flex flex-col items-center justify-start
+						className="flex flex-col items-center justify-start
 					order-2
 					xl:order-1
 					px-4
@@ -233,17 +232,17 @@ const	ListingsPage: React.FC = () => {
 						{
 							fetchedData.mine === true &&
 							<MyListingsView
-							fetchedData={ fetchedData }
-							setFetchedData={ setFetchedData }
-							t={ t }
+								fetchedData={fetchedData}
+								setFetchedData={setFetchedData}
+								t={t}
 							/>
 						}
 						{
 							fetchedData.mine === false &&
 							<ClientListingsView
-							fetchedData={ fetchedData }
-							setFetchedData={ setFetchedData }
-							t={ t }
+								fetchedData={fetchedData}
+								setFetchedData={setFetchedData}
+								t={t}
 							/>
 						}
 					</div>
