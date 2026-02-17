@@ -266,7 +266,8 @@ const Filter: React.FC<FilterProps> = ({
 				<InputEnum
 					title={t("buttons.filter.location.title")}
 					name="zone"
-					startValue={defaultZone}
+					defaultValue={defaultZone}
+					// startValue={defaultZone}
 					dataEnum={[
 						{ value: "none", title: t("buttons.filter.location.none") },
 						...ZONE_ENUM
