@@ -306,12 +306,6 @@ const SellerSlotsPage: React.FC = () => {
 	const listingID = searchParams.get("id");
 
 	useEffect(() => {
-		if (isConnected) {
-			console.log("user is connected here\n");
-			setTimeout(() => {
-				console.log("user is connected here\n");
-			}, 10000);
-		}
 		if (isConnected !== null && isConnected === false) {
 			navigate("/sign-in", { state: { from: location.pathname + location.search } });
 		}
