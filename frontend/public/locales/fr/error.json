@@ -46,7 +46,7 @@
 		"passwordAndConfirmationIsDifferent": "Les deux mots de passe ne correspondent pas.",
 		"user_permission_updated_successfully": "Les permissions de l'utilisateur ont été mises à jour avec succès.",
 		"verification_failed": "La vérification de l'authentification a échoué.",
-		"credit_service_error": "Le service de crédits est temporairement indisponible."
+		"credit_service_error": "Le service de crédits est temporairement indisponible.",
 		"unauthorized": "Acción no autorizada."
 	},
 	"validation": {
