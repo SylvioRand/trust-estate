@@ -24,15 +24,15 @@ export async function fetchWithSuppressedErrors(
   init?: RequestInit
 ): Promise<Response> {
   const originalConsoleError = console.error;
-  
+
   // Filtrer les erreurs liées aux requêtes HTTP
   console.error = (...args: any[]) => {
     const message = args[0]?.toString() || '';
     // Ne pas logger les erreurs HTTP 401, 403, etc.
-    if (message.includes('401') || 
-        message.includes('403') || 
-        message.includes('Unauthorized') ||
-        message.includes('Forbidden')) {
+    if (message.includes('401') ||
+      message.includes('403') ||
+      message.includes('Unauthorized') ||
+      message.includes('Forbidden')) {
       return;
     }
     originalConsoleError(...args);

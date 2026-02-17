@@ -325,10 +325,8 @@ const SellerSlotsPage: React.FC = () => {
 					setFetchedSlots(slots);
 					setInitialData(slots.map(s => ({ ...s })));
 				} else {
-					console.error("Failed to fetch availability", response.status);
 				}
 			} catch (error) {
-				console.error("Error fetching availability:", error);
 			} finally {
 				setLoading(false);
 			}
@@ -362,7 +360,6 @@ const SellerSlotsPage: React.FC = () => {
 				toast.error(t(errorData.message || "errors.save_failed", "Échec de l'enregistrement"));
 			}
 		} catch (error) {
-			console.error("Error saving availability:", error);
 			toast.error(t("errors.save_failed", "Une erreur est survenue lors de la sauvegarde"));
 		} finally {
 			setAreProcessingSave(false);
