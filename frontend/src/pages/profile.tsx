@@ -219,22 +219,61 @@ const ProfilePage: React.FC = () => {
 					w-full"
 				>
 					<div className="font-bold
+						w-full
+						truncate
 						mr-auto"
 					>
-						{userData?.firstName + " " + (userData?.lastName ? userData.lastName : "")}
+						{userData?.firstName}
 					</div>
+
+					{
+						userData && userData.lastName &&
+						<div className="font-bold
+						w-full
+						truncate
+						mr-auto"
+						>
+							{userData.lastName}
+						</div>
+					}
+
 					<div className="font-light
+						w-full
+						truncate
 						whitespace-pre-line
 						mr-auto"
 					>
-						{
-							userData?.email + "\n"
-							+ (userData?.phone ? userData.phone : "") + "\n\n"
-							+ t("listings:section.contact.memberSince")
-							+ " "
-							+ CreateDateForMemberSince(userData?.createdAt)
-						}
+						{userData?.email}
 					</div>
+
+					{
+						userData && userData.phone &&
+						<div className="font-light
+						w-full
+						truncate
+						whitespace-pre-line
+						mr-auto"
+						>
+							{userData.phone}
+						</div>
+					}
+
+					{
+						userData && userData.createdAt &&
+						<div className="font-light
+						w-full
+						truncate
+						whitespace-pre-line
+						mt-4
+						mr-auto"
+						>
+							{
+								t("listings:section.contact.memberSince")
+								+ " "
+								+ CreateDateForMemberSince(userData?.createdAt)
+							}
+						</div>
+					}
 				</div>
 				<div className="grid grid-cols-1 grid-rows-2
 					md:grid-cols-[auto_auto] md:grid-rows-1

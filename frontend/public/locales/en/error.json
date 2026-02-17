@@ -22,6 +22,7 @@
 		"auth_server_error": "The authentication service is temporarily unavailable."
 	},
 	"auth": {
+		"invalid_request": "Invalid Request.",
 		"verification_email_sent": "A verification email has been sent.",
 		"verification_email_sent_if_exists": "A verification email has been sent if the account exists.",
 		"email_already_exists": "This email address is already in use.",
@@ -46,6 +47,7 @@
 		"user_permission_updated_successfully": "User permissions have been successfully updated.",
 		"verification_failed": "Authentication verification failed.",
 		"credit_service_error": "The credit service is temporarily unavailable."
+		"unauthorized": "Action not authorized."
 	},
 	"validation": {
 		"email": {
