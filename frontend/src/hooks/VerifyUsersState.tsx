@@ -50,5 +50,5 @@ export function VerifyUsersState() {
 		};
 
 		checkAuth();
-	}, [navigate, setIsConnected, setUserData]);
+	}, [navigate, setIsConnected, setUserData, t]);
 }
