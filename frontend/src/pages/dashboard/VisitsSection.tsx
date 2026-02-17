@@ -35,7 +35,6 @@ const VisitsSection: React.FC = () => {
             });
 
             if (!response.ok) {
-                console.error("Error fetching data: ", response.status);
                 return;
             }
 
@@ -46,9 +45,7 @@ const VisitsSection: React.FC = () => {
             setTotalMatching(parsedData.pagination.totalMatching);
         } catch (error) {
             if (error instanceof ZodError) {
-                console.error("Zod Error Detail:", error.message);
             } else {
-                console.error("Fetch error:", error);
             }
         } finally {
             if (showLoading) setLoading(false);
@@ -66,11 +63,9 @@ const VisitsSection: React.FC = () => {
                 await fetchVisits(false);
             } else {
                 const errorData = await response.json();
-                console.error("Status update error:", errorData);
                 toast.error(t("notifications.updateError", { defaultValue: "Une erreur est survenue lors de la mise à jour." }));
             }
         } catch (err) {
-            console.error("Status update error:", err);
             toast.error(t("notifications.updateError", { defaultValue: "Une erreur est survenue lors de la mise à jour." }));
         }
     };

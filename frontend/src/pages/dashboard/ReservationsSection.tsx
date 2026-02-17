@@ -35,7 +35,6 @@ const ReservationsSection: React.FC = () => {
             });
 
             if (!response.ok) {
-                console.error("Error fetching data: ", response.status);
                 return;
             }
 
@@ -46,9 +45,7 @@ const ReservationsSection: React.FC = () => {
             setTotalMatching(parsedData.pagination.totalMatching);
         } catch (error) {
             if (error instanceof ZodError) {
-                console.error("Zod Error Detail:", error.message);
             } else {
-                console.error("Fetch error:", error);
             }
         } finally {
             if (showLoading) setLoading(false);
@@ -67,11 +64,8 @@ const ReservationsSection: React.FC = () => {
                 await fetchReservations(false);
             } else {
                 const errorData = await response.json();
-                console.error("Status update error:", errorData);
-                toast.error(t("notifications.updateError", { defaultValue: "Une erreur est survenue lors de la mise à jour." }));
             }
         } catch (error) {
-            console.error("Update error:", error);
             toast.error(t("notifications.updateError", { defaultValue: "Erreur réseau lors de la mise à jour" }));
         }
     };
