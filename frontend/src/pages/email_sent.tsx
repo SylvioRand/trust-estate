@@ -15,13 +15,11 @@ const EmailSentPage: React.FC = () => {
 	const [resendButtonDisabled, setResendButtonDisabled] = useState<boolean>(false);
 	const navigate = useNavigate();
 	const [timeLeft, setTimeLeft, controls] = useCountdown();
-	const { isConnected, userData } = useDataProvider();
+	const { isConnected } = useDataProvider();
 
 	VerifyUsersState();
 	if (isConnected !== null && isConnected === false)
 		navigate("/sign-in");
-	// if (isConnected !== null && isConnected === true && userData && userData.emailVerified === true)
-	// 	navigate("/home");
 	const handleOnResend = async () => {
 		setProcessResend(true);
 
