@@ -24,7 +24,7 @@ const MobileNavButton: React.FC<NavButtonProps> = ({
 	const [hovered, setHovered] = useState<boolean>(false);
 
 	useEffect(() => {
-		setActive(location.pathname === path);
+		setActive(location.pathname.includes(path));
 	}, [location.pathname, path]);
 
 	return (
