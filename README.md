@@ -144,18 +144,220 @@ We assigned roles from what each of use wanted to try, to learn, or just to do b
 We used github tools: creating a project on github, create an issue for each task, assign someone to it with the appropriate flags depending on the case.
 We used slack to communicate with the team.
 
-## Technical stack
+## Technical Stack
 
-Frontend technogies: **React**
+### Frontend Technologies
+- **React** — UI library for building interactive user interfaces with component-based architecture
+- **TypeScript** — Type-safe superset of JavaScript for improved code reliability
+- **Vite** — Modern build tool with fast hot module replacement (HMR) for development
+- **Tailwind CSS** — Utility-first CSS framework for responsive design and consistent styling
+- **React i18n** — Internationalization library for multi-language support (FR, EN, ES)
 
-Backend technologies: **Fastify**, **FastAPI**
+### Backend Technologies
+- **Fastify** — Fast and low-overhead Node.js web framework for microservices communication and APIs
+- **FastAPI** — Python async framework for AI service with automatic API documentation
+- **Node.js & TypeScript** — Runtime and language for auth, credits, and listings services
+- **Python 3** — Language for AI/ML capabilities and ChromaDB integration
 
-Database system: **PostgresSQL**
+### Database System
+- **PostgreSQL** — Relational database chosen for:
+  - ACID compliance and data integrity across microservices
+  - Robust transaction support for financial operations (credits)
+  - Strong relationship modeling with foreign keys and constraints
+  - JSON support for flexible data storage (photos, tags arrays)
+  - Scalability and reliability for production use
+
+### ORM & Data Access
+- **Prisma ORM** — Type-safe database access layer with auto-generated migrations and type definitions
+- **Prisma Client** — Generated client for type-safe database queries across all services
+
+### AI & Machine Learning
+- **ChromaDB** — Vector database for embedding storage and semantic search in RAG pipeline
+- **Groq LLM API** — Open LLM inference platform for text generation with streaming support
+- **Sentence Transformers** — Python library for generating embeddings for semantic search
+
+### Security & Authentication
+- **JWT (JSON Web Tokens)** — For stateless authentication and session management
+- **OAuth 2.0** — Third-party authentication (Google, GitHub, 42)
+- **bcrypt** — Password hashing for secure storage
+
+### Infrastructure & Deployment
+- **Docker & Docker Compose** — Containerization for reproducible, isolated service deployment
+- **Nginx** — Reverse proxy and load balancer for routing requests to microservices
+- **PostgreSQL Cluster** — Distributed database architecture with service isolation
+
+### Development & Build Tools
+- **npm/pnpm** — Package management for Node.js dependencies
+- **Prisma Migrations** — Version-controlled database schema changes
 
 
-## Database schema
+## Database Schema
 
-???
+The Trust Estate platform uses a **PostgreSQL** database distributed across four microservices. Each service maintains its own database for data isolation and scalability.
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        PostgreSQL Cluster                        │
+├──────────────────┬──────────────────┬──────────────────┬─────────┤
+│  Auth Service    │ Listings Service │ Credits Service │Reservation
+│  (Users, Tokens) │  (Properties)    │  (Finances)     │ Service  
+└──────────────────┴──────────────────┴──────────────────┴─────────┘
+```
+
+### Service 1: Authentication Service (`auth`)
+
+**Purpose**: User management, authentication, and authorization
+
+#### Tables
+
+| Table | Purpose | Key Fields |
+|-------|---------|-----------|
+| `User` | Core user data | `id` (UUID), `email`, `password`, `firstName`, `lastName`, `role`, `trustScore`, `emailVerified`, `phoneVerified` |
+| `refresh_token` | JWT refresh token storage | `id`, `userId` (FK), `tokenHash`, `expiresAt` |
+| `email_Verification_token` | Email verification tokens | `id`, `userId` (FK), `tokenHash`, `expiresAt` |
+| `forgot_password_token` | Password reset tokens | `id`, `userId` (FK), `tokenHash`, `expiresAt` |
+
+**Key Relationships**:
+- `User` → `refresh_token` (1:1, cascade delete)
+- `User` → `email_Verification_token` (1:1, cascade delete)
+- `User` → `forgot_password_token` (1:1, cascade delete)
+
+**Enumerations**:
+- `Role`: ADMIN, USER, MODERATOR
+
+---
+
+### Service 2: Listings Service (`listings`)
+
+**Purpose**: Property listing management, seller statistics, and moderation
+
+#### Tables
+
+| Table | Purpose | Key Fields |
+|-------|---------|-----------|
+| `Listing` | Property listings | `id` (UUID), `type` (sale/rent), `propertyType`, `title`, `description`, `price`, `surface`, `zone`, `photos[]`, `tags[]`, `status`, `sellerId`, `createdAt`, `updatedAt`, `soldAt` |
+| `ListingFeatures` | Property amenities | `id`, `listingId` (FK, unique), `bedrooms`, `bathrooms`, `wc`, `water_access`, `electricity_access`, `garden_private`, `parking_type`, `pool` |
+| `ListingAvailability` | Viewing time slots | `id`, `listingId` (FK), `dayOfWeek` (0-6), `startTime`, `endTime` |
+| `ListingStats` | Listing engagement metrics | `id`, `listingId` (FK, unique), `views`, `reservations`, `feedbacks` |
+| `SellerStats` | Seller performance metrics | `id`, `userId` (unique), `totalListings`, `activeListings`, `successfulSales`, `successfulRents`, `averageRating`, `responseRate` |
+| `Report` | User reports on listings | `id`, `listingId` (FK), `reporterId`, `reason`, `comment`, `createdAt` |
+| `ModerationAction` | Moderation activities | `id`, `listingId` (FK), `moderatorId`, `action`, `reason`, `internalNote`, `messageToSeller`, `createdAt` |
+
+**Key Relationships**:
+- `Listing` → `ListingFeatures` (1:1, cascade delete)
+- `Listing` → `ListingAvailability` (1:N, cascade delete)
+- `Listing` → `ListingStats` (1:1, cascade delete)
+- `Listing` → `Report` (1:N, cascade delete)
+- `Listing` → `ModerationAction` (1:N, cascade delete)
+
+**Enumerations**:
+- `ListingType`: sale, rent
+- `PropertyType`: apartment, house, loft, land, commercial
+- `ListingStatus`: active, blocked, archived
+- `ParkingType`: none, garage, box, parking
+- `MarketingTag`: urgent, exclusive, discount
+- `ReportReason`: fraud, duplicate, spam, incorrect_info, inappropriate, other
+- `ModerationActionType`: block_temporary, archive_permanent, request_clarification, reject_reports
+
+**Indexes**: `averageRating`, `successfulSales`, `responseRate` on SellerStats; `listingId`, `dayOfWeek` on ListingAvailability
+
+---
+
+### Service 3: Credits Service (`credits`)
+
+**Purpose**: Financial transactions and credit management
+
+#### Tables
+
+| Table | Purpose | Key Fields |
+|-------|---------|-----------|
+| `CreditBalance` | User credit accounts | `id` (UUID), `userId` (unique), `balance`, `totalEarned`, `totalSpent`, `lastRechargeAt`, `createdAt`, `updatedAt` |
+| `CreditTransaction` | Financial transaction log | `id` (UUID), `userId`, `amount`, `type`, `reason`, `listingId`, `reservationId`, `balanceAfter`, `createdAt` |
+
+**Key Relationships**:
+- `CreditBalance` → `CreditTransaction` (1:N via userId)
+
+**Enumerations**:
+- `TransactionType`: recharge, consume, bonus, refund
+- `TransactionReason`: initial_bonus, recharge_pack, publish_listing, renew_listing, reserve_visit, refund_cancelled
+
+**Indexes**: `userId` on CreditTransaction
+
+---
+
+### Service 4: Reservation Service (`reservation`)
+
+**Purpose**: Property reservations, visits, and user feedback
+
+#### Tables
+
+| Table | Purpose | Key Fields |
+|-------|---------|-----------|
+| `Reservation` | Visit reservations | `reservationId` (UUID, PK), `listingId`, `buyerId`, `sellerId`, `status`, `slot` (DateTime), `confirmedAt`, `rejectedAt`, `cancelledAt`, `cancelledBy`, `doneAt`, `sellerContactVisible`, `feedbackEligible`, `feedbackGiven`, `createdAt`, `updatedAt` |
+| `Feedback` | User reviews | `id` (UUID), `reservationId` (FK, unique), `listingId`, `authorId`, `targetId`, `rating`, `comment`, `listingAccurate`, `sellerReactive`, `visitUseful`, `visible`, `moderatedAt`, `moderationReason`, `createdAt`, `updatedAt` |
+
+**Key Relationships**:
+- `Reservation` → `Feedback` (1:1, cascade delete)
+
+**Enumerations**:
+- `ReservationStatus`: pending, confirmed, rejected, cancelled, done
+- `CancelledBy`: buyer, seller, system
+
+**Indexes**: `listingId`, `buyerId`, `sellerId`, `status`, `slot` on Reservation; `listingId`, `targetId` on Feedback
+
+---
+
+### Cross-Service Relationships
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│              Service Integration Points                         │
+├────────────────────────────────────────────────────────────────┤
+│ Auth.User.id                                                   │
+│    ├─→ Listings.Listing.sellerId                              │
+│    ├─→ Listings.SellerStats.userId                            │
+│    ├─→ Reservation.Reservation.(buyerId, sellerId)            │
+│    ├─→ Credits.CreditBalance.userId                           │
+│    └─→ Credits.CreditTransaction.userId                       │
+│                                                                 │
+│ Listings.Listing.id                                            │
+│    ├─→ Reservation.Reservation.listingId                      │
+│    ├─→ Credits.CreditTransaction.listingId                    │
+│    └─→ Feedback.Feedback.listingId                            │
+│                                                                 │
+│ Reservation.Reservation.id                                     │
+│    ├─→ Feedback.Feedback.reservationId                        │
+│    └─→ Credits.CreditTransaction.reservationId                │
+└────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Data Types Reference
+
+| Type | Description | Examples |
+|------|-------------|----------|
+| `String` | Text data | emails, names, descriptions |
+| `UUID` | Universally Unique Identifier | Primary and foreign keys |
+| `Int` | Integer numbers | counts, ratings (1-5), day of week |
+| `Float` | Decimal numbers | prices, ratings (averages), credit balances |
+| `Boolean` | True/False values | feature flags, verification status |
+| `DateTime` | Timestamp | creation dates, update times |
+| `String[]` | Array of strings | photos URLs, tags |
+| `Enum` | Enumerated values | status, types, reasons |
+
+---
+
+### Key Design Patterns
+
+1. **Soft Deletions**: Implemented via status fields (e.g., `ListingStatus.archived`) rather than hard deletes
+2. **Cascade Deletes**: Foreign key relationships use `onDelete: Cascade` for referential integrity
+3. **Indexes**: Applied to frequently queried fields for performance optimization
+4. **Unique Constraints**: Enforced on critical fields (email, userId combinations)
+5. **Timestamps**: All tables include `createdAt` and `updatedAt` for audit trails
+6. **Enumerated Types**: Used for constrained fields to ensure data consistency
 
 ## Features list
 
