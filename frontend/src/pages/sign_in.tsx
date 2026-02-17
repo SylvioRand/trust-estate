@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { type APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
 import useDataProvider from "../provider/useDataProvider";
+import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 const SignInPage: React.FC = () => {
 	const { t } = useTranslation(["signIn", "error"]);
@@ -19,6 +20,7 @@ const SignInPage: React.FC = () => {
 
 	const location = useLocation();
 
+	VerifyUsersState();
 	useEffect(() => {
 		if (isConnected === true) {
 			const from = location.state?.from || "/profile";
