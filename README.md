@@ -359,9 +359,59 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 5. **Timestamps**: All tables include `createdAt` and `updatedAt` for audit trails
 6. **Enumerated Types**: Used for constrained fields to ensure data consistency
 
-## Features list
+## Features List
 
-?????
+### Authentication Service (tolrandr)
+
+| Feature | Description |
+|---------|-------------|
+| **User Registration** | Create new user accounts with email/password validation and welcome email verification |
+| **User Login** | Authenticate users and issue JWT access/refresh tokens for secure session management |
+| **Email Verification** | Send verification tokens to users and validate email ownership during registration |
+| **Email Resend** | Resend verification emails with rate limiting (1 per minute) to prevent abuse |
+| **Forgot Password** | Send password reset tokens to registered emails with rate limiting (1 per minute) |
+| **Reset Password** | Allow users to set new password using valid reset token |
+| **OAuth 2.0 (Google)** | Third-party authentication via Google with automatic account linking |
+| **Token Validation** | Internal endpoint to verify JWT tokens for inter-service communication |
+| **Role Management** | Admin capability to change user roles (ADMIN, USER, MODERATOR) |
+| **User Profile** | Get authenticated user information including email, name, phone, trust score |
+| **Profile Update** | Update user information (first name, last name) |
+| **Phone Management** | Add or update phone number with verification status tracking |
+| **Password Update** | Change existing password with current password verification |
+| **Set Password** | Add password for OAuth-only users to enable email/password login |
+| **Account Deletion (GDPR)** | Permanently delete user account and associated data with password confirmation |
+| **Logout** | Invalidate refresh tokens and end user session |
+
+### Credits Service (tolrandr)
+
+| Feature | Description |
+|---------|-------------|
+| **Credit Recharge** | Users purchase credit packages via internal endpoint (admin/system integration) |
+| **Personal Recharge** | Users purchase credits directly with payment processing |
+| **Balance Inquiry** | Get current credit balance, total earned, and total spent for authenticated user |
+| **Transaction History** | Retrieve complete transaction log with filters (type, reason, date) |
+| **Debit Credits** | Internal operation to deduct credits when publishing listings or making reservations |
+| **Credit Refund** | Internal operation to refund credits for cancelled actions or refund operations |
+| **Transaction Logging** | Automatic logging of all credit movements with type, reason, amount, and remaining balance |
+| **Health Check** | Service status endpoint for monitoring and load balancing |
+| **Data Deletion (GDPR)** | Delete all credit data associated with deleted user account |
+
+### Reservation Service (tolrandr)
+
+| Feature | Description |
+|---------|-------------|
+| **Create Reservation** | Buyer books a viewing slot for a property listing with datetime and seller matching |
+| **List User Reservations** | Buyer views all their reservation history with filtering by status and date |
+| **Seller Reservations** | Seller views all incoming reservations for their listings with status tracking |
+| **Confirm Reservation** | Seller accepts a pending reservation and notifies buyer of confirmed time |
+| **Reject Reservation** | Seller declines a reservation request with optional reason |
+| **Cancel Reservation** | Buyer or seller cancels a pending/confirmed reservation and refunds any credits |
+| **Mark as Done** | Mark reservation as completed after viewing, enables feedback submission |
+| **Check Slot Availability** | Verify if a specific datetime slot is available for a listing before booking |
+| **Get Listing Status** | Internal endpoint to check reservation counts and status for listings |
+| **Submit Feedback** | Leave rating (1-5 stars) and review for property, seller, or viewing experience |
+| **Retrieve Feedback** | Get all feedback received on user's properties or given by user |
+| **Data Deletion (GDPR)** | Delete all reservation and feedback data associated with deleted user account |
 
 ## Modules
 
