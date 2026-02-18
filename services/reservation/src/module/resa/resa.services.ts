@@ -24,6 +24,9 @@ export async function getAllUserReservation(app: FastifyInstance, userId: string
 }
 
 export async function addSlot(app: FastifyInstance, userId: string, slot: Date, sellerId: string, listingId: string) {
+	if (userId === sellerId) {
+		throw new Error("cannot_reserve_own_listing");
+	}
 
 	return await app.prisma.$transaction(async (tx: TransactionClient) => {
 		const slotDate = slot instanceof Date ? slot : new Date(slot);
@@ -36,6 +39,7 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 		const maxDate = new Date(minDate);
 		maxDate.setDate(minDate.getDate() + 14);
 		maxDate.setHours(23, 59, 59, 999);
+
 
 		if (slotDate < minDate) {
 			throw new Error("slot_unavailable");
