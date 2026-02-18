@@ -107,7 +107,6 @@ const SignUpPage: React.FC = () => {
 					throw new Error("Invalid Request.");
 				}
 				else if (errorData.error === "rate_limited") {
-					toast.error(t(errorData.message));
 					throw new Error("common.rate_limited");
 				}
 			}
