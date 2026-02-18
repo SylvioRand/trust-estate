@@ -48,6 +48,7 @@ interface AvailabilitySlot {
 interface AvailabilityData {
   availability: AvailabilitySlot[];
   sellerId: string;
+  isMine: boolean;
 }
 
 const BuyerSlotsPage: React.FC = () => {
@@ -85,6 +86,8 @@ const BuyerSlotsPage: React.FC = () => {
         }
 
         const data: AvailabilityData = await response.json();
+        if (data.isMine)
+          navigate("/home");
 
         const dates = data.availability.map(slot => new Date(slot.day));
         setAvailableDates(dates);
