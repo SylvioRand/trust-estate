@@ -15,7 +15,7 @@ const EmailSentPage: React.FC = () => {
 	const [resendButtonDisabled, setResendButtonDisabled] = useState<boolean>(false);
 	const navigate = useNavigate();
 	const [timeLeft, setTimeLeft, controls] = useCountdown();
-	const { isConnected } = useDataProvider();
+	const { isConnected, setIsConnected, setUserData } = useDataProvider();
 
 	VerifyUsersState();
 	if (isConnected !== null && isConnected === false)
@@ -59,7 +59,7 @@ const EmailSentPage: React.FC = () => {
 		setProcessLogOut(true);
 
 		try {
-			const response = await fetch("/api/auth/logout", {
+			await fetch("/api/auth/logout", {
 				method: "POST",
 				credentials: "include"
 			});
@@ -67,6 +67,8 @@ const EmailSentPage: React.FC = () => {
 			if (error instanceof Error && error.message !== "")
 				toast.error(t(`error:${error.message}`));
 		} finally {
+			setIsConnected(false);
+			setUserData(null);
 			navigate("/home");
 			setProcessLogOut(false);
 		}
