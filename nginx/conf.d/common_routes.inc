@@ -12,6 +12,8 @@
     # API ROUTES - Auth Service
     # ==============================================
     location /api/auth/ {
+        limit_req zone=auth_limit burst=3 nodelay;
+        limit_req_status 429;
         proxy_pass http://auth_service/auth/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -21,6 +23,8 @@
     }
 
 	  location /api/users/ {
+        limit_req zone=api_limit burst=10 nodelay;
+        limit_req_status 429;
         proxy_pass http://auth_service/users/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -30,7 +34,9 @@
     }
 
     location /api/listings/ {
-        client_max_body_size 55M;  # 10 photos × 5MB + JSON metadata
+        client_max_body_size 55M;
+        limit_req zone=upload_limit burst=5 nodelay;
+        limit_req_status 429;
         proxy_pass http://listings_service/listings/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -41,6 +47,8 @@
 
     location /api/moderator/ {
         client_max_body_size 5M;
+        limit_req zone=api_limit burst=10 nodelay;
+        limit_req_status 429;
         proxy_pass http://listings_service/moderator/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -50,6 +58,8 @@
     }
 
     location /api/credits/ {
+        limit_req zone=api_limit burst=10 nodelay;
+        limit_req_status 429;
         proxy_pass http://credits_service/credits/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -60,7 +70,7 @@
 
     location /api/ai/chat/ {
         client_max_body_size 5M;
-        
+
         # Apply rate limiting
         limit_req zone=chatbot_limit burst=5 nodelay;
         limit_req_status 429;
@@ -83,6 +93,8 @@
 
     location /api/reservations/ {
         client_max_body_size 5M;
+        limit_req zone=api_limit burst=10 nodelay;
+        limit_req_status 429;
         proxy_pass http://reservations_service/reservations/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
