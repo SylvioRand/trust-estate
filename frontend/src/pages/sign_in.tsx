@@ -63,7 +63,6 @@ const SignInPage: React.FC = () => {
 					throw new Error("");
 				}
 				else if (response.status === 429) {
-					toast.error(t("error:" + errorData.message));
 					throw new Error("");
 				}
 			}
