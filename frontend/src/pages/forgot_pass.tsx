@@ -131,7 +131,7 @@ const ForgotPassPage: React.FC = () => {
 						</div>
 					}
 
-					<Link to="/sign_in">
+					<Link to="/sign-in">
 						<span className="text-[12px] font-bold
 							hover:underline cursor-pointer"
 						>
