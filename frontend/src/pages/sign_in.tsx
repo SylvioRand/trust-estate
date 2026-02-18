@@ -34,7 +34,7 @@ const SignInPage: React.FC = () => {
 		const formData = new FormData(e.currentTarget);
 		const data = Object.fromEntries(formData.entries());
 		try {
-			const response = await fetch("/api/auth/login", {
+			const response = await fetch("https://localhost:8443/api/auth/login", {
 				method: "POST",
 				headers: {
 					"Content-type": "application/json"
