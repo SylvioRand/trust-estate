@@ -197,14 +197,9 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 
 ### Architecture Overview
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        PostgreSQL Cluster                        │
-├──────────────────┬──────────────────┬──────────────────┬─────────┤
-│  Auth Service    │ Listings Service │ Credits Service │Reservation
-│  (Users, Tokens) │  (Properties)    │  (Finances)     │ Service  
-└──────────────────┴──────────────────┴──────────────────┴─────────┘
-```
+| Auth Service | Listings Service | Credits Service | Reservation Service |
+| :--- | :--- | :--- | :--- |
+| (Users, Tokens) | (Properties) | (Finances) | (Bookings) |
 
 ### Service 1: Authentication Service (`auth`)
 
@@ -313,23 +308,23 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│              Service Integration Points                         │
+│              Service Integration Points                        │
 ├────────────────────────────────────────────────────────────────┤
 │ Auth.User.id                                                   │
-│    ├─→ Listings.Listing.sellerId                              │
-│    ├─→ Listings.SellerStats.userId                            │
-│    ├─→ Reservation.Reservation.(buyerId, sellerId)            │
-│    ├─→ Credits.CreditBalance.userId                           │
-│    └─→ Credits.CreditTransaction.userId                       │
-│                                                                 │
+│    ├─→ Listings.Listing.sellerId                               │
+│    ├─→ Listings.SellerStats.userId                             │
+│    ├─→ Reservation.Reservation.(buyerId, sellerId)             │
+│    ├─→ Credits.CreditBalance.userId                            │
+│    └─→ Credits.CreditTransaction.userId                        │
+│                                                                │
 │ Listings.Listing.id                                            │
-│    ├─→ Reservation.Reservation.listingId                      │
-│    ├─→ Credits.CreditTransaction.listingId                    │
-│    └─→ Feedback.Feedback.listingId                            │
-│                                                                 │
+│    ├─→ Reservation.Reservation.listingId                       │
+│    ├─→ Credits.CreditTransaction.listingId                     │
+│    └─→ Feedback.Feedback.listingId                             │
+│                                                                │
 │ Reservation.Reservation.id                                     │
-│    ├─→ Feedback.Feedback.reservationId                        │
-│    └─→ Credits.CreditTransaction.reservationId                │
+│    ├─→ Feedback.Feedback.reservationId                         │
+│    └─→ Credits.CreditTransaction.reservationId                 │
 └────────────────────────────────────────────────────────────────┘
 ```
 
@@ -498,4 +493,18 @@ A scalable backend architecture built with independent services.
 
 ## Individuals contributions
 
-??????
+### srandria
+Sylvio ensured the platform was technically robust from infrastructure to high-level UI.
+- **Key Achievement**: Developed the **Frontend Dashboard & Reservation UI**, bridging the gap between Arthinew's backend logic and a seamless user experience. He also unified the deployment via a single-command **Makefile**.
+
+### rarakoto
+Ny Hasina transformed the vision into a premium reality.
+- **Key Achievement**: Designed the **Visual Identity** and built the responsive core component system that powers the entire application.
+
+### tolrandr
+Arthinew was the powerhouse behind the platform's core transactions.
+- **Key Achievement**: Successfully implemented the **Inter-Service Event Flow**, ensuring that credit debits and refunds are perfectly synchronized with reservation status changes.
+
+### aelison
+aelison enabled intelligent property discovery.
+- **Key Achievement**: Optimized the **ChromaDB indexing** for Malagasy geographic zones, ensuring high accuracy for the RAG assistant.
