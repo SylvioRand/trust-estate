@@ -63,6 +63,7 @@ const DataProvider: React.FC<DataProviderProps> = ({
 						if (url.pathname === "/add-phone") {
 							return;
 						}
+						console.log("DataProvider: responseData: ");
 						console.log("DataProvider: redirect to /add-phone.");
 						navigate("/add-phone", { replace: true });
 						return;
@@ -80,8 +81,10 @@ const DataProvider: React.FC<DataProviderProps> = ({
 					setIsConnected(true);
 					setUserData(serverResponse);
 
-					if (protectedRoutes.includes(location.pathname))
+					if (protectedRoutes.includes(location.pathname)) {
+						console.log("Protected Route redirection");
 						navigate("/sign-in");
+					}
 					else {
 						// I safely ignore redirection during email verification
 						if (location.pathname === "/verify-email")

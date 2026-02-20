@@ -154,8 +154,9 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 				>
 					
 				</div>
+
 				<div className="flex flex-col items-start justify-start
-					w-full h-full"
+						w-full h-full"
 				>
 					{
 						data.map((value: NavButtonProps, index: number) => {
@@ -171,8 +172,8 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 					}
 				</div>
 				<div className="flex flex-col items-start justify-end gap-3
-					flex-none
-					pb-4"
+						flex-none
+						pb-4"
 				>
 					{
 						(isConnected === false || isConnected === null) && dataUser.map((value: NavButtonProps, index: number) => {
@@ -339,35 +340,14 @@ const NavBar: React.FC = () => {
 					{t("brand.name")}
 				</div>
 
-				<div className="md:flex items-center justify-center gap-3
-						h-full
-						hidden"
-				>
-					{
-						dataNavButton.map((value: NavButtonProps, index: number) => {
-							return (
-								<NavigationButton
-									key={index}
-									icon={value.icon}
-									icon_size={value.icon_size ?? 32}
-									title={value.title}
-									path={value.path}
-								/>
-							);
-						})
-					}
-				</div>
-
-				<div className="flex items-center justify-center justify-self-end gap-3 h-full">
+				{
+					location.pathname !== "/add-phone" && location.pathname !== "/verify-email" &&
 					<div className="md:flex items-center justify-center gap-3
 						h-full
 						hidden"
 					>
 						{
-							(
-								isConnected === null
-								|| (isConnected !== null && isConnected === false)
-							) && userNavButton.map((value: NavButtonProps, index: number) => {
+							dataNavButton.map((value: NavButtonProps, index: number) => {
 								return (
 									<NavigationButton
 										key={index}
@@ -379,23 +359,49 @@ const NavBar: React.FC = () => {
 								);
 							})
 						}
-
-						{
-							(
-								isConnected !== null && isConnected === true
-							) &&
-							<div className="flex items-center justify-center gap-3 h-full">
-								<NavigationButton
-									icon=""
-									icon_size={32}
-									title={userData?.email ?? "user@example.com"}
-									path="/profile"
-								/>
-							</div>
-						}
-
-
 					</div>
+				}
+
+				<div className="flex items-center justify-center justify-self-end gap-3 h-full">
+					{
+						location.pathname !== "/add-phone" && location.pathname !== "/verify-email" &&
+						<div className="md:flex items-center justify-center gap-3
+						h-full
+						hidden"
+						>
+							{
+								(
+									isConnected === null
+									|| (isConnected !== null && isConnected === false)
+								) && userNavButton.map((value: NavButtonProps, index: number) => {
+									return (
+										<NavigationButton
+											key={index}
+											icon={value.icon}
+											icon_size={value.icon_size ?? 32}
+											title={value.title}
+											path={value.path}
+										/>
+									);
+								})
+							}
+
+							{
+								(
+									isConnected !== null && isConnected === true
+								) &&
+								<div className="flex items-center justify-center gap-3 h-full">
+									<NavigationButton
+										icon=""
+										icon_size={32}
+										title={userData?.email ?? "user@example.com"}
+										path="/profile"
+									/>
+								</div>
+							}
+						</div>
+
+					}
 
 					<select
 						name="langage"
@@ -412,13 +418,16 @@ const NavBar: React.FC = () => {
 						<option value="es">🇪🇸</option>
 					</select>
 
-					<div className="block justify-self-end
+					{
+						location.pathname !== "/add-phone" && location.pathname !== "/verify-email" &&
+						<div className="block justify-self-end
 						md:hidden
 						font-icon text-background text-4xl"
-						onClick={() => setOpenHamburger(true)}
-					>
-						
-					</div>
+							onClick={() => setOpenHamburger(true)}
+						>
+							
+						</div>
+					}
 				</div>
 
 				<HamburgerMenu
