@@ -6,7 +6,7 @@
 //   By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2026/01/26 14:15:16 by aelison           #+#    #+#             //
-//   Updated: 2026/02/03 07:09:01 by aelison          ###   ########.fr       //
+//   Updated:    2026-02-20 15:34:37 by aelison          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -189,7 +189,6 @@ type MessageType = {
 const AIPage: React.FC = () => {
 	const [chatValue, setChatValue] = useState<string>("");
 	const [messageData, setMessageData] = useState<MessageType[]>([
-		// { value: "I found those links.", side: "left", metadata: [exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI, exampleMetadataAI] }
 	]);
 
 	const [canSend, setCanSend] = useState<boolean>(true);
@@ -215,11 +214,7 @@ const AIPage: React.FC = () => {
 				headers: { "Content-type": "application/json" }
 			});
 			if (!response.ok) {
-				setMessageData((prev) => [
-					{ value: "ERROR: IA PART: ", side: "left" } as MessageType,
-					...prev
-				].filter((msg) => msg.value !== ""));
-				throw new Error(t(`error:ERROR`));
+						throw new Error(t(`error:ERROR`));
 			}
 
 			const reader = response.body?.getReader();
