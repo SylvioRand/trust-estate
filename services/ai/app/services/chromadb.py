@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated:    2026-02-16 09:59:11 by aelison          ###   ########.fr        #
+#    Updated:    2026-02-20 13:07:04 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,8 @@ from app.models import PostModel, metaData
 from app.services.embedding import embeddingService
 
 def sort_obj(obj, field, is_minimum):
+    if not obj or not obj.get('ids') or len(obj['ids'][0]) == 0:
+        return None
     tmp = []
     value = None
 
@@ -212,6 +214,8 @@ class ChromadbService:
             parse_filters = { "id": {"$ne": id_ref}}
         else:
             embedding_format = embeddingService.generate_embedding(text)
+        if nb_result <= 0:
+            nb_result = 10
         result = await self.collections[collection_name].query(
         query_embeddings=[embedding_format],
         n_results=nb_result,
@@ -366,9 +370,7 @@ class ChromadbService:
                 nb_context = await tmp.count()
             else:
                 nb_context = 10
-
         result = await self.query_in_collection("posts", search_text, nb_context, filters, id_ref)
-        print(f"Result of query: {result}")
         if sort_by and sort_by.get("field"):
             get_sorted = datas.get('sort_by')
             sorted_field_value = get_sorted.get("field", "")
