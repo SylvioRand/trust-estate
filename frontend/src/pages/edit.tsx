@@ -1,5 +1,4 @@
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider"
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
@@ -44,7 +43,6 @@ const EditPage: React.FC = () => {
 
 	if (listingID === null)
 		navigate("/home");
-	VerifyUsersState();
 
 	// NOTE: redirect the user if he is not authenticated
 	if (!isConnected)

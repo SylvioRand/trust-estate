@@ -8,7 +8,6 @@ import { dataProfileExample, type ProfileDataType } from "../dataModel/modelProf
 import { Link, useNavigate } from "react-router-dom";
 import ContentDivider from "../components/ContentDivider";
 import useDataProvider from "../provider/useDataProvider";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import type { PopUpAPI } from "../components/PopUp";
 import PopUp from "../components/PopUp";
 import type { APIResponse } from "./sign_up";
@@ -25,7 +24,7 @@ const SettingsButton: React.FC<SettingsButtonProps> = ({
 	icon = "",
 	title = "Title",
 	hover_color = "var(--color-accent)",
-	onClick = () => {}
+	onClick = () => { }
 }) => {
 	const [hovered, setHovered] = useState<boolean>(false);
 
@@ -67,7 +66,6 @@ const SettingsButton: React.FC<SettingsButtonProps> = ({
 const SettingsPage: React.FC = () => {
 	const navigate = useNavigate();
 	const { userData, isConnected, setIsConnected } = useDataProvider();
-	VerifyUsersState();
 
 	const { t } = useTranslation(["settings", "error", "signUp"]);
 

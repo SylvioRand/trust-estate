@@ -5,7 +5,6 @@ import ContentDivider from "../components/ContentDivider";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
 import PhoneInput from "../components/PhoneInput";
 
@@ -25,18 +24,16 @@ const SignUpPage: React.FC = () => {
 	const [errorLastName, setErrorLastName] = useState<string[]>([]);
 	const [errorPassword, setErrorPassword] = useState<string[]>([]);
 
-	const { isConnected, setIsConnected } = useDataProvider();
+	const { isConnected, setIsConnected, setUserData } = useDataProvider();
 
 	const location = useLocation();
 
 	useEffect(() => {
 		if (isConnected === true) {
-			const from = location.state?.from || "/profile";
+			const from = location.state?.from || "/email-sent";
 			navigate(from, { replace: true });
 		}
 	}, [isConnected, navigate, location.state?.from]);
-
-	VerifyUsersState();
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -112,6 +109,7 @@ const SignUpPage: React.FC = () => {
 			}
 
 			setIsConnected(true);
+			setUserData(responseData.data);
 			navigate("/email-sent");
 
 		} catch (error) {

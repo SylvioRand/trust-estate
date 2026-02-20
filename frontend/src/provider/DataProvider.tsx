@@ -4,6 +4,7 @@ import type { APIResponse } from "../pages/sign_up";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
+import { protectedRoutes } from "../main";
 
 interface DataProviderProps {
 	children: React.ReactNode;
@@ -45,38 +46,56 @@ const DataProvider: React.FC<DataProviderProps> = ({
 				});
 
 				const responseData = await response.json();
+				// console.log("Response Promise: ", response);
+				// console.log("Response Data: ", responseData);
 
 				if (response.ok) {
 					const serverResponse = responseData as UserModelData;
 
-					setIsConnected(false);
 					if ((serverResponse as any).error === "invalid_or_expired_token") {
+						setIsConnected(false);
+						setUserData(null);
 						return;
 					}
 					if ((serverResponse as any).error === "phone_number_not_verified") {
 						setIsConnected(false);
+						setUserData(null);
 						if (url.pathname === "/add-phone") {
 							return;
 						}
+						console.log("DataProvider: redirect to /add-phone.");
 						navigate("/add-phone", { replace: true });
 						return;
 					}
 					if ((serverResponse as any).error === "email_not_verified") {
 						setIsConnected(false);
-						if (url.pathname === "/email-sent") {
+						setUserData(null);
+						if (url.pathname === "/email-sent" || url.pathname === "/verify-email") {
 							return;
 						}
+						console.log("DataProvider: redirect to /email-sent.");
 						navigate("/email-sent", { replace: true });
 						return;
 					}
 					setIsConnected(true);
 					setUserData(serverResponse);
-					const from = location.state?.from;
-					if (from)
-						navigate(from, { replace: true });
+
+					if (protectedRoutes.includes(location.pathname))
+						navigate("/sign-in");
+					else {
+						// I safely ignore redirection during email verification
+						if (location.pathname === "/verify-email")
+							return;
+						if (window.history.length > 1)
+							navigate(-1);
+						else {
+							console.log("Redirected to /home");
+							navigate("/home");
+						}
+					}
+
 					return;
 				}
-
 				setIsConnected(false);
 
 			} catch (error) {

@@ -32,122 +32,130 @@ import FlaggedPage from './pages/flaggedPage.tsx';
 
 const originalFetch = window.fetch;
 window.fetch = async (...args) => {
-  const response = await originalFetch(...args);
-  if (response.status === 429) {
-    window.location.href = "/429.html";
-  }
-  return response;
+	const response = await originalFetch(...args);
+	if (response.status === 429) {
+		window.location.href = "/429.html";
+	}
+	return response;
 };
 
-const router = createBrowserRouter([
-  {
-    element: (
-      <DataProvider>
-        <MainLayout />
-      </DataProvider>
-    ),
-    children: [
-      {
-        path: "/sign-in",
-        element: <SignInPage />
-      },
-      {
-        path: "/sign-up",
-        element: <SignUpPage />
-      },
-      {
-        path: "/sign-in/forgot-pass",
-        element: <ForgotPassPage />
-      },
-      {
-        path: "/sign-in/reset-password",
-        element: <ResetPassPage />
-      },
-      {
-        path: "/welcome",
-        element: <WelcomePage />
-      },
-      {
-        path: "/property/listings",
-        element: <ListingsPage />
-      },
-      {
-        path: "/profile/publish",
-        element: <PublishPage />
-      },
-      {
-        path: "/email-sent",
-        element: <EmailSentPage />
-      },
-      {
-        path: "/verify-email",
-        element: <VerifyEmailPage />
-      },
-      {
-        path: "/add-phone",
-        element: <AddPhonePage />
-      },
+export const protectedRoutes: string[] = [
+	"/profile",
+	"/profile/settings",
+	"/profile/publish",
+	"/property/listings/buyer-slots",
+	"/property/listings/seller-slots"
+]
 
-      {
-        path: "/home",
-        element: <HomePage />
-      },
-      {
-        path: "/property",
-        element: <PropertyPage />
-      },
-      {
-        path: "/ai",
-        element: <AIPage />
-      },
-      {
-        path: "/profile",
-        element: <ProfilePage />
-      },
-      {
-        path: "/profile/settings",
-        element: <SettingsPage />
-      },
-      {
-        path: "/profile/moderator/flagged",
-        element: <FlaggedPage />
-      },
-      {
-        path: "/property/listings/edit",
-        element: <EditPage />
-      },
-      {
-        path: "/property/listings/seller-slots",
-        element: <SellerSlotsPage />
-      },
-      {
-        path: "/property/listings/buyer-slots",
-        element: <BuyerSlotsPage />
-      },
-      {
-        path: "/terms-of-service",
-        element: <TermOfServicePage />
-      },
-      {
-        path: "/privacy-policy",
-        element: <PrivacyPolicyPage />
-      },
-      {
-        path: "/dashboard",
-        element: <DashboardPage />
-      },
-      {
-        path: "/",
-        element: <Navigate to="/home" replace />
-      },
-    ]
-  },
+const router = createBrowserRouter([
+	{
+		element: (
+			<DataProvider>
+				<MainLayout />
+			</DataProvider>
+		),
+		children: [
+			{
+				path: "/sign-in",
+				element: <SignInPage />
+			},
+			{
+				path: "/sign-up",
+				element: <SignUpPage />
+			},
+			{
+				path: "/sign-in/forgot-pass",
+				element: <ForgotPassPage />
+			},
+			{
+				path: "/sign-in/reset-password",
+				element: <ResetPassPage />
+			},
+			{
+				path: "/welcome",
+				element: <WelcomePage />
+			},
+			{
+				path: "/property/listings",
+				element: <ListingsPage />
+			},
+			{
+				path: "/profile/publish",
+				element: <PublishPage />
+			},
+			{
+				path: "/email-sent",
+				element: <EmailSentPage />
+			},
+			{
+				path: "/verify-email",
+				element: <VerifyEmailPage />
+			},
+			{
+				path: "/add-phone",
+				element: <AddPhonePage />
+			},
+
+			{
+				path: "/home",
+				element: <HomePage />
+			},
+			{
+				path: "/property",
+				element: <PropertyPage />
+			},
+			{
+				path: "/ai",
+				element: <AIPage />
+			},
+			{
+				path: "/profile",
+				element: <ProfilePage />
+			},
+			{
+				path: "/profile/settings",
+				element: <SettingsPage />
+			},
+			{
+				path: "/profile/moderator/flagged",
+				element: <FlaggedPage />
+			},
+			{
+				path: "/property/listings/edit",
+				element: <EditPage />
+			},
+			{
+				path: "/property/listings/seller-slots",
+				element: <SellerSlotsPage />
+			},
+			{
+				path: "/property/listings/buyer-slots",
+				element: <BuyerSlotsPage />
+			},
+			{
+				path: "/terms-of-service",
+				element: <TermOfServicePage />
+			},
+			{
+				path: "/privacy-policy",
+				element: <PrivacyPolicyPage />
+			},
+			{
+				path: "/dashboard",
+				element: <DashboardPage />
+			},
+			{
+				path: "/",
+				element: <Navigate to="/home" replace />
+			},
+		]
+	},
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <RouterProvider router={router} />
-    </GoogleOAuthProvider>
-  </React.StrictMode>,
+	<React.StrictMode>
+		<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+			<RouterProvider router={router} />
+		</GoogleOAuthProvider>
+	</React.StrictMode>,
 );

@@ -14,7 +14,6 @@ import React, { useEffect, useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
 import { useTranslation } from "react-i18next";
 import Markdown from 'react-markdown';
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import { type PropertyType } from "../dataModel/modelListings";
 import { Link } from "react-router-dom";
 import ActionButton from "../components/ActionButton";

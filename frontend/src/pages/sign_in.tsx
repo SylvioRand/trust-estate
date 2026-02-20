@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import { type APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
 import useDataProvider from "../provider/useDataProvider";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 const SignInPage: React.FC = () => {
 	const { t } = useTranslation(["signIn", "error"]);
@@ -16,14 +15,13 @@ const SignInPage: React.FC = () => {
 	const [errorEmail, setErrorEmail] = useState<string[]>([]);
 	const [errorPassword, setErrorPassword] = useState<string[]>([]);
 	const [googleProcessing, setgoogleProcessing] = useState<boolean>(false);
-	const { isConnected } = useDataProvider();
+	const { isConnected, setIsConnected, setUserData } = useDataProvider();
 
 	const location = useLocation();
 
-	VerifyUsersState();
 	useEffect(() => {
 		if (isConnected === true) {
-			const from = location.state?.from || "/profile";
+			const from = location.state?.from || "/email-sent";
 			navigate(from, { replace: true });
 		}
 	}, [isConnected, navigate, location.state?.from]);
@@ -47,7 +45,6 @@ const SignInPage: React.FC = () => {
 			if (!response.ok) {
 				const errorData = responseData as APIResponse;
 
-
 				if (response.status === 403) {
 					if (errorData.error === "email_not_verified") {
 						navigate("/email-sent");
@@ -69,19 +66,12 @@ const SignInPage: React.FC = () => {
 
 			setErrorEmail([]);
 			setErrorPassword([]);
-			const from = location.state?.from;
 
-			if (from) {
-				navigate(from, { replace: true });
-			} else {
-				const canGoBack = window.history.state && window.history.state.idx > 0;
+			setIsConnected(true);
+			setUserData(responseData);
+			console.log("sign_in: redirect to /home");
+			navigate("/home", { replace: true });
 
-				if (canGoBack) {
-					navigate(-1);
-				} else {
-					navigate("/home", { replace: true });
-				}
-			}
 		} catch (error) {
 			if (error instanceof Error && error.message !== "")
 				toast.error(t(`error:${error.message}`))

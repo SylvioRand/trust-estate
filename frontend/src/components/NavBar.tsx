@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n/i18n";
 import useDataProvider from "../provider/useDataProvider";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 interface NavButtonProps {
 	icon: string;
@@ -121,7 +120,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 	open = false,
 	data = [],
 	dataUser = [],
-	onClose = () => {}
+	onClose = () => { }
 }) => {
 	const { isConnected, userData } = useDataProvider();
 
@@ -213,7 +212,6 @@ const NavigationButton: React.FC<NavButtonProps> = ({
 	const [hovered, setHovered] = useState<boolean>(false);
 
 	useEffect(() => {
-		// setActive(location.pathname === path);
 		setActive(location.pathname.includes(path));
 	}, [location.pathname, path])
 
@@ -306,8 +304,6 @@ const NavBar: React.FC = () => {
 	const [openHamburger, setOpenHamburger] = useState<boolean>(false);
 	const { isConnected, userData } = useDataProvider();
 
-	VerifyUsersState();
-
 	const dataNavButton: NavButtonProps[] = [
 		{ icon: "", title: t("button.home"), path: "/home" },
 		{ icon: "", icon_size: 22, title: t("button.property"), path: "/property" },
@@ -368,7 +364,10 @@ const NavBar: React.FC = () => {
 						hidden"
 					>
 						{
-							(isConnected === false || isConnected === null || userData === null) && userNavButton.map((value: NavButtonProps, index: number) => {
+							(
+								isConnected === null
+								|| (isConnected !== null && isConnected === false)
+							) && userNavButton.map((value: NavButtonProps, index: number) => {
 								return (
 									<NavigationButton
 										key={index}
@@ -382,12 +381,14 @@ const NavBar: React.FC = () => {
 						}
 
 						{
-							isConnected === true && userData &&
+							(
+								isConnected !== null && isConnected === true
+							) &&
 							<div className="flex items-center justify-center gap-3 h-full">
 								<NavigationButton
 									icon=""
 									icon_size={32}
-									title={userData.email}
+									title={userData?.email ?? "user@example.com"}
 									path="/profile"
 								/>
 							</div>

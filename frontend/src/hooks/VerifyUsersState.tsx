@@ -25,11 +25,13 @@ export function VerifyUsersState() {
 				if (response.ok) {
 					const serverResponse = responseData as UserModelData;
 
-					setIsConnected(false);
 					if ((serverResponse as any).error === "invalid_or_expired_token") {
+						setIsConnected(false);
+						console.log("invalid_or_expired_token");
 						return;
 					}
 					setIsConnected(true);
+					console.log("setIsConnected(true);");
 					if ((serverResponse as any).error === "phone_number_not_verified") {
 						if (url.pathname === "/add-phone") {
 							return;
@@ -55,5 +57,5 @@ export function VerifyUsersState() {
 		};
 
 		checkAuth();
-	}, [navigate, setIsConnected, setUserData, t]);
+	}, []);
 }

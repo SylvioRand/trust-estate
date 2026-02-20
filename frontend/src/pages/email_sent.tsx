@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ContentDivider from "../components/ContentDivider";
 import ActionButton from "../components/ActionButton";
 import { toast } from "react-toastify";
 import useCountdown from "../components/Countdown";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
 
 const EmailSentPage: React.FC = () => {
@@ -15,11 +14,21 @@ const EmailSentPage: React.FC = () => {
 	const [resendButtonDisabled, setResendButtonDisabled] = useState<boolean>(false);
 	const navigate = useNavigate();
 	const [timeLeft, setTimeLeft, controls] = useCountdown();
-	const { isConnected, setIsConnected, setUserData } = useDataProvider();
+	const { isConnected, setIsConnected, setUserData, userData } = useDataProvider();
 
-	VerifyUsersState();
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
+	useEffect(() => {
+		if (isConnected !== null && userData !== null) {
+			if (isConnected === true && userData.emailVerified === true) {
+				navigate("/home");
+			}
+			else if (isConnected === false) {
+				navigate("/sign-in");
+			}
+		}
+		else if (isConnected === null)
+			navigate("/sign-in");
+	}, [])
+
 	const handleOnResend = async () => {
 		setProcessResend(true);
 

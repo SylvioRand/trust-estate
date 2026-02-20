@@ -1,8 +1,16 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import { ToastContainer } from "react-toastify";
+import { useEffect } from "react";
 
 export default function MainLayout() {
+	// DEBUG ROUTE
+	const location = useLocation();
+
+	useEffect(() => {
+		console.log("Navigated to:", location.pathname);
+	}, [location]);
+	// DEBUG ROUTE END
 	return (
 		<div className="bg-foreground
 			w-full h-screen

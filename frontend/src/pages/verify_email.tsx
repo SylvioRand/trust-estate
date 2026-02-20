@@ -3,7 +3,6 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ContentDivider from "../components/ContentDivider";
 import { toast } from "react-toastify";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
 
 type EmailVerificationStatus = "loading" | "confirmed" | "invalid";
@@ -14,11 +13,8 @@ const VerifyEmailPage: React.FC = () => {
 	const token = searchParams.get("token");
 	const [status, setStatus] = useState<EmailVerificationStatus>("loading");
 	const navigate = useNavigate();
-	const { isConnected } = useDataProvider();
+	const { isConnected, setIsConnected, setUserData, userData } = useDataProvider();
 
-	VerifyUsersState();
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
 	const verifyToken = async () => {
 		try {
 			const response = await fetch("/api/auth/verify-email", {
@@ -33,16 +29,18 @@ const VerifyEmailPage: React.FC = () => {
 			if (!response.ok)
 				throw new Error("Invalid or Expired Token");
 
+			const responseData = await response.json();
+
 			toast.success(t("success"));
 			setStatus("confirmed");
-
+			setIsConnected(true);
+			setUserData(responseData.data);
 			navigate("/welcome");
 
 		} catch (e) {
 			toast.error(t("error:auth.invalid_or_expired_token"));
 			setStatus("invalid");
 			navigate("/home");
-
 		}
 	}
 

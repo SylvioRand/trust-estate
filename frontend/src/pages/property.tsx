@@ -10,7 +10,6 @@ import InputRange from "../components/InputRange";
 import InputCheckbox from "../components/InputCheckBox";
 import BentoProperty from "../components/BentoProperty";
 import { useSearchParams } from "react-router-dom";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 interface FilterProps {
 	t: TFunction<["property", "error", "common"]>;
@@ -378,8 +377,6 @@ const PropertyPage: React.FC = () => {
 	useEffect(() => {
 		getDataFromBackend();
 	}, [page]);
-
-	VerifyUsersState();
 
 	return (
 		<div className="flex flex-col items-center justify-start gap-4

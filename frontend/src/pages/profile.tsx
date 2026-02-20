@@ -5,7 +5,6 @@ import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
 import { CreateDateForMemberSince } from "../utils/Format";
 import useDataProvider from "../provider/useDataProvider";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import type { ListingsTags, MyListingsData } from "../dataModel/modelListings";
 import { toast } from "react-toastify";
 import { TagsComponents } from "../components/TagsComponents";
@@ -146,7 +145,6 @@ const MyListingsBento: React.FC<MyListingsBentoProps> = ({
 const ProfilePage: React.FC = () => {
 	const navigate = useNavigate();
 	const { userData, isConnected } = useDataProvider();
-	VerifyUsersState();
 	const { t } = useTranslation(["profile", "listings", "common", "error"]);
 	const [myListings, setMyListings] = useState<MyListingsData[]>([]);
 
