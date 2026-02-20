@@ -10,15 +10,13 @@ The platform integrates AI-powered tools to help users discover properties that 
 ## Instructions
 ### Prerequisites
 
-Ensure your machine has at least **20 GB of free disk space**.
+Ensure your machine has at least **15 GB of free disk space**.
 
 You will need the following tools installed:
 
-- **Docker** (including **Docker Compose**; if it’s not included with your Docker installation, install it separately)
 - **Git**, to clone the repository
+- **Docker** (including **Docker Compose**; if it’s not included with your Docker installation, install it separately)
 - **Make**, to build and run the project
-
-Once all prerequisites are installed, you can launch the project using `make`.
 
 ### Execution
 
@@ -408,6 +406,29 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Retrieve Feedback** | Get all feedback received on user's properties or given by user |
 | **Data Deletion (GDPR)** | Delete all reservation and feedback data associated with deleted user account |
 
+---
+
+## Individuals contributions
+
+### srandria
+Sylvio ensured the platform was technically robust from infrastructure to high-level UI.
+- **Key Achievement**: Developed the **Frontend Dashboard & Reservation UI**, bridging the gap between Arthinew's backend logic and a seamless user experience. He also unified the deployment via a single-command **Makefile**.
+
+### rarakoto
+Ny Hasina transformed the vision into a premium reality.
+- **Key Achievement**: Designed the **Visual Identity** and built the responsive core component system that powers the entire application.
+
+### tolrandr
+Arthinew was the powerhouse behind the platform's core transactions.
+- **Key Achievement**: Successfully implemented the **Inter-Service Event Flow**, ensuring that credit debits and refunds are perfectly synchronized with reservation status changes.
+
+### aelison
+aelison enabled the majority of bugs to be found.
+aelison enabled intelligent property discovery.
+- **Key achievement**: optimization of **ChromaDB indexing** for Madagascan geographical areas, ensuring high accuracy for the RAG assistant.
+
+---
+
 ## Modules
 
 ## Major Modules
@@ -490,21 +511,3 @@ A scalable backend architecture built with independent services.
 
 ## Evaluation
 **Total Points: 20**
-
-## Individuals contributions
-
-### srandria
-Sylvio ensured the platform was technically robust from infrastructure to high-level UI.
-- **Key Achievement**: Developed the **Frontend Dashboard & Reservation UI**, bridging the gap between Arthinew's backend logic and a seamless user experience. He also unified the deployment via a single-command **Makefile**.
-
-### rarakoto
-Ny Hasina transformed the vision into a premium reality.
-- **Key Achievement**: Designed the **Visual Identity** and built the responsive core component system that powers the entire application.
-
-### tolrandr
-Arthinew was the powerhouse behind the platform's core transactions.
-- **Key Achievement**: Successfully implemented the **Inter-Service Event Flow**, ensuring that credit debits and refunds are perfectly synchronized with reservation status changes.
-
-### aelison
-aelison enabled intelligent property discovery.
-- **Key Achievement**: Optimized the **ChromaDB indexing** for Malagasy geographic zones, ensuring high accuracy for the RAG assistant.

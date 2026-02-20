@@ -33,7 +33,7 @@ const DataProvider: React.FC<DataProviderProps> = ({
 	const { t } = useTranslation("error");
 	const location = useLocation();
 	const navigate = useNavigate();
-
+	const url = new URL(window.location.href);
 	useEffect(() => {
 		const checkAuth = async () => {
 			try {
@@ -49,9 +49,27 @@ const DataProvider: React.FC<DataProviderProps> = ({
 				if (response.ok) {
 					const serverResponse = responseData as UserModelData;
 
+					setIsConnected(false);
+					if ((serverResponse as any).error === "invalid_or_expired_token") {
+						return;
+					}
+					if ((serverResponse as any).error === "phone_number_not_verified") {
+						setIsConnected(false);
+						if (url.pathname === "/add-phone") {
+							return;
+						}
+						navigate("/add-phone", { replace: true });
+						return;
+					}
+					if ((serverResponse as any).error === "email_not_verified") {
+						setIsConnected(false);
+						if (url.pathname === "/email-sent") {
+							return;
+						}
+						navigate("/email-sent", { replace: true });
+						return;
+					}
 					setIsConnected(true);
-
-					// NOTE: use the response and populate the data.
 					setUserData(serverResponse);
 					const from = location.state?.from;
 					if (from)
@@ -60,18 +78,6 @@ const DataProvider: React.FC<DataProviderProps> = ({
 				}
 
 				setIsConnected(false);
-
-				if (response.status === 403) {
-					const errorData = responseData as APIResponse;
-
-					setIsConnected(true);
-					if (errorData.error === "phone_number_not_verified") {
-						return;
-					}
-					if (errorData.error === "email_not_verified") {
-						return;
-					}
-				}
 
 			} catch (error) {
 				if (error instanceof Error && error.message !== "")

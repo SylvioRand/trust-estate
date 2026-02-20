@@ -99,7 +99,7 @@ export async function verifyAccessToken(
 			}
 		}
 
-		reply.code(401).send({
+		reply.code(200).send({
 			error: "invalid_or_expired_token",
 			message: "auth.verification_token_invalid"
 		});
@@ -215,16 +215,14 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 		request.user = user;
 
 		if (!user.phoneVerified)
-			return reply.code(403).send({
+			return reply.code(200).send({
 				"error": "phone_number_not_verified",
-				"message": "auth.phone_number_verification_required",
-				"redirect": "/add-phone.html"
+				"message": "auth.phone_number_verification_required"
 			});
 		if (!user.emailVerified) {
-			return reply.code(403).send({
+			return reply.code(200).send({
 				"error": "email_not_verified",
-				"message": "auth.email_verification_required",
-				"redirect": "/request-email-verification.html"
+				"message": "auth.email_verification_required"
 			});
 		}
 	});

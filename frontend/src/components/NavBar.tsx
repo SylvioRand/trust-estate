@@ -121,7 +121,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 	open = false,
 	data = [],
 	dataUser = [],
-	onClose = () => console.error("Error: HamburgerMenu doesn't have onClose func!")
+	onClose = () => {}
 }) => {
 	const { isConnected, userData } = useDataProvider();
 

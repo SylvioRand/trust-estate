@@ -4,7 +4,7 @@ import type { FastifyInstance } from "fastify";
 
 const rateLimitPlugin = async (app: FastifyInstance): Promise<void> => {
 	await app.register(fastifyRateLimit, {
-		max: 100,
+		max: 600,
 		timeWindow: '1 minute',
 		global: true,
 		errorResponseBuilder: (request, context) => {

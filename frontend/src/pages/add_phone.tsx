@@ -8,18 +8,28 @@ import type { APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
+import { Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 const AddPhonePage: React.FC = () => {
 	const { t } = useTranslation(["addPhone", "error"]);
 	const [processingSubmit, setProcessingSubmit] = useState<boolean>(false);
 	const [errorPhone, setErrorPhone] = useState<string[]>([]);
 	const navigate = useNavigate();
-	const { isConnected } = useDataProvider();
+	const { isConnected, userData } = useDataProvider();
 
+	const location = useLocation();
+	
+	useEffect(() => {
+		if ((isConnected !== null && isConnected === false) ||
+	userData?.phoneVerified) {
+			const from = location.state?.from || "/home";
+			navigate(from, { replace: true });
+		}
+	}, [isConnected, userData?.phoneVerified, navigate, location.state?.from]);
+	
 	VerifyUsersState();
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
-
+	
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 

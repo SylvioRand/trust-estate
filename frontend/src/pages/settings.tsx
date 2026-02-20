@@ -25,7 +25,7 @@ const SettingsButton: React.FC<SettingsButtonProps> = ({
 	icon = "",
 	title = "Title",
 	hover_color = "var(--color-accent)",
-	onClick = () => console.error("SettingsButton: onClick not overrided.")
+	onClick = () => {}
 }) => {
 	const [hovered, setHovered] = useState<boolean>(false);
 
