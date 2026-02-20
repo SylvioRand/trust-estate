@@ -290,12 +290,10 @@ export async function getUserInfo(app: FastifyInstance, code: string): Promise<U
 
 	const tokens = await tokentResponse.json();
 	if (!tokentResponse.ok) {
-		console.error("❌ Google Token Exchange Error:", tokens);
 		throw new Error("Invalid credentials");
 	}
 
 	if (!tokens || !(tokens as any).access_token) {
-		console.error("❌ Google Token Response missing access_token:", tokens);
 		throw new Error("Invalid credentials");
 	}
 
@@ -305,11 +303,9 @@ export async function getUserInfo(app: FastifyInstance, code: string): Promise<U
 
 	if (!userResponse.ok) {
 		const errorData = await userResponse.json();
-		console.error("❌ Google User Info Error:", errorData);
 		throw new Error("Something went wrong");
 	}
 	const userData: any = await userResponse.json();
-	console.log("👤 Google User Data Received:", userData);
 
 	const userInfo: UserGoogleInterface = {
 		id: userData.id || userData.sub, // Google uses 'sub' as primary ID

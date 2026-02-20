@@ -87,8 +87,7 @@ export async function createSlot(request: FastifyRequest<{ Body: ReservationInte
 		else if (error.message.includes("slot_unavailable"))
 			return reply.status(409).send({
 				"error": "slot_unavailable",
-				"message": "reservation.slot_unavailable",
-				"availableSlots": []
+				"message": "reservation.slot_unavailable"
 			});
 		else if (error.message.includes("insufficient_credits"))
 			return reply.status(402).send({

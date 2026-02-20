@@ -585,7 +585,7 @@ const MyListingsView: React.FC<ListingsViewProps> = ({
 			: {
 				icon: "",
 				title: "IGNORE",
-				func: () => console.log("nothing")
+				func: () => {}
 			})
 
 	return (
