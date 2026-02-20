@@ -12,8 +12,8 @@
     # API ROUTES - Auth Service
     # ==============================================
     location /api/auth/ {
-        limit_req zone=auth_limit burst=3 nodelay;
-        limit_req_status 429;
+    #    limit_req zone=auth_limit burst=50 nodelay;
+    #    limit_req_status 429;
         proxy_pass http://auth_service/auth/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -23,8 +23,8 @@
     }
 
 	  location /api/users/ {
-        limit_req zone=api_limit burst=10 nodelay;
-        limit_req_status 429;
+    #    limit_req zone=api_limit burst=50 nodelay;
+    #    limit_req_status 429;
         proxy_pass http://auth_service/users/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -120,7 +120,13 @@
 
 		}
 
-    location /api/internal/credits/ {
+    # Route interne — accessible uniquement depuis le réseau Docker (pas depuis l'extérieur)
+    location /api/internal/ {
+        allow 172.16.0.0/12;
+        allow 10.0.0.0/8;
+        allow 192.168.0.0/16;
+        deny all;
+
         client_max_body_size 5M;
         proxy_pass http://credits_service/internal/credits/;
         proxy_http_version 1.1;

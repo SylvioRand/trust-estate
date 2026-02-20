@@ -10,7 +10,7 @@ interface	PhotoViewerProps {
 const	ComponentPhotoViewer: React.FC<PhotoViewerProps> = ({
 	picture = [],
 	startID = 0,
-	onClose = () => console.error("PhotoViewer: ComponentPhotoViewer: onClose was not overrided")
+	onClose = () => {}
 }) => {
 	const	[displayID, setDisplayID] = useState<number>(startID);
 	const	[closeRequested, setCloseRequested] = useState<boolean>(false);
@@ -121,7 +121,7 @@ const	ComponentPhotoViewer: React.FC<PhotoViewerProps> = ({
 function	PhotoViewer({
 	picture = [],
 	startID = 0,
-	onClose = () => console.error("PhotoViewer: onClose was not overrided")
+	onClose = () => {}
 } : {
 	picture: string[],
 	startID: number,
