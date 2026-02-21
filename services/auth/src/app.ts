@@ -54,19 +54,11 @@ await pluginRegister(server);
 await authRegister(server);
 await userRegister(server);
 
-server.get("/health", async (req: FastifyRequest, reply: FastifyReply) => {
-	return reply.status(200).send({ status: "ok" });
-});
-
-server.get("/api/auth", async (req: FastifyRequest, reply: FastifyReply) => {
-	return reply.status(200).send("Bonjour depuis auth");
-});
-
 const start = async () => {
 	try {
 		await server.listen({
-		port: parseInt(server.config.PORT_AUTH_SERVICE || '3001'),
-		host: '0.0.0.0'
+			port: parseInt(server.config.PORT_AUTH_SERVICE || '3001'),
+			host: '0.0.0.0'
 		});
 
 	} catch (error: any) {

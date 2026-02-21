@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { authenticationInterne, authRoutes, emailAuthRoutes, oathAuthRoutes, spaceModerator } from "./auth.routes";
-import fastifyCookie from "fastify-cookie";
+import fastifyCookie from "@fastify/cookie";
 import jwtPlugin from "../../plugin/jwt.plugin";
 import prismaPlugin from "../../plugin/prisma.plugin";
 import mailPlugin from "../../plugin/mail.plugin";

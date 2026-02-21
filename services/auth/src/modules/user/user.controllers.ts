@@ -121,14 +121,14 @@ export async function updateInfoUser(request: FastifyRequest<{Body: UpdateInfoUs
 	const userId = (request.user as UserInterface).id;
 
 	try {
-		await userServices.updateUser(request.server, phone, firstName, userId, lastName)
+		const updatedUser = await userServices.updateUser(request.server, phone, firstName, userId, lastName)
 		return reply.status(200).send({
 			"updated": true,
 			"user": {
-				"id": "7631562f-fa30-4db3-8af2-4db942f0efd7",
-				"firstName": "Jude",
-				"lastName": "Turner",
-				"phone": "+261386000000"
+				"id": updatedUser.id,
+				"firstName": updatedUser.firstName,
+				"lastName": updatedUser.lastName,
+				"phone": updatedUser.phone
 			}
 		})
 	} catch (error : any) {

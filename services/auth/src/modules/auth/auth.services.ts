@@ -93,7 +93,7 @@ export async function createUserAccount(app: FastifyInstance,
 				emailVerificationToken: {
 					create: {
 						tokenHash,
-						expiresAt: new Date(Date.now() + 1000 * 60 * 24).toISOString()
+						expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString()
 					}
 				}
 			},
@@ -175,7 +175,7 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 		throw new Error("Your email is already in verified");
 
 	if (user.emailVerificationToken) {
-		const tokenCreatedAt = new Date(user.emailVerificationToken.expiresAt.getTime() - 24 * 60 * 1000);
+		const tokenCreatedAt = new Date(user.emailVerificationToken.expiresAt.getTime() - 24 * 60 * 60 * 1000);
 		const timeSinceCreation = Date.now() - tokenCreatedAt.getTime();
 		const ONE_MINUTE = 60 * 1000;
 
@@ -193,7 +193,7 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 
 	const hash = crypto.randomBytes(32).toString('base64url');
 	const tokenHash = createHash('sha256').update(hash).digest('hex');
-	const expiresAt = new Date(Date.now() + 1000 * 60 * 24).toISOString();
+	const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString();
 
 	await app.prisma.email_Verification_token.upsert({
 		where: { userId: user.id },
@@ -380,7 +380,7 @@ export async function sendTokenForgotPassword(app: FastifyInstance, email: strin
 		throw new Error("User not found");
 	const hash = crypto.randomBytes(32).toString('base64url');
 	const tokenHash = createHash('sha256').update(hash).digest('hex');
-	const expiresAt = new Date(Date.now() + 1000 * 60 * 24).toISOString();
+	const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString();
 
 	await app.prisma.forgot_password_token.upsert({
 		where: { userId: user.id },
@@ -441,27 +441,23 @@ export async function crediter(app: FastifyInstance, userId: string) {
 		{ algorithm: 'HS256', expiresIn: '30s' }
 	);
 
-	try {
-		const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/credits/recharge`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'x-internal-key': internalToken,
-				'x-user-id': userId
-			},
-			body: JSON.stringify({
-				amount: 5,
-				reason: "initial_bonus",
-				type: 'bonus'
-			})
-		});
+	const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/credits/recharge`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'x-internal-key': internalToken,
+			'x-user-id': userId
+		},
+		body: JSON.stringify({
+			amount: 5,
+			reason: "initial_bonus",
+			type: 'bonus'
+		})
+	});
 
-		if (!response.ok) {
-			const error = await response.json() as any;
-			throw new Error('credit_service_error');
-		}
-	} catch (error: any) {
-		app.log.error({ error }, 'Failed to credit user');
+	if (!response.ok) {
+		await response.json();
+		throw new Error('credit_service_error');
 	}
 };
 
