@@ -366,6 +366,8 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Reset Password** | Allow users to set new password using valid reset token |
 | **OAuth 2.0 (Google)** | Third-party authentication via Google with automatic account linking |
 | **Token Validation** | Internal endpoint to verify JWT tokens for inter-service communication |
+| **Moderator Role Check** | Internal endpoint to verify if a user holds a moderator or admin role, used by other services for access control |
+| **User Details (Internal)** | Internal endpoint to fetch a user's full profile by ID, enabling cross-service data lookups without exposing a public route |
 | **Role Management** | Admin capability to change user roles (ADMIN, USER, MODERATOR) |
 | **User Profile** | Get authenticated user information including email, name, phone, trust score |
 | **Profile Update** | Update user information (first name, last name) |
@@ -396,9 +398,11 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Create Reservation** | Buyer books a viewing slot for a property listing with datetime and seller matching |
 | **List User Reservations** | Buyer views all their reservation history with filtering by status and date |
 | **Seller Reservations** | Seller views all incoming reservations for their listings with status tracking |
+| **Get Available Slots** | Retrieve the seller's weekly schedule and compute available booking slots for a given listing, including ownership check |
 | **Confirm Reservation** | Seller accepts a pending reservation and notifies buyer of confirmed time |
 | **Reject Reservation** | Seller declines a reservation request with optional reason |
 | **Cancel Reservation** | Buyer or seller cancels a pending/confirmed reservation and refunds any credits |
+| **Delete Reservation** | Hard delete a pending reservation by the buyer before the cancellation window closes |
 | **Mark as Done** | Mark reservation as completed after viewing, enables feedback submission |
 | **Check Slot Availability** | Verify if a specific datetime slot is available for a listing before booking |
 | **Get Listing Status** | Internal endpoint to check reservation counts and status for listings |
@@ -420,7 +424,32 @@ Ny Hasina transformed the vision into a premium reality.
 
 ### tolrandr
 Arthinew was the powerhouse behind the platform's core transactions.
-- **Key Achievement**: Successfully implemented the **Inter-Service Event Flow**, ensuring that credit debits and refunds are perfectly synchronized with reservation status changes.
+
+**Services implemented**: Authentication & User Management (`services/auth`), Credit Management (`services/credits`), Reservations & Feedback (`services/reservation`)
+
+**Implemented features:**
+- Full authentication system: email/password registration, login with bcrypt (salt rounds=12), email verification, forgot/reset password flows with rate limiting (1 req/min per email+IP+User-Agent)
+- JWT session management: RS256 access tokens (short-lived) + HS256 refresh tokens (long-lived), both stored as HttpOnly Secure cookies to prevent XSS token theft
+- OAuth 2.0 with Google: full authorization flow (redirect → callback → token exchange → user info → account creation or linking)
+- Role-Based Access Control: `USER`, `MODERATOR`, `ADMIN` roles with protected role-specific routes and cross-service moderator verification
+- Inter-service JWT validation: internal `POST /verify-token` endpoint allows all other services to validate user tokens using only the public key, without sharing the private key
+- Credit system: immutable transaction log with `balanceAfter` snapshots, balance checks before every debit, automatic +5 credits bonus on registration, paginated history
+- Full reservation lifecycle: slot booking (30-min slots, D+2 minimum, 14-day window, GMT+3 timezone, seller schedule validation), seller confirmation/rejection, buyer/seller cancellation with automatic credit refund, mark-as-done, and structured feedback collection (rating 1–5, categories, comment 10–1000 chars)
+- GDPR-compliant account deletion propagated across all 3 services via internal `X-Service-Key` protected endpoints
+
+**Key Achievement**: Successfully implemented the **Inter-Service Event Flow**, ensuring that credit debits and refunds are perfectly synchronized with reservation status changes.
+
+**Design choices:**
+- **RS256 (asymmetric JWT)** for access tokens: other services verify with the public key only — the private key never leaves the auth service
+- **HttpOnly + Secure cookies** instead of `localStorage` tokens: prevents client-side XSS theft of session credentials
+- **`X-Service-Key` internal header** for all inter-service calls: a shared secret protecting internal routes, never forwarding or exposing user tokens
+- **Immutable `CreditTransaction` log** with `balanceAfter` fields: full financial history can be audited without replaying transactions
+- **`feedbackEligible` flag** set server-side on `PATCH /done`: ensures buyers can only submit feedback after the seller explicitly closes the visit
+
+**Challenges faced:**
+- **OAuth account linking**: a user who registered with email/password then logs in with Google using the same email must be linked to the existing account without creating a duplicate — solved via a dedicated `sub` field (Google subject ID) on the `User` model
+- **Credit atomicity across services**: when creating a reservation, a network call to the credits service debits the buyer; if the reservation then fails to persist, a compensating refund call must fire — required careful error propagation, try/catch at each step, and a rollback-by-design pattern
+- **Slot timezone handling**: seller schedules are stored in local time (GMT+3 / Madagascar), but reservation slots arrive as UTC — all availability and conflict checks had to be performed after converting to GMT+3 to avoid off-by-one day and hour mismatches
 
 ### aelison
 aelison enabled the majority of bugs to be found.
@@ -447,10 +476,19 @@ A secured public API for interacting with the database.
 ### 2. Advanced Permission System
 A role-based access control (RBAC) system.
 
+**Implemented by**: **tolrandr** (`services/auth`)
+
 **Features**
 - Full user management (CRUD operations)
 - Role management (admin, user, guest, moderator, etc.)
 - Conditional views and actions based on user roles
+
+**How it was implemented**:
+- Three roles defined as a Prisma enum: `USER`, `MODERATOR`, `ADMIN`
+- Each protected route uses a Fastify `preHandler` hook that verifies the JWT and checks the `role` field
+- Admin-only `PATCH /auth/change-permission/:id` endpoint to promote/demote users
+- Internal `GET /auth/is-moderator` endpoint used by the listings service to gate moderation actions (blocking, archiving listings)
+- All role checks are centralized in hook middleware, never duplicated in controller logic
 ### 3. Retrieval-Augmented Generation (RAG) System
 An AI-powered question–answering system built on contextual retrieval.
 
@@ -479,10 +517,19 @@ A unified interface for interacting with Large Language Models.
 ### 5. Microservices-Based Backend
 A scalable backend architecture built with independent services.
 
+**Implemented by**: **srandria** (architecture & listings), **tolrandr** (auth, credits, reservation), **mravelon** (credits coordination), **aelison** (AI service)
+
 **Principles**
 - Loosely coupled services with clear responsibilities
 - Communication via REST APIs and/or message queues
 - Each service follows the single-responsibility principle
+
+**How it was implemented**:
+- 5 independent Docker containers: `auth` (port 3001), `listings` (port 3002), `reservation` (port 3003), `credits` (port 3004), `ai` (port 8000)
+- Each service has its own PostgreSQL database — no shared DB, no cross-service ORM queries
+- Inter-service communication uses HTTP with a shared `INTERNAL_KEY_SECRET` sent in the `X-Service-Key` header
+- Nginx reverse proxy routes all public traffic; internal service URLs are Docker network-only
+- Each service is independently buildable and startable; the full stack runs with a single `make` command via Docker Compose
 ## Minor Modules
 
 ### Frontend & Backend Stack
@@ -496,16 +543,120 @@ A scalable backend architecture built with independent services.
 - Advanced search with filtering, sorting, and pagination
 
 ### Authentication & Compliance
-- Remote authentication using **OAuth 2.0** (Google, GitHub, 42, etc.)
-- GDPR compliance features:
-	- User data access requests
-	- Data deletion with confirmation
-	- Export of user data in a readable format
+- Remote authentication using **OAuth 2.0** (Google) — **implemented by tolrandr** (`services/auth`): full Google authorization flow, account creation and linking via `sub` field, HttpOnly cookie session
+- GDPR compliance features — **implemented by tolrandr** across `services/auth`, `services/credits`, `services/reservation`:
+	- User data deletion with password confirmation (`DELETE /users/me`)
+	- Cross-service cascade: auth triggers internal delete calls to credits and reservation services
 	- Confirmation emails for sensitive data operations
 
 ### Accessibility & Internationalization
 - Support for additional web browsers
 - Multi-language support (i18n)
+
+---
+
+## API Reference (tolrandr services)
+
+### Auth Service — port `3001`
+
+**Auth Routes** (`/api/auth`)
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `POST` | `/auth/login` | ❌ | Email/password login — sets JWT + refresh token as HttpOnly cookies |
+| `POST` | `/auth/register` | ❌ | Account creation, bcrypt hash (salt=12), sends verification email |
+| `POST` | `/auth/logout` | Partial | Clears cookies, deletes refresh token from DB |
+| `POST` | `/auth/forgot-password` | ❌ | Sends reset email. Rate limit: 1/min per email+IP+UA |
+| `POST` | `/auth/reset-password` | ❌ | Resets password with valid token |
+| `POST` | `/auth/email/verify-email` | ❌ | Validates email verification token |
+| `POST` | `/auth/email/resend-email` | Partial | Resends verification email. Rate limit: 1/min |
+| `GET` | `/auth/oauth/google` | ❌ | Redirects to Google consent page |
+| `GET` | `/auth/oauth/google/callback` | ❌ | Google callback — creates/links account, sets session |
+
+**User Routes** (`/api`)
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/users/me` | ✅ JWT | Returns authenticated user profile |
+| `PUT` | `/users/me` | ✅ JWT | Updates first name and/or last name |
+| `PUT` | `/users/me/phone` | ✅ JWT + email verified | Adds or updates phone number |
+| `PUT` | `/users/me/update-password` | ✅ JWT | Changes password (requires current password) |
+| `PUT` | `/users/me/add-password` | ✅ JWT | Sets a password for OAuth-only accounts |
+| `DELETE` | `/users/me` | ✅ JWT | Deletes account + cascades all data (GDPR) |
+
+**Internal Routes** (`X-Service-Key` header required)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/auth/internal/verify-token` | Validates JWT, returns decoded user payload |
+| `GET` | `/auth/is-moderator` | Checks MODERATOR or ADMIN role |
+| `PATCH` | `/auth/change-permission/:id` | Changes user role (Admin only) |
+| `GET` | `/users/:id/details` | Returns user profile by ID for cross-service lookups |
+
+**Required environment variables**: `JWT_SECRET_PRIVATE_KEY`, `JWT_SECRET_PUBLIC_KEY`, `JWT_REFRESH_SECRET`, `COOKIE_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `REDIRECT_URI`, `AUTH_URL`, `TOKEN_URL`, `USER_INFO_URL`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `INTERNAL_KEY_SECRET`, `CREDITS_SERVICE_URL`, `LISTINGS_SERVICE_URL`, `RESERVATION_SERVICE_URL`, `DATABASE_URL`
+
+---
+
+### Credits Service — port `3004`
+
+**User Routes** (`/api/credits`)
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/credits/balance` | ✅ JWT | Returns balance, totalEarned, totalSpent |
+| `GET` | `/credits/history` | ✅ JWT | Paginated transaction log |
+| `POST` | `/credits/recharge/me` | ✅ JWT | User purchases credits |
+| `GET` | `/credits/health` | ❌ | Health check |
+
+**Internal Routes** (`X-Service-Key` header required)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/internal/credits/debit` | Deducts credits (publish listing, book visit) |
+| `POST` | `/internal/credits/credit` | Adds credits (bonus on register, refund on cancel) |
+| `POST` | `/credits/recharge` | Admin/system-triggered recharge |
+| `DELETE` | `/internal/delete/data` | Deletes all credit data for user (GDPR) |
+
+**Credit cost table**: Registration `+5` bonus · Publish listing `−1` · Reserve visit `−1` · Renew listing `−0.5` · Cancellation refund `+N`
+
+**Required environment variables**: `PORT_CREDITS_SERVICE`, `JWT_SECRET_PUBLIC_KEY`, `COOKIE_SECRET`, `AUTH_SERVICE_URL`, `INTERNAL_KEY_SECRET`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `DATABASE_URL`
+
+---
+
+### Reservation Service — port `3003`
+
+**Reservation Routes** (`/api/reservations`)
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `POST` | `/reservations` | ✅ JWT | Create reservation — debits 1 credit from buyer |
+| `GET` | `/reservations/mine` | ✅ JWT | Buyer's reservation list (filter: status, page, limit) |
+| `GET` | `/reservations/seller/me` | ✅ JWT | Seller's incoming reservations |
+| `GET` | `/reservations/get-slot` | ✅ JWT | Available 30-min slots for a listing (from seller's schedule, GMT+3) |
+| `GET` | `/reservations/check-slot` | ✅ JWT | Check if a specific slot is free |
+| `PATCH` | `/reservations/:id/confirm` | ✅ JWT | Seller confirms pending reservation |
+| `PATCH` | `/reservations/:id/reject` | ✅ JWT | Seller rejects pending reservation |
+| `PATCH` | `/reservations/:id/cancel` | ✅ JWT | Buyer or seller cancels — refunds credit |
+| `PATCH` | `/reservations/:id/done` | ✅ JWT | Seller marks visit as completed, enables feedback |
+| `DELETE` | `/reservations/:id` | ✅ JWT | Hard delete a pending reservation |
+
+**Feedback Routes** (`/api`)
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `POST` | `/feedback` | ✅ JWT | Submit review (rating 1–5, comment 10–1000 chars, optional categories) |
+| `GET` | `/feedback/mine` | ✅ JWT | Get feedback given or received |
+
+**Internal Routes** (`X-Service-Key` header required)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/reservations/internal/status` | Reservation counts for a listing |
+| `DELETE` | `/internal/delete/data` | Deletes all reservations + feedbacks for user (GDPR) |
+
+**Slot booking rules**: minimum D+2 · maximum D+16 · slot must fit in seller's weekly schedule · 30-min duration · GMt+3 timezone · no duplicate active reservation per buyer/listing
+
+**Required environment variables**: `PORT_AUTH_RESERVATION`, `JWT_SECRET_PUBLIC_KEY`, `COOKIE_SECRET`, `AUTH_SERVICE_URL`, `CREDITS_SERVICE_URL`, `LISTINGS_SERVICE_URL`, `INTERNAL_KEY_SECRET`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `DATABASE_URL`
 
 ---
 
