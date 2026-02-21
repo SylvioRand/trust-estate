@@ -111,7 +111,6 @@ const SignUpPage: React.FC = () => {
 				}
 			}
 
-			setIsConnected(true);
 			navigate("/email-sent");
 
 		} catch (error) {

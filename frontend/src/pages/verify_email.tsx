@@ -17,9 +17,17 @@ const VerifyEmailPage: React.FC = () => {
 	const { isConnected } = useDataProvider();
 
 	VerifyUsersState();
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
+	useEffect(() => {
+		if (isConnected !== null && isConnected === false)
+			navigate("/sign-in");
+	}, [isConnected, navigate]);
 	const verifyToken = async () => {
+		if (!token) {
+			toast.error(t("error:auth.invalid_or_expired_token"));
+			setStatus("invalid");
+			navigate("/home");
+			return;
+		}
 		try {
 			const response = await fetch("/api/auth/verify-email", {
 				method: "POST",

@@ -41,7 +41,7 @@ export async function handleUpdate(request: FastifyRequest, reply: FastifyReply)
 
     const { listing, features } = await ListingService.updateListing(id, user.id, validatedData);
 
-    AIClient.upsertIndexListing(listing, "PUT", features);
+    await AIClient.upsertIndexListing(listing, "PUT", features);
 
     return reply.status(200).send({
       listingId: listing.id,

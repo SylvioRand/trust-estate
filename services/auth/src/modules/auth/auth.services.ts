@@ -230,9 +230,7 @@ export async function resendEmail(app: FastifyInstance, lastName: string, email:
 	return (user.id);
 };
 
-/**
- * Fetch with retry logic to handle intermittent network issues (ETIMEDOUT) in Docker
- */
+
 async function fetchWithRetry(
 	url: string,
 	options: RequestInit,
@@ -290,11 +288,11 @@ export async function getUserInfo(app: FastifyInstance, code: string): Promise<U
 
 	const tokens = await tokentResponse.json();
 	if (!tokentResponse.ok) {
-		throw new Error("Invalid credentials");
+		throw new Error("Invalid credential");
 	}
 
 	if (!tokens || !(tokens as any).access_token) {
-		throw new Error("Invalid credentials");
+		throw new Error("Invalid credential");
 	}
 
 	const userResponse = await fetchWithRetry(app.config.USER_INFO_URL, {
@@ -428,6 +426,10 @@ export async function changePassword(app: FastifyInstance, token: string, passwo
 		}
 	});
 
+	await app.prisma.refresh_token.deleteMany({
+		where: { userId: tokenExist.userId }
+	});
+
 	await app.prisma.forgot_password_token.delete({
 		where: { userId: tokenExist.userId }
 	})
@@ -456,8 +458,8 @@ export async function crediter(app: FastifyInstance, userId: string) {
 	});
 
 	if (!response.ok) {
-		await response.json();
-		throw new Error('credit_service_error');
+		const data = await response.json();
+		app.log.error({ data, userId }, 'Failed to credit initial bonus to user');
 	}
 };
 

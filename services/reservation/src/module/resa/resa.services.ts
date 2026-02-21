@@ -126,7 +126,7 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 		});
 
 		if (buyerSlotTaken) {
-			throw new Error("cannot_reserve_own_listing");
+			throw new Error("buyer_slot_conflict");
 		}
 
 		const existingReservationSameListing = await tx.reservation.findFirst({
@@ -142,8 +142,6 @@ export async function addSlot(app: FastifyInstance, userId: string, slot: Date, 
 		if (existingReservationSameListing) {
 			throw new Error("already_reserved_this_listing");
 		}
-
-		await debitCredits(app, userId);
 
 		const reservation = await tx.reservation.create({
 			data: {
@@ -181,10 +179,14 @@ export async function deleteReservation(app: FastifyInstance, userId: string, re
 		const time = new Date();
 		const total = reservation.slot.getTime() - time.getTime();
 
-		const minCancelTime = 30 * 60 * 1000; // 30 minutes
+		const minCancelTime = 30 * 60 * 1000;
 		if (total > 0) {
 			if (total <= minCancelTime)
 				throw new Error("cancellation_too_late");
+		}
+
+		if (reservation.status === 'confirmed' && reservation.buyerId === userId) {
+			await refundCredits(app, reservation.buyerId);
 		}
 
 		await tx.reservation.delete({
@@ -226,8 +228,7 @@ export async function cancelReservation(app: FastifyInstance, userId: string, re
 		else
 			cancel = $Enums.CancelledBy.system;
 
-
-		if ((reservation.status === 'confirmed' || reservation.status === 'pending') && (cancel === $Enums.CancelledBy.seller || cancel === $Enums.CancelledBy.system)) {
+		if (reservation.status === 'confirmed' && cancel === $Enums.CancelledBy.seller) {
 			await refundCredits(app, reservation.buyerId);
 		}
 
@@ -282,20 +283,18 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 			}
 		}
 
-		const allPendingReservations = await tx.reservation.findMany({
+		const slotOverlapFilter = {
+			gt: new Date(confirmedSlotStart - 30 * 60 * 1000),
+			lt: new Date(confirmedSlotEnd)
+		};
+
+		const listingConflicts = await tx.reservation.findMany({
 			where: {
 				reservationId: { not: reservationId },
-				status: 'pending'
+				listingId: reservation.listingId,
+				status: 'pending',
+				slot: slotOverlapFilter
 			}
-		});
-
-		const listingConflicts = allPendingReservations.filter(r => {
-			if (r.listingId !== reservation.listingId) return false;
-
-			const otherStart = r.slot.getTime();
-			const otherEnd = otherStart + 30 * 60 * 1000;
-
-			return otherStart < confirmedSlotEnd && otherEnd > confirmedSlotStart;
 		});
 
 		if (listingConflicts.length > 0) {
@@ -308,20 +307,16 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 					rejectedAt: new Date()
 				}
 			});
-
-			for (const conflict of listingConflicts) {
-				await refundCredits(app, conflict.buyerId);
-			}
 		}
 
-		const buyerConflicts = allPendingReservations.filter(r => {
-			if (r.buyerId !== reservation.buyerId) return false;
-			if (r.listingId === reservation.listingId) return false;
-
-			const otherStart = r.slot.getTime();
-			const otherEnd = otherStart + 30 * 60 * 1000;
-
-			return otherStart < confirmedSlotEnd && otherEnd > confirmedSlotStart;
+		const buyerConflicts = await tx.reservation.findMany({
+			where: {
+				reservationId: { not: reservationId },
+				buyerId: reservation.buyerId,
+				listingId: { not: reservation.listingId },
+				status: 'pending',
+				slot: slotOverlapFilter
+			}
 		});
 
 		if (buyerConflicts.length > 0) {
@@ -335,11 +330,9 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 					cancelledBy: 'system'
 				}
 			});
-
-			for (const conflict of buyerConflicts) {
-				await refundCredits(app, conflict.buyerId);
-			}
 		}
+
+		await debitCredits(app, reservation.buyerId);
 
 		const data = await tx.reservation.update({
 			where: { reservationId },
@@ -419,8 +412,6 @@ export async function rejectStatusReservation(app: FastifyInstance, userId: stri
 
 		if (reservation.status !== "pending")
 			throw new Error("reservation_already_processed");
-
-		await refundCredits(app, reservation.buyerId);
 
 		const data = await tx.reservation.update({
 			where: { reservationId },
@@ -528,7 +519,7 @@ async function refundCredits(app: FastifyInstance, buyerId: string) {
 	);
 
 	try {
-		const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/internal/credits/refund`, {
+		const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/internal/credits/credit`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -536,10 +527,10 @@ async function refundCredits(app: FastifyInstance, buyerId: string) {
 				'x-user-id': buyerId
 			},
 			body: JSON.stringify({
-				reason: 'refund_visit'
+				reason: 'refund_cancelled',
+				type: 'refund'
 			})
 		});
-
 		if (!response.ok) {
 			throw new Error('credit_service_error');
 		}
@@ -561,20 +552,20 @@ export async function deleteUserData(app: FastifyInstance, userId: string) {
 }
 
 
-export async function getAvailability(app: FastifyInstance, userId: string) {
+export async function getAvailability(app: FastifyInstance, listingId: string) {
 	const jwt = await import('jsonwebtoken');
 	const internalToken = jwt.default.sign(
-		{ service: 'reservation-service', userId },
+		{ service: 'reservation-service', listingId },
 		app.config.INTERNAL_KEY_SECRET,
 		{ algorithm: 'HS256', expiresIn: '30s' }
 	);
 
 	try {
-		const response = await fetch(`${app.config.LISTINGS_SERVICE_URL}/listings/${userId}/availability`, {
+		const response = await fetch(`${app.config.LISTINGS_SERVICE_URL}/listings/${listingId}/availability`, {
 			method: 'GET',
 			headers: {
 				'x-internal-key': internalToken,
-				'x-user-id': userId
+				'x-listing-id': listingId
 			}
 		});
 
@@ -591,10 +582,10 @@ export async function getAvailability(app: FastifyInstance, userId: string) {
 }
 
 
-async function getReservedSlots(app: FastifyInstance, userId: string, startOfDayUtc: Date, endOfDayUtc: Date): Promise<number[]> {
+async function getReservedSlots(app: FastifyInstance, listingId: string, startOfDayUtc: Date, endOfDayUtc: Date): Promise<number[]> {
 	const reservedSlots = await app.prisma.reservation.findMany({
 		where: {
-			listingId: userId,
+			listingId: listingId,
 			status: { in: ['confirmed', 'pending'] },
 			slot: {
 				gte: startOfDayUtc,
@@ -606,7 +597,7 @@ async function getReservedSlots(app: FastifyInstance, userId: string, startOfDay
 	return reservedSlots.map(r => r.slot.getTime());
 }
 
-async function getAvailableSlotsForDay(app: FastifyInstance, userId: string, dayDateUtc: Date, startTime: number, startMinute: number, endTime: number, endMinute: number, GMT_OFFSET: number) {
+async function getAvailableSlotsForDay(app: FastifyInstance, listingId: string, dayDateUtc: Date, startTime: number, startMinute: number, endTime: number, endMinute: number, GMT_OFFSET: number) {
 	const slots = generateSlotsForDay(dayDateUtc, startTime, startMinute, endTime, endMinute, GMT_OFFSET);
 	const startOfDayUtc = new Date(Date.UTC(
 		dayDateUtc.getUTCFullYear(),
@@ -620,13 +611,13 @@ async function getAvailableSlotsForDay(app: FastifyInstance, userId: string, day
 		dayDateUtc.getUTCDate(),
 		23 - GMT_OFFSET, 59, 59, 999
 	));
-	const reservedDates = await getReservedSlots(app, userId, startOfDayUtc, endOfDayUtc);
+	const reservedDates = await getReservedSlots(app, listingId, startOfDayUtc, endOfDayUtc);
 	return slots.filter(slot => !reservedDates.includes(slot.getTime()));
 }
 
 export async function getAvailableSlotsByUserId(
 	app: FastifyInstance,
-	userId: string,
+	listingId: string,
 	days: { dayOfWeek: number, startTime: number | string, endTime: number | string }[]
 ): Promise<{ day: string, slots: string[], Taken: string[] }[]> {
 	const allAvailableSlots: { day: string, slots: string[], Taken: string[] }[] = [];
@@ -651,7 +642,6 @@ export async function getAvailableSlotsByUserId(
 				allSlotsForDay.push(...rangeSlots);
 			}
 
-			// Remove duplicate timestamps if ranges overlap
 			const uniqueSlots = Array.from(new Set(allSlotsForDay.map(s => s.getTime())))
 				.map(t => new Date(t))
 				.sort((a, b) => a.getTime() - b.getTime());
@@ -669,7 +659,7 @@ export async function getAvailableSlotsByUserId(
 				23 - GMT_OFFSET, 59, 59, 999
 			));
 
-			const reservedDates = await getReservedSlots(app, userId, startOfDayUtc, endOfDayUtc);
+			const reservedDates = await getReservedSlots(app, listingId, startOfDayUtc, endOfDayUtc);
 
 			const availableSlots = uniqueSlots.filter(slot => !reservedDates.includes(slot.getTime()));
 			const takenSlots = uniqueSlots.filter(slot => reservedDates.includes(slot.getTime()));
@@ -816,7 +806,7 @@ export async function getReservationsByBuyerId(
 		cancelledBy: reservation.cancelledBy,
 		createdAt: reservation.createdAt,
 		listing: await getListingData(app, reservation.listingId, buyerId, token),
-		buyer: await getUserData(app, reservation.sellerId, token) // We pass seller data as 'buyer' to reuse frontend structures if needed, or we can adapt frontend
+		seller: await getUserData(app, reservation.sellerId, token)
 	})));
 
 	return {

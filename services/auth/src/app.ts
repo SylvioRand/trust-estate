@@ -54,6 +54,10 @@ await pluginRegister(server);
 await authRegister(server);
 await userRegister(server);
 
+server.get('/health', async (_req, reply) => {
+	return reply.status(200).send({ status: 'ok', service: 'auth', version: '1.0.0' });
+});
+
 const start = async () => {
 	try {
 		await server.listen({

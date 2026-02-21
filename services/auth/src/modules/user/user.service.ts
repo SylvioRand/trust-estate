@@ -193,11 +193,11 @@ export async function DeleteUser(app: FastifyInstance, userId: string, password:
 		const jwt = await import('jsonwebtoken');
 		const internalToken = jwt.default.sign(
 			{ service: 'auth-service', userId },
-			process.env.INTERNAL_KEY_SECRET || "INTERNAL_KEY",
+			app.config.INTERNAL_KEY_SECRET,
 			{ algorithm: 'HS256', expiresIn: '30s' }
 		);
 
-		await Promise.allSettled([
+		const results = await Promise.allSettled([
 			fetch(process.env.CREDITS_SERVICE_URL + '/internal/delete/data', {
 				method: 'DELETE',
 				headers: {
@@ -220,6 +220,10 @@ export async function DeleteUser(app: FastifyInstance, userId: string, password:
 				}
 			})
 		]);
+		const failures = results.filter(r => r.status === 'rejected');
+		if (failures.length > 0) {
+			app.log.error({ failures, userId }, 'Some services failed to clean up user data on deletion');
+		}
 	} catch (error: any) {
 		app.log.error({ error, userId }, 'Failed to delete user data from other services');
 	}

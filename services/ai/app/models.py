@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    models.py                                          :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
+#    By: tolrandr <tolrandr@student.42antananari    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:23 by aelison           #+#    #+#              #
-#    Updated: 2026/02/04 09:21:04 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/21 14:21:39 by tolrandr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 

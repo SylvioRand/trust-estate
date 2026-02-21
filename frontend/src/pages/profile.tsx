@@ -149,10 +149,13 @@ const ProfilePage: React.FC = () => {
 	VerifyUsersState();
 	const { t } = useTranslation(["profile", "listings", "common", "error"]);
 	const [myListings, setMyListings] = useState<MyListingsData[]>([]);
+	const [creditBalance, setCreditBalance] = useState<number>(0);
 
 	// Redirect if user is not connected
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
+	useEffect(() => {
+		if (isConnected !== null && isConnected === false)
+			navigate("/sign-in");
+	}, [isConnected, navigate]);
 
 	useEffect(() => {
 		const getMyData = async () => {
@@ -174,7 +177,7 @@ const ProfilePage: React.FC = () => {
 					}
 					throw new Error(responseData.message);
 				}
-				setMyListings(responseData.data);
+				setMyListings(responseData.data ?? []);
 			} catch (error) {
 				if (error instanceof Error && error.message !== "")
 					toast.error(t(`error:${error.message}`))
@@ -182,6 +185,31 @@ const ProfilePage: React.FC = () => {
 		};
 
 		getMyData();
+	}, []);
+
+	useEffect(() => {
+		const credit = async () => {
+			try {
+				const response = await fetch('/api/credits/balance', {
+					method: 'GET',
+					credentials: 'include'
+				});
+				const responseData = await response.json();
+
+				if (!response.ok) {
+					toast.error(t(`error:${responseData.message}`));
+					throw new Error(responseData.message);
+				}
+				if (responseData && typeof responseData.balance === "number") {
+					setCreditBalance(responseData.balance);
+				}
+			} catch (error) {
+				if (error instanceof Error && error.message !== "")
+					toast.error(t(`error:${error.message}`))
+			}
+		};
+
+		credit();
 	}, []);
 
 	return (
@@ -274,6 +302,27 @@ const ProfilePage: React.FC = () => {
 							}
 						</div>
 					}
+
+					{
+						userData !== null &&
+						<div className="flex items-center gap-2
+						w-full
+						mt-3
+						mr-auto"
+						>
+							<div className="flex items-center gap-1
+							px-3 py-1
+							rounded-full
+							bg-background/10
+							border border-background/20
+							text-sm font-semibold"
+							>
+								<span className="font-icon text-base"></span>
+								<span>{creditBalance}</span>
+								<span className="font-light">{t("credits")}</span>
+							</div>
+						</div>
+					}
 				</div>
 				<div className="grid grid-cols-1 grid-rows-2
 					md:grid-cols-[auto_auto] md:grid-rows-1
@@ -319,6 +368,7 @@ const ProfilePage: React.FC = () => {
 					transparent)"
 				/>
 			</div>
+
 
 			{
 				myListings.length === 0 &&

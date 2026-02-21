@@ -249,6 +249,8 @@
 		"insufficient_credits": "Tienes créditos insuficientes para esta operación.",
 		"transaction_failed": "El pago falló. Por favor, verifica tu saldo de Mobile Money.",
 		"rate_limited_recharge": "Demasiados intentos de recarga. Se permite un máximo de tres por hora.",
+		"balance_not_zero": "La recarga solo está disponible cuando tu saldo es 0.",
+		"recharge_daily_limit": "Ya has realizado una recarga hoy. Vuelve mañana.",
 		"balance_not_found": "No se pudo encontrar tu saldo de créditos."
 	},
 	"user": {

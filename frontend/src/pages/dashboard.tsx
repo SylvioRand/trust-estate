@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import VisitsSection from "./dashboard/VisitsSection";
 import ReservationsSection from "./dashboard/ReservationsSection";
+import CreditsSection from "./dashboard/CreditsSection";
 import useDataProvider from "../provider/useDataProvider";
 import { useNavigate, useLocation } from "react-router-dom";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
@@ -19,8 +20,9 @@ const DashboardPage: React.FC = () => {
   }
 
   const menuItems = [
-    { id: "visits", label: t("button.dashboard.tabs.visits"), component: <VisitsSection /> },
-    { id: "reservations", label: t("button.dashboard.tabs.reservations"), component: <ReservationsSection /> }
+    { id: "visits", label: t("button.dashboard.tabs.visits"), icon: "👁", component: <VisitsSection /> },
+    { id: "reservations", label: t("button.dashboard.tabs.reservations"), icon: "📅", component: <ReservationsSection /> },
+    { id: "credits", label: t("button.dashboard.tabs.credits"), icon: "🪙", component: <CreditsSection /> }
   ];
 
   const currentItem = menuItems.find(item => item.id === activeTab);
@@ -29,7 +31,6 @@ const DashboardPage: React.FC = () => {
   return (
     <div className="bg-(--color-bg-dash) pt-[60px] lg:pt-[100px] mb-20 px-4 text-background min-h-screen transition-all duration-500">
       <div className="max-w-[1700px] mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8">
-        {/* SIDEBAR */}
         <div className="w-full lg:w-60 flex-none">
           <div className="bg-card-bg/30 backdrop-blur-md rounded-2xl p-4 border border-highlight/20 flex flex-col gap-2 shadow-2xl">
             <div className="px-4 py-2 mb-2 border-b border-highlight/10">
@@ -45,7 +46,7 @@ const DashboardPage: React.FC = () => {
                   }`}
               >
                 <span className={`transition-transform duration-500 ${activeTab === item.id ? "rotate-12 scale-110" : "group-hover:rotate-12"}`}>
-                  {item.id === "visits" ? "👁" : "📅"}
+                  {item.icon}
                 </span>
                 {item.label}
               </button>
@@ -53,7 +54,6 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* CONTENT AREA */}
         <div className="flex-1 bg-card-bg/30 backdrop-blur-md rounded-2xl p-4 sm:p-8 lg:p-10 border border-highlight/20 min-h-[600px] shadow-2xl overflow-hidden">
           <header className="mb-10">
             <h2 className="text-4xl font-black tracking-tight">

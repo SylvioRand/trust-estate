@@ -15,14 +15,13 @@ const ResetPassPage: React.FC = () => {
 	const token = searchParams.get("token");
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
 		// NOTE: If there is no token in the query, just redirect to sign-in
 		if (token === null) {
 			toast.error(t(`error:ERROR`));
 			navigate("/sign-in");
 			return;
 		}
-
-		e.preventDefault();
 		setProcessingSubmit(true);
 		setErrorPassword([]);
 		const formData = new FormData(e.currentTarget);
@@ -53,6 +52,9 @@ const ResetPassPage: React.FC = () => {
 					toast.error(t(`error:${responseData?.message ?? "invalid token"}`));
 					navigate("/sign-in");
 					throw new Error(responseData.message);
+				}
+				else {
+					throw new Error(responseData?.message ?? "ERROR");
 				}
 			}
 			else {

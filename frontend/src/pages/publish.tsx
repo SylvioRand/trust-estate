@@ -89,8 +89,10 @@ const PublishPage: React.FC = () => {
 	const { isConnected } = useDataProvider();
 
 	// Redirect if user is not connected
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
+	useEffect(() => {
+		if (isConnected !== null && isConnected === false)
+			navigate("/sign-in");
+	}, [isConnected, navigate]);
 
 	type UploadDataType = {
 		"type": "sale" | "rent",
@@ -169,7 +171,6 @@ const PublishPage: React.FC = () => {
 				navigate(`/property/listings?id=${responseData?.listingId}`)
 			}
 			else {
-				toast.error(t(`error:${responseData.message ?? "ERROR"}`));
 				if (responseData.details) {
 					const details: Record<string, string[]> = responseData.details as Record<string, string[]>;
 
@@ -248,7 +249,7 @@ const PublishPage: React.FC = () => {
 
 				const responseData = await response.json();
 
-				if (response.ok && responseData.reply !== "")
+				if (response.ok && responseData.reply)
 					refToDescription.current!.value = responseData.reply;
 				else
 					throw new Error(responseData?.message);

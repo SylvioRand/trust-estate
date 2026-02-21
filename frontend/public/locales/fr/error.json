@@ -249,6 +249,8 @@
 		"insufficient_credits": "Vous avez des crédits insuffisants pour cette opération.",
 		"transaction_failed": "Le paiement a échoué. Veuillez vérifier le solde de votre Mobile Money.",
 		"rate_limited_recharge": "Trop de tentatives de recharge. Un maximum de trois par heure est autorisé.",
+		"balance_not_zero": "La recharge n'est possible que lorsque votre solde est à 0.",
+		"recharge_daily_limit": "Vous avez déjà effectué une recharge aujourd'hui. Revenez demain.",
 		"balance_not_found": "Votre solde de crédits n'a pas pu être trouvé."
 	},
 	"user": {

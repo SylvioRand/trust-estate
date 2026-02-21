@@ -72,8 +72,10 @@ const SettingsPage: React.FC = () => {
 	const { t } = useTranslation(["settings", "error", "signUp"]);
 
 	// Redirect if user is not connected
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
+	useEffect(() => {
+		if (isConnected !== null && isConnected === false)
+			navigate("/sign-in");
+	}, [isConnected, navigate]);
 
 	// NOTE: May remove those error check since the back-end looks like
 	const [errorFirstName, setErrorFirstName] = useState<string[]>([]);
@@ -200,7 +202,7 @@ const SettingsPage: React.FC = () => {
 			});
 
 			if (!response.ok)
-				throw new Error(t("error:auth.not_authenticated_user}"))
+				throw new Error(t("error:auth.not_authenticated_user"))
 
 		} catch (error) {
 			if (error instanceof Error && error.message !== "")

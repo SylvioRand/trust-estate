@@ -3,10 +3,12 @@ import { PublishListingSchema } from "../listing.schema";
 import { ZodError } from "zod";
 import path from 'path';
 import fs from 'fs';
+import crypto from 'crypto';
 import { pipeline } from 'stream/promises';
 import { ListingService } from "../listing.service";
 import { AIClient } from "../../../infrastructure/ai.client";
 import { creditClient } from "../../../infrastructure/credit.client";
+import { prisma } from "../../../config/prisma";
 
 const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp"];
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
@@ -21,16 +23,17 @@ export async function handlePublish(request: FastifyRequest, reply: FastifyReply
 
     const validatedData = PublishListingSchema.parse(listingData);
 
+    const { listing, listingFeatures } = await ListingService.createListing(validatedData, photos, user.id);
+
     try {
       await creditClient.debit(user.id);
     } catch (debitError: any) {
-      console.error("❌ Credit debit failed, rolling back listing creation:", debitError);
+      console.error("❌ Credit debit failed after listing creation, rolling back:", debitError);
+      await prisma.listing.delete({ where: { id: listing.id } }).catch(() => {});
       throw debitError;
     }
 
-    const { listing, listingFeatures } = await ListingService.createListing(validatedData, photos, user.id);
-
-    AIClient.upsertIndexListing(listing, "POST", listingFeatures);
+    await AIClient.upsertIndexListing(listing, "POST", listingFeatures);
 
     return reply.status(201).send({
       listingId: listing.id,
@@ -60,7 +63,7 @@ async function processMultipart(request: FastifyRequest, uploadedFiles: string[]
         fs.mkdirSync(UPLOAD_DIR, { recursive: true });
       }
 
-      const filepath = path.join(UPLOAD_DIR, `${Date.now()}-${part.filename}`);
+      const filepath = path.join(UPLOAD_DIR, `${Date.now()}-${crypto.randomUUID()}-${part.filename}`);
       await pipeline(part.file, fs.createWriteStream(filepath));
       uploadedFiles.push(filepath);
     }

@@ -10,10 +10,10 @@ export function VerifyUsersState() {
 	const navigate = useNavigate();
 	const { setIsConnected, setUserData } = useDataProvider();
 	const { t } = useTranslation("error");
-	const url = new URL(window.location.href);
 
 	useEffect(() => {
 		const checkAuth = async () => {
+			const url = new URL(window.location.href);
 			try {
 				const response = await fetch(`/api/users/me`, {
 					method: "GET",
@@ -25,12 +25,12 @@ export function VerifyUsersState() {
 				if (response.ok) {
 					const serverResponse = responseData as UserModelData;
 
-					setIsConnected(false);
 					if ((serverResponse as any).error === "invalid_or_expired_token") {
+						setIsConnected(false);
 						return;
 					}
-					setIsConnected(true);
 					if ((serverResponse as any).error === "phone_number_not_verified") {
+						setIsConnected(true);
 						if (url.pathname === "/add-phone") {
 							return;
 						}
@@ -38,12 +38,14 @@ export function VerifyUsersState() {
 						return;
 					}
 					if ((serverResponse as any).error === "email_not_verified") {
+						setIsConnected(true);
 						if (url.pathname === "/email-sent") {
 							return;
 						}
 						navigate("/email-sent", { replace: true });
 						return;
 					}
+					setIsConnected(true);
 					setUserData(serverResponse);
 					return;
 				}

@@ -325,8 +325,11 @@ const SellerSlotsPage: React.FC = () => {
 					setFetchedSlots(slots);
 					setInitialData(slots.map(s => ({ ...s })));
 				} else {
+					const errData = await response.json().catch(() => ({}));
+					toast.error(String(t("errors.fetch_failed")) || errData?.message || "Failed to load availability");
 				}
 			} catch (error) {
+				toast.error(String(t("errors.network")));
 			} finally {
 				setLoading(false);
 			}
@@ -353,14 +356,14 @@ const SellerSlotsPage: React.FC = () => {
 			});
 
 			if (response.ok) {
-				toast.success(t("success.saved", "Disponibilités enregistrées !"));
+				toast.success(String(t("success.saved")));
 				setInitialData(fetchedSlots.map(s => ({ ...s })));
 			} else {
 				const errorData = await response.json();
-				toast.error(t(errorData.message || "errors.save_failed", "Échec de l'enregistrement"));
+				toast.error(String(t(errorData.message || "errors.save_failed")));
 			}
 		} catch (error) {
-			toast.error(t("errors.save_failed", "Une erreur est survenue lors de la sauvegarde"));
+			toast.error(String(t("errors.save_failed")));
 		} finally {
 			setAreProcessingSave(false);
 		}

@@ -184,7 +184,6 @@ export async function googleCallback(request: FastifyRequest<{ Querystring: { co
 			const separator = state.includes('?') ? '&' : '?';
 			redirectUrl = `${request.server.config.FRONTEND_URL}${state}${separator}auth_google=success`;
 		}
-
 		return (reply.redirect(redirectUrl));
 	} catch (error: any) {
 		if (error.message === "Invalid credential")

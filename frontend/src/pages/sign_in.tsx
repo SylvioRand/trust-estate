@@ -34,7 +34,7 @@ const SignInPage: React.FC = () => {
 		const formData = new FormData(e.currentTarget);
 		const data = Object.fromEntries(formData.entries());
 		try {
-			const response = await fetch("https://localhost:8443/api/auth/login", {
+			const response = await fetch("/api/auth/login", {
 				method: "POST",
 				headers: {
 					"Content-type": "application/json"
@@ -51,9 +51,11 @@ const SignInPage: React.FC = () => {
 				if (response.status === 403) {
 					if (errorData.error === "email_not_verified") {
 						navigate("/email-sent");
+						return;
 					}
 					else if (errorData.error === "phone_not_verified") {
 						navigate("/add-phone");
+						return;
 					}
 				}
 				else if (response.status === 400) {

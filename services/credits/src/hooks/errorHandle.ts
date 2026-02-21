@@ -34,7 +34,7 @@ function validateSlot(slotValue: string): string[] {
 	const errors: string[] = [];
 	const slotDate = new Date(slotValue);
 	const now = new Date();
-	const minAdvanceTime = new Date(now.getTime() + 60 * 60 * 1000); // 1 heure à l'avance minimum
+	const minAdvanceTime = new Date(now.getTime() + 60 * 60 * 1000);
 
 	if (isNaN(slotDate.getTime())) {
 		errors.push('validation.reservation.slot.invalid_format');

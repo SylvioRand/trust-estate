@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    llm.py                                             :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
+#    By: tolrandr <tolrandr@student.42antananari    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:10 by aelison           #+#    #+#              #
-#    Updated: 2026/02/06 14:24:29 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/21 14:22:01 by tolrandr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 

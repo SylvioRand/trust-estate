@@ -42,13 +42,15 @@ const EditPage: React.FC = () => {
 		{ value: "false", title: t("common:false") }
 	]
 
-	if (listingID === null)
-		navigate("/home");
 	VerifyUsersState();
 
 	// NOTE: redirect the user if he is not authenticated
-	if (!isConnected)
-		navigate("/sign-in");
+	useEffect(() => {
+		if (listingID === null)
+			navigate("/home");
+		else if (isConnected === false)
+			navigate("/sign-in");
+	}, [listingID, isConnected, navigate]);
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -169,7 +171,7 @@ const EditPage: React.FC = () => {
 
 				const responseData = await response.json();
 
-				if (response.ok && responseData.reply !== "")
+				if (response.ok && responseData.reply)
 					refToDescription.current!.value = responseData.reply;
 				else
 					throw new Error(responseData?.message);
@@ -207,10 +209,14 @@ const EditPage: React.FC = () => {
 		const fetchListingsData = async () => {
 			let responseData: ListingsData | APIResponse | null = null;
 			try {
-				if (!formRef.current)
+				if (!formRef.current) {
 					navigate("/home");
-				if (listingID === null)
+					return;
+				}
+				if (listingID === null) {
 					navigate("/property");
+					return;
+				}
 
 				const response = await fetch(`/api/listings/${listingID}`, {
 					method: "GET",
@@ -245,7 +251,7 @@ const EditPage: React.FC = () => {
 				}
 			} catch (error) {
 				if (error instanceof Error && error.message !== "")
-					toast.error(`error:${error.message}`);
+					toast.error(t(`error:${error.message}`));
 				navigate("/property");
 			}
 		}

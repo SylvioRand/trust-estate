@@ -56,14 +56,14 @@ const BuyerSlotsPage: React.FC = () => {
   const calendarLocale = i18n.language === "en" ? enUS : fr;
   const [availability, setAvailability] = useState<AvailabilityData>();
   const [searchParams] = useSearchParams();
-  const listingID = searchParams.get("id") as string;
+  const listingID = searchParams.get("id");
   const [selected, setSelected] = useState<Date>();
   const [selectedSlot, setSelectedSlot] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
   const [availableDates, setAvailableDates] = useState<Date[]>([]);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [isConfirming, setIsConfirming] = useState<boolean>(false);
-  const url = `/api/reservations/get-slot?id=${listingID}`;
+  const url = `/api/reservations/get-slot?id=${listingID ?? ""}`;
   const navigate = useNavigate();
   const location = useLocation();
   VerifyUsersState()
@@ -72,6 +72,11 @@ const BuyerSlotsPage: React.FC = () => {
   useEffect(() => {
     if (isConnected !== null && isConnected === false) {
       navigate("/sign-in", { state: { from: location.pathname + location.search } });
+      return;
+    }
+    if (!listingID) {
+      navigate("/property");
+      return;
     }
     const fetchSlots = async () => {
       try {
@@ -81,6 +86,8 @@ const BuyerSlotsPage: React.FC = () => {
         });
 
         if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          toast.error(t(errData?.message || "errors.fetch_failed"));
           setLoading(false);
           return;
         }
@@ -94,13 +101,14 @@ const BuyerSlotsPage: React.FC = () => {
         setAvailability(data);
 
       } catch (error) {
+        toast.error(t("errors.network"));
       } finally {
         setLoading(false);
       }
     };
 
     fetchSlots();
-  }, [url, isConnected, navigate, location.pathname, location.search, showConfirmation]);
+  }, [url, isConnected, navigate, location.pathname, location.search, showConfirmation, listingID]);
 
   const handleConfirm = async () => {
     if (!selectedSlot || !availability?.sellerId) return;
@@ -121,15 +129,15 @@ const BuyerSlotsPage: React.FC = () => {
       });
 
       if (response.ok) {
-        toast.success(t("messages.success", "Réservation confirmée avec succès !"));
+        toast.success(String(t("messages.success")));
         setShowConfirmation(false);
       } else {
         const errorData = await response.json();
-        const errorMessage = errorData.message ? t(`error:${errorData.message}`) : t("errors.failed", "Erreur lors de la réservation");
+        const errorMessage = errorData.message ? t(`error:${errorData.message}`) : String(t("errors.failed"));
         toast.error(errorMessage);
       }
     } catch (error) {
-      toast.error(t("errors.network", "Erreur réseau lors de la réservation"));
+      toast.error(String(t("errors.network")));
     } finally {
       setIsConfirming(false);
     }
@@ -162,7 +170,7 @@ const BuyerSlotsPage: React.FC = () => {
   return (
     <div className="flex justify-center w-full bg-foreground">
       <div className=" w-full max-w-[1425px] pt-[60px] md:pt-[100px] mb-20 px-4 text-background">
-        <CommonPart listingID={listingID} />
+        <CommonPart listingID={listingID ?? ""} />
         <div className="w-full mx-auto rounded-3xl shadow-2xl flex flex-col md:flex-row gap-0 bg-card-bg  overflow-hidden border border-highlight/20 transition-colors duration-300">
           <div className="p-6 md:p-10 border-b md:border-b-0 md:border-r border-highlight/20 flex justify-center bg-background/5">
             <DayPicker

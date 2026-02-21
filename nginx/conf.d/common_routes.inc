@@ -33,9 +33,23 @@
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
+    # Publish endpoint — strict upload rate limit (file upload)
+    location /api/listings/publish {
+        client_max_body_size 55M;
+        limit_req zone=upload_limit burst=3 nodelay;
+        limit_req_status 429;
+        proxy_pass http://listings_service/listings/publish;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # General listing reads/mutations — generous limit
     location /api/listings/ {
         client_max_body_size 55M;
-        limit_req zone=upload_limit burst=5 nodelay;
+        limit_req zone=api_limit burst=30 nodelay;
         limit_req_status 429;
         proxy_pass http://listings_service/listings/;
         proxy_http_version 1.1;
@@ -47,7 +61,7 @@
 
     location /api/moderator/ {
         client_max_body_size 5M;
-        limit_req zone=api_limit burst=10 nodelay;
+        limit_req zone=api_limit burst=30 nodelay;
         limit_req_status 429;
         proxy_pass http://listings_service/moderator/;
         proxy_http_version 1.1;
@@ -58,7 +72,7 @@
     }
 
     location /api/credits/ {
-        limit_req zone=api_limit burst=10 nodelay;
+        limit_req zone=api_limit burst=30 nodelay;
         limit_req_status 429;
         proxy_pass http://credits_service/credits/;
         proxy_http_version 1.1;
@@ -72,7 +86,7 @@
         client_max_body_size 5M;
 
         # Apply rate limiting
-        limit_req zone=chatbot_limit burst=5 nodelay;
+        limit_req zone=chatbot_limit burst=10 nodelay;
         limit_req_status 429;
 
         proxy_pass http://ai_service/ai/chat/;
@@ -93,7 +107,7 @@
 
     location /api/reservations/ {
         client_max_body_size 5M;
-        limit_req zone=api_limit burst=10 nodelay;
+        limit_req zone=api_limit burst=30 nodelay;
         limit_req_status 429;
         proxy_pass http://reservations_service/reservations/;
         proxy_http_version 1.1;
@@ -104,11 +118,24 @@
     }
 
 		
+    # AI index-status is a lightweight read — use read_limit instead of chatbot_limit
+    location /api/ai/index-status/ {
+        client_max_body_size 1M;
+        limit_req zone=read_limit burst=20 nodelay;
+        limit_req_status 429;
+        proxy_pass http://ai_service/ai/index-status/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
     location /api/ai/ {
         client_max_body_size 5M;
-        
+
         # Apply rate limiting
-        limit_req zone=chatbot_limit burst=5 nodelay;
+        limit_req zone=chatbot_limit burst=10 nodelay;
         limit_req_status 429;
 
         proxy_pass http://ai_service/ai/;

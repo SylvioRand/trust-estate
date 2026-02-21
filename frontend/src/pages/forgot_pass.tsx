@@ -43,12 +43,6 @@ const ForgotPassPage: React.FC = () => {
 				}
 			}
 			toast.success(t("notification.emailSent"));
-		} catch (error) {
-			if (error instanceof Error && error.message !== "") {
-				toast.error(t(`error:${error.message}`));
-			}
-		} finally {
-			setProcessingSubmit(false);
 			setTimeLeft(60);
 			controls.start();
 			setButtonSendDisabled(true);
@@ -58,6 +52,12 @@ const ForgotPassPage: React.FC = () => {
 				setTimeLeft(0);
 				controls.stop();
 			}, 60000);
+		} catch (error) {
+			if (error instanceof Error && error.message !== "") {
+				toast.error(t(`error:${error.message}`));
+			}
+		} finally {
+			setProcessingSubmit(false);
 		}
 	}
 

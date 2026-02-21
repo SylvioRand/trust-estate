@@ -74,7 +74,12 @@ export async function createSlot(request: FastifyRequest<{ Body: ReservationInte
 		const reservation = await resaServices.addSlot(request.server, user.id, slot, sellerId, listingId);
 		return reply.status(201).send(reservation);
 	} catch (error: any) {
-		if (error.message.includes("cannot_reserve_own_listing"))
+		if (error.message.includes("buyer_slot_conflict"))
+			return reply.status(409).send({
+				"error": "buyer_slot_conflict",
+				"message": "reservation.buyer_slot_conflict"
+			});
+		else if (error.message.includes("cannot_reserve_own_listing"))
 			return reply.status(403).send({
 				"error": "cannot_reserve_own_listing",
 				"message": "reservation.cannot_reserve_own"
@@ -245,7 +250,7 @@ export async function rejectReservation(request: FastifyRequest<
 	try {
 		const rejectedAt = await resaServices.rejectStatusReservation(request.server, user.id, reservationId);
 		return reply.status(200).send({
-			"status": "confirmed",
+			"status": "rejected",
 			"rejectedAt": rejectedAt
 		})
 	} catch (error: any) {
@@ -290,10 +295,10 @@ export async function doneReservation(request: FastifyRequest<
 				"error": "reservation_not_found",
 				"message": "reservation.not_found"
 			})
-		else if (error.message === "reservation_not_completed")
+		else if (error.message === "reservation_not_confirmed")
 			return reply.status(400).send({
-				"error": "reservation_not_completed",
-				"message": "reservation.not_completed"
+				"error": "reservation_not_confirmed",
+				"message": "reservation.not_confirmed"
 			});
 		else
 			return reply.status(500).send({
@@ -358,7 +363,7 @@ export async function checkSlot(request: FastifyRequest<{ Querystring: CheckSlot
 
 export async function getSlots(request: FastifyRequest<{ Querystring: { id: string } }>, reply: FastifyReply) {
 	const user = (request as any).user as UserInterface;
-	const userId = request.query.id;
+	const listingId = request.query.id;
 
 	if (!user)
 		return reply.status(401).send({
@@ -367,8 +372,8 @@ export async function getSlots(request: FastifyRequest<{ Querystring: { id: stri
 		});
 
 	try {
-		const data = await resaServices.getAvailability(request.server, userId) as ListingInterface;
-		const availability = await resaServices.getAvailableSlotsByUserId(request.server, userId, data.weeklySchedule);
+		const data = await resaServices.getAvailability(request.server, listingId) as ListingInterface;
+		const availability = await resaServices.getAvailableSlotsByUserId(request.server, listingId, data.weeklySchedule);
 		return reply.status(200).send({ availability, sellerId: data.sellerId, isMine: data.sellerId === user.id });
 	} catch (error: any) {
 		if (error.message === "listing_server_error")
