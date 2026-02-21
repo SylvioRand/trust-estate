@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n/i18n";
 import useDataProvider from "../provider/useDataProvider";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 interface NavButtonProps {
 	icon: string;
@@ -121,7 +120,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 	open = false,
 	data = [],
 	dataUser = [],
-	onClose = () => {}
+	onClose = () => { }
 }) => {
 	const { isConnected, userData } = useDataProvider();
 
@@ -305,8 +304,6 @@ const NavBar: React.FC = () => {
 	const { t } = useTranslation("nav");
 	const [openHamburger, setOpenHamburger] = useState<boolean>(false);
 	const { isConnected, userData } = useDataProvider();
-
-	VerifyUsersState();
 
 	const dataNavButton: NavButtonProps[] = [
 		{ icon: "", title: t("button.home"), path: "/home" },

@@ -85,8 +85,6 @@ services:
     container_name: trust-estate-listings
     expose:
       - "3002"
-    ports:
-      - "3002:3002" # Expose port for direct access for testing (optional
     environment:
       DATABASE_URL: ${DATABASE_URL}?schema=listings
       PORT: 3002
@@ -119,8 +117,6 @@ services:
     container_name: trust-estate-reservations
     expose:
       - "3003"
-    ports:
-      - "3003:3003"
     environment:
       DATABASE_URL: ${DATABASE_URL}?schema=reservations
       PORT_AUTH_RESERVATION: 3003
@@ -154,8 +150,6 @@ services:
     container_name: trust-estate-credits
     expose:
       - "3004"
-    ports:
-      - "3004:3004"
     environment:
       DATABASE_URL: ${DATABASE_URL}?schema=credits
       PORT_CREDITS_SERVICE: 3004
