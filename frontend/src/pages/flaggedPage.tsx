@@ -123,7 +123,7 @@ const FlaggedPage: React.FC = () => {
 				})
 
 				const responseData = await response.json();
-				console.log(responseData);
+
 				if (!response.ok) {
 					if (responseData.details) {
 						const details: Record<string, string[]> = responseData.details as Record<string, string[]>;

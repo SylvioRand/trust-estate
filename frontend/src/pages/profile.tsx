@@ -182,7 +182,7 @@ const ProfilePage: React.FC = () => {
 
 		getMyData();
 	}, []);
-	console.log(myListings);
+
 	useEffect(() => {
 		const credit = async () => {
 			try {
