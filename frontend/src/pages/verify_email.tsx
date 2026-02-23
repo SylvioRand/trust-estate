@@ -16,9 +16,10 @@ const VerifyEmailPage: React.FC = () => {
 	const navigate = useNavigate();
 	const { isConnected } = useDataProvider();
 
-	VerifyUsersState();
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
+	useEffect(() => {
+		if (isConnected !== null && isConnected === false)
+			navigate("/sign-in");
+	}, [isConnected])
 	const verifyToken = async () => {
 		try {
 			const response = await fetch("/api/auth/verify-email", {
@@ -47,6 +48,8 @@ const VerifyEmailPage: React.FC = () => {
 	}
 
 	useEffect(() => {
+		if (token === null)
+			navigate("/home");
 		verifyToken(); // verify the token sent
 	}, []);
 

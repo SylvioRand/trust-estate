@@ -89,8 +89,10 @@ const PublishPage: React.FC = () => {
 	const { isConnected } = useDataProvider();
 
 	// Redirect if user is not connected
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
+	useEffect(() => {
+		if (isConnected !== null && isConnected === false)
+			navigate("/sign-in");
+	}, [isConnected])
 
 	type UploadDataType = {
 		"type": "sale" | "rent",
