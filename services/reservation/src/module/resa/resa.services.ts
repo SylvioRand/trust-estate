@@ -1,7 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { generateSlotsForDay, parseHourMinute, responseReservation, toGmt3String } from "../../utils/utils";
 import { Prisma, PrismaClient, $Enums } from "@prisma/client";
-import { error } from "console";
 import { ListingDataInterface, ListingInterface, ReservationDetailsInterface, UserDetailsInterface } from "./resa.interface";
 
 type TransactionClient = Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>;
@@ -181,12 +180,14 @@ export async function deleteReservation(app: FastifyInstance, userId: string, re
 		const time = new Date();
 		const total = reservation.slot.getTime() - time.getTime();
 
-		const minCancelTime = 30 * 60 * 1000; // 30 minutes
+		const minCancelTime = 30 * 60 * 1000;
 		if (total > 0) {
 			if (total <= minCancelTime)
 				throw new Error("cancellation_too_late");
 		}
-
+		if (userId !== reservation.buyerId)
+			await refundCredits(app, reservation.buyerId);
+		
 		await tx.reservation.delete({
 			where: { reservationId }
 		});
@@ -225,8 +226,7 @@ export async function cancelReservation(app: FastifyInstance, userId: string, re
 			cancel = $Enums.CancelledBy.seller;
 		else
 			cancel = $Enums.CancelledBy.system;
-
-		if (reservation.status === 'confirmed' && cancel === $Enums.CancelledBy.seller) {
+		if ((reservation.status === 'confirmed' || reservation.status === 'pending') && cancel === $Enums.CancelledBy.seller) {
 			await refundCredits(app, reservation.buyerId);
 		}
 
@@ -328,9 +328,10 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 					cancelledBy: 'system'
 				}
 			});
+			for (const conflict of buyerConflicts) {
+				await refundCredits(app, conflict.buyerId);
+			}
 		}
-
-		await debitCredits(app, reservation.buyerId);
 
 		const data = await tx.reservation.update({
 			where: { reservationId },
@@ -419,6 +420,9 @@ export async function rejectStatusReservation(app: FastifyInstance, userId: stri
 			}
 		});
 
+		if (reservation.status === 'confirmed' || reservation.status === 'pending') {
+			await refundCredits(app, reservation.buyerId);
+		}
 		return (data.rejectedAt);
 	});
 }
@@ -517,7 +521,7 @@ async function refundCredits(app: FastifyInstance, buyerId: string) {
 	);
 
 	try {
-		const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/internal/credits/refund`, {
+		const response = await fetch(`${app.config.CREDITS_SERVICE_URL}/internal/credits/credit`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -529,7 +533,6 @@ async function refundCredits(app: FastifyInstance, buyerId: string) {
 				type: 'refund'
 			})
 		});
-
 		if (!response.ok) {
 			throw new Error('credit_service_error');
 		}
@@ -537,6 +540,7 @@ async function refundCredits(app: FastifyInstance, buyerId: string) {
 		app.log.error({ error }, 'Failed to refund credits');
 	}
 }
+
 export async function deleteUserData(app: FastifyInstance, userId: string) {
 	return await app.prisma.$transaction(async (tx: TransactionClient) => {
 		await tx.reservation.deleteMany({
