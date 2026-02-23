@@ -5,6 +5,7 @@ import useDataProvider from "../provider/useDataProvider";
 import { Link, useNavigate } from "react-router-dom";
 import { CreateDateForMemberSince } from "../utils/Format";
 import ActionButton from "../components/ActionButton";
+import ContentDivider from "../components/ContentDivider";
 
 type HistoryModActionType = {
 	listingId: string,
@@ -155,6 +156,27 @@ const FlaggedPage: React.FC = () => {
 			<div
 				className="w-full h-18 flex-none">
 			</div>
+			<div className="grid grid-cols-[auto_1fr] grid-rows-1
+				mb-4
+				place-items-center
+				w-full"
+			>
+				<Link
+					to="/profile"
+				>
+					<ActionButton
+						icon=""
+						title={t("buttons.goBackToProfile")}
+					/>
+				</Link>
+				<div
+					className="w-full"
+				>
+					<ContentDivider
+						line_color="linear-gradient(to right,var(--color-background) 80%,transparent)"
+					/>
+				</div>
+			</div>
 			<div
 				className="grid grid-cols-1 grid-rows-1
 			md:grid-cols-2
@@ -173,6 +195,24 @@ const FlaggedPage: React.FC = () => {
 					})
 				}
 			</div>
+			{
+				historyModAction.length === 0 &&
+				<div
+					className="flex flex-col items-center justify-center
+					w-full h-full"
+				>
+					<div
+						className="font-icon text-[128px]"
+					>
+						
+					</div>
+					<div
+						className="font-light"
+					>
+						{t("emptyReport")}
+					</div>
+				</div>
+			}
 			<div
 				className="w-full h-4 flex-none">
 			</div>

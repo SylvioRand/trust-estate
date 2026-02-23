@@ -333,12 +333,12 @@ const ProfilePage: React.FC = () => {
 					>
 						<Link className="w-full" to="/profile/settings">
 							<ActionButton
-								icon=""
+								icon=""
 								title={t("buttons.settings")}
 							/>
 						</Link>
 						<ActionButton
-							icon={userData?.role === "MODERATOR" ? "" : "󰚧"}
+							icon={userData?.role === "MODERATOR" ? "" : "󰚧"}
 							icon_size={22}
 							title={userData?.role === "MODERATOR" ? t("buttons.flagged") : t("buttons.publish")}
 							onClick={() => {
@@ -376,7 +376,7 @@ const ProfilePage: React.FC = () => {
 					<div
 						className="font-icon text-[96px] leading-none"
 					>
-						
+
 					</div>
 					<div className="text-sm font-light tracking-widest uppercase">
 						{t("noMyListings")}

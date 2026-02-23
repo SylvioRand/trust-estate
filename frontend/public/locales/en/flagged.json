@@ -1,9 +1,13 @@
 {
+	"buttons": {
+		"goBackToProfile": "Back to profile"
+	},
 	"latestReportReason": {
 		"title": "Latest report reason"
 	},
 	"userInfo": {
 		"title": "User information"
 	},
-	"reportedThe": "Reported the"
+	"reportedThe": "Reported the",
+	"emptyReport": "There are currently no reported listings."
 }

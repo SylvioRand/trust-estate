@@ -1,9 +1,13 @@
 {
+	"buttons": {
+		"goBackToProfile": "Retour au profil"
+	},
 	"latestReportReason": {
 		"title": "Dernier motif du signalement"
 	},
 	"userInfo": {
 		"title": "Informations de l’utilisateur"
 	},
-	"reportedThe": "Signalé le"
+	"reportedThe": "Signalé le",
+	"emptyReport": "Il n’y a actuellement aucune annonce signalée."
 }
