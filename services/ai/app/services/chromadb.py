@@ -59,6 +59,17 @@ def rewrap_as_chromadb_query_format(obj):
             'datas': None
     }
 
+def refine_for_llm(user_mssg, chroma_result):
+    chroma_string = json.dumps(chroma_result, indent = 2)
+
+    prompt = f"""
+    INSTRUCTION: Return EXACTLY the CHROMA_CONTEXT but with the values inside each field that match the USER_INPUT ONLY 
+    USER_INPUT: {user_mssg}
+
+    CHROMA_CONTEXT: 
+    {chroma_string}
+    """
+    return prompt
 
 class ChromadbService:
     def __init__(self):
@@ -420,42 +431,24 @@ class ChromadbService:
             query['distances'][0].append(0.0)
         return query
     
-    def get_ids_from_query(self, query_result):
+    async def get_ids_from_query(self, query_result, llm_service, user_mssg):
+        llm_refine = refine_for_llm(user_mssg, query_result)
+        llm_response = await llm_service.generate_bloc_response(llm_refine, llm_service.get_matching_listing())
+        filtered_result = json.loads(llm_response)
         result: list[metaData] = []
 
-        if query_result.get('ids') and len(query_result['ids']) > 0:
-            for nb in range(len(query_result['ids'][0])):
+        if filtered_result.get('ids') and len(filtered_result['ids']) > 0:
+            for nb in range(len(filtered_result['ids'][0])):
                 curr_obj = metaData(
-                        id = query_result['ids'][0][nb],
-                        photos = "https://localhost:8443/uploads/" + query_result['metadatas'][0][nb].get("photos", ""),
-                        title = query_result['metadatas'][0][nb].get("title", ""),
-                        price = query_result['metadatas'][0][nb].get("price", 1.0),
-                        propertyType = query_result['metadatas'][0][nb].get("property_type", "house"),
-                        type = query_result['metadatas'][0][nb].get("post_type", "sale"),
-                        zone = query_result['metadatas'][0][nb].get("zone", "")
+                        id = filtered_result['ids'][0][nb],
+                        photos = "https://localhost:8443/uploads/" + filtered_result['metadatas'][0][nb].get("photos", ""),
+                        title = filtered_result['metadatas'][0][nb].get("title", ""),
+                        price = filtered_result['metadatas'][0][nb].get("price", 1.0),
+                        propertytype = filtered_result['metadatas'][0][nb].get("property_type", "house"),
+                        type = filtered_result['metadatas'][0][nb].get("post_type", "sale"),
+                        zone = filtered_result['metadatas'][0][nb].get("zone", "")
                 )
                 result.append(curr_obj)
         return result
-
-    #================= DEBUG Methods =========================
-    async def get_all_in_collection(self, collection_name):
-        target_collection = self.collections.get(collection_name)
-
-        if not target_collection:
-            print("Collection not found?")
-            return None
-        try:
-            print("============================================ ALL DATAS ============================================")
-            data = await target_collection.get()
-            if not data['ids']:
-                print(f"No data found in collection: '{collection_name}'")
-                return 
-                
-            for tmp in data:
-                print(f"I got: {tmp} = {data[tmp]}")
-            print("============================================ END ALL DATAS ============================================")
-
-        except Exception as e:
-            print(f"Error in getting data inside collection {e}")
 
 chromadb_service = ChromadbService()
