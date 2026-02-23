@@ -2,7 +2,11 @@
 	"title": "Gérer créneau",
 	"errors": {
 		"overlapping": "Cette configuration se chevauche avec un autre créneau.",
-		"time_invalid": "L'heure de début doit être plus tôt que l'heure de fin."
+		"time_invalid": "L'heure de début doit être plus tôt que l'heure de fin.",
+		"save_failed": "Une erreur est survenue lors de l'enregistrement."
+	},
+	"success": {
+		"saved": "Créneau enregistré avec succès."
 	},
 	"buttons": {
 		"goBackToListing": "Retourner à l'annonce",
