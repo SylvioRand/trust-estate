@@ -12,9 +12,6 @@ export async function getAllUserReservation(app: FastifyInstance, userId: string
 				{ buyerId: userId },
 				{ sellerId: userId }
 			]
-		},
-		include: {
-			feedbacks: true
 		}
 	});
 	if (!reservation)
@@ -385,8 +382,6 @@ export async function doneStatusReservation(app: FastifyInstance, userId: string
 			where: { reservationId },
 			data: {
 				status: "done",
-				feedbackEligible: true,
-				feedbackGiven: false,
 				doneAt: new Date()
 			}
 		});
