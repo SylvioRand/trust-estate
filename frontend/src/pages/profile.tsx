@@ -152,8 +152,10 @@ const ProfilePage: React.FC = () => {
 	const [creditBalance, setCreditBalance] = useState<number>(0);
 
 	// Redirect if user is not connected
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
+	useEffect(() => {
+		if (isConnected !== null && isConnected === false)
+			navigate("/sign-in");
+	}, [isConnected])
 
 	useEffect(() => {
 		const getMyData = async () => {
@@ -182,7 +184,8 @@ const ProfilePage: React.FC = () => {
 			}
 		};
 
-		getMyData();
+		if (isConnected !== null && isConnected === true)
+			getMyData();
 	}, []);
 
 	useEffect(() => {
