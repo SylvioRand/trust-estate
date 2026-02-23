@@ -10,7 +10,8 @@
 			"title": "Tableau de Bord",
 			"tabs": {
 				"visits": "Mes Visites",
-				"reservations": "Réservations Reçues"
+				"reservations": "Réservations Reçues",
+				"credits": "Mes Crédits"
 			}
 		},
 		"signIn": "Se Connecter",

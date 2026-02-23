@@ -5,6 +5,7 @@ import ReservationsSection from "./dashboard/ReservationsSection";
 import useDataProvider from "../provider/useDataProvider";
 import { useNavigate, useLocation } from "react-router-dom";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
+import CreditsSection from "./dashboard/CreditsSection";
 
 const DashboardPage: React.FC = () => {
   const { t } = useTranslation("nav");
@@ -19,8 +20,9 @@ const DashboardPage: React.FC = () => {
   }
 
   const menuItems = [
-    { id: "visits", label: t("button.dashboard.tabs.visits"), component: <VisitsSection /> },
-    { id: "reservations", label: t("button.dashboard.tabs.reservations"), component: <ReservationsSection /> }
+    { id: "visits", label: t("button.dashboard.tabs.visits"), icon: "👁", component: <VisitsSection /> },
+    { id: "reservations", label: t("button.dashboard.tabs.reservations"), icon: "📅", component: <ReservationsSection /> },
+    { id: "credits", label: t("button.dashboard.tabs.credits"), icon: "🪙", component: <CreditsSection /> }
   ];
 
   const currentItem = menuItems.find(item => item.id === activeTab);

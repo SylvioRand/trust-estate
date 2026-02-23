@@ -10,7 +10,8 @@
             "title": "Panel de control",
             "tabs": {
                 "visits": "Mis visitas",
-                "reservations": "Reservas recibidas"
+                "reservations": "Reservas recibidas",
+				"credits": "Mis créditos"
             }
         },
         "signIn": "Iniciar sesión",
