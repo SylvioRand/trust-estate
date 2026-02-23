@@ -113,14 +113,14 @@
 			"bedroom": {
 				"invalid_value": "Le nombre de chambres doit être un nombre.",
 				"integer": "Le nombre de chambres doit être un entier.",
-				"positive": "Le nombre de chambres doit être positif.",
+				"too_low": "Le nombre de chambres ne peut pas être négatif.",
 				"too_high": "Le nombre de chambres ne doit pas dépasser 2147483647."
 			},
 			"bedroom_range_invalid": "La plage du nombre de chambres est invalide.",
 			"bathroom": {
 				"invalid_value": "Le nombre de salles de bain doit être un nombre.",
 				"integer": "Le nombre de salles de bain doit être un entier.",
-				"positive": "Le nombre de salles de bain doit être positif.",
+				"too_low": "Le nombre de salles de bain ne peut pas être négatif.",
 				"too_high": "Le nombre de salles de bain ne doit pas dépasser 2147483647."
 			},
 			"bathroom_range_invalid": "La plage du nombre de salles de bain est invalide.",

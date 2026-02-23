@@ -111,17 +111,17 @@
 			},
 			"surface_range_invalid": "The surface range is invalid.",
 			"bedroom": {
-				"invalid_value": "The bedroom must be a number.",
-				"integer": "The bedroom must be an integer.",
-				"positive": "The bedroom must be a positive number.",
-				"too_high": "The bedroom must not exceed 2147483647."
+				"invalid_value": "The bedroom count must be a number.",
+				"integer": "The bedroom count must be an integer.",
+				"too_low": "The bedroom count cannot be negative.",
+				"too_high": "The bedroom count must not exceed 2147483647."
 			},
 			"bedroom_range_invalid": "The bedroom range is invalid.",
 			"bathroom": {
-				"invalid_value": "The bathroom must be a number.",
-				"integer": "The bathroom must be an integer.",
-				"positive": "The bathroom must be a positive number.",
-				"too_high": "The bathroom must not exceed 2147483647."
+				"invalid_value": "The bathroom count must be a number.",
+				"integer": "The bathroom count must be an integer.",
+				"too_low": "The bathroom count cannot be negative.",
+				"too_high": "The bathroom count must not exceed 2147483647."
 			},
 			"bathroom_range_invalid": "The bathroom range is invalid.",
 			"title": {
