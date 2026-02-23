@@ -31,6 +31,10 @@ export async function signUpUser(request: FastifyRequest<{ Body: SignUpUserInter
 	try {
 		const user = await authServices.createUserAccount(request.server, email, firstName, lastName, phone, password);
 		const data = await responseUserAddToken(request, reply, user);
+		try {
+			await authServices.crediter(request.server, data.id);
+		} catch (error) {
+		}
 		return reply.status(201).send({
 			data,
 			"message": "auth.verification_email_sent"
@@ -83,7 +87,6 @@ export async function verifiedEmail(request: FastifyRequest<{ Body: { token: str
 	try {
 		const user = await authServices.verifyTokenEmail(request.server, token);
 		const data = await responseUserAddToken(request, reply, user);
-		await authServices.crediter(request.server, user.id);
 		return (reply.status(200).send({
 			data,
 			message: "Compte activé avec succès. 5 crédits offerts !"
@@ -93,11 +96,6 @@ export async function verifiedEmail(request: FastifyRequest<{ Body: { token: str
 			return reply.status(401).send({
 				"error": "invalid_or_expired_token",
 				"message": "auth.verification_token_invalid"
-			});
-		else if (error.message === "credit_service_error")
-			return reply.status(502).send({
-				"error": "credit_service_error",
-				"message": "auth.credit_service_error"
 			});
 		else
 			return reply.status(500).send({
