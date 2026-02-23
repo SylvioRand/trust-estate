@@ -50,9 +50,9 @@ db-sync:
 seed:
 	@echo "🌱 Seeding database..."
 	@echo "   -> Seeding Auth (Admin account)..."
-	@docker exec trust-estate-auth npx tsx prisma/seed.ts
+	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx tsx prisma/seed.ts
 	@echo "   -> Seeding Listings (Test data)..."
-	@docker exec trust-estate-listings npm run seed
+	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=listings" npm run seed
 	@echo "✅ Seeding complete!"
 
 # Build all containers
