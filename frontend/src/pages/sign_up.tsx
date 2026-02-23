@@ -18,7 +18,9 @@ export type APIResponse = {
 const SignUpPage: React.FC = () => {
 	const { t } = useTranslation(["signUp", "error"]);
 	const navigate = useNavigate();
+	const [processingSubmit, setProcessingSubmit] = useState<boolean>(false);
 	const [processSignUp, setProcessSignUp] = useState<boolean>(false);
+	const [isFirstLoad, setIsFirstLoad] = useState<boolean>(false);
 	const [errorEmail, setErrorEmail] = useState<string[]>([]);
 	const [errorPhone, setErrorPhone] = useState<string[]>([]);
 	const [errorFirstName, setErrorFirstName] = useState<string[]>([]);
@@ -28,14 +30,19 @@ const SignUpPage: React.FC = () => {
 	const { isConnected, setIsConnected } = useDataProvider();
 
 	useEffect(() => {
+		setIsFirstLoad(true);
 		if (isConnected !== null && isConnected === true)
 			navigate("/profile");
 	}, []);
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
+		if (isFirstLoad)
+			e.preventDefault();
+		if (processingSubmit)
+			return;
+		setProcessingSubmit(true);
 
-		setProcessSignUp(true);
+
 		const formData = new FormData(e.currentTarget);
 		const data = Object.fromEntries(formData.entries()) as Record<string, string>;
 
@@ -113,6 +120,7 @@ const SignUpPage: React.FC = () => {
 				toast.error(t(`error:${error.message}`))
 		} finally {
 			setProcessSignUp(false);
+			setProcessingSubmit(false);
 		}
 	}
 
