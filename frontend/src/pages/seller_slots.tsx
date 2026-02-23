@@ -353,14 +353,14 @@ const SellerSlotsPage: React.FC = () => {
 			});
 
 			if (response.ok) {
-				toast.success(t("success.saved", "Disponibilités enregistrées !"));
+				toast.success(t("success.saved"));
 				setInitialData(fetchedSlots.map(s => ({ ...s })));
 			} else {
 				const errorData = await response.json();
-				toast.error(t(errorData.message || "errors.save_failed", "Échec de l'enregistrement"));
+				toast.error(t(errorData.message || "errors.save_failed"));
 			}
 		} catch (error) {
-			toast.error(t("errors.save_failed", "Une erreur est survenue lors de la sauvegarde"));
+			toast.error(t("errors.save_failed"));
 		} finally {
 			setAreProcessingSave(false);
 		}

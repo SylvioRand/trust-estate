@@ -38,12 +38,13 @@ const ModActionHistory: React.FC<ModActionHistoryProps> = ({ data }) => {
 			bg-white/5
 			shadow-lg
 			hover:-translate-y-0.5
-			transition-transform duration-300"
+			transition-transform duration-300
+			max-w-[500px]"
 		>
 			<div
 				className="grid grid-cols-[1fr_auto] items-center
 				gap-3
-				px-5 pt-5 pb-4
+				px-5 pt-5 pb-2
 				border-b border-white/10"
 			>
 				<div className="font-bold text-base tracking-wide truncate">
@@ -65,10 +66,10 @@ const ModActionHistory: React.FC<ModActionHistoryProps> = ({ data }) => {
 			<div className="flex flex-col gap-4 px-5 py-4">
 
 				<div className="flex flex-col gap-1">
-					<span className="text-[10px] font-semibold tracking-[0.15em] uppercase text-amber-400/80">
+					<span className="text-[14px] font-semibold tracking-[0.15em] uppercase text-amber-400/80">
 						{t("latestReportReason.title")}
 					</span>
-					<span className="text-sm font-extralight opacity-70">
+					<span className="text-sm font-normal opacity-70">
 						{t(`listings:section.actionButton.popup.report.popup.reason.${data.latestReportReason}`)}
 					</span>
 				</div>
@@ -76,13 +77,18 @@ const ModActionHistory: React.FC<ModActionHistoryProps> = ({ data }) => {
 				<div className="w-full h-px bg-white/5" />
 
 				<div className="flex flex-col gap-1">
-					<span className="text-[10px] font-semibold tracking-[0.15em] uppercase text-amber-400/80">
+					<span className="text-[14px] font-semibold tracking-[0.15em] uppercase text-amber-400/80">
 						{t("userInfo.title")}
 					</span>
 					<div className="flex flex-col gap-0.5 w-full">
-						<span className="text-sm font-light">{data.seller.name}</span>
-						<span className="text-sm font-extralight opacity-50">{data.seller.email}</span>
-						<span className="text-sm font-light wrap-anywhere opacity-25 tracking-wide mt-0.5">{data.comment}</span>
+						<span className="text-sm font-normal">{data.seller.name}</span>
+						<span className="text-sm font-light opacity-50">{data.seller.email}</span>
+					</div>
+					<div className="flex flex-col gap-0.5 w-full">
+						<span className="text-[14px] font-semibold tracking-[0.15em] uppercase text-amber-400/80">
+							{t(`listings:section.actionButton.popup.report.popup.comment.title`)}
+						</span>
+						<span className="text-sm font-normal wrap-anywhere opacity-50 tracking-wide mt-0.5">{data.comment}</span>
 					</div>
 				</div>
 
@@ -106,6 +112,7 @@ const ModActionHistory: React.FC<ModActionHistoryProps> = ({ data }) => {
 
 const FlaggedPage: React.FC = () => {
 	const { t } = useTranslation(["flagged", "error", "common"]);
+	// const { t } = useTranslation(["settings", "error", "signUp"]);
 	const [historyModAction, setHistoryModAction] = useState<HistoryModActionType[]>([]);
 	const { userData, isConnected } = useDataProvider();
 	const navigate = useNavigate();

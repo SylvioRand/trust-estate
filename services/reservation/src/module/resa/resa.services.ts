@@ -542,7 +542,18 @@ async function refundCredits(app: FastifyInstance, buyerId: string) {
 }
 
 export async function deleteUserData(app: FastifyInstance, userId: string) {
+
 	return await app.prisma.$transaction(async (tx: TransactionClient) => {
+		const buyerReservations = await tx.reservation.findMany({
+			where: { sellerId: userId }
+		});
+
+		for (const reservation of buyerReservations) {
+			if (reservation.status === 'confirmed' || reservation.status === 'pending') {
+				await refundCredits(app, reservation.buyerId);
+			}
+		}
+
 		await tx.reservation.deleteMany({
 			where: {
 				OR: [
