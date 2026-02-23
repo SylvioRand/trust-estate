@@ -130,6 +130,6 @@ function handleError(error: any, reply: FastifyReply) {
   }
 
   return reply.status(400).send({
-    error: error.message || 'validation.unknown_error'
+    message: error.message || 'validation.unknown_error'
   });
 }

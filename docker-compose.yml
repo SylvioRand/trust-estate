@@ -99,7 +99,6 @@ services:
         condition: service_healthy
     restart: unless-stopped
     volumes:
-      #- ./uploads:/app/uploads # Dossier partagé (Read-Write pour API)
       - uploads_data:/app/uploads # Dossier partagé (Read-Write pour API)
     healthcheck:
       test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3002/listings/health" ]

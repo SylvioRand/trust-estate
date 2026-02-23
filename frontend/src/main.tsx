@@ -32,12 +32,11 @@ import FlaggedPage from './pages/flaggedPage.tsx';
 
 const originalFetch = window.fetch;
 window.fetch = async (...args) => {
-	const response = await originalFetch(...args);
-	if (response.status === 429) {
-		console.log("Fetch request:", args[0], "Response status:", response.status);
-		window.location.href = "/429.html";
-	}
-	return response;
+  const response = await originalFetch(...args);
+  if (response.status === 429) {
+    window.location.href = "/429.html";
+  }
+  return response;
 };
 
 const router = createBrowserRouter([
