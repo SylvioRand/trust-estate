@@ -414,8 +414,12 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 
 ## Individuals contributions
 
+### mravelon
+Sarah conception d'idees, le design, un peu de frontend le chatbot, structuration de l'architecture du projet.
+- **Key Achievement**: Developed the **Frontend Dashboard & Reservation UI**, bridging the gap between Arthinew's backend logic and a seamless user experience. He also unified the deployment via a single-command **Makefile**.
+
 ### srandria
-Sylvio ensured the platform was technically robust from infrastructure to high-level UI.
+srandria ensured the platform was technically robust from infrastructure to high-level UI.
 - **Key Achievement**: Developed the **Frontend Dashboard & Reservation UI**, bridging the gap between Arthinew's backend logic and a seamless user experience. He also unified the deployment via a single-command **Makefile**.
 
 ### rarakoto
@@ -454,13 +458,13 @@ Arthinew was the powerhouse behind the platform's core transactions.
 ### aelison
 aelison enabled the majority of bugs to be found.
 aelison enabled intelligent property discovery.
-- **Key achievement**: optimization of **ChromaDB indexing** for Madagascan geographical areas, ensuring high accuracy for the RAG assistant.
+- **Key achievement**: optimization of **ChromaDB indexing** for Madagascar geographical areas, ensuring high accuracy for the RAG assistant.
 
 ---
 
 ## Modules
 
-## Major Modules
+## Major Modules (1 module = 2 pts)
 ### 1. Public API
 A secured public API for interacting with the database.
 
@@ -489,6 +493,7 @@ A role-based access control (RBAC) system.
 - Admin-only `PATCH /auth/change-permission/:id` endpoint to promote/demote users
 - Internal `GET /auth/is-moderator` endpoint used by the listings service to gate moderation actions (blocking, archiving listings)
 - All role checks are centralized in hook middleware, never duplicated in controller logic
+  
 ### 3. Retrieval-Augmented Generation (RAG) System
 An AI-powered question–answering system built on contextual retrieval.
 
@@ -501,6 +506,7 @@ An AI-powered question–answering system built on contextual retrieval.
 - Assigned to **aelison**
 - Implemented using **ChromaDB**
 - Experimentation with multiple system prompts for optimal RAG behavior
+  
 ### 4. LLM System Interface
 A unified interface for interacting with Large Language Models.
 
@@ -513,7 +519,7 @@ A unified interface for interacting with Large Language Models.
 - Assigned to **aelison**
 - Implemented using **Groq LLM APIs**
 - Uses free models with real-time streaming support
----
+
 ### 5. Microservices-Based Backend
 A scalable backend architecture built with independent services.
 
@@ -530,7 +536,10 @@ A scalable backend architecture built with independent services.
 - Inter-service communication uses HTTP with a shared `INTERNAL_KEY_SECRET` sent in the `X-Service-Key` header
 - Nginx reverse proxy routes all public traffic; internal service URLs are Docker network-only
 - Each service is independently buildable and startable; the full stack runs with a single `make` command via Docker Compose
-## Minor Modules
+
+### Total major module: 10pts
+---
+## Minor Modules (1 module = 1 pts)
 
 ### Frontend & Backend Stack
 - Frontend framework: **React**
@@ -553,6 +562,7 @@ A scalable backend architecture built with independent services.
 - Support for additional web browsers
 - Multi-language support (i18n)
 
+TO DO: Review each modules, list tem one by one, show who was assigned to wich module
 ---
 
 ## API Reference (tolrandr services)

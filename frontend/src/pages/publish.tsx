@@ -180,7 +180,7 @@ const PublishPage: React.FC = () => {
 							toast.error(t(`error:${value[i]}`));
 					}
 				}
-				throw new Error(responseData?.message);
+				throw new Error("");
 			}
 
 		} catch (error) {
