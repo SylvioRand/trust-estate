@@ -20,9 +20,9 @@ const MyListingsBento: React.FC<MyListingsBentoProps> = ({ data }) => {
 	const { t } = useTranslation("common");
 
 	const statusIcon: Record<"archived" | "active" | "blocked", string> = {
-		archived: "",
+		archived: "",
 		active: "",
-		blocked: ""
+		blocked: ""
 	};
 	const statusColors: Record<"archived" | "active" | "blocked", string> = {
 		archived: "var(--color-red-500)",
@@ -116,18 +116,16 @@ const MyListingsBento: React.FC<MyListingsBentoProps> = ({ data }) => {
 
 					<div
 						className="flex items-center gap-1.5
-						w-full text-xs
-						opacity-60"
+						w-full"
 					>
-						<div className="font-icon text-xs"></div>
-						<div className="truncate w-full">{data.zone}</div>
+						<div className="font-icon text-xl"></div>
+						<div className="font-light truncate w-full">{data.zone}</div>
 					</div>
 				</div>
 
 				<div className="grid grid-cols-1 gap-2 w-full">
 					<div
 						className="font-bold text-sm tracking-wider"
-						style={{ color: "var(--color-gold, #c9a84c)" }}
 					>
 						{`${formatter.format(data.price)} Ar`}
 					</div>
@@ -224,7 +222,7 @@ const ProfilePage: React.FC = () => {
 				flex-none
 				relative
 				overflow-hidden
-				rounded-2xl"
+				rounded-t-2xl"
 				style={{
 					height: "160px",
 					boxShadow: "0 8px 40px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.06) inset",
@@ -333,12 +331,12 @@ const ProfilePage: React.FC = () => {
 					>
 						<Link className="w-full" to="/profile/settings">
 							<ActionButton
-								icon=""
+								icon=""
 								title={t("buttons.settings")}
 							/>
 						</Link>
 						<ActionButton
-							icon={userData?.role === "MODERATOR" ? "" : "󰚧"}
+							icon={userData?.role === "MODERATOR" ? "" : "󰚧"}
 							icon_size={22}
 							title={userData?.role === "MODERATOR" ? t("buttons.flagged") : t("buttons.publish")}
 							onClick={() => {
@@ -376,7 +374,7 @@ const ProfilePage: React.FC = () => {
 					<div
 						className="font-icon text-[96px] leading-none"
 					>
-						
+						
 					</div>
 					<div className="text-sm font-light tracking-widest uppercase">
 						{t("noMyListings")}
