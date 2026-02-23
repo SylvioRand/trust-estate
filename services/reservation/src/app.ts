@@ -5,7 +5,7 @@ import fastifyEnv from "@fastify/env";
 import { envSchema } from "./config/env.schema";
 import { pluginRegister, resaRoutes } from "./module/resa/resa.module";
 import { setupErrorHandler } from "./hooks/errorHandle";
-import { feedbackRoutes } from "./module/feedback/feedback.routes";
+import { feedbackRoutesRegister } from "./module/feedback/feedback.module";
 
 const dir = "../../.env";
 
@@ -43,7 +43,7 @@ await server.register(fastifyEnv, options);
 await setupErrorHandler(server);
 await pluginRegister(server);
 await resaRoutes(server);
-await feedbackRoutes(server);
+await feedbackRoutesRegister(server);
 
 server.get("/health", async (req: FastifyRequest, reply: FastifyReply) => {
 	return reply.status(200).send({ status: "ok" });
