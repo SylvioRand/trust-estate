@@ -6,7 +6,7 @@
 //   By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2026/01/26 14:15:16 by aelison           #+#    #+#             //
-//   Updated:    2026-02-21 00:00:00 by aelison          ###   ########.fr       //
+//   Updated: 2026/02/23 16:32:32 by aelison          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -120,17 +120,6 @@ type MetadataAI = {
 	type: "sale" | "rent",
 	id: string,
 	zone: string
-}
-
-// TO REMOVE
-const exampleMetadataAI: MetadataAI = {
-	photos: "https://images.unsplash.com/photo-1564703048291-bcf7f001d83d?q=80&w=1530&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-	title: "A little heaven in earth",
-	price: 2500000000,
-	propertyType: "house",
-	type: "sale",
-	id: "alda213bad2414pncoh-2318hdadhakbbqe-129723basdiuuljio",
-	zone: "Analakely"
 }
 
 interface MetadataComponentsProps {
@@ -345,13 +334,6 @@ const AIPage: React.FC = () => {
 			setCanSend(true);
 		}
 	}
-
-	useEffect(() => {
-		if (chatValue === "")
-			setCanSend(false);
-		else
-			setCanSend(true);
-	}, [chatValue]);
 
 	return (
 		<div className="flex flex-col-reverse items-center justify-start

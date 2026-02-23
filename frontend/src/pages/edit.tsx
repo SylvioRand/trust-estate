@@ -30,6 +30,7 @@ const EditPage: React.FC = () => {
 	const [errorBathrooms, setErrorBathrooms] = useState<string[]>([]);
 	const [uploadButtonProcessing, setUploadButtonProcessing] = useState<boolean>(false);
 	const [isUploadDisabled, setIsUploadDisabled] = useState<boolean>(false);
+	const [editCounter, setEditCounter] = useState<number>(0);
 	const [processingDescriptionEnhancement, setProcessingDescriptionEnhancement] = useState<boolean>(false);
 	const formRef: RefObject<HTMLFormElement | null> = useRef<HTMLFormElement | null>(null);
 
@@ -52,7 +53,8 @@ const EditPage: React.FC = () => {
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-
+		if (uploadButtonProcessing || editCounter > 0)
+			return;
 		setUploadButtonProcessing(true);
 		const formData = new FormData(e.currentTarget);
 		const data = Object.fromEntries(formData.entries());
@@ -93,6 +95,7 @@ const EditPage: React.FC = () => {
 
 			if (response.ok) {
 				toast.success(t(`error:listing.change_saved`));
+				setEditCounter(1);
 				navigate(`/property/listings?id=${listingID}`);
 			}
 			else {
@@ -253,8 +256,8 @@ const EditPage: React.FC = () => {
 	}, [])
 
 	useEffect(() => {
-		setIsUploadDisabled(processingDescriptionEnhancement);
-	}, [processingDescriptionEnhancement])
+		setIsUploadDisabled(processingDescriptionEnhancement || editCounter !== 0);
+	}, [processingDescriptionEnhancement, editCounter])
 
 	return (
 		<div

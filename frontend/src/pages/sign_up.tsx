@@ -19,7 +19,6 @@ const SignUpPage: React.FC = () => {
 	const { t } = useTranslation(["signUp", "error"]);
 	const navigate = useNavigate();
 	const [processingSubmit, setProcessingSubmit] = useState<boolean>(false);
-	const [processSignUp, setProcessSignUp] = useState<boolean>(false);
 	const [isFirstLoad, setIsFirstLoad] = useState<boolean>(false);
 	const [errorEmail, setErrorEmail] = useState<string[]>([]);
 	const [errorPhone, setErrorPhone] = useState<string[]>([]);
@@ -41,7 +40,6 @@ const SignUpPage: React.FC = () => {
 		if (processingSubmit)
 			return;
 		setProcessingSubmit(true);
-
 
 		const formData = new FormData(e.currentTarget);
 		const data = Object.fromEntries(formData.entries()) as Record<string, string>;
@@ -119,7 +117,6 @@ const SignUpPage: React.FC = () => {
 			if (error instanceof Error && error.message !== "")
 				toast.error(t(`error:${error.message}`))
 		} finally {
-			setProcessSignUp(false);
 			setProcessingSubmit(false);
 		}
 	}
@@ -241,7 +238,7 @@ const SignUpPage: React.FC = () => {
 							icon=""
 							icon_place="right"
 							type="submit"
-							processing_action={processSignUp}
+							processing_action={processingSubmit}
 						/>
 					</div>
 
