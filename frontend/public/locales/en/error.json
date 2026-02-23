@@ -48,7 +48,9 @@
 		"user_permission_updated_successfully": "User permissions have been successfully updated.",
 		"verification_failed": "Authentication verification failed.",
 		"credit_service_error": "The credit service is temporarily unavailable.",
-		"unauthorized": "Action not authorized."
+		"unauthorized": "Action not authorized.",
+		"resend_email_rate_limit": "Too many requests. Please try again later.",
+		"forgot_password_rate_limit": "Too many requests. Please try again later."
 	},
 	"validation": {
 		"email": {
@@ -179,7 +181,8 @@
 			},
 			"provider": {
 				"invalid": "The payment provider is invalid."
-			}
+			},
+			"balance_not_zero": "Your balance must be greater than 0 to perform a payment."
 		},
 		"moderator": {
 			"action": {
@@ -250,7 +253,8 @@
 		"insufficient_credits": "You have insufficient credits for this operation.",
 		"transaction_failed": "The payment failed. Please verify your Mobile Money balance.",
 		"rate_limited_recharge": "Too many recharge attempts. A maximum of three per hour is allowed.",
-		"balance_not_found": "Your credit balance could not be found."
+		"balance_not_found": "Your credit balance could not be found.",
+		"balance_not_zero":"Your balance must be greater than 0 to perform a payment."
 	},
 	"user": {
 		"user_not_found": "User not found."
