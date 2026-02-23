@@ -5,7 +5,7 @@ import ContentDivider from "../components/ContentDivider";
 import ActionButton from "../components/ActionButton";
 import { toast } from "react-toastify";
 import useCountdown from "../components/Countdown";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
+// import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
 
 const EmailSentPage: React.FC = () => {
@@ -15,13 +15,8 @@ const EmailSentPage: React.FC = () => {
 	const [resendButtonDisabled, setResendButtonDisabled] = useState<boolean>(false);
 	const navigate = useNavigate();
 	const [timeLeft, setTimeLeft, controls] = useCountdown();
-	const { isConnected, setIsConnected, setUserData } = useDataProvider();
+	const { setIsConnected, setUserData } = useDataProvider();
 
-	VerifyUsersState();
-	useEffect(() => {
-		if (isConnected !== null && isConnected === false)
-			navigate("/sign-in");
-	}, [isConnected]);
 	const handleOnResend = async () => {
 		setProcessResend(true);
 
@@ -34,8 +29,15 @@ const EmailSentPage: React.FC = () => {
 			const data = await response.json();
 
 			if (!response.ok) {
-				toast.error(t("error:global.500"));
-				throw new Error("Internal Server Error");
+				if (data.error === "email_already_verified") {
+					toast.error(t(`error:${data.message}`));
+					navigate("/home");
+				}
+				else {
+					if (data.message !== null)
+						throw new Error(t(`${data.message}`));
+				}
+				throw new Error("");
 			}
 
 			toast.success(t("buttons.resendEmail.success"));
