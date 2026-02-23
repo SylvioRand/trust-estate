@@ -23,7 +23,7 @@
     }
 
     location /api/users/ {
-        limit_req zone=api_limit burst=20;
+        limit_req zone=api_limit burst=20 nodelay;
         limit_req_status 429;
         proxy_pass http://auth_service/users/;
         proxy_http_version 1.1;
