@@ -1,12 +1,26 @@
 {
 	"buttons": {
 		"goBackToListing": "Volver à la lista",
-		"reserve": "Reservar este turno"
+		"reserve": "Reservar este turno",
+		"cancel": "Cancelar",
+		"confirm": "Confirmar",
+		"loading": "Cargando..."
+	},
+	"messages": {
+		"success": "La reserva se ha enviado correctamente."
+	},
+	"errors": {
+		"failed": "La reserva ha fallado.",
+		"network": "Error de red. Por favor, inténtalo de nuevo.",
+		"fetch_failed": "No se pudieron cargar los turnos disponibles."
 	},
 	"timezoneNote": "Todas las horas corresponden a Madagascar (GMT+3)",
 	"pleaseSelectDate": "Por favor, seleccione una fecha",
 	"slotsAvailable": "cupos disponibles",
 	"morning": "Mañana",
 	"afternoon": "Tarde",
-	"evening": "Noche"
+	"evening": "Noche",
+	"confirmationTitle": "Confirmar reserva",
+	"dateAndTime": "Fecha y hora",
+	"confirmationNotice": "Al confirmar, se enviará una solicitud de visita al propietario. Podrás seguir el estado de tu solicitud en tus reservas."
 }

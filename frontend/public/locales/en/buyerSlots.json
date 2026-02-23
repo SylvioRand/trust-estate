@@ -1,12 +1,26 @@
 {
 	"buttons": {
 		"goBackToListing": "Back to listing",
-		"reserve": "Reserve this slot"
+		"reserve": "Reserve this slot",
+		"cancel": "Cancel",
+		"confirm": "Confirm",
+		"loading": "Loading..."
+	},
+	"messages": {
+		"success": "The reservation has been successfully sent."
+	},
+	"errors": {
+		"failed": "The reservation failed.",
+		"network": "Network error. Please try again.",
+		"fetch_failed": "Unable to load available slots."
 	},
 	"timezoneNote": "All times are in Madagascar (GMT+3)",
 	"pleaseSelectDate": "Please select a date",
 	"slotsAvailable": "slots available",
 	"morning": "Morning",
 	"afternoon": "Afternoon",
-	"evening": "Evening"
+	"evening": "Evening",
+	"confirmationTitle": "Confirm reservation",
+	"dateAndTime": "Date and time",
+	"confirmationNotice": "By confirming, a visit request will be sent to the owner. You can track the status of your request in your reservations."
 }

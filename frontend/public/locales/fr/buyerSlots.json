@@ -1,12 +1,26 @@
 {
 	"buttons": {
 		"goBackToListing": "Retourner à l'annonce",
-		"reserve": "Réserver ce créneau"
+		"reserve": "Réserver ce créneau",
+		"cancel": "Annuler",
+		"confirm": "Confirmer",
+		"loading": "En cours..."
+	},
+	"messages": {
+		"success": "La réservation a été envoyée avec succès."
+	},
+	"errors": {
+		"failed": "La réservation a échoué.",
+		"network": "Erreur réseau. Veuillez réessayer.",
+		"fetch_failed": "Impossible de charger les créneaux disponibles."
 	},
 	"timezoneNote": "Tous les horaires sont en Madagascar (GMT+3)",
 	"pleaseSelectDate": "Veuillez sélectionner une date",
 	"slotsAvailable": "créneaux disponibles",
 	"morning": "Matin",
 	"afternoon": "Après-midi",
-	"evening": "Soir"
+	"evening": "Soir",
+	"confirmationTitle": "Confirmer la réservation",
+	"dateAndTime": "Date et heure",
+	"confirmationNotice": "En confirmant, une demande de visite sera envoyée au propriétaire. Vous pourrez suivre l'état de votre demande dans vos réservations."
 }
