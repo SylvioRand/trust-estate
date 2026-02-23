@@ -21,31 +21,38 @@ all: certs build up db-sync
 	@echo "🐳 Using: $(DOCKER_COMPOSE)"
 	@echo ""
 
-# Synchronize Prisma schemas with database
+# Synchronize Prisma schemas with database (runs inside Docker, no Node.js required on host)
 db-sync:
-	@echo "⏳ Waiting for auth service to be ready (migrations complete)..."
-	@# Attendre que trust-estate-auth soit healthy
+	@echo "⏳ Waiting for services to be ready..."
 	@until docker inspect --format='{{.State.Health.Status}}' trust-estate-auth 2>/dev/null | grep -q "healthy"; do \
 		echo "   ... waiting for auth service ..."; \
 		sleep 2; \
 	done
-	@echo "✅ Auth service is ready! Proceeding with listings sync..."
+	@until docker inspect --format='{{.State.Health.Status}}' trust-estate-listings 2>/dev/null | grep -q "healthy"; do \
+		echo "   ... waiting for listings service ..."; \
+		sleep 2; \
+	done
+	@until docker inspect --format='{{.State.Health.Status}}' trust-estate-reservations 2>/dev/null | grep -q "healthy"; do \
+		echo "   ... waiting for reservations service ..."; \
+		sleep 2; \
+	done
+	@echo "✅ All services ready! Synchronizing schemas..."
 	@echo "🔄 Synchronizing Prisma schemas with database..."
-	@echo "   -> Pushing listings schema..."
-	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=listings" npx -y prisma@6.19.1 db push --accept-data-loss
 	@echo "   -> Pushing auth schema..."
-	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx -y prisma@6.19.1 db push --accept-data-loss
+	@docker exec trust-estate-auth npx prisma db push --accept-data-loss
+	@echo "   -> Pushing listings schema..."
+	@docker exec trust-estate-listings npx prisma db push --accept-data-loss
 	@echo "   -> Pushing reservation schema..."
-	@cd services/reservation && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=reservation" npx -y prisma@6.19.1 db push --accept-data-loss
+	@docker exec trust-estate-reservations npx prisma db push --accept-data-loss
 	@echo "✅ Database schemas synchronized!"
 
-# Seed the database with test data
+# Seed the database with test data (runs inside Docker, no Node.js required on host)
 seed:
 	@echo "🌱 Seeding database..."
 	@echo "   -> Seeding Auth (Admin account)..."
-	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx tsx prisma/seed.ts
+	@docker exec trust-estate-auth npx tsx prisma/seed.ts
 	@echo "   -> Seeding Listings (Test data)..."
-	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=listings" npm run seed
+	@docker exec trust-estate-listings npm run seed
 	@echo "✅ Seeding complete!"
 
 # Build all containers
@@ -134,7 +141,7 @@ certs:
 		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 		-keyout nginx/certs/server.key \
 		-out nginx/certs/server.crt \
-		-subj "/C=MG/ST=Antananarivo/L=Antananarivo/O=TrustEstate/OU=Dev/CN=localhost"; \
+		-subj "/C=MG/ST=Antananarivo/L=Antananarivo/O=TrustEstate/OU=Dev/CN=localhost" 2>/dev/null; \
 		echo "✅ Certificates generated in nginx/certs/"; \
 	else \
 		echo "✅ Certificates already exist."; \
