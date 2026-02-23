@@ -104,7 +104,8 @@
             },
             "provider": {
                 "invalid": "Fournisseur de paiement invalide"
-            }
+            },
+			"balance_not_zero": "Votre solde doit être supérieur à 0 pour effectuer un paiement"
         },
         "admin": {
             "action": {
@@ -149,7 +150,8 @@
         "insufficient_credits_renew": "Solde insuffisant (0.5 crédit requis)",
         "insufficient_credits_reservation": "Solde insuffisant pour réserver (Coût: 1 crédit)",
         "transaction_failed": "Paiement échoué. Vérifiez votre solde Mobile Money.",
-        "rate_limited_recharge": "Trop de recharges. Maximum 3 par heure."
+        "rate_limited_recharge": "Trop de recharges. Maximum 3 par heure.",
+		"balance_not_zero": "Votre solde doit être supérieur à 0 pour effectuer un paiement"
     },
     "admin": {
         "forbidden": {

@@ -32,11 +32,13 @@ import FlaggedPage from './pages/flaggedPage.tsx';
 
 const originalFetch = window.fetch;
 window.fetch = async (...args) => {
-  const response = await originalFetch(...args);
-  if (response.status === 429) {
-    window.location.href = "/429.html";
-  }
-  return response;
+	const response = await originalFetch(...args);
+	if (response.status === 429) {
+		if (window.location.pathname !== "/email-sent" && window.location.pathname !== "/sign-in/forgot-pass") {
+			window.location.href = "/429.html";
+		}
+	}
+	return response;
 };
 
 const router = createBrowserRouter([
