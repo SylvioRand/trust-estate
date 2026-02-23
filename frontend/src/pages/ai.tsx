@@ -122,17 +122,6 @@ type MetadataAI = {
 	zone: string
 }
 
-// TO REMOVE
-const exampleMetadataAI: MetadataAI = {
-	photos: "https://images.unsplash.com/photo-1564703048291-bcf7f001d83d?q=80&w=1530&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-	title: "A little heaven in earth",
-	price: 2500000000,
-	propertyType: "house",
-	type: "sale",
-	id: "alda213bad2414pncoh-2318hdadhakbbqe-129723basdiuuljio",
-	zone: "Analakely"
-}
-
 interface MetadataComponentsProps {
 	metadata: MetadataAI
 }
