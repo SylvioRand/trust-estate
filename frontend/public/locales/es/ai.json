@@ -1,8 +1,21 @@
 {
 	"inputChat": {
-		"placeholder": "¿Dime qué quieres hoy?"
+		"placeholder": "Pregúntame sobre inmuebles…"
 	},
 	"message": {
-		"processing": "Procesando tu solicitud..."
+		"processing": "Pensando…"
+	},
+	"welcome": {
+		"title": "Tu IA inmobiliaria",
+		"subtitle": "Pregúntame sobre propiedades, mercados, barrios y más.",
+		"suggestions": [
+			"Busca una casa de 3 habitaciones bajo 300M Ar",
+			"¿Mejores barrios para invertir?",
+			"Apartamentos en alquiler en Analakely",
+			"Documentos para comprar una propiedad"
+		]
+	},
+	"header": {
+		"badge": "Asistente IA"
 	}
 }
