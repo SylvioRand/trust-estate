@@ -16,7 +16,6 @@ const VerifyEmailPage: React.FC = () => {
 	const navigate = useNavigate();
 	const { isConnected } = useDataProvider();
 
-	VerifyUsersState();
 	useEffect(() => {
 		if (isConnected !== null && isConnected === false)
 			navigate("/sign-in");
@@ -49,6 +48,8 @@ const VerifyEmailPage: React.FC = () => {
 	}
 
 	useEffect(() => {
+		if (token === null)
+			navigate("/home");
 		verifyToken(); // verify the token sent
 	}, []);
 
