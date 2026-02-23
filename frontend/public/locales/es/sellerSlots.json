@@ -3,9 +3,12 @@
 
     "errors": {
         "overlapping": "Esta configuración se superpone con otro horario.",
-        "time_invalid": "La hora de inicio debe ser anterior a la hora de fin."
+        "time_invalid": "La hora de inicio debe ser anterior a la hora de fin.",
+		"save_failed": "Ocurrió un error al guardar."
     },
-
+	"success": {
+		"saved": "Horario guardado con éxito."
+	},
     "buttons": {
         "goBackToListing": "Volver al anuncio",
 

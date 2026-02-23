@@ -2,7 +2,11 @@
 	"title": "Manage slots",
 	"errors": {
 		"overlapping": "These configuration overlaps with another slots.",
-		"time_invalid": "Start time have to be earlier than end time."
+		"time_invalid": "Start time have to be earlier than end time.",
+		"save_failed": "An error occurred while saving."
+	},
+	"success": {
+		"saved": "Slot saved successfully."
 	},
 	"buttons": {
 		"goBackToListing": "Back to the listing",
