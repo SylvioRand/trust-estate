@@ -3,23 +3,16 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ContentDivider from "../components/ContentDivider";
 import { toast } from "react-toastify";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
-import useDataProvider from "../provider/useDataProvider";
 
 type EmailVerificationStatus = "loading" | "confirmed" | "invalid";
 
 const VerifyEmailPage: React.FC = () => {
 	const { t } = useTranslation(["verifyEmail", "error"]);
 	const [searchParams] = useSearchParams();
-	const token = searchParams.get("token");
+	const token: string | null = searchParams.get("token");
 	const [status, setStatus] = useState<EmailVerificationStatus>("loading");
 	const navigate = useNavigate();
-	const { isConnected } = useDataProvider();
 
-	useEffect(() => {
-		if (isConnected !== null && isConnected === false)
-			navigate("/sign-in");
-	}, [isConnected])
 	const verifyToken = async () => {
 		try {
 			const response = await fetch("/api/auth/verify-email", {
