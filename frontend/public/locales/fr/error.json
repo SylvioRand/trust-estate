@@ -25,6 +25,7 @@
 		"invalid_request": "Requête invalide.",
 		"verification_email_sent": "Un e-mail de vérification a été envoyé.",
 		"verification_email_sent_if_exists": "Un e-mail de vérification a été envoyé si le compte existe.",
+		"email_already_verified": "Cette adresse e-mail est déjà vérifiée.",
 		"email_already_exists": "Cette adresse e-mail est déjà utilisée.",
 		"phone_already_exists": "Ce numéro de téléphone est déjà utilisé.",
 		"account_activated_bonus": "Le compte a été activé avec succès. Cinq crédits ont été attribués.",
