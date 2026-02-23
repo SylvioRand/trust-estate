@@ -80,7 +80,12 @@ const SignInPage: React.FC = () => {
 				const canGoBack = window.history.state && window.history.state.idx > 0;
 
 				if (canGoBack) {
-					navigate(-1);
+					if (sessionStorage.getItem("fromSignUp") === "/sign-up") {
+						navigate("/home");
+						sessionStorage.removeItem("fromSignUp");
+					}
+					else
+						navigate(-1);
 				} else {
 					navigate("/home", { replace: true });
 				}

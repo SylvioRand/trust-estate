@@ -227,6 +227,12 @@ const NavigationButton: React.FC<NavButtonProps> = ({
 			overflow-hidden
 			min-w-20
 			select-none"
+			onClick={() => {
+				if (path === "/sign-up")
+					sessionStorage.setItem("fromSignUp", path);
+				else if (path !== "/sign-in")
+					sessionStorage.removeItem("fromSignUp");
+			}}
 			onPointerEnter={() => setHovered(true)}
 			onPointerLeave={() => setHovered(false)}
 		>
