@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ContentDivider from "../components/ContentDivider";
@@ -18,8 +18,10 @@ const EmailSentPage: React.FC = () => {
 	const { isConnected, setIsConnected, setUserData } = useDataProvider();
 
 	VerifyUsersState();
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
+	useEffect(() => {
+		if (isConnected !== null && isConnected === false)
+			navigate("/sign-in");
+	}, [isConnected]);
 	const handleOnResend = async () => {
 		setProcessResend(true);
 
