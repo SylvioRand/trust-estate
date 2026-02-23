@@ -33,9 +33,13 @@ export function toGmt3String(date: Date): string {
 
 export function generateSlotsForDay(dayDateUtc: Date, startTime: number, startMinute: number, endTime: number, endMinute: number, GMT_OFFSET: number): Date[] {
 	const slots: Date[] = [];
+	const endTotalMinutes = endTime * 60 + endMinute;
+
 	for (let hour = startTime; hour <= endTime; hour++) {
 		for (let minute = (hour === startTime ? startMinute : 0); minute < 60; minute += 30) {
-			if (hour === endTime && minute >= endMinute) break;
+			const currentTotalMinutes = hour * 60 + minute;
+			if (currentTotalMinutes + 30 > endTotalMinutes) break;
+
 			const slotUtc = new Date(Date.UTC(
 				dayDateUtc.getUTCFullYear(),
 				dayDateUtc.getUTCMonth(),
