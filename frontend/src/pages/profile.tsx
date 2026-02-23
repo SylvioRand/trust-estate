@@ -151,11 +151,6 @@ const ProfilePage: React.FC = () => {
 			navigate("/sign-in");
 	}, [isConnected]);
 
-	// Debug
-	useEffect(() => {
-		console.log(myListings);
-	}, [myListings]);
-
 	useEffect(() => {
 		const getMyData = async () => {
 			try {
@@ -379,7 +374,7 @@ const ProfilePage: React.FC = () => {
 					<div
 						className="font-icon text-[96px] leading-none"
 					>
-
+						
 					</div>
 					<div className="text-sm font-light tracking-widest uppercase">
 						{t("noMyListings")}
