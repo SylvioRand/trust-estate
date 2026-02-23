@@ -75,6 +75,7 @@ const PublishPage: React.FC = () => {
 	const [errorBathrooms, setErrorBathrooms] = useState<string[]>([]);
 	const [uploadButtonProcessing, setUploadButtonProcessing] = useState<boolean>(false);
 	const [isUploadDisabled, setIsUploadDisabled] = useState<boolean>(false);
+	const [publishCounter, setPublishCounter] = useState<number>(0);
 	const navigate = useNavigate();
 
 	const [activeTags, setActiveTags] = useState<ListingsTags[]>([]);
@@ -118,7 +119,8 @@ const PublishPage: React.FC = () => {
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-
+		if (uploadButtonProcessing || publishCounter > 0)
+			return;
 		setUploadButtonProcessing(true);
 
 		const formData = new FormData(e.currentTarget);
@@ -168,6 +170,7 @@ const PublishPage: React.FC = () => {
 
 			if (response.ok) {
 				toast.success(t("uploadSuccess"));
+				setPublishCounter(1);
 				navigate(`/property/listings?id=${responseData?.listingId}`)
 			}
 			else {
@@ -265,8 +268,8 @@ const PublishPage: React.FC = () => {
 	}
 
 	useEffect(() => {
-		setIsUploadDisabled(dataToPreview.length < 3 || processingDescriptionEnhancement);
-	}, [dataToPreview, processingDescriptionEnhancement]);
+		setIsUploadDisabled(dataToPreview.length < 3 || processingDescriptionEnhancement || publishCounter !== 0);
+	}, [dataToPreview, processingDescriptionEnhancement, publishCounter]);
 
 	return (
 		<div className="flex flex-col items-center justify-start

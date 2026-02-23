@@ -6,7 +6,7 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated:    2026-02-20 13:07:04 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/23 11:13:02 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -345,7 +345,6 @@ class ChromadbService:
 
     async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
         llm_parse_response = await llm_service.generate_bloc_response(user_mssg, sys_prompt)
-        print(f"DEBUGGING format send by LLM: {llm_parse_response}")
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}

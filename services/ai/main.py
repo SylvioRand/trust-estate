@@ -6,13 +6,14 @@
 #    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:32 by aelison           #+#    #+#              #
-#    Updated:    2026-02-16 09:51:48 by aelison          ###   ########.fr        #
+#    Updated: 2026/02/23 11:12:25 by aelison          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import asyncio
 import httpx
 import jwt
+import sys
 
 # from app.utils import *
 from app.config import config
@@ -82,7 +83,7 @@ async def lifespan(_: FastAPI):
             await asyncio.sleep(interval)
     if not is_connected:
         print("Failed to init with server chromadb")
-        exit(1)
+        sys.exit(1)
     else:
         await chromadb_service.create_collection("posts")
     yield
@@ -92,7 +93,7 @@ app = FastAPI(lifespan=lifespan)
 #Enable cross-origin (CORS)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["nginx:8080", "nginx:8443", "chromadb-service:8000", "listings-service:3002", "https://localhost:8443", "http://localhost:8080"],
+    allow_origins=["nginx:8443", "chromadb-service:8000", "listings-service:3002", "https://localhost:8443"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "Authorization"],
