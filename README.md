@@ -20,7 +20,7 @@ You will need the following tools installed:
 
 ### Execution
 
-First, review the `.env_example` file located at the root of the project and create your own `.env` file based on it.  
+First, review the `.env_example` file located at the root of the project and create your own `.env` file based on it.
 
 Then, simply run the command:
 
@@ -46,6 +46,7 @@ make
 
 - **AI Utilization**
   - Translate all JSON values used by i18n to ensure accurate and consistent localization.
+
 ## AI Service
 
 - **LLMs & AI Platforms**
@@ -93,54 +94,53 @@ make
   - https://www.youtube.com/watch?v=sHCRglj6qtA&start=1
 
 
-
 ## Team Information
 
 ## aelison
 - **Role**: Back-End Developer
 - **Responsibilities**:
-	- Integrated AI capabilities into the project backend.
-	- Implemented ChromaDB to manage contextual data for AI interactions.
-	- Designed and maintained system prompts combined with ChromaDB to build a robust RAG pipeline.
-	- Ensured AI features complied with project requirements through thorough testing and validation.
+    - Integrated AI capabilities into the project backend.
+    - Implemented ChromaDB to manage contextual data for AI interactions.
+    - Designed and maintained system prompts combined with ChromaDB to build a robust RAG pipeline.
+    - Ensured AI features complied with project requirements through thorough testing and validation.
 
 ## mravelon
 - **Role**: Product Owner & Back-End Developer
 - **Responsibilities**:
-	- Defined product vision, features, and priorities in alignment with business objectives.
-	- Acted as the primary liaison between stakeholders and the development team.
-	- Prioritized and validated backlog items to ensure maximum value delivery per sprint.
-	- Approved completed features by verifying functional and business requirements.
-	- Designed and maintained the credit management service and related APIs.
+    - Defined product vision, features, and priorities in alignment with business objectives.
+    - Acted as the primary liaison between stakeholders and the development team.
+    - Prioritized and validated backlog items to ensure maximum value delivery per sprint.
+    - Approved completed features by verifying functional and business requirements.
+    - Designed and maintained the credit management service and related APIs.
 
 ## tolrandr
 - **Role**: Back-End Developer
 - **Responsibilities**:
-	- Developed the authentication and authorization APIs.
-	- Implemented the User API to handle all user-related operations.
-	- Integrated OAuth flows for secure third-party authentication.
-	- Designed and maintained the reservation API.
+    - Developed the authentication and authorization APIs.
+    - Implemented the User API to handle all user-related operations.
+    - Integrated OAuth flows for secure third-party authentication.
+    - Designed and maintained the reservation API.
 
 ## srandria
 - **Role**: Technical Lead & Full-Stack Developer
 - **Responsibilities**:
-	- Designed and oversaw the overall system architecture of the project.
-	- Implemented the listings API.
-	- Developed the reservation interface and related frontend–backend interactions.
-	- Reviewed and validated backlog items to ensure technical and functional completeness.
+    - Designed and oversaw the overall system architecture of the project.
+    - Implemented the listings API.
+    - Developed the reservation interface and related frontend–backend interactions.
+    - Reviewed and validated backlog items to ensure technical and functional completeness.
 
 ## rarakoto
 - **Role**: Project Manager, Front-End Developer & Integration Lead
 - **Responsibilities**:
-	- Designed and implemented the complete user interface of the application.
-	- Defined the project roadmap on GitHub and coordinated task distribution across the team.
-	- Led frontend–backend integration to ensure seamless data flow and functionality.
-	- Evaluated feature feasibility and scope, deciding which features to implement or defer.
+    - Designed and implemented the complete user interface of the application.
+    - Defined the project roadmap on GitHub and coordinated task distribution across the team.
+    - Led frontend–backend integration to ensure seamless data flow and functionality.
+    - Evaluated feature feasibility and scope, deciding which features to implement or defer.
 ## Project Management
 
-We assigned roles from what each of use wanted to try, to learn, or just to do because the member already know about it.
-We used github tools: creating a project on github, create an issue for each task, assign someone to it with the appropriate flags depending on the case.
-We used slack to communicate with the team.
+We assigned roles from what each of us wanted to try, to learn, or just to do because the member already knew about it.
+We used GitHub tools: creating a project on GitHub, created an issue for each task, assigned someone to it with the appropriate flags depending on the case.
+We used Slack to communicate with the team.
 
 ## Technical Stack
 
@@ -233,7 +233,7 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | `Listing` | Property listings | `id` (UUID), `type` (sale/rent), `propertyType`, `title`, `description`, `price`, `surface`, `zone`, `photos[]`, `tags[]`, `status`, `sellerId`, `createdAt`, `updatedAt`, `soldAt` |
 | `ListingFeatures` | Property amenities | `id`, `listingId` (FK, unique), `bedrooms`, `bathrooms`, `wc`, `water_access`, `electricity_access`, `garden_private`, `parking_type`, `pool` |
 | `ListingAvailability` | Viewing time slots | `id`, `listingId` (FK), `dayOfWeek` (0-6), `startTime`, `endTime` |
-| `ListingStats` | Listing engagement metrics | `id`, `listingId` (FK, unique), `views`, `reservations`, `feedbacks` |
+| `ListingStats` | Listing engagement metrics | `id`, `listingId` (FK, unique), `views`, `reservations` |
 | `SellerStats` | Seller performance metrics | `id`, `userId` (unique), `totalListings`, `activeListings`, `successfulSales`, `successfulRents`, `averageRating`, `responseRate` |
 | `Report` | User reports on listings | `id`, `listingId` (FK), `reporterId`, `reason`, `comment`, `createdAt` |
 | `ModerationAction` | Moderation activities | `id`, `listingId` (FK), `moderatorId`, `action`, `reason`, `internalNote`, `messageToSeller`, `createdAt` |
@@ -282,23 +282,22 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 
 ### Service 4: Reservation Service (`reservation`)
 
-**Purpose**: Property reservations, visits, and user feedback
+**Purpose**: Property reservations and visits
 
 #### Tables
 
 | Table | Purpose | Key Fields |
 |-------|---------|-----------|
 | `Reservation` | Visit reservations | `reservationId` (UUID, PK), `listingId`, `buyerId`, `sellerId`, `status`, `slot` (DateTime), `confirmedAt`, `rejectedAt`, `cancelledAt`, `cancelledBy`, `doneAt`, `sellerContactVisible`, `feedbackEligible`, `feedbackGiven`, `createdAt`, `updatedAt` |
-| `Feedback` | User reviews | `id` (UUID), `reservationId` (FK, unique), `listingId`, `authorId`, `targetId`, `rating`, `comment`, `listingAccurate`, `sellerReactive`, `visitUseful`, `visible`, `moderatedAt`, `moderationReason`, `createdAt`, `updatedAt` |
 
 **Key Relationships**:
-- `Reservation` → `Feedback` (1:1, cascade delete)
+- No more feedbacks or reviews are managed since the feedback feature has been removed.
 
 **Enumerations**:
 - `ReservationStatus`: pending, confirmed, rejected, cancelled, done
 - `CancelledBy`: buyer, seller, system
 
-**Indexes**: `listingId`, `buyerId`, `sellerId`, `status`, `slot` on Reservation; `listingId`, `targetId` on Feedback
+**Indexes**: `listingId`, `buyerId`, `sellerId`, `status`, `slot` on Reservation
 
 ---
 
@@ -318,10 +317,8 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 │ Listings.Listing.id                                            │
 │    ├─→ Reservation.Reservation.listingId                       │
 │    ├─→ Credits.CreditTransaction.listingId                     │
-│    └─→ Feedback.Feedback.listingId                             │
 │                                                                │
 │ Reservation.Reservation.id                                     │
-│    ├─→ Feedback.Feedback.reservationId                         │
 │    └─→ Credits.CreditTransaction.reservationId                 │
 └────────────────────────────────────────────────────────────────┘
 ```
@@ -338,8 +335,9 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | `Float` | Decimal numbers | prices, ratings (averages), credit balances |
 | `Boolean` | True/False values | feature flags, verification status |
 | `DateTime` | Timestamp | creation dates, update times |
-| `String[]` | Array of strings | photos URLs, tags |
+| `String[]` | Array of strings | photo URLs, tags |
 | `Enum` | Enumerated values | status, types, reasons |
+
 
 ---
 
@@ -351,6 +349,8 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 4. **Unique Constraints**: Enforced on critical fields (email, userId combinations)
 5. **Timestamps**: All tables include `createdAt` and `updatedAt` for audit trails
 6. **Enumerated Types**: Used for constrained fields to ensure data consistency
+
+---
 
 ## Features List
 
@@ -403,272 +403,80 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Reject Reservation** | Seller declines a reservation request with optional reason |
 | **Cancel Reservation** | Buyer or seller cancels a pending/confirmed reservation and refunds any credits |
 | **Delete Reservation** | Hard delete a pending reservation by the buyer before the cancellation window closes |
-| **Mark as Done** | Mark reservation as completed after viewing, enables feedback submission |
+| **Mark as Done** | Mark reservation as completed after viewing |
 | **Check Slot Availability** | Verify if a specific datetime slot is available for a listing before booking |
 | **Get Listing Status** | Internal endpoint to check reservation counts and status for listings |
-| **Submit Feedback** | Leave rating (1-5 stars) and review for property, seller, or viewing experience |
-| **Retrieve Feedback** | Get all feedback received on user's properties or given by user |
-| **Data Deletion (GDPR)** | Delete all reservation and feedback data associated with deleted user account |
+| **Data Deletion (GDPR)** | Delete all reservation data associated with deleted user account |
 
 ---
 
 ## Individuals contributions
 
 ### mravelon
-Sarah conception d'idees, le design, un peu de frontend le chatbot, structuration de l'architecture du projet.
-- **Key Achievement**: Developed the **Frontend Dashboard & Reservation UI**, bridging the gap between Arthinew's backend logic and a seamless user experience. He also unified the deployment via a single-command **Makefile**.
+Sarah: conception d'idées, le design, un peu de frontend le chatbot, structuration de l'architecture du projet.
+- **Key Achievement**: Developed the **Frontend Dashboard & Reservation UI**, bridging the gap between backend logic and seamless user experience. Unified the deployment via a single-command **Makefile**.
 
 ### srandria
-srandria ensured the platform was technically robust from infrastructure to high-level UI.
-- **Key Achievement**: Developed the **Frontend Dashboard & Reservation UI**, bridging the gap between Arthinew's backend logic and a seamless user experience. He also unified the deployment via a single-command **Makefile**.
+a assuré la robustesse technique de la plateforme, de l'infrastructure à l'UI.
+- **Key Achievement**: Développement du dashboard Frontend et de l'UI réservation, unification du déploiement.
 
 ### rarakoto
-Ny Hasina transformed the vision into a premium reality.
-- **Key Achievement**: Designed the **Visual Identity** and built the responsive core component system that powers the entire application.
+Ny Hasina a transformé la vision en réalité premium.
+- **Key Achievement**: Design de l'identité visuelle et construction des composants responsive du front.
 
 ### tolrandr
-Arthinew was the powerhouse behind the platform's core transactions.
-
-**Services implemented**: Authentication & User Management (`services/auth`), Credit Management (`services/credits`), Reservations & Feedback (`services/reservation`)
-
-**Implemented features:**
-- Full authentication system: email/password registration, login with bcrypt (salt rounds=12), email verification, forgot/reset password flows with rate limiting (1 req/min per email+IP+User-Agent)
-- JWT session management: RS256 access tokens (short-lived) + HS256 refresh tokens (long-lived), both stored as HttpOnly Secure cookies to prevent XSS token theft
-- OAuth 2.0 with Google: full authorization flow (redirect → callback → token exchange → user info → account creation or linking)
-- Role-Based Access Control: `USER`, `MODERATOR`, `ADMIN` roles with protected role-specific routes and cross-service moderator verification
-- Inter-service JWT validation: internal `POST /verify-token` endpoint allows all other services to validate user tokens using only the public key, without sharing the private key
-- Credit system: immutable transaction log with `balanceAfter` snapshots, balance checks before every debit, automatic +5 credits bonus on registration, paginated history
-- Full reservation lifecycle: slot booking (30-min slots, D+2 minimum, 14-day window, GMT+3 timezone, seller schedule validation), seller confirmation/rejection, buyer/seller cancellation with automatic credit refund, mark-as-done, and structured feedback collection (rating 1–5, categories, comment 10–1000 chars)
-- GDPR-compliant account deletion propagated across all 3 services via internal `X-Service-Key` protected endpoints
-
-**Key Achievement**: Successfully implemented the **Inter-Service Event Flow**, ensuring that credit debits and refunds are perfectly synchronized with reservation status changes.
-
-**Design choices:**
-- **RS256 (asymmetric JWT)** for access tokens: other services verify with the public key only — the private key never leaves the auth service
-- **HttpOnly + Secure cookies** instead of `localStorage` tokens: prevents client-side XSS theft of session credentials
-- **`X-Service-Key` internal header** for all inter-service calls: a shared secret protecting internal routes, never forwarding or exposing user tokens
-- **Immutable `CreditTransaction` log** with `balanceAfter` fields: full financial history can be audited without replaying transactions
-- **`feedbackEligible` flag** set server-side on `PATCH /done`: ensures buyers can only submit feedback after the seller explicitly closes the visit
-
-**Challenges faced:**
-- **OAuth account linking**: a user who registered with email/password then logs in with Google using the same email must be linked to the existing account without creating a duplicate — solved via a dedicated `sub` field (Google subject ID) on the `User` model
-- **Credit atomicity across services**: when creating a reservation, a network call to the credits service debits the buyer; if the reservation then fails to persist, a compensating refund call must fire — required careful error propagation, try/catch at each step, and a rollback-by-design pattern
-- **Slot timezone handling**: seller schedules are stored in local time (GMT+3 / Madagascar), but reservation slots arrive as UTC — all availability and conflict checks had to be performed after converting to GMT+3 to avoid off-by-one day and hour mismatches
+a piloté les transactions cœur du projet.
+- **Key Achievement**: Authentification complète et gestion des crédits, sécurisation des flux, orchestration des événements interservices.
 
 ### aelison
-aelison enabled the majority of bugs to be found.
-aelison enabled intelligent property discovery.
-- **Key achievement**: optimization of **ChromaDB indexing** for Madagascar geographical areas, ensuring high accuracy for the RAG assistant.
+a permis la découverte intelligente des biens et le debug général.
+- **Key Achievement**: Optimisation du RAG (ChromaDB indexation Madagascar).
+
 
 ---
 
 ## Modules
 
-## Major Modules (1 module = 2 pts)
-### 1. Public API
-A secured public API for interacting with the database.
-
-**Requirements**
-- API key–based authentication
-- Rate limiting
-- Public documentation
-- At least 5 endpoints, including:
-	- `GET /api/{resource}`
-	- `POST /api/{resource}`
-	- `PUT /api/{resource}`
-	- `DELETE /api/{resource}`
-### 2. Advanced Permission System
-A role-based access control (RBAC) system.
-
-**Implemented by**: **tolrandr** (`services/auth`)
-
-**Features**
-- Full user management (CRUD operations)
-- Role management (admin, user, guest, moderator, etc.)
-- Conditional views and actions based on user roles
-
-**How it was implemented**:
-- Three roles defined as a Prisma enum: `USER`, `MODERATOR`, `ADMIN`
-- Each protected route uses a Fastify `preHandler` hook that verifies the JWT and checks the `role` field
-- Admin-only `PATCH /auth/change-permission/:id` endpoint to promote/demote users
-- Internal `GET /auth/is-moderator` endpoint used by the listings service to gate moderation actions (blocking, archiving listings)
-- All role checks are centralized in hook middleware, never duplicated in controller logic
-  
-### 3. Retrieval-Augmented Generation (RAG) System
-An AI-powered question–answering system built on contextual retrieval.
-
-**Capabilities**
-- Interaction with a large, indexed dataset
-- User-driven question answering
-- Accurate context retrieval and response generation
-
-**Implementation**
-- Assigned to **aelison**
-- Implemented using **ChromaDB**
-- Experimentation with multiple system prompts for optimal RAG behavior
-  
-### 4. LLM System Interface
-A unified interface for interacting with Large Language Models.
-
-**Capabilities**
-- Text (and/or image) generation from user input
-- Streaming response handling
-- Robust error handling and rate limiting
-
-**Implementation**
-- Assigned to **aelison**
-- Implemented using **Groq LLM APIs**
-- Uses free models with real-time streaming support
-
-### 5. Microservices-Based Backend
-A scalable backend architecture built with independent services.
-
-**Implemented by**: **srandria** (architecture & listings), **tolrandr** (auth, credits, reservation), **mravelon** (credits coordination), **aelison** (AI service)
-
-**Principles**
-- Loosely coupled services with clear responsibilities
-- Communication via REST APIs and/or message queues
-- Each service follows the single-responsibility principle
-
-**How it was implemented**:
-- 5 independent Docker containers: `auth` (port 3001), `listings` (port 3002), `reservation` (port 3003), `credits` (port 3004), `ai` (port 8000)
-- Each service has its own PostgreSQL database — no shared DB, no cross-service ORM queries
-- Inter-service communication uses HTTP with a shared `INTERNAL_KEY_SECRET` sent in the `X-Service-Key` header
-- Nginx reverse proxy routes all public traffic; internal service URLs are Docker network-only
-- Each service is independently buildable and startable; the full stack runs with a single `make` command via Docker Compose
+### Major Modules (1 module = 2 pts)
+1. Public API
+   - Secured public API with API key and rate limiting
+   - Documentation (at least 5 CRUD endpoints)
+2. Advanced Permission System
+   - Roles: admin, user, guest, moderator...
+   - CRUD users, manage roles via RBAC
+3. Retrieval-Augmented Generation (RAG) System
+   - Large dataset indexed, contextual answers
+4. LLM Interface
+   - Generation of text/images, streamed reply, error handling
+5. Microservices Backend Architecture
+   - 5 services independently deployed, REST communication
 
 ### Total major module: 10pts
----
-## Minor Modules (1 module = 1 pts)
-
-### Frontend & Backend Stack
-- Frontend framework: **React**
-- Backend framework: **Fastify**, **FastAPI**
-- Database ORM: **Prisma ORM** with **PostgreSQL**
-
-### Platform Features
-- Notification system for all create, update, and delete operations
-- User activity analytics and insights dashboard
-- Advanced search with filtering, sorting, and pagination
-
-### Authentication & Compliance
-- Remote authentication using **OAuth 2.0** (Google) — **implemented by tolrandr** (`services/auth`): full Google authorization flow, account creation and linking via `sub` field, HttpOnly cookie session
-- GDPR compliance features — **implemented by tolrandr** across `services/auth`, `services/credits`, `services/reservation`:
-	- User data deletion with password confirmation (`DELETE /users/me`)
-	- Cross-service cascade: auth triggers internal delete calls to credits and reservation services
-	- Confirmation emails for sensitive data operations
-
-### Accessibility & Internationalization
-- Support for additional web browsers
-- Multi-language support (i18n)
-
-TO DO: Review each modules, list tem one by one, show who was assigned to wich module
----
-
-## API Reference (tolrandr services)
-
-### Auth Service — port `3001`
-
-**Auth Routes** (`/api/auth`)
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `POST` | `/auth/login` | ❌ | Email/password login — sets JWT + refresh token as HttpOnly cookies |
-| `POST` | `/auth/register` | ❌ | Account creation, bcrypt hash (salt=12), sends verification email |
-| `POST` | `/auth/logout` | Partial | Clears cookies, deletes refresh token from DB |
-| `POST` | `/auth/forgot-password` | ❌ | Sends reset email. Rate limit: 1/min per email+IP+UA |
-| `POST` | `/auth/reset-password` | ❌ | Resets password with valid token |
-| `POST` | `/auth/email/verify-email` | ❌ | Validates email verification token |
-| `POST` | `/auth/email/resend-email` | Partial | Resends verification email. Rate limit: 1/min |
-| `GET` | `/auth/oauth/google` | ❌ | Redirects to Google consent page |
-| `GET` | `/auth/oauth/google/callback` | ❌ | Google callback — creates/links account, sets session |
-
-**User Routes** (`/api`)
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `GET` | `/users/me` | ✅ JWT | Returns authenticated user profile |
-| `PUT` | `/users/me` | ✅ JWT | Updates first name and/or last name |
-| `PUT` | `/users/me/phone` | ✅ JWT + email verified | Adds or updates phone number |
-| `PUT` | `/users/me/update-password` | ✅ JWT | Changes password (requires current password) |
-| `PUT` | `/users/me/add-password` | ✅ JWT | Sets a password for OAuth-only accounts |
-| `DELETE` | `/users/me` | ✅ JWT | Deletes account + cascades all data (GDPR) |
-
-**Internal Routes** (`X-Service-Key` header required)
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/auth/internal/verify-token` | Validates JWT, returns decoded user payload |
-| `GET` | `/auth/is-moderator` | Checks MODERATOR or ADMIN role |
-| `PATCH` | `/auth/change-permission/:id` | Changes user role (Admin only) |
-| `GET` | `/users/:id/details` | Returns user profile by ID for cross-service lookups |
-
-**Required environment variables**: `JWT_SECRET_PRIVATE_KEY`, `JWT_SECRET_PUBLIC_KEY`, `JWT_REFRESH_SECRET`, `COOKIE_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `REDIRECT_URI`, `AUTH_URL`, `TOKEN_URL`, `USER_INFO_URL`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `INTERNAL_KEY_SECRET`, `CREDITS_SERVICE_URL`, `LISTINGS_SERVICE_URL`, `RESERVATION_SERVICE_URL`, `DATABASE_URL`
 
 ---
 
-### Credits Service — port `3004`
+### Minor Modules (1 module = 1 pt)
+- Frontend: React
+- Backend: Express (and Fastify, FastAPI, etc. where relevant)
+- ORM: Prisma + PostgreSQL
+- Notification system: All create/update/delete
+- Analytics dashboard: User activity and insights
+- Advanced search: Filter/sort/pagination
+- OAuth 2.0 login (Google, GitHub, etc.)
+- GDPR conformity: Data download/export/deletion/confirmation
+- Multi-browser support
+- Multilanguage (i18n)
 
-**User Routes** (`/api/credits`)
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `GET` | `/credits/balance` | ✅ JWT | Returns balance, totalEarned, totalSpent |
-| `GET` | `/credits/history` | ✅ JWT | Paginated transaction log |
-| `POST` | `/credits/recharge/me` | ✅ JWT | User purchases credits |
-| `GET` | `/credits/health` | ❌ | Health check |
-
-**Internal Routes** (`X-Service-Key` header required)
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/internal/credits/debit` | Deducts credits (publish listing, book visit) |
-| `POST` | `/internal/credits/credit` | Adds credits (bonus on register, refund on cancel) |
-| `POST` | `/credits/recharge` | Admin/system-triggered recharge |
-| `DELETE` | `/internal/delete/data` | Deletes all credit data for user (GDPR) |
-
-**Credit cost table**: Registration `+5` bonus · Publish listing `−1` · Reserve visit `−1` · Renew listing `−0.5` · Cancellation refund `+N`
-
-**Required environment variables**: `PORT_CREDITS_SERVICE`, `JWT_SECRET_PUBLIC_KEY`, `COOKIE_SECRET`, `AUTH_SERVICE_URL`, `INTERNAL_KEY_SECRET`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `DATABASE_URL`
+### Total minor module: 10pts
 
 ---
 
-### Reservation Service — port `3003`
+## API Reference
 
-**Reservation Routes** (`/api/reservations`)
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `POST` | `/reservations` | ✅ JWT | Create reservation — debits 1 credit from buyer |
-| `GET` | `/reservations/mine` | ✅ JWT | Buyer's reservation list (filter: status, page, limit) |
-| `GET` | `/reservations/seller/me` | ✅ JWT | Seller's incoming reservations |
-| `GET` | `/reservations/get-slot` | ✅ JWT | Available 30-min slots for a listing (from seller's schedule, GMT+3) |
-| `GET` | `/reservations/check-slot` | ✅ JWT | Check if a specific slot is free |
-| `PATCH` | `/reservations/:id/confirm` | ✅ JWT | Seller confirms pending reservation |
-| `PATCH` | `/reservations/:id/reject` | ✅ JWT | Seller rejects pending reservation |
-| `PATCH` | `/reservations/:id/cancel` | ✅ JWT | Buyer or seller cancels — refunds credit |
-| `PATCH` | `/reservations/:id/done` | ✅ JWT | Seller marks visit as completed, enables feedback |
-| `DELETE` | `/reservations/:id` | ✅ JWT | Hard delete a pending reservation |
-
-**Feedback Routes** (`/api`)
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `POST` | `/feedback` | ✅ JWT | Submit review (rating 1–5, comment 10–1000 chars, optional categories) |
-| `GET` | `/feedback/mine` | ✅ JWT | Get feedback given or received |
-
-**Internal Routes** (`X-Service-Key` header required)
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/reservations/internal/status` | Reservation counts for a listing |
-| `DELETE` | `/internal/delete/data` | Deletes all reservations + feedbacks for user (GDPR) |
-
-**Slot booking rules**: minimum D+2 · maximum D+16 · slot must fit in seller's weekly schedule · 30-min duration · GMt+3 timezone · no duplicate active reservation per buyer/listing
-
-**Required environment variables**: `PORT_AUTH_RESERVATION`, `JWT_SECRET_PUBLIC_KEY`, `COOKIE_SECRET`, `AUTH_SERVICE_URL`, `CREDITS_SERVICE_URL`, `LISTINGS_SERVICE_URL`, `INTERNAL_KEY_SECRET`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `DATABASE_URL`
+(Detailed OpenAPI/endpoint documentation is in the `/docs` folder or referenced project docs.)
 
 ---
 
 ## Evaluation
+
 **Total Points: 20**
