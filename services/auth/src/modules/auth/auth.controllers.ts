@@ -126,7 +126,7 @@ export async function resendEmailVerification(request: FastifyRequest, reply: Fa
 		})
 	} catch (error: any) {
 		if (error.message === "Your email is already in verified") {
-			return reply.status(400).send({
+			return reply.status(200).send({
 				"error": "email_already_verified",
 				"message": "auth.email_already_verified"
 			});
