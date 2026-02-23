@@ -1,8 +1,21 @@
 {
 	"inputChat": {
-		"placeholder": "Tell me what do you want today?"
+		"placeholder": "Ask me anything about real estate…"
 	},
 	"message": {
-		"processing": "Processing your request ..."
+		"processing": "Thinking…"
+	},
+	"welcome": {
+		"title": "Your real estate AI",
+		"subtitle": "Ask me anything about properties, markets, neighbourhoods and more.",
+		"suggestions": [
+			"Find me a 3-bedroom house under 300M Ar",
+			"Best neighbourhoods to invest in?",
+			"Apartments for rent in Analakely",
+			"Documents needed to buy property"
+		]
+	},
+	"header": {
+		"badge": "AI Assistant"
 	}
 }
