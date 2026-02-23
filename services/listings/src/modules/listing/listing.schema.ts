@@ -42,8 +42,8 @@ export const PublishListingSchema = z.object({
       "validation.listing.bedroom.invalid_value"
     ).int(
       "validation.listing.bedroom.integer"
-    ).positive(
-      "validation.listing.bedroom.positive"
+    ).min(0,
+      "validation.listing.bedroom.too_low"
     ).max(2147483647,
       "validation.listing.bedroom.too_high"
     ),
@@ -51,8 +51,8 @@ export const PublishListingSchema = z.object({
       "validation.listing.bathroom.invalid_value"
     ).int(
       "validation.listing.bathroom.integer"
-    ).positive(
-      "validation.listing.bathroom.positive"
+    ).min(0,
+      "validation.listing.bathroom.too_low"
     ).max(2147483647,
       "validation.listing.bathroom.too_high"
     ),
@@ -135,8 +135,8 @@ export const SearchListingsSchema = z.object({
     "validation.listing.bedroom.invalid_value"
   ).int(
     "validation.listing.bedroom.integer"
-  ).positive(
-    "validation.listing.bedroom.positive"
+  ).min(0,
+    "validation.listing.bedroom.too_low"
   ).max(2147483647,
     "validation.listing.bedroom.too_high"
   ).optional(),
@@ -144,8 +144,8 @@ export const SearchListingsSchema = z.object({
     "validation.listing.bedroom.invalid_value"
   ).int(
     "validation.listing.bedroom.integer"
-  ).positive(
-    "validation.listing.bedroom.positive"
+  ).min(0,
+    "validation.listing.bedroom.too_low"
   ).max(2147483647,
     "validation.listing.bedroom.too_high"
   ).optional(),
@@ -153,8 +153,8 @@ export const SearchListingsSchema = z.object({
     "validation.listing.bathroom.invalid_value"
   ).int(
     "validation.listing.bathroom.integer"
-  ).positive(
-    "validation.listing.bathroom.positive"
+  ).min(0,
+    "validation.listing.bathroom.too_low"
   ).max(2147483647,
     "validation.listing.bathroom.too_high"
   ).optional(),
@@ -162,8 +162,8 @@ export const SearchListingsSchema = z.object({
     "validation.listing.bathroom.invalid_value"
   ).int(
     "validation.listing.bathroom.integer"
-  ).positive(
-    "validation.listing.bathroom.positive"
+  ).min(0,
+    "validation.listing.bathroom.too_low"
   ).max(2147483647,
     "validation.listing.bathroom.too_high"
   ).optional(),
