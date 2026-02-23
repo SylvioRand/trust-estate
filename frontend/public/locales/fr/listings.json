@@ -7,12 +7,12 @@
 	"no": "Non",
 
 	"viewDetails": "Voir les détails",
-	"areaUnit": "m2",
+	"areaUnit": "m²",
 
 	"status": {
 		"active": "Actif",
-		"archived": "Archivée",
-		"blocked": "Bloquée",
+		"archived": "Archivé",
+		"blocked": "Bloqué",
 		"available": "Disponible",
 		"unavailable": "Indisponible"
 	},
@@ -34,25 +34,25 @@
 		"features": {
 			"title": "Caractéristiques",
 			"bedrooms": "Chambres",
-			"bathrooms": "Douches",
-			"area": "m2",
-			"wc_separate": "WC exterieur"
+			"bathrooms": "Salles de bain",
+			"area": "m²",
+			"wc_separate": "WC séparé"
 		},
 		"equipments": {
-			"title": "Equipements",
+			"title": "Équipements",
 			"parking_type": "Parking",
 			"garden_private": "Jardin",
 			"wc": "Toilette",
 			"pool": "Piscine",
 			"electricity_access": {
-				"title": "Accès electricité",
-				"true": "Cette propriété a accèss a l'électricité.",
-				"false": "Cette propriété n'a pas accèss a l'électricité."
+				"title": "Accès à l'électricité",
+				"true": "Cette propriété a accès à l'électricité.",
+				"false": "Cette propriété n'a pas accès à l'électricité."
 			},
 			"water_access": {
-				"title": "Accès d'eau",
-				"true": "Cette propriété a accès a l'eau.",
-				"false": "Cette propriété n'a pas accès a l'eau."
+				"title": "Accès à l'eau",
+				"true": "Cette propriété a accès à l'eau.",
+				"false": "Cette propriété n'a pas accès à l'eau."
 			}
 		},
 
@@ -64,8 +64,8 @@
 			"favorites": "Favoris",
 			"report": "Signaler",
 			"scheduleVisit": "Planifier une visite",
-			"visitSlot": "Voir créneaux",
-			"editPost": "Editer la publication"
+			"visitSlot": "Voir les créneaux",
+			"editPost": "Éditer la publication"
 		},
 
 		"tags": {
@@ -87,9 +87,8 @@
 
 		"stats": {
 			"title": "Statistiques du vendeur",
-
 			"sellerStats": {
-				"successfulSales": "Biens Vendues",
+				"successfulSales": "Biens vendus",
 				"successfulRent": "Biens loués",
 				"averageRating": "Score"
 			}
@@ -104,10 +103,10 @@
 				"archive": {
 					"title": "Archiver",
 					"popup": {
-						"title": "Archiver annonce",
+						"title": "Archiver l'annonce",
 						"warning": "L’archivage de cette annonce est définitif et ne peut pas être annulé. Une fois archivée, l’annonce sera retirée de la vue publique et il ne sera pas possible de la restaurer. Veuillez vous assurer que vous souhaitez vraiment archiver cette annonce avant de continuer.",
 						"continue": "Archiver l'annonce",
-						"success": "L'annonce à été placée dans les archives."
+						"success": "L'annonce a été placée dans les archives."
 					}
 				},
 				"mark": {
@@ -143,7 +142,7 @@
 						},
 						"comment": {
 							"title": "Commentaire",
-							"placeholder": "Entrer votre commentaire ici."
+							"placeholder": "Entrez votre commentaire ici."
 						},
 						"warning": "Signaler une annonce vous permet d’alerter notre équipe de modération concernant un contenu qui pourrait être inexact, inapproprié ou ne pas respecter nos règles.",
 						"submit": "Envoyer"
@@ -180,8 +179,8 @@
 		"postStats": {
 			"title": "Statistiques de la publication",
 			"views": "Vues",
-			"reservations": "Reservations",
-			"feedbacks": "Critiques"
+			"reservations": "Réservations",
+			"feedbacks": "Avis"
 		}
 	}
 }
