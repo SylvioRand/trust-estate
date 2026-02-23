@@ -1,5 +1,29 @@
 {
 	"noMyListings": "You have no listing published",
+	"credits": "credits",
+	"creditSection": {
+		"title": "My credits",
+		"recharge": "Top up",
+		"rechargeTitle": "Choose a pack",
+		"recharging": "Processing...",
+		"noHistory": "No transactions yet.",
+		"historyTitle": "Transaction history",
+		"type": {
+			"recharge": "Top-up",
+			"bonus": "Bonus",
+			"debit": "Debit",
+			"consume": "Debit",
+			"refund": "Refund"
+		},
+		"reason": {
+			"recharge_pack": "Pack purchase",
+			"initial_bonus": "Initial bonus",
+			"publish_listing": "Listing published",
+			"renew_listing": "Listing renewed",
+			"reserve_visit": "Visit booked",
+			"refund_cancelled": "Cancellation refund"
+		}
+	},
 	"buttons": {
 		"publish": "Publish",
 		"settings": "Settings",

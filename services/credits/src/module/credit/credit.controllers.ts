@@ -32,6 +32,16 @@ export async function rechargeCredit(request: FastifyRequest<{ Body: RechargeInt
 				"error": "payment_failed",
 				"message": "payment.transaction_failed",
 			});
+		else if (error.message === "balance_not_zero")
+			return reply.status(403).send({
+				"error": "balance_not_zero",
+				"message": "payment.balance_not_zero",
+			});
+		else if (error.message === "recharge_daily_limit")
+			return reply.status(400).send({
+				"error": "recharge_daily_limit",
+				"message": "payment.recharge_daily_limit",
+			});
 		else
 			return reply.status(500).send({
 				"error": "internal_server_error",
@@ -58,16 +68,10 @@ export async function getBalance(request: FastifyRequest, reply: FastifyReply) {
 		})
 	} catch (error: any) {
 		request.server.log.error({ error, userId: user?.id }, 'GetBalance error');
-		if (error.message === "balance_not_found")
-			return reply.status(404).send({
-				"error": "balance_not_found",
-				"message": "balance.balance_not_found",
-			});
-		else
-			return reply.status(500).send({
-				"error": "internal_server_error",
-				"message": "common.internal_server_error"
-			});
+		return reply.status(500).send({
+			"error": "internal_server_error",
+			"message": "common.internal_server_error"
+		});
 	}
 };
 
@@ -134,6 +138,31 @@ export async function creditBalance(request: FastifyRequest<{ Body: creditBalanc
 	}
 };
 
+export async function ensureBalance(request: FastifyRequest, reply: FastifyReply) {
+	const user = (request as any).user as UserInterface;
+
+	if (!user) {
+		return reply.code(400).send({
+			"error": "Error",
+			"message": "auth.invalid_credentials"
+		});
+	};
+
+	try {
+		const balance = await creditServices.ensureUserBalance(request.server, user.id);
+		return reply.status(200).send({
+			"balance": balance,
+			"currency": "credits"
+		});
+	} catch (error: any) {
+		request.server.log.error({ error, userId: user?.id }, 'EnsureBalance error');
+		return reply.status(500).send({
+			"error": "internal_server_error",
+			"message": "common.internal_server_error"
+		});
+	}
+}
+
 export async function requestDeleteData(request: FastifyRequest, reply: FastifyReply) {
 	const user = (request as any).user as UserInterface;
 
@@ -171,15 +200,14 @@ export async function history(request: FastifyRequest<{ Querystring: { page?: st
 			});
 		}
 
-		const page = parseInt(request.query.page || "1");
-		const limit = parseInt(request.query.limit || "10");
-		console.log(user);
-		const data = await creditServices.getUserHistory(request.server, user.id);
-
-		return reply.status(200).send({data});
+		const result = await creditServices.getUserHistory(request.server, user.id, query.page, query.limit);
+		return reply.status(200).send(result);
 	}
 	catch (error: any) {
 		request.server.log.error({ error }, 'History error');
-		return reply.status(500).send(error);
+		return reply.status(500).send({
+			"error": "internal_server_error",
+			"message": "common.internal_server_error"
+		});
 	}
 }
