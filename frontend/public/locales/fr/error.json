@@ -48,7 +48,9 @@
 		"user_permission_updated_successfully": "Les permissions de l'utilisateur ont été mises à jour avec succès.",
 		"verification_failed": "La vérification de l'authentification a échoué.",
 		"credit_service_error": "Le service de crédits est temporairement indisponible.",
-		"unauthorized": "Acción no autorizada."
+		"unauthorized": "Acción no autorizada.",
+		"resend_email_rate_limit": "Trop de requêtes. Veuillez réessayer plus tard.",
+		"forgot_password_rate_limit": "Trop de requêtes. Veuillez réessayer plus tard."
 	},
 	"validation": {
 		"email": {
@@ -250,7 +252,8 @@
 		"insufficient_credits": "Vous avez des crédits insuffisants pour cette opération.",
 		"transaction_failed": "Le paiement a échoué. Veuillez vérifier le solde de votre Mobile Money.",
 		"rate_limited_recharge": "Trop de tentatives de recharge. Un maximum de trois par heure est autorisé.",
-		"balance_not_found": "Votre solde de crédits n'a pas pu être trouvé."
+		"balance_not_found": "Votre solde de crédits n'a pas pu être trouvé.",
+		"balance_not_zero": "Votre solde doit être supérieur à 0 pour effectuer un paiement."
 	},
 	"user": {
 		"user_not_found": "Utilisateur non trouvé."

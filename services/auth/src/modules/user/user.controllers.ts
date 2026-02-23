@@ -49,7 +49,7 @@ export async function updatePhoneNumber(request: FastifyRequest <{Body: {phoneNu
 		if (error.message === "phone_exists")
 			return reply.code(400).send({
 					"error": "phone_exists",
-					"message": "Ce numéro de téléphone est déjà utilisé par un autre compte"
+					"message": "auth.phone_already_exists"
 				});
 		else if (error.message === "User not found")
 			return reply.code(404).send({

@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import useCountdown from "../components/Countdown";
 // import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
+import { number } from "zod";
 
 const EmailSentPage: React.FC = () => {
 	const { t } = useTranslation(["emailSent", "error"]);
@@ -24,6 +25,7 @@ const EmailSentPage: React.FC = () => {
 			return;
 		}
 		setIsLoading(true);
+		let retryAfterSeconds: number = 60;
 		try {
 			const response = await fetch("/api/auth/resend-email", {
 				method: "POST",
@@ -37,29 +39,34 @@ const EmailSentPage: React.FC = () => {
 					toast.error(t(`error:${data.message}`));
 					navigate("/home");
 				}
+				else if (response.status === 429) {
+					const retryAfter = response.headers.get("Retry-After");
+					const retryAfterSeconds = Number(retryAfter) || 60;
+					setTimeLeft(retryAfterSeconds);
+					setResendButtonDisabled(true);
+					toast.error(t("error:auth.resend_email_rate_limit"));
+				}
 				else {
 					if (data.message !== null)
 						throw new Error(t(`${data.message}`));
 				}
 				throw new Error("");
 			}
-
-			toast.success(t("buttons.resendEmail.success"));
+			else
+				toast.success(t("buttons.resendEmail.success"));
 
 		} catch (error) {
 			if (error instanceof Error && error.message !== "")
 				toast.error(t(`error:${error.message}`));
 		} finally {
 			setProcessResend(false);
-			setTimeLeft(60);
 			controls.start();
 			setResendButtonDisabled(true);
 
 			setTimeout(() => {
 				setResendButtonDisabled(false);
-				setTimeLeft(0);
 				controls.stop();
-			}, 60000);
+			}, retryAfterSeconds * 1000);
 			setIsLoading(false);
 		}
 	}
