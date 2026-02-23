@@ -14,7 +14,7 @@ DOCKER_COMPOSE := $(shell \
 export DOCKER_BUILDKIT=0
 
 # Default target: build and run everything
-all: certs build up db-sync
+all: certs build up db-sync seed
 	@echo ""
 	@echo "✅ Trust Estate is running!"
 	@echo "🌐 Frontend: https://localhost:8443"
@@ -50,9 +50,7 @@ db-sync:
 seed:
 	@echo "🌱 Seeding database..."
 	@echo "   -> Seeding Auth (Admin account)..."
-	@cd services/auth && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=auth" npx tsx prisma/seed.ts
-	@echo "   -> Seeding Listings (Test data)..."
-	@cd services/listings && DATABASE_URL="postgresql://trustestate:trustestate_secret@localhost:5433/trustestate?schema=listings" npm run seed
+	@docker exec trust-estate-auth npx tsx prisma/seed.ts
 	@echo "✅ Seeding complete!"
 
 # Build all containers

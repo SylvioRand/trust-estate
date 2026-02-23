@@ -27,16 +27,11 @@ const SignUpPage: React.FC = () => {
 
 	const { isConnected, setIsConnected } = useDataProvider();
 
-	const location = useLocation();
-
-	useEffect(() => {
-		if (isConnected === true) {
-			const from = location.state?.from || "/profile";
-			navigate(from, { replace: true });
-		}
-	}, [isConnected, navigate, location.state?.from]);
-
 	VerifyUsersState();
+	useEffect(() => {
+		if (isConnected !== null && isConnected === true)
+			navigate("/profile");
+	}, [isConnected]);
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
