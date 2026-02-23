@@ -175,6 +175,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 					pb-4"
 				>
 					{
+						(location.pathname !== "/add-phone" && location.pathname !== "/email-sent") &&
 						(isConnected === false || isConnected === null) && dataUser.map((value: NavButtonProps, index: number) => {
 							return (
 								<MobileNavButton
@@ -304,6 +305,7 @@ const NavBar: React.FC = () => {
 	const { t } = useTranslation("nav");
 	const [openHamburger, setOpenHamburger] = useState<boolean>(false);
 	const { isConnected, userData } = useDataProvider();
+	const location = useLocation();
 
 	const dataNavButton: NavButtonProps[] = [
 		{ icon: "", title: t("button.home"), path: "/home" },
@@ -365,6 +367,7 @@ const NavBar: React.FC = () => {
 						hidden"
 					>
 						{
+							(location.pathname !== "/add-phone" && location.pathname !== "/email-sent") &&
 							(isConnected === false || isConnected === null || userData === null) && userNavButton.map((value: NavButtonProps, index: number) => {
 								return (
 									<NavigationButton
