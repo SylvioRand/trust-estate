@@ -38,7 +38,7 @@ export function VerifyUsersState() {
 						return;
 					}
 					if ((serverResponse as any).error === "email_not_verified") {
-						if (url.pathname === "/email-sent") {
+						if (url.pathname === "/email-sent" || url.pathname === "/verify-email") {
 							return;
 						}
 						navigate("/email-sent", { replace: true });
