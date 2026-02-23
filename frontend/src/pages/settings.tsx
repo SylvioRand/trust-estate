@@ -25,7 +25,7 @@ const SettingsButton: React.FC<SettingsButtonProps> = ({
 	icon = "",
 	title = "Title",
 	hover_color = "var(--color-accent)",
-	onClick = () => {}
+	onClick = () => { }
 }) => {
 	const [hovered, setHovered] = useState<boolean>(false);
 
@@ -72,8 +72,10 @@ const SettingsPage: React.FC = () => {
 	const { t } = useTranslation(["settings", "error", "signUp"]);
 
 	// Redirect if user is not connected
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
+	useEffect(() => {
+		if (isConnected !== null && isConnected === false)
+			navigate("/sign-in");
+	}, [isConnected])
 
 	// NOTE: May remove those error check since the back-end looks like
 	const [errorFirstName, setErrorFirstName] = useState<string[]>([]);
