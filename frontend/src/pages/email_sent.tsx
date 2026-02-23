@@ -65,6 +65,7 @@ const EmailSentPage: React.FC = () => {
 
 			setTimeout(() => {
 				setResendButtonDisabled(false);
+				setTimeLeft(0);
 				controls.stop();
 			}, retryAfterSeconds * 1000);
 			setIsLoading(false);

@@ -547,7 +547,7 @@ export async function deleteUserData(app: FastifyInstance, userId: string) {
 		const buyerReservations = await tx.reservation.findMany({
 			where: { sellerId: userId }
 		});
-		console.log(`Found ${buyerReservations.length} reservations for buyer ${userId} to process for deletion.`);
+
 		for (const reservation of buyerReservations) {
 			if (reservation.status === 'confirmed' || reservation.status === 'pending') {
 				await refundCredits(app, reservation.buyerId);
