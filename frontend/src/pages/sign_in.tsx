@@ -70,8 +70,11 @@ const SignInPage: React.FC = () => {
 			setErrorEmail([]);
 			setErrorPassword([]);
 			const from = location.state?.from;
+			const cameFromResetPass = location.state?.fromResetPass;
 
-			if (from) {
+			if (cameFromResetPass)
+				navigate("/home", { replace: true });
+			else if (from) {
 				navigate(from, { replace: true });
 			} else {
 				const canGoBack = window.history.state && window.history.state.idx > 0;

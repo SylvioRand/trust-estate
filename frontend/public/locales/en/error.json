@@ -28,6 +28,7 @@
 		"email_already_verified": "This email address is already verified.",
 		"email_already_exists": "This email address is already in use.",
 		"phone_already_exists": "This phone number is already in use.",
+		"phone_number_verification_required": "Phone number verification is required to continue. Please verify your phone number to access this feature.",
 		"account_activated_bonus": "The account has been successfully activated. Five credits have been granted.",
 		"verification_token_invalid": "The verification link is invalid or has expired.",
 		"reset_password_email_sent": "If the email address exists, a reset link has been sent.",
