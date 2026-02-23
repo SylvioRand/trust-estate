@@ -73,6 +73,10 @@ const BuyerSlotsPage: React.FC = () => {
     if (isConnected !== null && isConnected === false) {
       navigate("/sign-in", { state: { from: location.pathname + location.search } });
     }
+    if (!listingID) {
+      navigate("/home");
+      return;
+    }
     const fetchSlots = async () => {
       try {
         const response = await fetch(url, {
