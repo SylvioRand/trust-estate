@@ -16,16 +16,16 @@ export async function rechargeUserCredit(app: FastifyInstance, userId: string, a
 			if (creditBalance && creditBalance.balance > 0)
 				throw new Error("balance_not_zero");
 
-			if (creditBalance?.lastRechargeAt) {
-				const now = new Date();
-				const last = new Date(creditBalance.lastRechargeAt);
-				const sameDay =
-					last.getUTCFullYear() === now.getUTCFullYear() &&
-					last.getUTCMonth() === now.getUTCMonth() &&
-					last.getUTCDate() === now.getUTCDate();
-				if (sameDay)
-					throw new Error("recharge_daily_limit");
-			}
+			// if (creditBalance?.lastRechargeAt) {
+			// 	const now = new Date();
+			// 	const last = new Date(creditBalance.lastRechargeAt);
+			// 	const sameDay =
+			// 		last.getUTCFullYear() === now.getUTCFullYear() &&
+			// 		last.getUTCMonth() === now.getUTCMonth() &&
+			// 		last.getUTCDate() === now.getUTCDate();
+			// 	if (sameDay)
+			// 		throw new Error("recharge_daily_limit");
+			// }
 		}
 
 		const creditBalances = await tx.creditBalance.upsert({
