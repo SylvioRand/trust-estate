@@ -178,12 +178,11 @@ const FlaggedPage: React.FC = () => {
 				</div>
 			</div>
 			<div
-				className="grid grid-cols-1 grid-rows-1
-			md:grid-cols-2
-			xl:grid-cols-3
-			place-items-center
-			gap-3
-			w-full">
+				className="grid grid-cols[repeat(minmax(min(250px,100%),1fr))] grid-rows-1
+				place-items-center
+				gap-3
+				w-full"
+			>
 				{
 					historyModAction && historyModAction.map((value: HistoryModActionType, index: number) => {
 						return (
