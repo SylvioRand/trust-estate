@@ -746,11 +746,6 @@
       "id": "tana-a6-avaratanana",
       "displayName": "Avaratanana",
       "arrondissement": 6
-    },
-    {
-      "id": "tana-autre",
-      "displayName": "Autre quartier",
-      "arrondissement": 0
     }
   ]
 }

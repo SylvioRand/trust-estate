@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import VisitsSection from "./dashboard/VisitsSection";
 import ReservationsSection from "./dashboard/ReservationsSection";
@@ -8,16 +8,18 @@ import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import CreditsSection from "./dashboard/CreditsSection";
 
 const DashboardPage: React.FC = () => {
-  const { t } = useTranslation("nav");
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [activeTab, setActiveTab] = useState<string>("visits");
-  VerifyUsersState()
-  const { isConnected } = useDataProvider();
+	const { t } = useTranslation("nav");
+	const navigate = useNavigate();
+	const location = useLocation();
+	const [activeTab, setActiveTab] = useState<string>("visits");
+	VerifyUsersState()
+	const { isConnected } = useDataProvider();
 
-  if (isConnected !== null && isConnected === false) {
-    navigate("/sign-in", { state: { from: location.pathname } });
-  }
+	useEffect(() => {
+		if (isConnected !== null && isConnected === false) {
+			navigate("/sign-in", { state: { from: location.pathname } });
+		}
+	}, [isConnected])
 
   const menuItems = [
     { id: "visits", label: t("button.dashboard.tabs.visits"), icon: "👁", component: <VisitsSection /> },
@@ -25,8 +27,8 @@ const DashboardPage: React.FC = () => {
     { id: "credits", label: t("button.dashboard.tabs.credits"), icon: "🪙", component: <CreditsSection /> }
   ];
 
-  const currentItem = menuItems.find(item => item.id === activeTab);
-  const ActiveComponent = currentItem?.component;
+	const currentItem = menuItems.find(item => item.id === activeTab);
+	const ActiveComponent = currentItem?.component;
 
   return (
     <div className="bg-(--color-bg-dash) pt-[60px] lg:pt-[100px] mb-20 px-4 text-background min-h-screen transition-all duration-500">
@@ -47,7 +49,7 @@ const DashboardPage: React.FC = () => {
                   }`}
               >
                 <span className={`transition-transform duration-500 ${activeTab === item.id ? "rotate-12 scale-110" : "group-hover:rotate-12"}`}>
-                  {item.id === "visits" ? "👁" : "📅"}
+                  {item.icon}
                 </span>
                 {item.label}
               </button>
@@ -55,22 +57,22 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* CONTENT AREA */}
-        <div className="flex-1 bg-card-bg/30 backdrop-blur-md rounded-2xl p-4 sm:p-8 lg:p-10 border border-highlight/20 min-h-[600px] shadow-2xl overflow-hidden">
-          <header className="mb-10">
-            <h2 className="text-4xl font-black tracking-tight">
-              {currentItem?.label}
-            </h2>
-            <div className="w-20 h-1 bg-accent mt-4 rounded-full opacity-80"></div>
-          </header>
+				{/* CONTENT AREA */}
+				<div className="flex-1 bg-card-bg/30 backdrop-blur-md rounded-2xl p-4 sm:p-8 lg:p-10 border border-highlight/20 min-h-[600px] shadow-2xl overflow-hidden">
+					<header className="mb-10">
+						<h2 className="text-4xl font-black tracking-tight">
+							{currentItem?.label}
+						</h2>
+						<div className="w-20 h-1 bg-accent mt-4 rounded-full opacity-80"></div>
+					</header>
 
-          <div className="animate-fade-in">
-            {ActiveComponent}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+					<div className="animate-fade-in">
+						{ActiveComponent}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 };
 
 export default DashboardPage;
