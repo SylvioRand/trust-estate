@@ -41,7 +41,7 @@ const EmailSentPage: React.FC = () => {
 				}
 				else if (response.status === 429) {
 					const retryAfter = response.headers.get("Retry-After");
-					const retryAfterSeconds = Number(retryAfter) || 60;
+					retryAfterSeconds = Number(retryAfter) || 60;
 					setTimeLeft(retryAfterSeconds);
 					setResendButtonDisabled(true);
 					toast.error(t("error:auth.resend_email_rate_limit"));
