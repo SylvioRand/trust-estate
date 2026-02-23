@@ -15,133 +15,130 @@ interface MyListingsBentoProps {
 	data: MyListingsData;
 }
 
-const MyListingsBento: React.FC<MyListingsBentoProps> = ({
-	data
-}) => {
+const MyListingsBento: React.FC<MyListingsBentoProps> = ({ data }) => {
 	const formatter = new Intl.NumberFormat("de-DE");
 	const { t } = useTranslation("common");
+
 	const statusIcon: Record<"archived" | "active" | "blocked", string> = {
-		archived: "",
+		archived: "",
 		active: "",
-		blocked: ""
-	}
+		blocked: ""
+	};
 	const statusColors: Record<"archived" | "active" | "blocked", string> = {
 		archived: "var(--color-red-500)",
 		active: "transparent",
 		blocked: "var(--color-red-500)"
-	}
+	};
 
 	return (
 		<div
-			className="grid grid-cols-1 grid-rows-[auto_1fr]
-		rounded-xl
-		shadow-standard
-		relative
-		w-full"
+			className="group grid grid-cols-1 grid-rows-[auto_1fr]
+			rounded-2xl
+			relative
+			w-full
+			overflow-hidden
+			transition-all duration-500 ease-out
+			hover:-translate-y-1"
+			style={{
+				background: "linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
+				boxShadow: "0 4px 24px rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.06) inset",
+				border: "1px solid rgba(255,255,255,0.08)",
+			}}
 		>
 			<div
-				className="absolute top-2 left-2
-			flex flex-wrap gap-2
-			z-2
-			w-full"
+				className="absolute top-3 left-3
+				flex flex-wrap gap-1.5
+				z-10
+				w-[calc(100%-1.5rem)]"
 			>
-				{
-					data.tags && data.tags.map((value: ListingsTags, index: number) => {
-						return (
-							<TagsComponents
-								key={index}
-								tags={value}
-							/>
-						);
-					})
-				}
+				{data.tags && data.tags.map((value: ListingsTags, index: number) => (
+					<TagsComponents key={index} tags={value} />
+				))}
 			</div>
 
 			<div
 				className="flex items-center justify-center
-			relative
-			overflow-hidden
-			w-full aspect-square"
+				relative
+				overflow-hidden
+				w-full aspect-square"
 			>
 				<div
-					className="absolute top-0 left-0
-				flex items-center justify-center
-				w-full h-full
-				select-none
-				rounded-t-xl
-				z-1"
+					className="absolute inset-0 z-[1] flex items-center justify-center
+					transition-opacity duration-300"
 					style={{
-						backgroundColor: data.status !== "active" ? "color-mix(in srgb, black 50%, transparent)" : "transparent",
+						backgroundColor: data.status !== "active"
+							? "color-mix(in srgb, black 55%, transparent)"
+							: "transparent",
 					}}
 				>
 					<div
-						className="font-icon text-[64px]"
+						className="font-icon text-[64px] drop-shadow-lg"
 						style={{
 							color: statusColors[data.status],
-							textShadow: `0px 0px 7px ${statusColors[data.status]}`
+							textShadow: `0px 0px 20px ${statusColors[data.status]}, 0px 0px 40px ${statusColors[data.status]}40`
 						}}
 					>
 						{statusIcon[data.status]}
 					</div>
 				</div>
 
+				<div
+					className="absolute bottom-0 left-0 w-full h-1/3 z-[1] pointer-events-none"
+					style={{
+						background: "linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 100%)"
+					}}
+				/>
+
 				<img
 					className="w-full h-full object-cover
-				rounded-t-xl"
+					transition-transform duration-700 ease-out
+					group-hover:scale-105"
 					src={data.photos[0]}
 					alt="User listing house picture"
 				/>
 			</div>
+
 			<div
 				className="grid grid-cols-1 grid-rows-[auto_auto]
-			gap-3
-			place-items-start
-			rounded-b-xl
-			p-3
-			border-x border-b border-background/25"
-			>
-				<div
-					className="grid grid-cols-1 grid-rows-[auto_auto]
+				gap-3
 				place-items-start
-				w-full">
+				p-4"
+			>
+				<div className="grid grid-cols-1 gap-1 w-full">
 					<div
 						className="font-higuen font-bold
-					text-lg
-					truncate w-full"
+						text-base leading-snug
+						truncate w-full
+						tracking-wide"
 					>
 						{data.title}
 					</div>
 
 					<div
-						className="flex items-center justify-center gap-1
-					w-full
-					text-sm"
+						className="flex items-center gap-1.5
+						w-full text-xs
+						opacity-60"
 					>
-						<div className="font-icon"></div><div className="truncate w-full">{data.zone}</div>
+						<div className="font-icon text-xs"></div>
+						<div className="truncate w-full">{data.zone}</div>
 					</div>
 				</div>
 
-				<div
-					className="grid grid-cols-1 grid-rows-[auto_auto]
-				w-full"
-				>
+				<div className="grid grid-cols-1 gap-2 w-full">
 					<div
-						className="font-bold">
+						className="font-bold text-sm tracking-wider"
+						style={{ color: "var(--color-gold, #c9a84c)" }}
+					>
 						{`${formatter.format(data.price)} Ar`}
 					</div>
-					<Link
-						className="w-full"
-						to={`/property/listings?id=${data.id}`}
-					>
-						<ActionButton
-							title={t("viewDetails")}
-						/>
+					<Link className="w-full" to={`/property/listings?id=${data.id}`}>
+						<ActionButton title={t("viewDetails")} />
 					</Link>
 				</div>
 			</div>
 		</div>
 	);
-}
+};
 
 const ProfilePage: React.FC = () => {
 	const navigate = useNavigate();
@@ -151,11 +148,10 @@ const ProfilePage: React.FC = () => {
 	const [myListings, setMyListings] = useState<MyListingsData[]>([]);
 	const [creditBalance, setCreditBalance] = useState<number>(0);
 
-	// Redirect if user is not connected
 	useEffect(() => {
 		if (isConnected !== null && isConnected === false)
 			navigate("/sign-in");
-	}, [isConnected])
+	}, [isConnected]);
 
 	useEffect(() => {
 		const getMyData = async () => {
@@ -177,17 +173,16 @@ const ProfilePage: React.FC = () => {
 					}
 					throw new Error(responseData.message);
 				}
-				setMyListings(responseData.data);
+				setMyListings(responseData.data ?? []);
 			} catch (error) {
 				if (error instanceof Error && error.message !== "")
 					toast.error(t(`error:${error.message}`))
 			}
 		};
 
-		if (isConnected !== null && isConnected === true)
-			getMyData();
+		getMyData();
 	}, []);
-
+	console.log(myListings);
 	useEffect(() => {
 		const credit = async () => {
 			try {
@@ -206,163 +201,159 @@ const ProfilePage: React.FC = () => {
 				}
 			} catch (error) {
 				if (error instanceof Error && error.message !== "")
-					toast.error(t(`error:${error.message}`))
+					toast.error(t(`error:${error.message}`));
 			}
 		};
 
 		credit();
 	}, []);
 
-
 	return (
-		<div className="flex flex-col items-center justify-start
+		<div
+			className="flex flex-col items-center justify-start
 			px-4 md:px-7 xl:px-64
 			overflow-y-scroll
 			animate-fade-in
 			w-full h-screen"
 		>
-			<div className="w-full h-20 flex-none"></div>
+			<div className="w-full h-20 flex-none" />
 
-			<div className="w-full h-36
+			{/* Hero Banner */}
+			<div
+				className="w-full
 				flex-none
-				flex items-center justify-center
 				relative
 				overflow-hidden
-				drop-shadow-standard
-				rounded-xl"
+				rounded-2xl"
+				style={{
+					height: "160px",
+					boxShadow: "0 8px 40px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.06) inset",
+				}}
 			>
 				<img
 					className="w-full h-full object-cover"
 					src="https://www.maxfosterphotography.com/images/xl/Radiant-Swirl.jpg"
 					alt="Abstract image"
 				/>
+				{/* Vignette overlay */}
+				<div
+					className="absolute inset-0 pointer-events-none"
+					style={{
+						background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%)"
+					}}
+				/>
 			</div>
 
-
-			<div className="grid grid-cols-1 grid-rows-2
-				md:grid-cols-[1fr_auto] md:grid-rows-1
-				w-full"
+			{/* Profile Card */}
+			<div
+				className="w-full mt-px rounded-b-2xl"
+				style={{
+					background: "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)",
+					border: "1px solid rgba(255,255,255,0.07)",
+					borderTop: "none",
+					boxShadow: "0 8px 32px rgba(0,0,0,0.14)"
+				}}
 			>
-				<div className="flex flex-col items-center justify-center
-					p-2
-					md:p-4
+				<div
+					className="grid grid-cols-1 grid-rows-2
+					md:grid-cols-[1fr_auto] md:grid-rows-1
 					w-full"
 				>
-					<div className="font-bold
+					{/* User Info */}
+					<div
+						className="flex flex-col items-start justify-center
+						px-5 py-5
 						w-full
-						truncate
-						mr-auto"
+						gap-0.5"
 					>
-						{userData?.firstName}
-					</div>
-
-					{
-						userData && userData.lastName &&
-						<div className="font-bold
-						w-full
-						truncate
-						mr-auto"
+						{/* Name */}
+						<div
+							className="font-bold text-xl tracking-wide truncate w-full"
 						>
-							{userData.lastName}
-						</div>
-					}
-
-					<div className="font-light
-						w-full
-						truncate
-						whitespace-pre-line
-						mr-auto"
-					>
-						{userData?.email}
-					</div>
-
-					{
-						userData && userData.phone &&
-						<div className="font-light
-						w-full
-						truncate
-						whitespace-pre-line
-						mr-auto"
-						>
-							{userData.phone}
-						</div>
-					}
-
-					{
-						userData && userData.createdAt &&
-						<div className="font-light
-						w-full
-						truncate
-						whitespace-pre-line
-						mt-4
-						mr-auto"
-						>
-							{
-								t("listings:section.contact.memberSince")
-								+ " "
-								+ CreateDateForMemberSince(userData?.createdAt)
+							{userData?.firstName}
+							{userData?.lastName &&
+								<span className="ml-2">{userData.lastName}</span>
 							}
 						</div>
-					}
 
-					{
-						userData !== null && creditBalance !== null &&
-						<div className="flex items-center gap-2
-						w-full
-						mt-3
-						mr-auto"
-						>
-							<div className="flex items-center gap-1
-							px-3 py-1
-							rounded-full
-							bg-background/10
-							border border-background/20
-							text-sm font-semibold"
-							>
-								<span className="font-icon text-base"></span>
-								<span>{creditBalance}</span>
-								<span className="font-light">{t("credits")}</span>
+						{/* Email */}
+						<div className="text-sm opacity-50 truncate w-full font-light mt-0.5">
+							{userData?.email}
+						</div>
+
+						{/* Phone */}
+						{userData?.phone &&
+							<div className="text-sm opacity-50 truncate w-full font-light">
+								{userData.phone}
 							</div>
-						</div>
-					}
-
-				</div>
-				<div className="grid grid-cols-1 grid-rows-2
-					md:grid-cols-[auto_auto] md:grid-rows-1
-					place-items-start
-					p-2
-					md:p-4
-					gap-0
-					xl:gap-4"
-				>
-					<Link
-						className="w-full"
-						to="/profile/settings"
-					>
-						<ActionButton
-							icon=""
-							title={t("buttons.settings")}
-						/>
-					</Link>
-					<ActionButton
-						icon={userData?.role === "MODERATOR" ? "" : "󰚧"}
-						icon_size={22}
-						title={userData?.role === "MODERATOR" ? t("buttons.flagged") : t("buttons.publish")}
-						onClick={
-							() => {
-								if (userData?.role === "MODERATOR")
-									navigate("/profile/moderator/flagged")
-								else
-									navigate("/profile/publish")
-							}
 						}
-					/>
+
+						{/* Member since */}
+						{userData?.createdAt &&
+							<div
+								className="text-xs opacity-40 mt-3 tracking-widest uppercase font-light"
+							>
+								{t("listings:section.contact.memberSince") + " " + CreateDateForMemberSince(userData?.createdAt)}
+							</div>
+						}
+
+						{/* Credits badge */}
+						{userData !== null && creditBalance !== null &&
+							<div className="mt-4">
+								<div
+									className="inline-flex items-center gap-2
+									px-3 py-1.5
+									rounded-full
+									text-xs font-semibold
+									transition-all duration-300"
+									style={{
+										background: "linear-gradient(135deg, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.05) 100%)",
+										border: "1px solid rgba(201,168,76,0.35)",
+										color: "var(--color-gold, #c9a84c)",
+										boxShadow: "0 0 12px rgba(201,168,76,0.08)"
+									}}
+								>
+									<span className="font-icon text-sm"></span>
+									<span className="font-bold">{creditBalance}</span>
+									<span
+										className="font-light opacity-70"
+									>
+										{t("credits")}
+									</span>
+								</div>
+							</div>
+						}
+					</div>
+
+					{/* Action Buttons */}
+					<div
+						className="flex flex-row md:flex-col items-center justify-center
+						px-4 py-4
+						gap-2"
+					>
+						<Link className="w-full" to="/profile/settings">
+							<ActionButton
+								icon=""
+								title={t("buttons.settings")}
+							/>
+						</Link>
+						<ActionButton
+							icon={userData?.role === "MODERATOR" ? "" : "󰚧"}
+							icon_size={22}
+							title={userData?.role === "MODERATOR" ? t("buttons.flagged") : t("buttons.publish")}
+							onClick={() => {
+								if (userData?.role === "MODERATOR")
+									navigate("/profile/moderator/flagged");
+								else
+									navigate("/profile/publish");
+							}}
+						/>
+					</div>
 				</div>
 			</div>
 
-			<div
-				className="w-full my-4"
-			>
+			{/* Divider */}
+			<div className="w-full my-6">
 				<ContentDivider
 					line_color="linear-gradient(to left,
 					transparent,
@@ -372,58 +363,47 @@ const ProfilePage: React.FC = () => {
 				/>
 			</div>
 
-			{
-				myListings.length === 0 &&
+			{/* Empty state */}
+			{myListings.length === 0 &&
 				<div
 					className="flex flex-col items-center justify-center
 					select-none
-					w-full"
+					w-full
+					py-16
+					gap-3
+					opacity-40"
 				>
 					<div
-						className="flex items-center justify-center
-						w-48 aspect-square
-						relative"
+						className="font-icon text-[96px] leading-none"
 					>
-						<div
-							className="font-icon text-[256px]
-							absolute"
-						>
-							
-						</div>
+						
 					</div>
-					<div className="font-light">
+					<div className="text-sm font-light tracking-widest uppercase">
 						{t("noMyListings")}
 					</div>
 				</div>
 			}
 			<div
-				className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] grid-rows-1
-		gap-3
-		xl:px-0
-		w-full"
+				className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))]
+				gap-4
+				w-full"
 			>
-				{
-					myListings && myListings.map((value: MyListingsData, index: number) => {
-						return (
-							<Animate
-								customStyle={{
-									width: "100%"
-								}}
-								delay={`${100 * index}ms`}
-							>
-								<MyListingsBento
-									key={index}
-									data={value}
-								/>
-							</Animate>
-						);
-					})
-				}
+				{myListings && myListings.map((value: MyListingsData, index: number) => (
+					<Animate
+						key={index}
+						customStyle={{ width: "100%" }}
+						delay={`${80 * index}ms`}
+					>
+						<MyListingsBento
+							data={value}
+						/>
+					</Animate>
+				))}
 			</div>
-			<div
-				className="w-full h-6 flex-none"></div>
+
+			<div className="w-full h-10 flex-none" />
 		</div>
 	);
-}
+};
 
 export default ProfilePage;

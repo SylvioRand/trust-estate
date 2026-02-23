@@ -11,6 +11,7 @@ type HistoryModActionType = {
 	title: string,
 	reportCount: number,
 	latestReportReason: string,
+	comment?: string | null,
 	seller: {
 		id: string,
 		name: string,
@@ -23,118 +24,84 @@ interface ModActionHistoryProps {
 	data: HistoryModActionType
 }
 
-const ModActionHistory: React.FC<ModActionHistoryProps> = ({
-	data
-}) => {
+const ModActionHistory: React.FC<ModActionHistoryProps> = ({ data }) => {
 	const { t } = useTranslation(["flagged", "common", "error", "listings"]);
 
 	return (
 		<div
-			className="rounded-xl
-		grid grid-cols-1 grid-rows-[auto_1fr]
-		shadow-standard
-		border border-background/25
-		p-4
-		w-full"
+			className="rounded-2xl
+			grid grid-cols-1
+			w-full
+			overflow-hidden
+			border border-white/10
+			bg-white/5
+			shadow-lg
+			hover:-translate-y-0.5
+			transition-transform duration-300"
 		>
 			<div
-				className="grid grid-cols-[1fr_auto] grid-rows-1
-			w-full"
+				className="grid grid-cols-[1fr_auto] items-center
+				gap-3
+				px-5 pt-5 pb-4
+				border-b border-white/10"
 			>
-				<div
-					className="font-bold text-lg">
+				<div className="font-bold text-base tracking-wide truncate">
 					{data.title}
 				</div>
 
 				<div
 					className="flex items-center justify-center
-				rounded-full
-				w-7 h-7
-				bg-red-500">
-					<div
-						className="
-					rounded-full"
-					>
-						{data.reportCount}
-					</div>
+					min-w-[28px] h-7 px-2
+					rounded-full
+					bg-red-600
+					text-xs font-bold text-white
+					shadow-[0_0_10px_rgba(220,38,38,0.5)]"
+				>
+					{data.reportCount}
 				</div>
 			</div>
-			<div
-				className="flex flex-col items-start justify-start
-			gap-3
-			w-full"
-			>
-				<div>
-					<div>
+
+			<div className="flex flex-col gap-4 px-5 py-4">
+
+				<div className="flex flex-col gap-1">
+					<span className="text-[10px] font-semibold tracking-[0.15em] uppercase text-amber-400/80">
 						{t("latestReportReason.title")}
-					</div>
-					<div
-						className="font-extralight">
+					</span>
+					<span className="text-sm font-extralight opacity-70">
 						{t(`listings:section.actionButton.popup.report.popup.reason.${data.latestReportReason}`)}
-					</div>
+					</span>
 				</div>
 
-				<div>
-					<div>
+				<div className="w-full h-px bg-white/5" />
+
+				<div className="flex flex-col gap-1">
+					<span className="text-[10px] font-semibold tracking-[0.15em] uppercase text-amber-400/80">
 						{t("userInfo.title")}
-					</div>
-
-					<div
-						className="flex flex-col items-start justify-start
-					font-extralight
-					w-full"
-					>
-						<div>
-							{data.seller.name}
-						</div>
-						<div>
-							{data.seller.email}
-						</div>
-						<div>
-							{data.seller.id}
-						</div>
+					</span>
+					<div className="flex flex-col gap-0.5">
+						<span className="text-sm font-light">{data.seller.name}</span>
+						<span className="text-sm font-extralight opacity-50">{data.seller.email}</span>
+						<span className="text-[11px] font-mono opacity-25 tracking-wide mt-0.5">{data.comment}</span>
 					</div>
 				</div>
 
-				<div
-					className="grid grid-cols-[auto_1fr] grid-rows-1
-				gap-3
-				place-items-center
-				w-full"
-				>
-					<div
-						className="font-light">
+				<div className="w-full h-px bg-white/5" />
+
+				<div className="flex items-center justify-between gap-3 w-full">
+					<span className="text-xs font-light opacity-40 whitespace-nowrap">
 						{`${t("reportedThe")} ${CreateDateForMemberSince(data.flaggedAt)}`}
-					</div>
-					<Link
-						className="flex items-center justify-end
-					w-full"
-						to={`/property/listings?id=${data.listingId}`}
-					>
-						<div>
-							<ActionButton
-								title={t("common:viewListing")}
-							/>
-						</div>
+					</span>
+
+					<Link to={`/property/listings?id=${data.listingId}`}>
+						<ActionButton title={t("common:viewListing")} />
 					</Link>
 				</div>
+
 			</div>
 		</div>
 	);
-}
+};
 
-// const	TEST: HistoryModActionType = {
-// 	listingId: "23071-231203hask-419askb78283h",
-// 	title: "A little heaven in earth",
-// 	reportCount: 1,
-// 	latestReportReason: "The listing photo doesn't match the description",
-// 	seller: {
-// 		id: "jhcqn923124-oiqbubw1-32139asigwdqbd97da7d65af",
-// 		name: "Rakotoarivony Razanajohary Ny Hasina",
-// 		email: "djazejhasi@gmail.com"
-// 	},
-// 	flaggedAt: "2026-04-02T23:00:00Z"
-// }
 
 const FlaggedPage: React.FC = () => {
 	const { t } = useTranslation(["flagged", "error", "common"]);
@@ -156,7 +123,7 @@ const FlaggedPage: React.FC = () => {
 				})
 
 				const responseData = await response.json();
-
+				console.log(responseData);
 				if (!response.ok) {
 					if (responseData.details) {
 						const details: Record<string, string[]> = responseData.details as Record<string, string[]>;
