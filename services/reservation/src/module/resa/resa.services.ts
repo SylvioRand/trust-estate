@@ -226,8 +226,7 @@ export async function cancelReservation(app: FastifyInstance, userId: string, re
 		else
 			cancel = $Enums.CancelledBy.system;
 
-
-		if ((reservation.status === 'confirmed' || reservation.status === 'pending') && (cancel === $Enums.CancelledBy.seller || cancel === $Enums.CancelledBy.system)) {
+		if (reservation.status === 'confirmed' && cancel === $Enums.CancelledBy.seller) {
 			await refundCredits(app, reservation.buyerId);
 		}
 
@@ -282,20 +281,18 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 			}
 		}
 
-		const allPendingReservations = await tx.reservation.findMany({
+		const slotOverlapFilter = {
+			gt: new Date(confirmedSlotStart - 30 * 60 * 1000),
+			lt: new Date(confirmedSlotEnd)
+		};
+
+		const listingConflicts = await tx.reservation.findMany({
 			where: {
 				reservationId: { not: reservationId },
-				status: 'pending'
+				listingId: reservation.listingId,
+				status: 'pending',
+				slot: slotOverlapFilter
 			}
-		});
-
-		const listingConflicts = allPendingReservations.filter(r => {
-			if (r.listingId !== reservation.listingId) return false;
-
-			const otherStart = r.slot.getTime();
-			const otherEnd = otherStart + 30 * 60 * 1000;
-
-			return otherStart < confirmedSlotEnd && otherEnd > confirmedSlotStart;
 		});
 
 		if (listingConflicts.length > 0) {
@@ -308,20 +305,16 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 					rejectedAt: new Date()
 				}
 			});
-
-			for (const conflict of listingConflicts) {
-				await refundCredits(app, conflict.buyerId);
-			}
 		}
 
-		const buyerConflicts = allPendingReservations.filter(r => {
-			if (r.buyerId !== reservation.buyerId) return false;
-			if (r.listingId === reservation.listingId) return false;
-
-			const otherStart = r.slot.getTime();
-			const otherEnd = otherStart + 30 * 60 * 1000;
-
-			return otherStart < confirmedSlotEnd && otherEnd > confirmedSlotStart;
+		const buyerConflicts = await tx.reservation.findMany({
+			where: {
+				reservationId: { not: reservationId },
+				buyerId: reservation.buyerId,
+				listingId: { not: reservation.listingId },
+				status: 'pending',
+				slot: slotOverlapFilter
+			}
 		});
 
 		if (buyerConflicts.length > 0) {
@@ -335,11 +328,9 @@ export async function confirmStatusReservation(app: FastifyInstance, userId: str
 					cancelledBy: 'system'
 				}
 			});
-
-			for (const conflict of buyerConflicts) {
-				await refundCredits(app, conflict.buyerId);
-			}
 		}
+
+		await debitCredits(app, reservation.buyerId);
 
 		const data = await tx.reservation.update({
 			where: { reservationId },
@@ -419,8 +410,6 @@ export async function rejectStatusReservation(app: FastifyInstance, userId: stri
 
 		if (reservation.status !== "pending")
 			throw new Error("reservation_already_processed");
-
-		await refundCredits(app, reservation.buyerId);
 
 		const data = await tx.reservation.update({
 			where: { reservationId },
@@ -536,7 +525,8 @@ async function refundCredits(app: FastifyInstance, buyerId: string) {
 				'x-user-id': buyerId
 			},
 			body: JSON.stringify({
-				reason: 'refund_visit'
+				reason: 'refund_cancelled',
+				type: 'refund'
 			})
 		});
 

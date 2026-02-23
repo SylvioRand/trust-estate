@@ -1,5 +1,29 @@
 {
-	"noMyListings": "Vous n’avez publié aucune annonce.",
+	"noMyListings": "Vous n'avez publié aucune annonce.",
+	"credits": "crédits",
+	"creditSection": {
+		"title": "Mes crédits",
+		"recharge": "Recharger",
+		"rechargeTitle": "Choisir un pack",
+		"recharging": "Rechargement...",
+		"noHistory": "Aucune transaction pour l'instant.",
+		"historyTitle": "Historique des transactions",
+		"type": {
+			"recharge": "Recharge",
+			"bonus": "Bonus",
+			"debit": "Débit",
+			"consume": "Débit",
+			"refund": "Remboursement"
+		},
+		"reason": {
+			"recharge_pack": "Achat de pack",
+			"initial_bonus": "Bonus initial",
+			"publish_listing": "Publication d'annonce",
+			"renew_listing": "Renouvellement",
+			"reserve_visit": "Réservation de visite",
+			"refund_cancelled": "Remboursement annulation"
+		}
+	},
 	"buttons": {
 		"publish": "Publier",
 		"settings": "Paramètres",

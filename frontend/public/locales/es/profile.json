@@ -1,5 +1,29 @@
 {
 	"noMyListings": "No tienes ninguna publicación",
+	"credits": "créditos",
+	"creditSection": {
+		"title": "Mis créditos",
+		"recharge": "Recargar",
+		"rechargeTitle": "Elegir un paquete",
+		"recharging": "Procesando...",
+		"noHistory": "Sin transacciones aún.",
+		"historyTitle": "Historial de transacciones",
+		"type": {
+			"recharge": "Recarga",
+			"bonus": "Bonificación",
+			"debit": "Débito",
+			"consume": "Débito",
+			"refund": "Reembolso"
+		},
+		"reason": {
+			"recharge_pack": "Compra de paquete",
+			"initial_bonus": "Bono inicial",
+			"publish_listing": "Publicación de anuncio",
+			"renew_listing": "Renovación de anuncio",
+			"reserve_visit": "Reserva de visita",
+			"refund_cancelled": "Reembolso por cancelación"
+		}
+	},
 	"buttons": {
 		"publish": "Publicar",
 		"settings": "Configuración",

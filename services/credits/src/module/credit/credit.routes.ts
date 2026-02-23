@@ -18,6 +18,10 @@ export async function creditRoutes(app: FastifyInstance) {
 		{
 			preHandler: app.authentication
 		}, creditController.getBalance);
+	app.post("/credits/balance/init",
+		{
+			preHandler: app.authentication
+		}, creditController.ensureBalance);
 	app.get("/credits/health", async (req, reply) => {
 		return reply.status(200).send({ status: "ok", service: "credits", version: "1.0.1" });
 	});
