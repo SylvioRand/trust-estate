@@ -346,12 +346,12 @@ const AIPage: React.FC = () => {
 		}
 	}
 
-	useEffect(() => {
-		if (chatValue === "")
-			setCanSend(false);
-		else
-			setCanSend(true);
-	}, [chatValue]);
+	// useEffect(() => {
+	// 	if (chatValue === "")
+	// 		setCanSend(false);
+	// 	else
+	// 		setCanSend(true);
+	// }, [chatValue]);
 
 	return (
 		<div className="flex flex-col-reverse items-center justify-start
