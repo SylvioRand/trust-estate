@@ -178,7 +178,8 @@ const ProfilePage: React.FC = () => {
 			}
 		};
 
-		getMyData();
+		if (isConnected !== null && isConnected === true)
+			getMyData();
 	}, []);
 
 	useEffect(() => {
@@ -203,7 +204,8 @@ const ProfilePage: React.FC = () => {
 			}
 		};
 
-		credit();
+		if (isConnected !== null && isConnected === true)
+			credit();
 	}, []);
 
 	return (
