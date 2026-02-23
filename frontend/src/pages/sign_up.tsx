@@ -105,7 +105,7 @@ const SignUpPage: React.FC = () => {
 							}
 						}
 					}
-					throw new Error("Invalid Request.");
+					throw new Error("common.validation_failed");
 				}
 				else if (errorData.error === "rate_limited") {
 					throw new Error("common.rate_limited");
