@@ -17,8 +17,10 @@ const VerifyEmailPage: React.FC = () => {
 	const { isConnected } = useDataProvider();
 
 	VerifyUsersState();
-	if (isConnected !== null && isConnected === false)
-		navigate("/sign-in");
+	useEffect(() => {
+		if (isConnected !== null && isConnected === false)
+			navigate("/sign-in");
+	}, [isConnected])
 	const verifyToken = async () => {
 		try {
 			const response = await fetch("/api/auth/verify-email", {
