@@ -99,7 +99,7 @@ export async function verifyAccessToken(
 			}
 		}
 
-		reply.code(200).send({
+		reply.code(400).send({
 			error: "invalid_or_expired_token",
 			message: "auth.verification_token_invalid"
 		});
