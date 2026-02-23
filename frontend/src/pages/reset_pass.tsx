@@ -57,7 +57,7 @@ const ResetPassPage: React.FC = () => {
 			}
 			else {
 				toast.success(t(`error:${responseData?.message ?? "success"}`));
-				navigate("/sign-in");
+				navigate("/sign-in", { state: { fromResetPass: true } });
 			}
 		} catch (error) {
 			if (error instanceof Error && error.message !== "") {
