@@ -25,6 +25,7 @@
 		"invalid_request": "Invalid Request.",
 		"verification_email_sent": "A verification email has been sent.",
 		"verification_email_sent_if_exists": "A verification email has been sent if the account exists.",
+		"email_already_verified": "This email address is already verified.",
 		"email_already_exists": "This email address is already in use.",
 		"phone_already_exists": "This phone number is already in use.",
 		"account_activated_bonus": "The account has been successfully activated. Five credits have been granted.",

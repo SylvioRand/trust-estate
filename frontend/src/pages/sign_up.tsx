@@ -27,11 +27,10 @@ const SignUpPage: React.FC = () => {
 
 	const { isConnected, setIsConnected } = useDataProvider();
 
-	VerifyUsersState();
 	useEffect(() => {
 		if (isConnected !== null && isConnected === true)
 			navigate("/profile");
-	}, [isConnected]);
+	}, []);
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();

@@ -11,7 +11,7 @@ export async function rechargeCredit(request: FastifyRequest<{ Body: RechargeInt
 	const type = request.body.type;
 	const user = (request as any).user as UserInterface;
 
-	if (!user) {
+	if (!user || user.role === "moderator") {
 		return reply.code(400).send({
 			"error": "Error",
 			"message": "auth.invalid_credentials"

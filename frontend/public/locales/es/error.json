@@ -25,6 +25,7 @@
 		"invalid_request": "Solicitud inválida.",
 		"verification_email_sent": "Se ha enviado un correo electrónico de verificación.",
 		"verification_email_sent_if_exists": "Se ha enviado un correo electrónico de verificación si la cuenta existe.",
+		"email_already_verified": "Esta dirección de correo electrónico ya está verificada.",
 		"email_already_exists": "Esta dirección de correo electrónico ya está en uso.",
 		"phone_already_exists": "Este número de teléfono ya está en uso.",
 		"account_activated_bonus": "La cuenta se ha activado correctamente. Se han otorgado cinco créditos.",
