@@ -12,6 +12,7 @@ const EmailSentPage: React.FC = () => {
 	const { t } = useTranslation(["emailSent", "error"]);
 	const [processResend, setProcessResend] = useState<boolean>(false);
 	const [processLogOut, setProcessLogOut] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [resendButtonDisabled, setResendButtonDisabled] = useState<boolean>(false);
 	const navigate = useNavigate();
 	const [timeLeft, setTimeLeft, controls] = useCountdown();
@@ -19,7 +20,10 @@ const EmailSentPage: React.FC = () => {
 
 	const handleOnResend = async () => {
 		setProcessResend(true);
-
+		if (isLoading) {
+			return;
+		}
+		setIsLoading(true);
 		try {
 			const response = await fetch("/api/auth/resend-email", {
 				method: "POST",
@@ -56,6 +60,7 @@ const EmailSentPage: React.FC = () => {
 				setTimeLeft(0);
 				controls.stop();
 			}, 60000);
+			setIsLoading(false);
 		}
 	}
 

@@ -18,8 +18,10 @@ const ForgotPassPage: React.FC = () => {
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-
+		if (processingSubmit)
+			return;
 		setProcessingSubmit(true);
+
 		const formData = new FormData(e.currentTarget);
 		const data = Object.fromEntries(formData.entries());
 
