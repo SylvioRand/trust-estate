@@ -79,10 +79,10 @@ const ModActionHistory: React.FC<ModActionHistoryProps> = ({ data }) => {
 					<span className="text-[10px] font-semibold tracking-[0.15em] uppercase text-amber-400/80">
 						{t("userInfo.title")}
 					</span>
-					<div className="flex flex-col gap-0.5">
+					<div className="flex flex-col gap-0.5 w-full">
 						<span className="text-sm font-light">{data.seller.name}</span>
 						<span className="text-sm font-extralight opacity-50">{data.seller.email}</span>
-						<span className="text-[11px] font-mono opacity-25 tracking-wide mt-0.5">{data.comment}</span>
+						<span className="text-sm font-light wrap-anywhere opacity-25 tracking-wide mt-0.5">{data.comment}</span>
 					</div>
 				</div>
 
