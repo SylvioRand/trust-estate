@@ -28,6 +28,7 @@
 		"email_already_verified": "Esta dirección de correo electrónico ya está verificada.",
 		"email_already_exists": "Esta dirección de correo electrónico ya está en uso.",
 		"phone_already_exists": "Este número de teléfono ya está en uso.",
+		"phone_number_verification_required": "Se requiere la verificación del número de teléfono para continuar. Por favor, verifica tu número de teléfono para acceder a esta función.",
 		"account_activated_bonus": "La cuenta se ha activado correctamente. Se han otorgado cinco créditos.",
 		"verification_token_invalid": "El enlace de verificación es inválido o ha expirado.",
 		"reset_password_email_sent": "Si la dirección de correo electrónico existe, se ha enviado un enlace de restablecimiento.",

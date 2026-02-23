@@ -28,6 +28,7 @@
 		"email_already_verified": "Cette adresse e-mail est déjà vérifiée.",
 		"email_already_exists": "Cette adresse e-mail est déjà utilisée.",
 		"phone_already_exists": "Ce numéro de téléphone est déjà utilisé.",
+		"phone_number_verification_required": "La vérification du numéro de téléphone est requise pour continuer. Veuillez vérifier votre numéro de téléphone pour accéder à cette fonctionnalité.",
 		"account_activated_bonus": "Le compte a été activé avec succès. Cinq crédits ont été attribués.",
 		"verification_token_invalid": "Le lien de vérification est invalide ou a expiré.",
 		"reset_password_email_sent": "Si l'adresse e-mail existe, un lien de réinitialisation a été envoyé.",

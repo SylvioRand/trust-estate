@@ -19,17 +19,17 @@ const AddPhonePage: React.FC = () => {
 	const { isConnected, userData } = useDataProvider();
 
 	const location = useLocation();
-	
+
 	useEffect(() => {
 		if ((isConnected !== null && isConnected === false) ||
-	userData?.phoneVerified) {
+			userData?.phoneVerified) {
 			const from = location.state?.from || "/home";
 			navigate(from, { replace: true });
 		}
 	}, [isConnected, userData?.phoneVerified, navigate, location.state?.from]);
-	
+
 	VerifyUsersState();
-	
+
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
@@ -59,7 +59,7 @@ const AddPhonePage: React.FC = () => {
 				const errorData = responseData as APIResponse;
 
 				setErrorPhone([errorData.message]);
-				throw new Error(t(`error:${errorData.message}`));
+				throw new Error(errorData.message);
 			}
 
 			toast.success(t("notif.success"));
