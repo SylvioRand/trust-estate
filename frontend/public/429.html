@@ -6,100 +6,195 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trop de requêtes - TrustEstate</title>
     <link rel="icon" type="image/svg+xml" href="/Casa.svg" />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5;
-            --bg: #0f172a;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
+            --color-background: #1E1E1E;
+            --color-foreground: #EEEEEE;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-background: #0a0a0a;
+                --color-foreground: #ededed;
+            }
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-foreground);
+            margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
+            min-height: 100vh;
+            overflow-y: auto;
         }
 
-        .container {
-            max-width: 500px;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 1rem;
+            width: 100%;
+            height: 100%;
+        }
+
+        @media (min-width: 1280px) {
+            .wrapper {
+                flex-direction: row;
+                gap: 2rem;
+            }
+        }
+
+        .content-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            width: 100%;
+            max-width: 25rem;
+        }
+
+        @media (min-width: 1280px) {
+            .content-left {
+                align-items: flex-end;
+                text-align: right;
+            }
+        }
+
+        .title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.75;
+            line-height: 1.5;
+        }
+
+        .divider-container {
+            display: none;
+            height: 15rem;
+            margin: 0 1rem;
+        }
+
+        @media (min-width: 1280px) {
+            .divider-container {
+                display: block;
+            }
+        }
+
+        .divider {
+            height: 100%;
+            width: 1px;
+            background-color: var(--color-foreground);
+            opacity: 0.75;
+            -webkit-mask-image: linear-gradient(to top, transparent, white 25%, white 85%, transparent);
+            mask-image: linear-gradient(to top, transparent, white 25%, white 85%, transparent);
+        }
+
+        .content-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 25rem;
         }
 
         .icon {
             font-size: 4rem;
-            margin-bottom: 1rem;
-            display: inline-block;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin: 0 0 1rem 0;
-            background: linear-gradient(to right, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        p {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 2rem;
+            animation: jiggle 1s ease-in-out infinite;
         }
 
         .btn {
-            display: inline-block;
-            background: var(--primary);
-            color: white;
+            background-color: var(--color-foreground);
+            color: var(--color-background);
             padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.2s;
+            border-radius: 0.5rem;
+            transition: opacity 0.2s, transform 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+            border: none;
+            outline: none;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
-            filter: brightness(1.1);
+            opacity: 0.9;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        @keyframes jiggle {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            15% {
+                transform: rotate(5deg);
+            }
+
+            30% {
+                transform: rotate(-5deg);
+            }
+
+            45% {
+                transform: rotate(3deg);
+            }
+
+            60% {
+                transform: rotate(-2deg);
+            }
+
+            75% {
+                transform: rotate(1deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="icon">⏳</div>
-        <h1>Ho là là !</h1>
-        <p>Vous allez un peu trop vite. Pour garantir une expérience fluide à tout le monde, nous limitons le nombre de
-            requêtes. Veuillez patienter quelques instants avant de réessayer.</p>
-        <a href="/" class="btn">Retour à l'accueil</a>
+    <div class="wrapper">
+        <div class="content-left">
+            <div class="title">Trop de requêtes</div>
+            <div class="subtitle">
+                Vous avez atteint la limite de requêtes autorisée.<br>
+                TrustEstate protège ses services pour garantir une expérience fluide à tout le monde. Veuillez patienter
+                quelques instants.
+            </div>
+        </div>
+
+        <div class="divider-container">
+            <div class="divider"></div>
+        </div>
+
+        <div class="content-right">
+            <div class="icon">⏳</div>
+            <a href="/" class="btn">
+                Retour à l'accueil
+            </a>
+        </div>
     </div>
 </body>
 
