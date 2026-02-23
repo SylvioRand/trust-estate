@@ -6,7 +6,7 @@
 //   By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2026/01/26 14:15:16 by aelison           #+#    #+#             //
-//   Updated:    2026-02-20 15:34:37 by aelison          ###   ########.fr       //
+//   Updated:    2026-02-21 00:00:00 by aelison          ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -19,6 +19,98 @@ import { type PropertyType } from "../dataModel/modelListings";
 import { Link } from "react-router-dom";
 import ActionButton from "../components/ActionButton";
 import Animate from "../components/Animate";
+
+const AIAvatar: React.FC = () => (
+	<div
+		className="flex-none w-8 h-8 rounded-full
+		flex items-center justify-center
+		border border-accent/30
+		text-accent text-sm font-bold
+		select-none"
+		style={{
+			background: "linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 30%, transparent), color-mix(in srgb, var(--color-accent) 8%, transparent))"
+		}}
+	>
+		✦
+	</div>
+);
+
+const LoadingDots: React.FC = () => (
+	<div className="flex items-center gap-1.5 px-1 py-0.5">
+		{[0, 150, 300].map((delay, i) => (
+			<div
+				key={i}
+				className="w-2 h-2 rounded-full bg-background/50 animate-bounce"
+				style={{ animationDelay: `${delay}ms`, animationDuration: "900ms" }}
+			/>
+		))}
+	</div>
+);
+
+interface WelcomeStateProps {
+	onSuggestion: (text: string) => void;
+}
+
+const WelcomeState: React.FC<WelcomeStateProps> = ({ onSuggestion }) => {
+	const { t } = useTranslation("ai");
+	const suggestions = t("welcome.suggestions", { returnObjects: true }) as string[];
+
+	return (
+		<div className="flex flex-col items-center justify-center gap-7
+			w-full h-[calc(100vh-14rem)]
+			px-4"
+		>
+			{/* glowing icon */}
+			<div className="relative flex items-center justify-center">
+				<div
+					className="absolute w-24 h-24 rounded-full"
+					style={{
+						background: "color-mix(in srgb, var(--color-accent) 20%, transparent)",
+						filter: "blur(24px)"
+					}}
+				/>
+				<div
+					className="relative w-16 h-16 rounded-full
+					flex items-center justify-center
+					border border-accent/30
+					text-accent text-3xl select-none"
+					style={{
+						background: "linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 35%, transparent), color-mix(in srgb, var(--color-accent) 8%, transparent))"
+					}}
+				>
+					✦
+				</div>
+			</div>
+
+			<div className="flex flex-col items-center gap-2 text-center max-w-sm">
+				<h2 className="font-higuen text-2xl font-bold text-background">
+					{t("welcome.title")}
+				</h2>
+				<p className="text-sm text-background/55 font-light leading-relaxed">
+					{t("welcome.subtitle")}
+				</p>
+			</div>
+
+			<div className="flex flex-wrap items-center justify-center gap-2 max-w-lg">
+				{suggestions.map((suggestion, i) => (
+					<button
+						key={i}
+						onClick={() => onSuggestion(suggestion)}
+						className="px-4 py-2 rounded-full text-sm
+						border border-background/20
+						text-background/65
+						transition-all duration-200
+						cursor-pointer select-none
+						hover:border-accent/40 hover:text-accent"
+						style={{ background: "transparent" }}
+					>
+						{suggestion}
+					</button>
+				))}
+			</div>
+		</div>
+	);
+};
 
 type MetadataAI = {
 	photos: string,
@@ -117,65 +209,43 @@ const Message: React.FC<MessageProps> = ({
 	side = "right",
 	metadata = []
 }) => {
+	const isUser = side === "right";
+
 	return (
 		<div
-			className="animate-fade-in
-		flex flex-col items-start justify-center
-		gap-3
-		w-full"
-			style={{
-				animationDuration: "50ms"
-			}}
+			className="animate-fade-in flex flex-col items-start justify-center gap-2 w-full"
+			style={{ animationDuration: "120ms" }}
 		>
 			<div
-				className="flex
-			animate-from-bottom
-			px-4 md:px-7 
-			w-full"
+				className="flex items-end gap-2.5 animate-from-bottom px-4 md:px-7 w-full"
 				style={{
-					justifyContent: side === "right" ? "flex-end" : "flex-start",
-					animationDuration: "50ms"
+					justifyContent: isUser ? "flex-end" : "flex-start",
+					animationDuration: "200ms"
 				}}
 			>
-				<div className="rounded-xl
-			  max-w-[70%]
-					p-3
-					border border-background/25
-					text-sm
-					wrap-break-word
-					shadow-standard"
+				{!isUser && <AIAvatar />}
+				<div
+					className={`max-w-[70%] p-3 text-sm wrap-break-word shadow-standard ${
+						isUser
+							? "rounded-2xl rounded-br-sm border border-accent/25"
+							: "rounded-2xl rounded-bl-sm border border-background/18"
+					}`}
 					style={{
-						order: side === "right" ? "2" : "1",
+						background: isUser
+							? "color-mix(in srgb, var(--color-accent) 10%, transparent)"
+							: "color-mix(in srgb, var(--color-background) 6%, transparent)"
 					}}
 				>
-					<Markdown>
-						{value}
-					</Markdown>
+					<Markdown>{value}</Markdown>
 				</div>
 			</div>
-			<div
-				className="xl:max-w-[70%] flex-none
-			py-3
-			px-4
-			gap-3
-			overflow-x-scroll
-			flex items-center justify-start
-			xl:flex xl:flex-wrap
-			xl:w-auto
-			w-full
-			"
-			>
-				{
-					metadata.map((value: MetadataAI, index: number) => {
-						return (
-							<MetadataComponents
-								key={index}
-								metadata={value}
-							/>
-						);
-					})
-				}
-			</div>
+			{metadata.length > 0 && (
+				<div className="xl:max-w-[calc(70%+2.625rem)] flex-none py-2 px-4 gap-3 overflow-x-scroll flex items-center justify-start xl:flex-wrap xl:w-auto w-full">
+					{metadata.map((meta: MetadataAI, index: number) => (
+						<MetadataComponents key={index} metadata={meta} />
+					))}
+				</div>
+			)}
 		</div>
 	);
 }
@@ -286,130 +356,145 @@ const AIPage: React.FC = () => {
 	return (
 		<div className="flex flex-col-reverse items-center justify-start
 			overflow-y-scroll
-			gap-3
+			gap-4
 			xl:px-64
 			relative
 			w-full h-screen"
 		>
+			{/* bottom spacer — sits below the input bar */}
+			<div className="w-full h-28 flex-none" />
 
-			<div className="w-full h-24 flex-none">
-			</div>
+			{/* messages / empty state */}
+			{messageData.length === 0
+				? <WelcomeState onSuggestion={(text) => setChatValue(text)} />
+				: messageData.map((msg: MessageType, index: number) => {
 
-			{
-				messageData.map((value: MessageType, index: number) => {
-					if (value.value === "ERROR: IA PART: " && value.side === "left")
+					/* loading state */
+					if (msg.value === "" && msg.side === "left")
 						return (
 							<div
-								className="flex items-center justify-start
-							w-full"
+								key={index}
+								className="flex items-end gap-2.5 animate-fade-in px-4 md:px-7 w-full"
+								style={{ animationDuration: "150ms" }}
 							>
+								<AIAvatar />
 								<div
-									className="flex items-center justify-center gap-3
-								rounded-xl
-								p-3
-								shadow-standard
-								max-w-[70%]
-								outline-solid outline-1 outline-red-500/50"
+									className="rounded-2xl rounded-bl-sm border border-background/18 shadow-standard px-3 py-2"
+									style={{ background: "color-mix(in srgb, var(--color-background) 6%, transparent)" }}
 								>
-									<div
-										className="flex items-center justify-center">
-										<div
-											className="font-icon text-4xl text-red-500 animate-pulse"
-											style={{
-												textShadow: "0px 0px 4px color-mix(in srgb, var(--color-red-500) 75%, transparent)"
-											}}
-										>
-											
-										</div>
-									</div>
-									<div
-										className="font-light
-									text-sm">
-										{t("error:ERROR")}
-									</div>
+									<LoadingDots />
 								</div>
 							</div>
 						);
-					if (value.value === "")
+
+					/* error state */
+					if (msg.value === "ERROR: IA PART: " && msg.side === "left")
 						return (
 							<div
-								className="flex items-center justify-start
-							w-full"
+								key={index}
+								className="flex items-end gap-2.5 animate-fade-in px-4 md:px-7 w-full"
+								style={{ animationDuration: "150ms" }}
 							>
 								<div
-									className="font-light
-								text-sm
-								animate-fade-in"
+									className="flex-none w-8 h-8 rounded-full flex items-center justify-center border border-red-500/30"
+									style={{ background: "color-mix(in srgb, #ef4444 12%, transparent)" }}
 								>
-									{t("message.processing")}
+									<div
+										className="font-icon text-lg text-red-500 animate-pulse"
+										style={{ textShadow: "0 0 6px color-mix(in srgb, #ef4444 60%, transparent)" }}
+									>
+										
+									</div>
+								</div>
+								<div
+									className="rounded-2xl rounded-bl-sm p-3 text-sm font-light border border-red-500/20 shadow-standard"
+									style={{ background: "color-mix(in srgb, #ef4444 6%, transparent)" }}
+								>
+									{t("error:ERROR")}
 								</div>
 							</div>
 						);
+
 					return (
 						<Message
 							key={index}
-							value={value.value}
-							side={value.side}
-							metadata={value.metadata}
+							value={msg.value}
+							side={msg.side}
+							metadata={msg.metadata}
 						/>
 					);
 				})
 			}
 
-			<div className="w-full h-20 flex-none"></div>
+			{/* top spacer — sits below the NavBar */}
+			<div className="w-full h-20 flex-none" />
+
+			{/* gradient fade at bottom */}
 			<div
-				className="fixed bottom-0 left-0
-			bg-linear-to-t from-foreground to-transparent
-			w-full h-24"
-			>
+				className="fixed bottom-0 left-0 w-full h-32 pointer-events-none"
+				style={{ background: "linear-gradient(to top, var(--color-foreground) 40%, transparent)" }}
+			/>
 
-			</div>
-			<div className="fixed bottom-8
-				px-4 md:px-7 xl:px-64
-				w-full"
-			>
-				<div className="grid grid-cols-[1fr_auto] grid-rows-1
-					shadow-standard
+			{/* input bar */}
+			<div className="fixed bottom-5 px-4 md:px-7 xl:px-64 w-full">
+				<div
+					className="grid grid-cols-[1fr_auto] grid-rows-1
 					place-items-center
-					border border-background/25
+					border border-background/20
 					backdrop-blur-2xl
-					rounded-xl
-					w-full"
+					rounded-2xl
+					shadow-standard
+					w-full
+					transition-all duration-200
+					focus-within:border-accent/35
+					focus-within:shadow-[0_4px_20px_color-mix(in_srgb,var(--color-accent)_10%,transparent)]"
 				>
-					<ChatTextarea
-						value={chatValue}
-						onChange={setChatValue}
-						maxRows={7}
-						placeholder={t("inputChat.placeholder")}
-						onKeyDown={(e) => {
-							if (e.key === "Enter") {
-								e.preventDefault();
-								if (chatValue.trim() !== "" && canSend)
-									handleSendButton();
-							}
-						}}
-					/>
+					<div className="w-full flex flex-col">
+						<ChatTextarea
+							value={chatValue}
+							onChange={setChatValue}
+							maxRows={7}
+							placeholder={t("inputChat.placeholder")}
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									e.preventDefault();
+									if (chatValue.trim() !== "" && canSend)
+										handleSendButton();
+								}
+							}}
+						/>
+						{chatValue.length > 3000 && (
+							<div
+								className="px-3 pb-1.5 text-xs text-right select-none"
+								style={{
+									color: chatValue.length > 4500
+										? "#ef4444"
+										: "color-mix(in srgb, var(--color-background) 45%, transparent)"
+								}}
+							>
+								{chatValue.length} / 5000
+							</div>
+						)}
+					</div>
 
-					<div className="flex items-end justify-center
-						h-full"
-					>
-						<button className="flex items-center justify-center
-							bg-accent
+					<div className="flex items-end justify-center h-full">
+						<button
+							className="flex items-center justify-center
 							m-2
-							rounded-lg
-							shadow-[0px_0px_3px_var(--color-accent)]
+							rounded-xl
 							cursor-pointer
 							select-none
-							w-8 h-8"
+							w-8 h-8
+							transition-all duration-150"
 							style={{
-								opacity: canSend === true ? "100%" : "25%"
+								background: "var(--color-accent)",
+								opacity: canSend ? "1" : "0.3",
+								boxShadow: canSend ? "0 0 10px color-mix(in srgb, var(--color-accent) 50%, transparent)" : "none"
 							}}
 							disabled={!canSend}
 							onClick={handleSendButton}
 						>
-							<div className="font-icon text-3xl
-								-translate-x-[0.085rem]"
-							>
+							<div className="font-icon text-3xl -translate-x-[0.085rem] text-foreground">
 								
 							</div>
 						</button>
