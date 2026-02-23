@@ -24,7 +24,7 @@ const ForgotPassPage: React.FC = () => {
 
 		const formData = new FormData(e.currentTarget);
 		const data = Object.fromEntries(formData.entries());
-
+		let retryAfterSeconds: number = 60;
 		try {
 			const response = await fetch("/api/auth/forgot-password", {
 				method: "POST",
@@ -43,15 +43,22 @@ const ForgotPassPage: React.FC = () => {
 					setErrorEmail([errorData.message]);
 					throw new Error(errorData.message);
 				}
+				else if (response.status === 429) {
+					const retryAfter = response.headers.get("Retry-After");
+					retryAfterSeconds = Number(retryAfter) || 60;
+					setTimeLeft(retryAfterSeconds);
+					setButtonSendDisabled(true);
+					toast.error(t("error:auth.forgot_password_rate_limit"));
+				}
 			}
-			toast.success(t("notification.emailSent"));
+			else
+				toast.success(t("notification.emailSent"));
 		} catch (error) {
 			if (error instanceof Error && error.message !== "") {
 				toast.error(t(`error:${error.message}`));
 			}
 		} finally {
 			setProcessingSubmit(false);
-			setTimeLeft(60);
 			controls.start();
 			setButtonSendDisabled(true);
 
@@ -59,7 +66,7 @@ const ForgotPassPage: React.FC = () => {
 				setButtonSendDisabled(false);
 				setTimeLeft(0);
 				controls.stop();
-			}, 60000);
+			}, retryAfterSeconds * 1000);
 		}
 	}
 

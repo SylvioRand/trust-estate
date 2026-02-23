@@ -48,6 +48,20 @@ export function VerifyUsersState() {
 					return;
 				}
 
+				if (!response.ok) {
+					if (response.status === 502) {
+						toast.error(t("error:server_unavailable"));
+						return;
+					}
+					const errorResponse = responseData as APIResponse;
+					if (errorResponse.error === "invalid_or_expired_token") {
+						setIsConnected(false);
+						return;
+					}
+					toast.error(t(`error:${errorResponse.error}`));
+					return;
+				}
+
 			} catch (error) {
 				if (error instanceof Error && error.message !== "")
 					toast.error(t(`error:${error.message}`))
