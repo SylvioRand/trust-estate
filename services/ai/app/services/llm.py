@@ -112,6 +112,62 @@ class LLMService:
         """
         return rules
 
+    def get_matching_listing(self):
+        result = """
+        You are a strict JSON generator for a real estate search engine.
+        Your ONLY job is to filter the provided CHROMA_CONTEXT JSON object based on the user's criteria.
+
+        RULES:
+        1. OUTPUT: Return ONLY a valid JSON object. No prose, no explanations, no "Je suppose que...".
+        2. DO NOT use Markdown formatting or code blocks (no ```json).
+        3. The output must be a valid Python/JSON dictionary string that can be parsed by json.loads().
+        4. Maintain the exact same keys: 'ids', 'distances', 'metadatas', 'documents', etc.
+
+        EXAMPLE: 
+        {
+            "ids": [
+                [
+                "56743e23-3068-44d7-98bf-ec76dac9f04c",
+                "cf5340e0-d369-44a5-bd0a-5c07917ec960"
+                ]
+            ],
+            "distances": [
+                [
+                0.6956119903131714,
+                0.9098695615577355
+                ]
+            ],
+            "embeddings": null,
+            "metadatas": [
+                [
+                {
+                    "features": "{\"bedrooms\": 5, \"bathrooms\": 1, \"wc\": true, \"wcSeparate\": true, \"parkingType\": \"none\", \"gardenPrivate\": true, \"pool\": true, \"water_access\": true, \"electricityAccess\": true}",
+                    "photos": "1771885395551-image.png",
+                    "post_type": "sale",
+                    "price": 10000000.0,
+                    "property_type": "apartment",
+                    "surface": 78.49879871981499,
+                    "title": "The failure house",
+                    "zone": "Ankasina"
+                }
+                ]
+            ],
+            "documents": [
+                [
+                "Title: The failure house. Type: sale. Description: i want to pass that final project, pleaaaase i want to pass that final project, pleaaaase i want to pass that final project, pleaaaase i want to pass that final project, pleaaaase i want to pass that final project, pleaaaase i want to pass that final project, pleaaaase i want to pass that final project, pleaaaase i want to pass that final project, pleaaaase i want to pass that final project, pleaaaase i want to pass that final project, pleaaaase i want to pass that final project, pleaaaase . Zone: Ankasina. Price: 10000000.0. Surface: 78.49879871981499. Features: bedrooms: 5, bathrooms: 1, wc: True, wcSeparate: True, parkingType: none, gardenPrivate: True, pool: True, water_access: True, electricityAccess: True. Photos: 1771885395551-image.png.",
+                "Title: The camembert. Type: sale. Description: The camembert smells hard The camembert smells hard The camembert smells hard The camembert smells hard The camembert smells hard The camembert smells hard The camembert smells hard The camembert smells hard The camembert smells hard The camembert smells hard The camembert smells hard The camembert smells hard . Zone: Ambalavao-Isotry. Price: 10000000.0. Surface: 78.49879871981499. Features: bedrooms: 1, bathrooms: 5, wc: True, wcSeparate: True, parkingType: none, gardenPrivate: True, pool: True, water_access: True, electricityAccess: True. Photos: 1771885442974-Screenshot from 2026-02-24 01-23-09.png."
+                ]
+            ],
+            "uris": null,
+            "data": null,
+            "included": [
+                "distances",
+                "documents",
+                "metadatas"
+            ]
+        }
+        """
+
     def generate_header(self):
         headers = {
             "Authorization": "Bearer " + self.key,

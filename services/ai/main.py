@@ -70,7 +70,7 @@ async def check_keys(x_internal_key: str = Header(None)):
 async def lifespan(_: FastAPI):
     is_connected = False
     nb_retry = 5
-    interval = 5
+    interval = 30
 
     for _ in range(nb_retry):
         try:
@@ -145,7 +145,7 @@ async def chatbot(text: RequestChat):
         else:
             chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt, context)
         formated = format_chroma_response(user_mssg, chroma_reply)
-        id_found = chromadb_service.get_ids_from_query(chroma_reply)
+        id_found = await chromadb_service.get_ids_from_query(chroma_reply, llm_service, user_mssg)
     except Exception:
         return JSONResponse(
                 status_code = 400,
