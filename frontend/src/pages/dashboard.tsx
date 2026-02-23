@@ -47,7 +47,7 @@ const DashboardPage: React.FC = () => {
                   }`}
               >
                 <span className={`transition-transform duration-500 ${activeTab === item.id ? "rotate-12 scale-110" : "group-hover:rotate-12"}`}>
-                  {item.id === "visits" ? "👁" : "📅"}
+                  {item.icon}
                 </span>
                 {item.label}
               </button>
