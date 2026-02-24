@@ -16,6 +16,7 @@ You will need the following tools installed:
 
 - **Git**, to clone the repository
 - **Docker** (including **Docker Compose**; if it's not included with your Docker installation, install it separately)
+- **npm**, for the framework
 - **Make**, to build and run the project
 
 ### Execution
