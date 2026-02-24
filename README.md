@@ -15,7 +15,7 @@ Ensure your machine has at least **15 GB of free disk space**.
 You will need the following tools installed:
 
 - **Git**, to clone the repository
-- **Docker** (including **Docker Compose**; if it’s not included with your Docker installation, install it separately)
+- **Docker** (including **Docker Compose**; if it's not included with your Docker installation, install it separately)
 - **Make**, to build and run the project
 
 ### Execution
@@ -136,11 +136,10 @@ make
     - Defined the project roadmap on GitHub and coordinated task distribution across the team.
     - Led frontend–backend integration to ensure seamless data flow and functionality.
     - Evaluated feature feasibility and scope, deciding which features to implement or defer.
+
 ## Project Management
 
-We assigned roles from what each of us wanted to try, to learn, or just to do because the member already knew about it.
-We used GitHub tools: creating a project on GitHub, created an issue for each task, assigned someone to it with the appropriate flags depending on the case.
-We used Slack to communicate with the team.
+We assigned roles based on what each team member wanted to try, learn, or already had experience with. We used GitHub tools: creating a project on GitHub, creating an issue for each task, and assigning team members with appropriate labels depending on the case. We used Slack to communicate with the team.
 
 ## Technical Stack
 
@@ -291,7 +290,7 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | `Reservation` | Visit reservations | `reservationId` (UUID, PK), `listingId`, `buyerId`, `sellerId`, `status`, `slot` (DateTime), `confirmedAt`, `rejectedAt`, `cancelledAt`, `cancelledBy`, `doneAt`, `sellerContactVisible`, `feedbackEligible`, `feedbackGiven`, `createdAt`, `updatedAt` |
 
 **Key Relationships**:
-- No more feedbacks or reviews are managed since the feedback feature has been removed.
+- No feedback or reviews are managed since the feedback feature has been removed.
 
 **Enumerations**:
 - `ReservationStatus`: pending, confirmed, rejected, cancelled, done
@@ -363,7 +362,7 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Email Verification** | Send verification tokens to users and validate email ownership during registration |
 | **Email Resend** | Resend verification emails with rate limiting (1 per minute) to prevent abuse |
 | **Forgot Password** | Send password reset tokens to registered emails with rate limiting (1 per minute) |
-| **Reset Password** | Allow users to set new password using valid reset token |
+| **Reset Password** | Allow users to set a new password using a valid reset token |
 | **OAuth 2.0 (Google)** | Third-party authentication via Google with automatic account linking |
 | **Token Validation** | Internal endpoint to verify JWT tokens for inter-service communication |
 | **Moderator Role Check** | Internal endpoint to verify if a user holds a moderator or admin role, used by other services for access control |
@@ -373,7 +372,7 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Profile Update** | Update user information (first name, last name) |
 | **Phone Management** | Add or update phone number with verification status tracking |
 | **Password Update** | Change existing password with current password verification |
-| **Set Password** | Add password for OAuth-only users to enable email/password login |
+| **Set Password** | Add a password for OAuth-only users to enable email/password login |
 | **Account Deletion (GDPR)** | Permanently delete user account and associated data with password confirmation |
 | **Logout** | Invalidate refresh tokens and end user session |
 
@@ -389,7 +388,7 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Credit Refund** | Internal operation to refund credits for cancelled actions or refund operations |
 | **Transaction Logging** | Automatic logging of all credit movements with type, reason, amount, and remaining balance |
 | **Health Check** | Service status endpoint for monitoring and load balancing |
-| **Data Deletion (GDPR)** | Delete all credit data associated with deleted user account |
+| **Data Deletion (GDPR)** | Delete all credit data associated with a deleted user account |
 
 ### Reservation Service (tolrandr)
 
@@ -406,31 +405,31 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Mark as Done** | Mark reservation as completed after viewing |
 | **Check Slot Availability** | Verify if a specific datetime slot is available for a listing before booking |
 | **Get Listing Status** | Internal endpoint to check reservation counts and status for listings |
-| **Data Deletion (GDPR)** | Delete all reservation data associated with deleted user account |
+| **Data Deletion (GDPR)** | Delete all reservation data associated with a deleted user account |
 
 ---
 
-## Individuals contributions
+## Individual Contributions
 
 ### mravelon
-Sarah: conception d'idées, le design, un peu de frontend le chatbot, structuration de l'architecture du projet.
+Sarah contributed to concept design, visual design, some frontend work on the chatbot, and overall project architecture structuring.
 - **Key Achievement**: Developed the **Frontend Dashboard & Reservation UI**, bridging the gap between backend logic and seamless user experience. Unified the deployment via a single-command **Makefile**.
 
 ### srandria
-a assuré la robustesse technique de la plateforme, de l'infrastructure à l'UI.
-- **Key Achievement**: Développement du dashboard Frontend et de l'UI réservation, unification du déploiement.
+Ensured the technical robustness of the platform, from infrastructure to UI.
+- **Key Achievement**: Developed the frontend dashboard and reservation UI, and unified the deployment setup.
 
 ### rarakoto
-Ny Hasina a transformé la vision en réalité premium.
-- **Key Achievement**: Design de l'identité visuelle et construction des composants responsive du front.
+Ny Hasina turned the vision into a premium reality.
+- **Key Achievement**: Designed the visual identity and built the responsive frontend components.
 
 ### tolrandr
-a piloté les transactions cœur du projet.
-- **Key Achievement**: Authentification complète et gestion des crédits, sécurisation des flux, orchestration des événements interservices.
+Drove the core transactions of the project.
+- **Key Achievement**: Complete authentication and credit management, securing data flows, and orchestrating inter-service events.
 
 ### aelison
-a permis la découverte intelligente des biens et le debug général.
-- **Key Achievement**: Optimisation du RAG (ChromaDB indexation Madagascar).
+Enabled intelligent property discovery and general debugging.
+- **Key Achievement**: RAG optimization (ChromaDB indexing for Madagascar).
 
 
 ---
@@ -451,7 +450,7 @@ a permis la découverte intelligente des biens et le debug général.
 5. Microservices Backend Architecture
    - 5 services independently deployed, REST communication
 
-### Total major module: 10pts
+### Total major modules: 10 pts
 
 ---
 
@@ -463,11 +462,11 @@ a permis la découverte intelligente des biens et le debug général.
 - Analytics dashboard: User activity and insights
 - Advanced search: Filter/sort/pagination
 - OAuth 2.0 login (Google, GitHub, etc.)
-- GDPR conformity: Data download/export/deletion/confirmation
+- GDPR compliance: Data download/export/deletion/confirmation
 - Multi-browser support
 - Multilanguage (i18n)
 
-### Total minor module: 10pts
+### Total minor modules: 10 pts
 
 ---
 
