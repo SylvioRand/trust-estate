@@ -353,6 +353,34 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 
 ## Features List
 
+### User Interface
+
+| **Path**                            | **Creator** |
+| ----------------------------------- | --------- |
+| **/sign-in**                        | rarakoto  |
+| **/sign-up**                        | rarakoto  |
+| **/sign-in/forgot-pass**            | rarakoto  |
+| **/sign-in/reset-password**         | rarakoto  |
+| **/welcome**                        | rarakoto  |
+| **/property/listings**              | rarakoto  |
+| **/profile/publish**                | rarakoto  |
+| **/email-sent**                     | rarakoto  |
+| **/verify-email**                   | rarakoto  |
+| **/add-phone**                      | rarakoto  |
+| **/home**                           | rarakoto  |
+| **/property**                       | rarakoto  |
+| **/ai**                             | rarakoto && aelison && mravelon  |
+| **/profile**                        | rarakoto && mravelon  |
+| **/profile/settings**               | rarakoto  |
+| **/profile/moderator/flagged**      | rarakoto  |
+| **/property/listings/edit**         | rarakoto  |
+| **/property/listings/seller-slots** | srandria  |
+| **/property/listings/buyer-slots**  | srandria  |
+| **/terms-of-service**               | rarakoto  |
+| **/privacy-policy**                 | rarakoto  |
+| **/dashboard**                      | srandria  |
+| **/** → `/home`                     | rarakoto  |
+
 ### Authentication Service (tolrandr)
 
 | Feature | Description |
@@ -460,6 +488,7 @@ Enabled intelligent property discovery and general debugging.
 - ORM: Prisma + PostgreSQL
 - Notification system: All create/update/delete
 - Analytics dashboard: User activity and insights
+- Custom-made design: System with reusable components, including a proper color palette, typography, and icons.
 - Advanced search: Filter/sort/pagination
 - OAuth 2.0 login (Google, GitHub, etc.)
 - GDPR compliance: Data download/export/deletion/confirmation
