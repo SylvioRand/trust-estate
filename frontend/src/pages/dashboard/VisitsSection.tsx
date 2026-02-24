@@ -39,6 +39,9 @@ const VisitsSection: React.FC = () => {
             }
 
             const data = await response.json();
+			if (data.error === "reservations_not_found") {
+				return;
+			}
             const parsedData = VisitsResponseSchema.parse(data);
             setReservations(parsedData.reservations);
             setTotalPages(parsedData.pagination.totalPages);

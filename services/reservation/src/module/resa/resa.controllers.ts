@@ -27,7 +27,7 @@ export async function listReservation(request: FastifyRequest<{ Querystring: Fil
 		});
 	} catch (error: any) {
 		if (error.message === "reservations_not_found")
-			return reply.status(404).send({
+			return reply.status(200).send({
 				"error": "reservations_not_found",
 				"message": "reservations.not_found"
 			});

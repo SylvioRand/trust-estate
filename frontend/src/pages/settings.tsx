@@ -13,6 +13,8 @@ import type { PopUpAPI } from "../components/PopUp";
 import PopUp from "../components/PopUp";
 import type { APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
+import type { HistoryItem } from "./dashboard/CreditsSection";
+import type { Reservation } from "./dashboard/zodSchema/dashboard.schema";
 
 interface SettingsButtonProps {
 	icon: string;
@@ -299,8 +301,97 @@ const SettingsPage: React.FC = () => {
 		}
 	}
 
+	const [credits, setCredits] = useState<HistoryItem[]>([]);
+	const [reservations, setReservations] = useState<Reservation[]>([]);
+	const [balance, setBalance] = useState<number>(0);
+
+	const fetchHistory = async () => {
+		try {
+			const response = await fetch("/api/credits/history", {
+				method: "GET",
+				credentials: "include",
+			});
+			const data = await response.json();
+			if (response.ok) {
+				if (response.status === 200) {
+					const history = data.data as HistoryItem[];
+					setCredits(history);
+				}
+			}
+		} catch (error) {
+			
+		}
+	};
+
+	const fetchBalance = async () => {
+		try {
+			const response = await fetch("/api/credits/balance", {
+				method: "GET",
+				credentials: "include",
+			});
+			const data = await response.json();
+			if (response.ok) {
+				if (response.status === 200) {
+					const balance = data.balance as number;
+					setBalance(balance);
+				}
+			}
+		} catch (error) {
+		};
+	};
+
+	const fetchReservations = async () => {
+		try {
+			const response = await fetch("/api/reservations/mine", {
+				method: "GET",
+				credentials: "include",
+			});
+			const data = await response.json();
+			if (response.ok) {
+				if (response.status === 200 && data.message !== 'reservations_not_found') {
+					const reservations = data.reservations as any[];
+					setReservations(reservations);
+				}
+			}
+		} catch (error) {
+			
+		}
+	};
+
+	useEffect(() => {
+		fetchHistory();
+		fetchReservations();
+		fetchBalance();
+	}, []);
+
 	function downloadGDPR() {
+		let transactions: { id: string; type: string; reason: string }[] = [];
+		let reservationsData: { id: string; status: string; listing: { id: string; title: string } | null }[] = [];
+		if (credits && credits.length > 0) {
+			transactions = credits.map(credit => ({
+				id: credit.id,
+				type: credit.type,
+				reason: credit.reason,
+				date: credit.createdAt
+			}));
+		};
+		if (reservations && reservations.length > 0) {
+			reservationsData = reservations.map(reservation => ({
+				id: reservation.reservationId,
+				status: reservation.status,
+				listing: reservation.listing ? {
+					id: reservation.listing.id,
+					title: reservation.listing.title,
+					date: reservation.createdAt
+				} : null
+			}));
+		};
+
 		const data = {
+			"export_info": {
+				"exported_at": new Date().toISOString(),
+				"format_version": "1.0"
+			},
 			"user": {
 				"id": userData?.id,
 				"email": userData?.email,
@@ -313,7 +404,12 @@ const SettingsPage: React.FC = () => {
 			},
 			"security": {
 				"providers": ["password", "google"]
-			}
+			},
+			"credits": {
+				"balance": balance,
+				"transactions": transactions
+			},
+			"reservations": reservationsData
 		};
 
 		const json = JSON.stringify(data, null, 2);
