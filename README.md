@@ -435,6 +435,25 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Get Listing Status** | Internal endpoint to check reservation counts and status for listings |
 | **Data Deletion (GDPR)** | Delete all reservation data associated with a deleted user account |
 
+### AI Service (aelison)
+
+| Feature | Description |
+|---------|-------------|
+| **AI Health Check** | Reports AI service status and connectivity to ChromaDB. |
+| **AI Chat (RAG)** | Accepts user messages, fetches vector context, and streams LLM responses. |
+| **AI Chat Streaming** | Streams LLM output back to the client for faster response delivery. |
+| **Index Listing (Add)** | Adds a listing to the ChromaDB collection for retrieval. |
+| **Index Listing (Update)** | Updates an indexed listing in ChromaDB |
+| **Index Listing (Delete)** | Removes a listing’s vectors from ChromaDB by ID. |
+| **Index Status Check** | Confirms whether a listing is indexed in ChromaDB. |
+| **Generate Listing Description** | Correct the user's grammatical and syntactical errors. |
+| **Internal JWT Gate** | Protects internal indexing routes with a signed internal key |
+| **ChromaDB Startup Init** | Initializes ChromaDB connection and creates the posts collection at startup |
+| **CORS Enabled** | Allows cross-origin access from configured services (nginx, listings, chromadb). |
+| **ChromaDB Context Formatting** | Formats retrieved documents into LLM-ready context blocks. |
+| **Embedding Generation** | Generates embeddings for listing text using sentence-transformers. |
+| **Listing Text/Embedding Formats** | Standardizes listing fields into formats for embeddings and LLM context. |
+
 ---
 
 ## Individual Contributions
