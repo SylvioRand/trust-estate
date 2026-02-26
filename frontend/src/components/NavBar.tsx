@@ -313,6 +313,8 @@ const NavBar: React.FC = () => {
 	const { isConnected, userData } = useDataProvider();
 	const location = useLocation();
 
+	const preferredLangage: string = navigator.language.split("-")[0];
+
 	const dataNavButton: NavButtonProps[] = [
 		{ icon: "", title: t("button.home"), path: "/home" },
 		{ icon: "", icon_size: 22, title: t("button.property"), path: "/property" },
@@ -407,10 +409,12 @@ const NavBar: React.FC = () => {
 						style={{
 							backgroundColor: "transparent"
 						}}
-						onChange={(e) => {
-							i18n.changeLanguage(e.target.value);
+						onChange={
+							(e) => {
+								i18n.changeLanguage(e.target.value);
+							}
 						}
-						}
+						defaultValue={preferredLangage}
 					>
 						<option value="en">🇬🇧</option>
 						<option value="fr">🇫🇷</option>
