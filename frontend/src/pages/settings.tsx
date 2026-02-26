@@ -177,8 +177,16 @@ const SettingsPage: React.FC = () => {
 			if (!response.ok) {
 				const errorData = responseData as APIResponse;
 
-				if (response.status === 400)
-					setErrorCurrentPassword([errorData.message]);
+				if (response.status === 400) {
+					if (errorData.error === "invalid_credentials")
+						setErrorCurrentPassword([errorData.message]);
+					if (errorData.details) {
+						if (errorData.details.password)
+							setErrorCurrentPassword(errorData.details.password);
+						if (errorData.details.newPassword)
+							setErrorNewPassword(errorData.details.newPassword);
+					}
+				}
 				throw new Error(errorData.message);
 			}
 			toast.success(t(`error:${responseData?.message ?? "success"}`));
