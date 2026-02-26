@@ -15,6 +15,7 @@ import type { APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
 import type { HistoryItem } from "./dashboard/CreditsSection";
 import type { Reservation } from "./dashboard/zodSchema/dashboard.schema";
+import { passwordRules } from "../const/constant";
 
 interface SettingsButtonProps {
 	icon: string;
@@ -319,7 +320,7 @@ const SettingsPage: React.FC = () => {
 				}
 			}
 		} catch (error) {
-			
+
 		}
 	};
 
@@ -354,7 +355,7 @@ const SettingsPage: React.FC = () => {
 				}
 			}
 		} catch (error) {
-			
+
 		}
 	};
 
@@ -549,7 +550,7 @@ const SettingsPage: React.FC = () => {
 								name="newPassword"
 								placeholder={t("section.accountSettings.form.changePassword.newPassword.placeholder")}
 								error={errorNewPassword}
-								pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
+								pattern={passwordRules}
 							/>
 							<div className="flex items-center justify-start w-full">
 								<div
@@ -585,7 +586,7 @@ const SettingsPage: React.FC = () => {
 								name="password"
 								placeholder={t("section.accountSettings.form.addPassword.input.placeholder")}
 								error={errorAddPassword}
-								pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
+								pattern={passwordRules}
 							/>
 							<div className="flex items-center justify-start w-full">
 								<div

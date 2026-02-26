@@ -5,6 +5,7 @@ import ContentDivider from "../components/ContentDivider";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { passwordRules } from "../const/constant";
 
 const ResetPassPage: React.FC = () => {
 	const { t } = useTranslation(["resetPass", "error"]);
@@ -114,7 +115,7 @@ const ResetPassPage: React.FC = () => {
 						name="newPassword"
 						placeholder={t("form.password.placeholder")}
 						error={errorPassword}
-						pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
+						pattern={passwordRules}
 					/>
 
 					<PasswordInput
