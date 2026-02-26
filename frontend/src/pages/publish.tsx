@@ -233,7 +233,7 @@ const PublishPage: React.FC = () => {
 	const enhanceDescription = async () => {
 		if (refToDescription.current) {
 			// NOTE: We need at least 200 characters in the description to give a more concise information for the LLM
-			if (refToDescription.current.value.length < 200) {
+			if (refToDescription.current.value.length < 50) {
 				toast.error(t("error:ai.not_enough_data"));
 				return;
 			}

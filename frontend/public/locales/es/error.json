@@ -4,7 +4,7 @@
 		"timeout": "Tiempo de espera: la IA tardó demasiado en responder. Por favor, espere un momento antes de intentar de nuevo.",
 		"rate_limited_generate": "Has alcanzado el límite de solicitudes. Por favor, espera un momento antes de intentar de nuevo.",
 		"success_generate": "Tu descripción se ha mejorado correctamente.",
-		"not_enough_data": "La descripción proporcionada no contiene suficiente información para ser mejorada. Se requieren al menos 200 caracteres. Por favor, agrega más detalles e intenta de nuevo.",
+		"not_enough_data": "La descripción proporcionada no contiene suficiente información para ser mejorada. Se requieren al menos 50 caracteres. Por favor, agrega más detalles e intenta de nuevo.",
 		"listing_not_indexed": "El anuncio no se encuentra en la base de datos.",
 		"wrong_format": "Error en el formato de la solicitud.",
 		"chroma_general": "La base de datos chromadb tiene un problema.",
