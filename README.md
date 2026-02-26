@@ -502,19 +502,19 @@ Enabled intelligent property discovery and general debugging.
 ---
 
 ### Minor Modules (1 module = 1 pt)
-- Frontend: React
-- Backend: Express (and Fastify, FastAPI, etc. where relevant)
-- ORM: Prisma + PostgreSQL
-- Notification system: All create/update/delete
-- Analytics dashboard: User activity and insights
-- Custom-made design: System with reusable components, including a proper color palette, typography, and icons.
-- Advanced search: Filter/sort/pagination
-- OAuth 2.0 login (Google, GitHub, etc.)
-- GDPR compliance: Data download/export/deletion/confirmation
-- Multi-browser support
-- Multilanguage (i18n)
+1. Frontend: React
+2. Backend: Express (and Fastify, FastAPI, etc. where relevant)
+3. ORM: Prisma + PostgreSQL
+4. Notification system: All create/update/delete
+5. Analytics dashboard: User activity and insights
+6. Custom-made design: System with reusable components, including a proper color palette, typography, and icons.
+7. Advanced search: Filter/sort/pagination
+8. OAuth 2.0 login (Google, GitHub, etc.)
+9. GDPR compliance: Data download/export/deletion/confirmation
+10. Multi-browser support
+11. Multilanguage (i18n)
 
-### Total minor modules: 10 pts
+### Total minor modules: 11 pts
 
 ---
 
@@ -526,4 +526,4 @@ Enabled intelligent property discovery and general debugging.
 
 ## Evaluation
 
-**Total Points: 20**
+**Total Points: 21**
