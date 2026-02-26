@@ -436,6 +436,17 @@ const SettingsPage: React.FC = () => {
 		if (refPhoneInput.current)
 			refPhoneInput.current.value = userData?.phone?.slice(4) ?? "";
 	}, []);
+
+	useEffect(() => {
+		if (userData) {
+			if (refFirstNameInput.current)
+				refFirstNameInput.current.value = userData?.firstName ?? "";
+			if (refLastNameInput.current)
+				refLastNameInput.current.value = userData?.lastName ?? "";
+			if (refPhoneInput.current)
+				refPhoneInput.current.value = userData?.phone?.slice(4) ?? "";
+		}
+	}, [userData]);
 	return (
 		<div
 			className="flex flex-col items-center justify-start
