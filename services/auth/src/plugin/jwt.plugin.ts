@@ -99,7 +99,7 @@ export async function verifyAccessToken(
 			}
 		}
 
-		reply.code(400).send({
+		reply.code(401).send({
 			error: "invalid_or_expired_token",
 			message: "auth.verification_token_invalid"
 		});
@@ -144,7 +144,7 @@ async function validateToken(request: FastifyRequest, reply: FastifyReply) {
 		const payload = jwt.verify(internalToken, request.server.config.INTERNAL_KEY_SECRET, { algorithms: ["HS256"] }); // modified by srandria
 		return (payload);
 	} catch (err) {
-		reply.code(401).send({ error: 'Invalide' });
+		reply.code(401).send({ error: 'Invalid internal token', message: 'auth.invalid_internal_token' });
 	}
 }
 
