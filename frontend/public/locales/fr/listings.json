@@ -7,7 +7,7 @@
 	"no": "Non",
 
 	"viewDetails": "Voir les détails",
-	"areaUnit": "m²",
+	"areaUnit": "pi²",
 
 	"status": {
 		"active": "Actif",
@@ -28,50 +28,47 @@
 			}
 		},
 		"listingType": {
-			"rent": "Location",
-			"sale": "Vente"
+			"rent": "À louer",
+			"sale": "À vendre"
 		},
 		"features": {
 			"title": "Caractéristiques",
-			"bedrooms": "Chambres",
-			"bathrooms": "Salles de bain",
-			"area": "m²",
-			"wc_separate": "WC séparé"
+			"bedrooms": "Chambre",
+			"bathrooms": "Salle de bain",
+			"area": "Pi²"
 		},
 		"equipments": {
 			"title": "Équipements",
 			"parking_type": "Parking",
 			"garden_private": "Jardin",
-			"wc": "Toilette",
+			"wc": "Toilettes",
 			"pool": "Piscine",
 			"electricity_access": {
-				"title": "Accès à l'électricité",
-				"true": "Cette propriété a accès à l'électricité.",
-				"false": "Cette propriété n'a pas accès à l'électricité."
+				"title": "Accès à l’électricité",
+				"true": "Ce bien dispose d’un accès à l’électricité.",
+				"false": "Ce bien ne dispose pas d’un accès à l’électricité."
 			},
 			"water_access": {
-				"title": "Accès à l'eau",
-				"true": "Cette propriété a accès à l'eau.",
-				"false": "Cette propriété n'a pas accès à l'eau."
+				"title": "Accès à l’eau",
+				"true": "Ce bien dispose d’un accès à l’eau.",
+				"false": "Ce bien ne dispose pas d’un accès à l’eau."
 			}
 		},
-
 		"description": {
 			"title": "Description"
 		},
-
 		"quickButtons": {
 			"favorites": "Favoris",
 			"report": "Signaler",
 			"scheduleVisit": "Planifier une visite",
-			"visitSlot": "Voir les créneaux",
-			"editPost": "Éditer la publication"
+			"visitSlot": "Créneau de visite",
+			"editPost": "Modifier l’annonce"
 		},
 
 		"tags": {
 			"urgent": "Urgent",
 			"exclusive": "Exclusif",
-			"discount": "Promotion"
+			"discount": "Réduction"
 		},
 
 		"contact": {
@@ -80,72 +77,81 @@
 		},
 
 		"post": {
-			"title": "Publication",
+			"title": "Annonce",
 			"publicationDate": "Publié le",
 			"updateDate": "Mis à jour le"
 		},
 
 		"stats": {
 			"title": "Statistiques du vendeur",
+
 			"sellerStats": {
 				"successfulSales": "Biens vendus",
 				"successfulRent": "Biens loués",
-				"averageRating": "Score"
+				"averageRating": "Note"
 			}
 		},
 		
 		"actionButton": {
 			"popup": {
-				"title": "Action de l'annonce",
+				"title": "Actions de l’annonce",
 				"edit": {
 					"title": "Modifier"
 				},
 				"archive": {
 					"title": "Archiver",
 					"popup": {
-						"title": "Archiver l'annonce",
-						"warning": "L’archivage de cette annonce est définitif et ne peut pas être annulé. Une fois archivée, l’annonce sera retirée de la vue publique et il ne sera pas possible de la restaurer. Veuillez vous assurer que vous souhaitez vraiment archiver cette annonce avant de continuer.",
-						"continue": "Archiver l'annonce",
-						"success": "L'annonce a été placée dans les archives."
+						"title": "Archiver l’annonce",
+						"warning": "L’archivage de cette annonce est permanent et ne peut pas être annulé. Une fois archivée, l’annonce sera retirée de la vue publique et vous ne pourrez pas la restaurer. Veuillez vous assurer que vous souhaitez réellement archiver cette annonce avant de continuer.",
+						"continue": "Archiver l’annonce",
+						"success": "Votre annonce a été placée dans les archives."
 					}
 				},
 				"mark": {
 					"sold": {
-						"title": "Marquer comme vendu",
-						"warning": "Marquer cette propriété comme vendue est définitif et ne peut pas être annulé.",
-						"continue": "Marquer"
+						"title": "Marquer comme vendu"
 					},
 					"rented": {
-						"title": "Marquer comme louée",
-						"warning": "Marquer cette propriété comme louée peut être annulé ultérieurement si nécessaire.",
-						"continue": "Marquer"
+						"title": "Marquer comme loué"
+					},
+					"popup": {
+						"sale": {
+							"title": "Marquer comme vendu",
+							"warning": "Marquer ce bien comme vendu est permanent et ne peut pas être annulé.",
+							"continue": "Valider"
+						},
+						"rent": {
+							"title": "Marquer comme loué",
+							"warning": "Marquer ce bien comme loué peut être annulé ultérieurement si nécessaire.",
+							"continue": "Valider"
+						}
 					}
 				},
 				"unmark": {
 					"title": "Marquer comme disponible",
 					"popup": {
 						"title": "Marquer comme disponible",
-						"warning": "Marquer cette annonce comme disponible à nouveau la rendra visible pour les autres utilisateurs. Une fois réactivée, la propriété apparaîtra dans les résultats de recherche et pourra être consultée et contactée par les utilisateurs intéressés.",
-						"continue": "Continuer"
+						"warning": "Marquer à nouveau cette annonce comme disponible la rendra visible aux autres utilisateurs. Une fois réactivé, le bien apparaîtra dans les résultats de recherche et pourra être consulté et contacté par les utilisateurs intéressés.",
+						"continue": "Valider"
 					}
 				},
 				"report": {
 					"title": "Signaler",
 					"popup": {
-						"title": "Signaler l'annonce",
+						"title": "Signaler l’annonce",
 						"reason": {
-							"title": "Raison",
+							"title": "Motif",
 							"fraud": "Fraude",
 							"spam": "Spam",
-							"incorrect_info": "Information incorrecte",
+							"incorrect_info": "Informations incorrectes",
 							"inappropriate": "Inapproprié"
 						},
 						"comment": {
 							"title": "Commentaire",
 							"placeholder": "Entrez votre commentaire ici."
 						},
-						"warning": "Signaler une annonce vous permet d’alerter notre équipe de modération concernant un contenu qui pourrait être inexact, inapproprié ou ne pas respecter nos règles.",
-						"submit": "Envoyer"
+						"warning": "Signaler une annonce vous permet d’alerter notre équipe de modération concernant un contenu potentiellement inexact, inapproprié ou en violation de nos règles.",
+						"submit": "Soumettre"
 					}
 				},
 				"modAction": {
@@ -153,31 +159,31 @@
 					"popup": {
 						"title": "Action du modérateur",
 						"action": {
-							"block_temporary": "Blocage temporaire",
-							"archive_permanent": "Archivage permanent",
-							"request_clarification": "Demande de clarification",
+							"block_temporary": "Bloquer temporairement",
+							"archive_permanent": "Archiver définitivement",
+							"request_clarification": "Demander des précisions",
 							"reject_reports": "Rejeter le signalement"
 						},
 						"reason": {
 							"title": "Motif",
-							"placeholder": "Saisissez votre motif ici."
+							"placeholder": "Entrez votre motif ici."
 						},
 						"messageToSeller": {
 							"title": "Message au vendeur",
-							"placeholder": "Saisissez votre message ici."
+							"placeholder": "Entrez votre message ici."
 						},
 						"internalNote": {
 							"title": "Note interne",
-							"placeholder": "Saisissez votre note ici."
+							"placeholder": "Entrez votre note ici."
 						},
-						"submit": "Envoyer"
+						"submit": "Soumettre"
 					}
 				}
 			}
 		},
 
 		"postStats": {
-			"title": "Statistiques de la publication",
+			"title": "Statistiques de l’annonce",
 			"views": "Vues",
 			"reservations": "Réservations",
 			"feedbacks": "Avis"
