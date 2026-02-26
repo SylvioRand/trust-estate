@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import SimpleInput, { PasswordInput } from "../components/Input";
 import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
 import PhoneInput from "../components/PhoneInput";
+import { passwordRules } from "../const/constant";
 
 export type APIResponse = {
 	error: string;
@@ -220,7 +220,7 @@ const SignUpPage: React.FC = () => {
 						name="password"
 						placeholder={t("form.password.placeholder")}
 						error={errorPassword}
-						pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$"
+						pattern={passwordRules}
 					/>
 					<div
 						className="flex items-center justify-start w-full"
