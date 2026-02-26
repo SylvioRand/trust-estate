@@ -135,7 +135,7 @@ export async function updateInfoUser(request: FastifyRequest<{Body: UpdateInfoUs
 		if (error.message === "User not found")
 			return reply.code(404).send({
 				"error": "user_not_found",
-				"message": "User not found"
+				"message": "user.user_not_found"
 			});
 		else if (error.message === "phone_exists")
 			return reply.code(400).send({
@@ -160,7 +160,7 @@ export async function userDetails(request: FastifyRequest<{Params: {id: string}}
 		if (error.message === "User not found")
 			return reply.code(404).send({
 					"error": "user_not_found",
-					"message": "User not found"
+					"message": "user.user_not_found"
 				});
 		else
 			return reply.status(500).send({
@@ -181,7 +181,7 @@ export async function requestDeleteAccompte(request: FastifyRequest<{Body: {pass
 		if (error.message === "User not found")
 			return reply.code(404).send({
 					"error": "user_not_found",
-					"message": "User not found"
+					"message": "user.user_not_found"
 				});
 		else if (error.message === "Invalid password")
 			return reply.code(400).send({

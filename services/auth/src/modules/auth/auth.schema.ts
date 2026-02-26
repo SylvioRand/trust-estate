@@ -37,7 +37,7 @@ export const SignUpUserSchema = {
 			password: {
 				type: 'string',
 				minLength: 12,
-				pattern: '(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}',
+				pattern: '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^A-Za-z0-9]).{12,}$',
 			},
 			avatarUrl: { type: 'string' }
 		},
@@ -108,7 +108,7 @@ export const ResetPasswordSchema = {
 			newPassword: {
 				type: 'string',
 				minLength: 12,
-				pattern: '(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}'
+				pattern: '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^A-Za-z0-9]).{12,}$'
 			}
 		},
 		additionalProperties: false

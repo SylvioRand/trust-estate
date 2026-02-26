@@ -6,12 +6,12 @@ export const UpdatePasswordSchema = {
 			password: {
 				type: 'string',
 				minLength: 12,
-				pattern: '(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}'
+				pattern: '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^A-Za-z0-9]).{12,}$'
 			},
 			newPassword: {
 				type: 'string',
 				minLength: 12,
-				pattern: '(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}'
+				pattern: '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^A-Za-z0-9]).{12,}$'
 			},
 		},
 		additionalProperties: false
@@ -26,7 +26,7 @@ export const addPasswordSchema = {
 			password: {
 				type: 'string',
 				minLength: 12,
-				pattern: '(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}'
+				pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{12,}$'
 			}
 		},
 		additionalProperties: false
@@ -82,7 +82,7 @@ export const DeleteAccompte = {
 			password: {
 				type: 'string',
 				minLength: 12,
-				pattern: '(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{12,}'
+				pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{12,}$'
 			}
 		},
 		additionalProperties: false

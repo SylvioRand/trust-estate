@@ -49,6 +49,13 @@ const validationErrorMessages: Record<string, Record<string, string>> = {
 		required: "validation.password.required",
 		type: "validation.password.invalid_type"
 	},
+	newPassword: {
+		minLength: "validation.new_password.too_short",
+		maxLength: "validation.new_password.too_long",
+		pattern: "validation.new_password.weak",
+		required: "validation.new_password.required",
+		type: "validation.new_password.invalid_type"
+	},
 	avatarUrl: {
 		format: "validation.avatar_url.invalid_format",
 		type: "validation.avatar_url.invalid_type"
@@ -57,7 +64,7 @@ const validationErrorMessages: Record<string, Record<string, string>> = {
 
 function parsePasswordErrors(pattern: string, value: string): string[] {
 	const errors: string[] = [];
-	
+
 	if (pattern.includes('(?=.*?[A-Z])') && !/[A-Z]/.test(value)) {
 		errors.push('validation.password.missing_uppercase');
 	}
@@ -67,10 +74,10 @@ function parsePasswordErrors(pattern: string, value: string): string[] {
 	if (pattern.includes('(?=.*?[0-9])') && !/[0-9]/.test(value)) {
 		errors.push('validation.password.missing_digit');
 	}
-	if (pattern.includes('(?=.*?[#?!@$%^&*-])') && !/[#?!@$%^&*-]/.test(value)) {
+	if (!/[^A-Za-z0-9]/.test(value)) {
 		errors.push('validation.password.missing_special_char');
 	}
-	
+
 	return errors.length > 0 ? errors : ['validation.password.weak'];
 }
 
@@ -108,7 +115,13 @@ export async function setErrorHandler(server: FastifyInstance) {
 					details[field] = [];
 				}
 
+
 				if (field === 'password' && keyword === 'pattern' && err.params.pattern) {
+					const passwordValue = (request.body as any)?.[field] || '';
+					const passwordErrors = parsePasswordErrors(err.params.pattern, passwordValue);
+					details[field].push(...passwordErrors);
+				}
+				else if (field === 'newPassword' && keyword === 'pattern' && err.params.pattern) {
 					const passwordValue = (request.body as any)?.[field] || '';
 					const passwordErrors = parsePasswordErrors(err.params.pattern, passwordValue);
 					details[field].push(...passwordErrors);
