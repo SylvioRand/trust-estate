@@ -16,9 +16,10 @@ import { useTranslation } from "react-i18next";
 import Markdown from 'react-markdown';
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import { type PropertyType } from "../dataModel/modelListings";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ActionButton from "../components/ActionButton";
 import Animate from "../components/Animate";
+import useDataProvider from "../provider/useDataProvider";
 
 const AIAvatar: React.FC = () => (
 	<div
@@ -214,11 +215,10 @@ const Message: React.FC<MessageProps> = ({
 			>
 				{!isUser && <AIAvatar />}
 				<div
-					className={`max-w-[70%] p-3 text-sm wrap-break-word shadow-standard ${
-						isUser
-							? "rounded-2xl rounded-br-sm border border-accent/25"
-							: "rounded-2xl rounded-bl-sm border border-background/18"
-					}`}
+					className={`max-w-[70%] p-3 text-sm wrap-break-word shadow-standard ${isUser
+						? "rounded-2xl rounded-br-sm border border-accent/25"
+						: "rounded-2xl rounded-bl-sm border border-background/18"
+						}`}
 					style={{
 						background: isUser
 							? "color-mix(in srgb, var(--color-accent) 10%, transparent)"
@@ -249,9 +249,10 @@ const AIPage: React.FC = () => {
 	const [chatValue, setChatValue] = useState<string>("");
 	const [messageData, setMessageData] = useState<MessageType[]>([
 	]);
-
 	const [canSend, setCanSend] = useState<boolean>(true);
 	const { t } = useTranslation(["ai", "error", "common"]);
+	const { userData } = useDataProvider();
+	const navigate = useNavigate();
 
 	const handleSendButton = async () => {
 		if (!chatValue.trim() || !canSend)
@@ -273,7 +274,7 @@ const AIPage: React.FC = () => {
 				headers: { "Content-type": "application/json" }
 			});
 			if (!response.ok) {
-						throw new Error(t(`error:ERROR`));
+				throw new Error(t(`error:ERROR`));
 			}
 
 			const reader = response.body?.getReader();
@@ -335,6 +336,16 @@ const AIPage: React.FC = () => {
 		}
 	}
 
+	// If user email are not verified, redirect to /email-sent
+	// Verify on component mount, and when userData are changed
+	useEffect(() => {
+		if (userData && userData.emailVerified === false)
+			navigate("/email-sent")
+	}, [userData]);
+	useEffect(() => {
+		if (userData && userData.emailVerified === false)
+			navigate("/email-sent")
+	}, []);
 	return (
 		<div className="flex flex-col-reverse items-center justify-start
 			overflow-y-scroll
@@ -385,7 +396,7 @@ const AIPage: React.FC = () => {
 										className="font-icon text-lg text-red-500 animate-pulse"
 										style={{ textShadow: "0 0 6px color-mix(in srgb, #ef4444 60%, transparent)" }}
 									>
-										
+
 									</div>
 								</div>
 								<div
