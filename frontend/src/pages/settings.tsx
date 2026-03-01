@@ -374,61 +374,53 @@ const SettingsPage: React.FC = () => {
 	}, []);
 
 	function downloadGDPR() {
-		let transactions: { id: string; type: string; reason: string }[] = [];
-		let reservationsData: { id: string; status: string; listing: { id: string; title: string } | null }[] = [];
+		const rows: string[][] = [];
+
+		rows.push(["section", "field", "value"]);
+
+		rows.push(["export_info", "exported_at", new Date().toISOString()]);
+		rows.push(["export_info", "format_version", "1.0"]);
+
+		rows.push(["user", "id", userData?.id ?? ""]);
+		rows.push(["user", "email", userData?.email ?? ""]);
+		rows.push(["user", "created_at", userData?.createdAt ?? ""]);
+
+		rows.push(["profile", "first_name", userData?.firstName ?? ""]);
+		rows.push(["profile", "last_name", userData?.lastName ?? ""]);
+		rows.push(["profile", "phone", userData?.phone ?? ""]);
+
+		rows.push(["security", "providers", "password, google"]);
+
+		rows.push(["credits", "balance", String(balance ?? "")]);
+
 		if (credits && credits.length > 0) {
-			transactions = credits.map(credit => ({
-				id: credit.id,
-				type: credit.type,
-				reason: credit.reason,
-				date: credit.createdAt
-			}));
-		};
+			credits.forEach((credit : any) => {
+				rows.push(["transaction", "id", credit.id]);
+				rows.push(["transaction", "type", credit.type]);
+				rows.push(["transaction", "reason", credit.reason]);
+				rows.push(["transaction", "date", credit.createdAt]);
+			});
+		}
+
 		if (reservations && reservations.length > 0) {
-			reservationsData = reservations.map(reservation => ({
-				id: reservation.reservationId,
-				status: reservation.status,
-				listing: reservation.listing ? {
-					id: reservation.listing.id,
-					title: reservation.listing.title,
-					date: reservation.createdAt
-				} : null
-			}));
-		};
+			reservations.forEach((reservation: any) => {
+				rows.push(["reservation", "id", reservation.reservationId]);
+				rows.push(["reservation", "status", reservation.status]);
+				rows.push(["reservation", "listing_id", reservation.listing?.id ?? ""]);
+				rows.push(["reservation", "listing_title", reservation.listing?.title ?? ""]);
+				rows.push(["reservation", "date", reservation.createdAt ?? ""]);
+			});
+		}
 
-		const data = {
-			"export_info": {
-				"exported_at": new Date().toISOString(),
-				"format_version": "1.0"
-			},
-			"user": {
-				"id": userData?.id,
-				"email": userData?.email,
-				"created_at": userData?.createdAt
-			},
-			"profile": {
-				"first_name": userData?.firstName,
-				"last_name": userData?.lastName,
-				"phone": userData?.phone
-			},
-			"security": {
-				"providers": ["password", "google"]
-			},
-			"credits": {
-				"balance": balance,
-				"transactions": transactions
-			},
-			"reservations": reservationsData
-		};
+		const csv = rows
+			.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+			.join("\n");
 
-		const json = JSON.stringify(data, null, 2);
-		const blob = new Blob([json], {
-			type: "application/json"
-		});
+		const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
 		const url = URL.createObjectURL(blob);
 		const link = document.createElement("a");
 		link.href = url;
-		link.download = "CASAGDPRData.json";
+		link.download = "CASAGDPRData.csv";
 		link.click();
 
 		URL.revokeObjectURL(url);
