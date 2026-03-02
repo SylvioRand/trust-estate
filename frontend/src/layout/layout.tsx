@@ -39,6 +39,7 @@ export default function MainLayout() {
 							return;
 						}
 						navigate("/add-phone", { replace: true });
+						sessionStorage.setItem("NeedToSetPhone", "true");
 						return;
 					}
 					if ((serverResponse as any).error === "email_not_verified") {

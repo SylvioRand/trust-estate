@@ -14,29 +14,16 @@ const AddPhonePage: React.FC = () => {
 	const [processingSubmit, setProcessingSubmit] = useState<boolean>(false);
 	const [errorPhone, setErrorPhone] = useState<string[]>([]);
 	const navigate = useNavigate();
-	const { isConnected, setIsConnected, userData } = useDataProvider();
-	// const { setIsConnected } = useDataProvider();
-
-	// const location = useLocation();
-
-	// useEffect(() => {
-	// 	if ((isConnected !== null && isConnected === false) ||
-	// 		userData?.phoneVerified) {
-	// 		const from = location.state?.from || "/home";
-	// 		navigate(from, { replace: true });
-	// 	}
-	// }, [isConnected, userData?.phoneVerified, navigate, location.state?.from]);
+	const { setIsConnected, userData } = useDataProvider();
 
 	useEffect(() => {
-		if (isConnected === false || userData !== null && userData.phoneVerified === true) {
-			console.log("HERE1");
+		if (sessionStorage.getItem("NeedToSetPhone") === null || userData !== null && userData.phoneVerified === true) {
 			navigate("/home");
 		}
 	}, []);
 
 	useEffect(() => {
-		if (userData !== null && userData?.phoneVerified === true) {
-			console.log("HERE2");
+		if (sessionStorage.getItem("NeedToSetPhone") === null || userData !== null && userData?.phoneVerified === true) {
 			navigate("/home");
 		}
 	}, [userData]);
