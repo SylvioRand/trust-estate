@@ -105,7 +105,7 @@
 				"invalid_value": "The price must be a number.",
 				"integer": "The price must be an integer.",
 				"too_low": "The price must be at least 1.",
-				"too_high": "The price must not exceed 2147483647."
+				"too_high": "The price must not exceed 9007199254740991."
 			},
 			"price_range_invalid": "The price range is invalid.",
 			"surface": {
@@ -255,7 +255,7 @@
 		"transaction_failed": "The payment failed. Please verify your Mobile Money balance.",
 		"rate_limited_recharge": "Too many recharge attempts. A maximum of three per hour is allowed.",
 		"balance_not_found": "Your credit balance could not be found.",
-		"balance_not_zero":"Your balance must be greater than 0 to perform a payment."
+		"balance_not_zero": "Your balance must be greater than 0 to perform a payment."
 	},
 	"user": {
 		"user_not_found": "User not found."
