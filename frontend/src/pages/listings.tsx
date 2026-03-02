@@ -80,6 +80,10 @@ const ListingsPage: React.FC = () => {
 		fetchListingsData();
 	}, []);
 
+	useEffect(() => {
+		console.log("Fetched Data: ", fetchedData);
+	}, [fetchedData]);
+
 	return (
 		<div
 			className="grid grid-cols-1 grid-rows-[auto_1fr]
