@@ -4,11 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import PhoneInput from "../components/PhoneInput";
 import BoxSection from "../components/BoxSection";
 import ActionButton from "../components/ActionButton";
-import { dataProfileExample, type ProfileDataType } from "../dataModel/modelProfile";
 import { Link, useNavigate } from "react-router-dom";
 import ContentDivider from "../components/ContentDivider";
 import useDataProvider from "../provider/useDataProvider";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import type { PopUpAPI } from "../components/PopUp";
 import PopUp from "../components/PopUp";
 import type { APIResponse } from "./sign_up";
@@ -70,7 +68,6 @@ const SettingsButton: React.FC<SettingsButtonProps> = ({
 const SettingsPage: React.FC = () => {
 	const navigate = useNavigate();
 	const { userData, isConnected, setIsConnected } = useDataProvider();
-	VerifyUsersState();
 
 	const { t } = useTranslation(["settings", "error", "signUp"]);
 

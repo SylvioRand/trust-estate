@@ -4,7 +4,6 @@ import VisitsSection from "./dashboard/VisitsSection";
 import ReservationsSection from "./dashboard/ReservationsSection";
 import useDataProvider from "../provider/useDataProvider";
 import { useNavigate, useLocation } from "react-router-dom";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import CreditsSection from "./dashboard/CreditsSection";
 
 const DashboardPage: React.FC = () => {
@@ -12,7 +11,6 @@ const DashboardPage: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [activeTab, setActiveTab] = useState<string>("visits");
-	VerifyUsersState()
 	const { isConnected } = useDataProvider();
 
 	useEffect(() => {

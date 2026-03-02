@@ -8,7 +8,6 @@ import bentoSmartAi from "../../src/images/bento_smart_ai.png";
 import bentoVerifiedProperty from "../../src/images/bento_verified_property.png";
 import bentoInstantNotification from "../../src/images/bento_instant_notification.png";
 import bentoAccurateValuation from "../../src/images/bento_accurate_valuation.png";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import ActionButton from "../components/ActionButton";
 import SimpleInput from "../components/Input";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -111,7 +110,6 @@ const HomePage: React.FC = () => {
     { picture: bentoAccurateValuation, title: t("aboutUs.card.accurateValuation.title"), content: t("aboutUs.card.accurateValuation.content") },
     { picture: bentoInstantNotification, title: t("aboutUs.card.instantNotification.title"), content: t("aboutUs.card.instantNotification.content") }
   ];
-  VerifyUsersState();
 
   const [isProcessingSearch, setIsProcessingSearch] = useState<boolean>(false);
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {

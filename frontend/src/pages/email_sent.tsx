@@ -5,7 +5,6 @@ import ContentDivider from "../components/ContentDivider";
 import ActionButton from "../components/ActionButton";
 import { toast } from "react-toastify";
 import useCountdown from "../components/Countdown";
-// import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
 import { number } from "zod";
 

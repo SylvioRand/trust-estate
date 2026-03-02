@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import ContentDivider from "../components/ContentDivider";
 import useDataProvider from "../provider/useDataProvider";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 
 interface AddSlotsButtonProps {
 	t: TFunction<"slots">;
@@ -299,7 +298,6 @@ const SellerSlotsPage: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const navigate = useNavigate();
 	const location = useLocation();
-	VerifyUsersState()
 	const { isConnected } = useDataProvider();
 
 	const [searchParams] = useSearchParams();
