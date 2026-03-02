@@ -6,9 +6,8 @@ import { useTranslation } from "react-i18next";
 import PhoneInput from "../components/PhoneInput";
 import type { APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
 const AddPhonePage: React.FC = () => {
@@ -27,8 +26,6 @@ const AddPhonePage: React.FC = () => {
 			navigate(from, { replace: true });
 		}
 	}, [isConnected, userData?.phoneVerified, navigate, location.state?.from]);
-
-	VerifyUsersState();
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();

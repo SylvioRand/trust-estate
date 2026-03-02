@@ -65,8 +65,12 @@ const BuyerSlotsPage: React.FC = () => {
 	const url = `/api/reservations/get-slot?id=${listingID}`;
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { isConnected } = useDataProvider();
 
 	useEffect(() => {
+		if (isConnected !== null && isConnected === false) {
+			navigate("/sign-in", { state: { from: location.pathname + location.search } });
+		}
 		if (!listingID) {
 			navigate("/home");
 			return;
