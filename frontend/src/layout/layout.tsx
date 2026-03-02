@@ -67,6 +67,11 @@ export default function MainLayout() {
 
 		checkAuth();
 	}, [])
+
+	useEffect(() => {
+		console.log(location.pathname);
+	}, [location.pathname]);
+
 	return (
 		<div className="bg-foreground
 			w-full h-screen

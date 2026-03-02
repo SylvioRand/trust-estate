@@ -6,7 +6,6 @@ import ActionButton from "../components/ActionButton";
 import { toast } from "react-toastify";
 import useCountdown from "../components/Countdown";
 import useDataProvider from "../provider/useDataProvider";
-import { number } from "zod";
 
 const EmailSentPage: React.FC = () => {
 	const { t } = useTranslation(["emailSent", "error"]);
