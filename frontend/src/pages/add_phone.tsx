@@ -7,7 +7,6 @@ import PhoneInput from "../components/PhoneInput";
 import type { APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
 import useDataProvider from "../provider/useDataProvider";
-import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
 const AddPhonePage: React.FC = () => {
@@ -17,15 +16,25 @@ const AddPhonePage: React.FC = () => {
 	const navigate = useNavigate();
 	const { isConnected, setIsConnected, userData } = useDataProvider();
 
-	const location = useLocation();
+	// const location = useLocation();
+
+	// useEffect(() => {
+	// 	if ((isConnected !== null && isConnected === false) ||
+	// 		userData?.phoneVerified) {
+	// 		const from = location.state?.from || "/home";
+	// 		navigate(from, { replace: true });
+	// 	}
+	// }, [isConnected, userData?.phoneVerified, navigate, location.state?.from]);
 
 	useEffect(() => {
-		if ((isConnected !== null && isConnected === false) ||
-			userData?.phoneVerified) {
-			const from = location.state?.from || "/home";
-			navigate(from, { replace: true });
-		}
-	}, [isConnected, userData?.phoneVerified, navigate, location.state?.from]);
+		if (isConnected === false || userData !== null && userData.phoneVerified)
+			navigate("/home");
+	}, []);
+
+	useEffect(() => {
+		if (userData !== null && userData?.phoneVerified)
+			navigate("/home");
+	}, [userData]);
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
