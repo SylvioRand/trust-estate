@@ -12,7 +12,7 @@ export default function MainLayout() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const url = new URL(window.location.href);
-	const { setIsConnected, setUserData, userData } = useDataProvider();
+	const { setIsConnected, setUserData, isConnected } = useDataProvider();
 
 	useEffect(() => {
 		const checkAuth = async () => {
@@ -90,7 +90,7 @@ export default function MainLayout() {
 
 			<NavBar />
 			{
-				userData !== null ? <Outlet /> : <LoadingPage />
+				isConnected !== null && isConnected === true ? <Outlet /> : <LoadingPage />
 			}
 		</div>
 	);
