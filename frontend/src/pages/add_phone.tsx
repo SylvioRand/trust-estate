@@ -14,7 +14,8 @@ const AddPhonePage: React.FC = () => {
 	const [processingSubmit, setProcessingSubmit] = useState<boolean>(false);
 	const [errorPhone, setErrorPhone] = useState<string[]>([]);
 	const navigate = useNavigate();
-	const { isConnected, setIsConnected, userData } = useDataProvider();
+	// const { isConnected, setIsConnected, userData } = useDataProvider();
+	const { setIsConnected } = useDataProvider();
 
 	// const location = useLocation();
 
@@ -26,15 +27,15 @@ const AddPhonePage: React.FC = () => {
 	// 	}
 	// }, [isConnected, userData?.phoneVerified, navigate, location.state?.from]);
 
-	useEffect(() => {
-		if (isConnected === false || userData !== null && userData.phoneVerified)
-			navigate("/home");
-	}, []);
+	// useEffect(() => {
+	// 	if (isConnected === false || userData !== null && userData.phoneVerified)
+	// 		navigate("/home");
+	// }, []);
 
-	useEffect(() => {
-		if (userData !== null && userData?.phoneVerified)
-			navigate("/home");
-	}, [userData]);
+	// useEffect(() => {
+	// 	if (userData !== null && userData?.phoneVerified)
+	// 		navigate("/home");
+	// }, [userData]);
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
