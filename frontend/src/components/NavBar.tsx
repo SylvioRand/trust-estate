@@ -158,6 +158,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 					w-full h-full"
 				>
 					{
+						(location.pathname !== "/email-sent" && location.pathname !== "/add-phone") &&
 						data.map((value: NavButtonProps, index: number) => {
 							return (
 								<MobileNavButton
@@ -355,6 +356,7 @@ const NavBar: React.FC = () => {
 						hidden"
 				>
 					{
+						(location.pathname !== "/email-sent" && location.pathname !== "/add-phone") &&
 						dataNavButton.map((value: NavButtonProps, index: number) => {
 							return (
 								<NavigationButton
