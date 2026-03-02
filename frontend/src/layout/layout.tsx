@@ -30,6 +30,7 @@ export default function MainLayout() {
 					const serverResponse = responseData as UserModelData;
 
 					setIsConnected(false);
+					console.log("setIsConnected(false);");
 					if ((serverResponse as any).error === "invalid_or_expired_token") {
 						return;
 					}
@@ -55,6 +56,7 @@ export default function MainLayout() {
 					if (from)
 						navigate(from, { replace: true });
 					return;
+					console.log("setIsConnected(true);");
 				}
 
 				setIsConnected(false);
