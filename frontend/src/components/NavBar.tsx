@@ -158,7 +158,6 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 					w-full h-full"
 				>
 					{
-						(location.pathname !== "/email-sent" && location.pathname !== "/add-phone") &&
 						data.map((value: NavButtonProps, index: number) => {
 							return (
 								<MobileNavButton
@@ -176,7 +175,6 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 					pb-4"
 				>
 					{
-						(location.pathname !== "/add-phone" && location.pathname !== "/email-sent") &&
 						(isConnected === false || isConnected === null) && dataUser.map((value: NavButtonProps, index: number) => {
 							return (
 								<MobileNavButton
@@ -423,13 +421,16 @@ const NavBar: React.FC = () => {
 						<option value="es">🇪🇸</option>
 					</select>
 
-					<div className="block justify-self-end
+					{
+						location.pathname !== "/add-phone" && location.pathname !== "/email-sent" &&
+						<div className="block justify-self-end
 						md:hidden
 						font-icon text-background text-4xl"
-						onClick={() => setOpenHamburger(true)}
-					>
-						
-					</div>
+							onClick={() => setOpenHamburger(true)}
+						>
+							
+						</div>
+					}
 				</div>
 
 				<HamburgerMenu
