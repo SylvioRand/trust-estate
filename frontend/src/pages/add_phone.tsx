@@ -15,7 +15,7 @@ const AddPhonePage: React.FC = () => {
 	const [processingSubmit, setProcessingSubmit] = useState<boolean>(false);
 	const [errorPhone, setErrorPhone] = useState<string[]>([]);
 	const navigate = useNavigate();
-	const { isConnected, userData } = useDataProvider();
+	const { isConnected, setIsConnected, userData } = useDataProvider();
 
 	const location = useLocation();
 
@@ -60,6 +60,7 @@ const AddPhonePage: React.FC = () => {
 			}
 
 			toast.success(t("notif.success"));
+			setIsConnected(true);
 			navigate("/home");
 
 		}

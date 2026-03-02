@@ -15,7 +15,7 @@ const EmailSentPage: React.FC = () => {
 	const [resendButtonDisabled, setResendButtonDisabled] = useState<boolean>(false);
 	const navigate = useNavigate();
 	const [timeLeft, setTimeLeft, controls] = useCountdown();
-	const { setIsConnected, setUserData, userData } = useDataProvider();
+	const { setIsConnected, isConnected, setUserData, userData } = useDataProvider();
 
 	useEffect(() => {
 		if (userData && userData.emailVerified === true)
@@ -24,6 +24,11 @@ const EmailSentPage: React.FC = () => {
 
 	useEffect(() => {
 		if (userData && userData.emailVerified === true)
+			navigate("/home");
+	}, []);
+
+	useEffect(() => {
+		if (isConnected === false)
 			navigate("/home");
 	}, []);
 
