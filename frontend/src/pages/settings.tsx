@@ -67,7 +67,7 @@ const SettingsButton: React.FC<SettingsButtonProps> = ({
 
 const SettingsPage: React.FC = () => {
 	const navigate = useNavigate();
-	const { userData, isConnected, setIsConnected } = useDataProvider();
+	const { userData, setUserData, isConnected, setIsConnected } = useDataProvider();
 
 	const { t } = useTranslation(["settings", "error", "signUp"]);
 
@@ -136,7 +136,12 @@ const SettingsPage: React.FC = () => {
 					throw new Error(errorData.message);
 				}
 			}
-
+			setUserData(prev => prev ? {
+				...prev,
+				firstName: data.firstName,
+				lastName: data.lastName,
+				phone: data.phone
+			} : prev)
 			toast.success(t("error:auth.info_update_success"));
 		} catch (error) {
 			if (error instanceof Error) {
