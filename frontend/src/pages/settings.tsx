@@ -365,9 +365,11 @@ const SettingsPage: React.FC = () => {
 	};
 
 	useEffect(() => {
-		fetchHistory();
-		fetchReservations();
-		fetchBalance();
+		if (isConnected !== null && isConnected === true) {
+			fetchHistory();
+			fetchReservations();
+			fetchBalance();
+		}
 	}, []);
 
 	function downloadGDPR() {
@@ -391,7 +393,7 @@ const SettingsPage: React.FC = () => {
 		rows.push(["credits", "balance", String(balance ?? "")]);
 
 		if (credits && credits.length > 0) {
-			credits.forEach((credit : any) => {
+			credits.forEach((credit: any) => {
 				rows.push(["transaction", "id", credit.id]);
 				rows.push(["transaction", "type", credit.type]);
 				rows.push(["transaction", "reason", credit.reason]);
