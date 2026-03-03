@@ -105,7 +105,7 @@
 				"invalid_value": "Le prix doit être un nombre.",
 				"integer": "Le prix doit être un entier.",
 				"too_low": "Le prix doit être au moins 1.",
-				"too_high": "Le prix ne doit pas dépasser 2147483647."
+				"too_high": "Le prix ne doit pas dépasser 9007199254740991."
 			},
 			"price_range_invalid": "La plage de prix est invalide.",
 			"surface": {
