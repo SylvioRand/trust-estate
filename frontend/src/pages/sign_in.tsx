@@ -15,7 +15,7 @@ const SignInPage: React.FC = () => {
 	const [errorEmail, setErrorEmail] = useState<string[]>([]);
 	const [errorPassword, setErrorPassword] = useState<string[]>([]);
 	const [googleProcessing, setgoogleProcessing] = useState<boolean>(false);
-	const { isConnected, setUserData } = useDataProvider();
+	const { isConnected, setIsConnected, setUserData } = useDataProvider();
 
 	const location = useLocation();
 
@@ -70,6 +70,7 @@ const SignInPage: React.FC = () => {
 			const from = location.state?.from;
 			const cameFromResetPass = location.state?.fromResetPass;
 
+			setIsConnected(true);
 			setUserData(responseData);
 
 			if (cameFromResetPass)
