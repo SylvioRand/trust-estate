@@ -20,8 +20,8 @@ import VerifyEmailPage from './pages/verify_email.tsx';
 import DataProvider from './provider/DataProvider.tsx';
 // import PublishPage from './pages/publish.tsx';
 // import SellerSlotsPage from './pages/seller_slots.tsx';
-// import SettingsPage from './pages/settings.tsx';
-// import ProfilePage from './pages/profile.tsx';
+import SettingsPage from './pages/settings.tsx';
+import ProfilePage from './pages/profile.tsx';
 // import AIPage from './pages/ai.tsx';
 // import BuyerSlotsPage from './pages/buyer_slots.tsx';
 import TermOfServicePage from './pages/term_of_service.tsx';
@@ -102,14 +102,14 @@ const router = createBrowserRouter([
 			//     path: "/ai",
 			//     element: <AIPage />
 			//   },
-			//   {
-			//     path: "/profile",
-			//     element: <ProfilePage />
-			//   },
-			//   {
-			//     path: "/profile/settings",
-			//     element: <SettingsPage />
-			//   },
+			{
+				path: "/profile",
+				element: <ProfilePage />
+			},
+			{
+				path: "/profile/settings",
+				element: <SettingsPage />
+			},
 			//   {
 			//     path: "/profile/moderator/flagged",
 			//     element: <FlaggedPage />
