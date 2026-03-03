@@ -15,7 +15,7 @@ const SignInPage: React.FC = () => {
 	const [errorEmail, setErrorEmail] = useState<string[]>([]);
 	const [errorPassword, setErrorPassword] = useState<string[]>([]);
 	const [googleProcessing, setgoogleProcessing] = useState<boolean>(false);
-	const { isConnected } = useDataProvider();
+	const { isConnected, setUserData } = useDataProvider();
 
 	const location = useLocation();
 
@@ -69,6 +69,8 @@ const SignInPage: React.FC = () => {
 			setErrorPassword([]);
 			const from = location.state?.from;
 			const cameFromResetPass = location.state?.fromResetPass;
+
+			setUserData(responseData);
 
 			if (cameFromResetPass)
 				navigate("/home", { replace: true });
