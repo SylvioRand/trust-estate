@@ -6,7 +6,6 @@ services:
     build:
       context: .
       dockerfile: nginx/Dockerfile
-      network: host
     container_name: trust-estate-nginx
     ports:
       - "8443:443"
@@ -29,7 +28,6 @@ services:
     build:
       context: ./services/auth
       dockerfile: Dockerfile
-      network: host
     container_name: trust-estate-auth
     expose:
       - "3001"
@@ -84,7 +82,6 @@ services:
     build:
       context: ./services/listings
       dockerfile: Dockerfile
-      network: host
     container_name: trust-estate-listings
     expose:
       - "3002"
@@ -116,7 +113,6 @@ services:
     build:
       context: ./services/reservation
       dockerfile: Dockerfile
-      network: host
     container_name: trust-estate-reservations
     expose:
       - "3003"
@@ -150,7 +146,6 @@ services:
     build:
       context: ./services/credits
       dockerfile: Dockerfile
-      network: host
     container_name: trust-estate-credits
     expose:
       - "3004"
@@ -183,7 +178,6 @@ services:
     build:
       context: ./services/ai
       dockerfile: Dockerfile
-      network: host
     ports:
       - "3005:3005"
     env_file:
@@ -205,7 +199,6 @@ services:
     build:
       context: ./services/chromadb
       dockerfile: Dockerfile
-      network: host
     ports:
       - "8000:8000"
     env_file:
