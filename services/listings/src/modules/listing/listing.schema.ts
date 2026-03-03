@@ -26,7 +26,7 @@ export const PublishListingSchema = z.object({
     "validation.listing.price.integer"
   ).min(1,
     "validation.listing.price.too_low"
-  ).max(2147483647,
+  ).max(9007199254740991,
     "validation.listing.price.too_high"
   ),
   surface: z.number(
@@ -105,7 +105,7 @@ export const SearchListingsSchema = z.object({
     "validation.listing.price.integer"
   ).min(1,
     "validation.listing.price.too_low"
-  ).max(2147483647,
+  ).max(9007199254740991,
     "validation.listing.price.too_high"
   ).optional(),
   maxPrice: z.coerce.number(
@@ -114,7 +114,7 @@ export const SearchListingsSchema = z.object({
     "validation.listing.price.integer"
   ).min(1,
     "validation.listing.price.too_low"
-  ).max(2147483647,
+  ).max(9007199254740991,
     "validation.listing.price.too_high"
   ).optional(),
   minSurface: z.coerce.number(
