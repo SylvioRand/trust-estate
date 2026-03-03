@@ -269,8 +269,6 @@ const SettingsPage: React.FC = () => {
 	const [processingAddPassword, setProcessingAddPassword] = useState<boolean>(false);
 	const [errorAddPassword, setErrorAddPassword] = useState<string[]>([]);
 
-	const { setUserData } = useDataProvider();
-
 	const handleAddPassword = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
