@@ -8,8 +8,8 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import SignUpPage from './pages/sign_up.tsx';
 import MainLayout from './layout/layout.tsx';
 import SignInPage from './pages/sign_in.tsx';
-// import ForgotPassPage from './pages/forgot_pass.tsx';
-// import ResetPassPage from './pages/reset_pass.tsx';
+import ForgotPassPage from './pages/forgot_pass.tsx';
+import ResetPassPage from './pages/reset_pass.tsx';
 import AddPhonePage from './pages/add_phone.tsx';
 import HomePage from './pages/home.tsx';
 // import PropertyPage from './pages/property.tsx';
@@ -57,14 +57,14 @@ const router = createBrowserRouter([
 				path: "/sign-up",
 				element: <SignUpPage />
 			},
-			//   {
-			//     path: "/sign-in/forgot-pass",
-			//     element: <ForgotPassPage />
-			//   },
-			//   {
-			//     path: "/sign-in/reset-password",
-			//     element: <ResetPassPage />
-			//   },
+			{
+				path: "/sign-in/forgot-pass",
+				element: <ForgotPassPage />
+			},
+			{
+				path: "/sign-in/reset-password",
+				element: <ResetPassPage />
+			},
 			{
 				path: "/welcome",
 				element: <WelcomePage />
