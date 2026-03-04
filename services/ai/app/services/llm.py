@@ -122,6 +122,7 @@ class LLMService:
         2. DO NOT use Markdown formatting or code blocks (no ```json).
         3. The output must be a valid Python/JSON dictionary string that can be parsed by json.loads().
         4. Maintain the exact same keys: 'ids', 'distances', 'metadatas', 'documents', etc.
+        5. DO NOT omit any fields from the dictionaries inside the 'metadatas' array. You MUST return all fields (photos, title, zone, property_type, price, etc) exactly as they are in the CHROMA_CONTEXT.
 
         EXAMPLE: 
         {

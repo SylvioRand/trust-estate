@@ -438,17 +438,27 @@ class ChromadbService:
         result: list[metaData] = []
 
         if filtered_result.get('ids') and len(filtered_result['ids']) > 0:
-            for nb in range(len(filtered_result['ids'][0])):
-                curr_obj = metaData(
-                        id = filtered_result['ids'][0][nb],
-                        photos = "/uploads/" + filtered_result['metadatas'][0][nb].get("photos", ""),
-                        title = filtered_result['metadatas'][0][nb].get("title", ""),
-                        price = filtered_result['metadatas'][0][nb].get("price", 1.0),
-                        propertytype = filtered_result['metadatas'][0][nb].get("property_type", "house"),
-                        type = filtered_result['metadatas'][0][nb].get("post_type", "sale"),
-                        zone = filtered_result['metadatas'][0][nb].get("zone", "")
-                )
-                result.append(curr_obj)
+            for returned_id in filtered_result['ids'][0]:
+                try:
+                    # Find the index of this ID in the original query_result
+                    original_idx = query_result['ids'][0].index(returned_id)
+                    original_meta = query_result['metadatas'][0][original_idx]
+                    
+                    photos_url = ("/uploads/" + original_meta.get("photos")) if original_meta.get("photos") else ""
+                    
+                    curr_obj = metaData(
+                            id = returned_id,
+                            photos = photos_url,
+                            title = original_meta.get("title", ""),
+                            price = original_meta.get("price", 1.0),
+                            propertyType = original_meta.get("property_type", "house"),
+                            type = original_meta.get("post_type", "sale"),
+                            zone = original_meta.get("zone", "")
+                    )
+                    result.append(curr_obj)
+                except ValueError:
+                    # ID returned by LLM was not in original query_result (should be rare)
+                    continue
         return result
 
 chromadb_service = ChromadbService()
