@@ -441,7 +441,7 @@ class ChromadbService:
             for nb in range(len(filtered_result['ids'][0])):
                 curr_obj = metaData(
                         id = filtered_result['ids'][0][nb],
-                        photos = "https://localhost:8443/uploads/" + filtered_result['metadatas'][0][nb].get("photos", ""),
+                        photos = "/uploads/" + filtered_result['metadatas'][0][nb].get("photos", ""),
                         title = filtered_result['metadatas'][0][nb].get("title", ""),
                         price = filtered_result['metadatas'][0][nb].get("price", 1.0),
                         propertytype = filtered_result['metadatas'][0][nb].get("property_type", "house"),
