@@ -198,7 +198,7 @@ export class ListingService {
     return { listing: updatedListing, features };
   }
 
-  static async archiveListing(id: string, sellerId: string, data: ArchiveListingData) {
+  static async archiveListing(id: string, sellerId: string) {
     const listing = await prisma.listing.findUnique({ where: { id } });
 
     if (!listing) throw new Error('listing.not_found');
