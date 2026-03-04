@@ -12,8 +12,6 @@
     # API ROUTES - Auth Service
     # ==============================================
     location /api/auth/ {
-        limit_req zone=auth_limit burst=20 nodelay;
-        limit_req_status 429;
         proxy_pass http://auth_service/auth/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -23,8 +21,6 @@
     }
 
     location /api/users/ {
-        limit_req zone=api_limit burst=20 nodelay;
-        limit_req_status 429;
         proxy_pass http://auth_service/users/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -35,8 +31,6 @@
 
     # Listings — api_limit (120r/m, burst 20)
     location /api/listings/ {
-        limit_req zone=api_limit burst=20 nodelay;
-        limit_req_status 429;
 
         client_max_body_size 55M;
         proxy_pass http://listings_service/listings/;
@@ -49,8 +43,6 @@
 
     location /api/moderator/ {
         client_max_body_size 5M;
-        limit_req zone=api_limit burst=10 nodelay;
-        limit_req_status 429;
         proxy_pass http://listings_service/moderator/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -60,8 +52,6 @@
     }
 
     location /api/credits/ {
-        limit_req zone=api_limit burst=10 nodelay;
-        limit_req_status 429;
         proxy_pass http://credits_service/credits/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -95,8 +85,6 @@
 
     location /api/reservations/ {
         client_max_body_size 5M;
-        limit_req zone=api_limit burst=10;
-        limit_req_status 429;
         proxy_pass http://reservations_service/reservations/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
