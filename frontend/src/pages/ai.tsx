@@ -150,7 +150,7 @@ const MetadataComponents: React.FC<MetadataComponentsProps> = ({
 				<img
 					className="rounded-2xl
 				w-full h-full object-cover"
-					src={metadata.photos}
+					src={`https://${window.location.hostname}:${window.location.port}${metadata.photos}`}
 					alt="Picture of a house"
 				/>
 			</div>
