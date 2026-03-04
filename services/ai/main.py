@@ -146,6 +146,7 @@ async def chatbot(text: RequestChat):
             chroma_reply = await chromadb_service.get_query(user_mssg, llm_service, sys_prompt, context)
         formated = format_chroma_response(user_mssg, chroma_reply)
         id_found = await chromadb_service.get_ids_from_query(chroma_reply, llm_service, user_mssg)
+        print(f"{id_found}")
     except Exception:
         return JSONResponse(
                 status_code = 400,
