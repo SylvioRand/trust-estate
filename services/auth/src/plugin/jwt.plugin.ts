@@ -183,17 +183,25 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 	});
 
 	app.decorate("emailVerifiedAuthentication", async function (request: FastifyRequest, reply: FastifyReply) {
-		const user = await verifyAccessToken(request, reply, publicKey, JWT_REFRESH_SECRET, privateKey, cookieOptions);
+		let user = await verifyAccessToken(request, reply, publicKey, JWT_REFRESH_SECRET, privateKey, cookieOptions);
 
 		if (!user) return;
 		request.user = user;
 
-		if (!user.emailVerified)
-			return reply.code(401).send({
-				"error": "email_not_verified",
-				"message": "auth.email_verification_required",
-				"redirect": "/request-email-verification.html"
-			});
+		if (!user.emailVerified) {
+			// Check DB in case the token is stale
+			const dbUser = await app.prisma.user.findUnique({ where: { id: user.id } });
+			if (dbUser && dbUser.emailVerified) {
+				await generateAccessToken(request, reply, dbUser);
+				user.emailVerified = true;
+			} else {
+				return reply.code(401).send({
+					"error": "email_not_verified",
+					"message": "auth.email_verification_required",
+					"redirect": "/request-email-verification.html"
+				});
+			}
+		}
 	});
 
 	app.decorate("phoneVerifiedAuthentication", async function (request: FastifyRequest, reply: FastifyReply) {
@@ -209,10 +217,29 @@ async function jwtPlugin(app: FastifyInstance, options: FastifyPluginOptions) {
 	});
 
 	app.decorate("authentication", async function (request: FastifyRequest, reply: FastifyReply) {
-		const user = await verifyAccessToken(request, reply, publicKey, JWT_REFRESH_SECRET, privateKey, cookieOptions);
+		let user = await verifyAccessToken(request, reply, publicKey, JWT_REFRESH_SECRET, privateKey, cookieOptions);
 
 		if (!user) return;
 		request.user = user;
+
+		if (!user.phoneVerified || !user.emailVerified) {
+			// Double check DB to see if status changed elsewhere (stale JWT)
+			const dbUser = await app.prisma.user.findUnique({ where: { id: user.id } });
+			if (dbUser) {
+				let changed = false;
+				if (!user.phoneVerified && dbUser.phoneVerified) {
+					user.phoneVerified = true;
+					changed = true;
+				}
+				if (!user.emailVerified && dbUser.emailVerified) {
+					user.emailVerified = true;
+					changed = true;
+				}
+				if (changed) {
+					await generateAccessToken(request, reply, dbUser);
+				}
+			}
+		}
 
 		if (!user.phoneVerified)
 			return reply.code(200).send({
