@@ -134,7 +134,7 @@ export const ListingsHeader: React.FC<ListingsHeaderProps> = ({
 						}
 
 						{
-							fetchedData.mine === false &&
+							fetchedData.mine === false && fetchedData.status === "active" &&
 							<div
 								style={{
 									border: `solid 1px ${fetchedData.isAvailable ? "var(--color-green-500)" : "var(--color-red-500)"}`,
@@ -144,6 +144,20 @@ export const ListingsHeader: React.FC<ListingsHeaderProps> = ({
 									padding: "2px 8px"
 								}}>
 								{t(`status.${fetchedData.isAvailable === true ? "available" : "unavailable"}`)}
+							</div>
+						}
+
+						{
+							fetchedData.mine === false && fetchedData.status !== "active" &&
+							<div
+								style={{
+									border: `solid 1px ${colorStatus[fetchedData.status]}`,
+									color: colorStatus[fetchedData.status],
+									borderRadius: "100px",
+									textShadow: `0px 0px 4px color-mix(in srgb, ${colorStatus[fetchedData.status]} 50%, transparent)`,
+									padding: "2px 8px"
+								}}>
+								{t(`status.${fetchedData.status}`)}
 							</div>
 						}
 					</div>
@@ -585,7 +599,7 @@ const MyListingsView: React.FC<ListingsViewProps> = ({
 			: {
 				icon: "",
 				title: "IGNORE",
-				func: () => {}
+				func: () => { }
 			})
 
 	return (
