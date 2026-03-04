@@ -45,7 +45,7 @@ export class ModeratorServices {
         title: listing.title,
         reportCount: listing._count.reports,
         latestReportReason: latestReport?.reason || null,
-		comment: latestReport?.comment || null,
+        comment: latestReport?.comment || null,
         seller: {
           id: listing.sellerId,
           name: sellerDetails ? `${sellerDetails.firstName} ${sellerDetails.lastName}` : null,

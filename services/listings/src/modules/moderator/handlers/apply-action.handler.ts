@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify"
 import { ModerationActionSchema } from "../moderator.schema";
 import { ModeratorServices } from "../moderator.service";
+import { AIClient } from "../../../infrastructure/ai.client";
 
 export async function HandleApplyAction(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -10,6 +11,10 @@ export async function HandleApplyAction(request: FastifyRequest, reply: FastifyR
     const bodyData = ModerationActionSchema.parse(request.body);
 
     const result = await ModeratorServices.applyModeratorAction(id, user.id, bodyData);
+
+    if (bodyData.action == 'archive_permanent' || bodyData.action == 'block_temporary') {
+      AIClient.deleteIndexListing(id);
+    }
 
     return reply.status(200).send(result);
   } catch (error: any) {
