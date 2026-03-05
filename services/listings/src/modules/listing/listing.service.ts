@@ -416,6 +416,10 @@ export class ListingService {
       throw new Error('listing.not_found');
     }
 
+    if (listing.status !== 'active' || !listing.isAvailable) {
+      throw new Error('listing.not_available');
+    }
+
     return listing;
   }
 
