@@ -144,21 +144,6 @@ class ChromadbService:
         
         if data.features:
             metadata["features"] = json.dumps(data.features)
-            if "bedrooms" in data.features:
-                metadata["f_bedrooms"] = data.features["bedrooms"]
-            if "bathrooms" in data.features:
-                metadata["f_bathrooms"] = data.features["bathrooms"]
-            if "pool" in data.features:
-                metadata["f_pool"] = data.features["pool"]
-            if "garden_private" in data.features:
-                metadata["f_garden_private"] = data.features["garden_private"]
-            if "parking_type" in data.features:
-                metadata["f_parking_type"] = data.features["parking_type"]
-            if "water_access" in data.features:
-                metadata["f_water_access"] = data.features["water_access"]
-            if "electricity_access" in data.features:
-                metadata["f_electricity_access"] = data.features["electricity_access"]
-            
         if data.photos:
             metadata["photos"] = data.photos[0]
 
@@ -192,21 +177,6 @@ class ChromadbService:
             
         if data.features:
             metadata["features"] = json.dumps(data.features)
-            if "bedrooms" in data.features:
-                metadata["f_bedrooms"] = data.features["bedrooms"]
-            if "bathrooms" in data.features:
-                metadata["f_bathrooms"] = data.features["bathrooms"]
-            if "pool" in data.features:
-                metadata["f_pool"] = data.features["pool"]
-            if "garden_private" in data.features:
-                metadata["f_garden_private"] = data.features["garden_private"]
-            if "parking_type" in data.features:
-                metadata["f_parking_type"] = data.features["parking_type"]
-            if "water_access" in data.features:
-                metadata["f_water_access"] = data.features["water_access"]
-            if "electricity_access" in data.features:
-                metadata["f_electricity_access"] = data.features["electricity_access"]
-            
         if data.photos:
             metadata["photos"] = data.photos[0]
 
@@ -311,26 +281,19 @@ class ChromadbService:
         RULES:
         1. OUTPUT: Return ONLY a valid JSON object. No prose, no explanations.
         2. FILTERS: 
-            - Use "price", "zone", "post_type", "property_type", "surface".
-            - Precise Features: "f_bedrooms" (number), "f_bathrooms" (number), "f_pool" (bool), "f_garden_private" (bool), "f_parking_type" ('none', 'garage', 'box', 'parking'), "f_water_access" (bool), "f_electricity_access" (bool).
+            - Use ONLY these keys: "price", "zone", "post_type", "property_type", "surface".
+            - Do NOT add feature-level filters (bedrooms, pool, etc.) to the filters object. Features are handled separately via semantic search.
         3. ZONE NORMALIZATION: 
             - MANDATORY: Search the user's location in the VALID ZONES list.
             - If a partial match exists (e.g., "Ambalavao"), use the FULL VALID ZONE name (e.g., "Ambalavao-Isotry").
             - NEVER invent a zone name. If NO match is found in VALID ZONES, use "Autre quartier".
-        4. FEATURE MAPPING:
-            - If user says "no rooms", "sans chambre", "0 chambres": use {"f_bedrooms": 0}
-            - If user says "no pool", "sans piscine": use {"f_pool": false}
-            - Apply this logic to all boolean/numeric features.
-        5. PROPERTY_TYPE: Map to 'apartment', 'house', 'loft', 'land', or 'commercial'.
+        4. PROPERTY_TYPE: Map to 'apartment', 'house', 'loft', 'land', or 'commercial'.
         5. POST_TYPE: Map to 'sale' or 'rent'.
         6. PRICE FILTER RULES:
             - If user mentions a price ("for X", "budget of X", "less than X"): ALWAYS use {"price": {"$lte": X}}.
             - If user implies a minimum ("at least X", "more than X"): use {"price": {"$gte": X}}.
             - NEVER use exact price match.
             - NUMBER NORMALIZATION: "3 milliards" / "3 billion" → 3000000000.
-        7. ZERO & BOOLEAN HANDLING:
-            - "No bedrooms", "0 bedrooms", "studio" -> {"f_bedrooms": 0}
-            - "No pool", "without pool" -> {"f_pool": false}
         8. SEARCH_TEXT: Always write keywords in English (e.g., "apartment for rent").
         8. NB_CONTEXT & SORTING:
             - Cheapest/most expensive, NO other filters → nb_context: -1, sort_by active.
@@ -441,17 +404,7 @@ class ChromadbService:
             else:
                 nb_context = 10
 
-        # Separate hard filters (always in metadata) from soft feature filters (may be missing)
-        # Only hard filters go to ChromaDB; soft filters are handled by LLM refinement
-        hard_filter_keys = {"property_type", "post_type", "zone", "price", "surface"}
-        hard_filters = None
-        if filters:
-            hard_filters = {k: v for k, v in filters.items() if k in hard_filter_keys}
-            if not hard_filters:
-                hard_filters = None
-        print(f"[AI FILTERS] hard={hard_filters} (sent to ChromaDB), soft={({k: v for k, v in filters.items() if k not in hard_filter_keys}) if filters else None} (handled by LLM)")
-
-        result = await self.query_in_collection("posts", search_text, nb_context, hard_filters, id_ref)
+        result = await self.query_in_collection("posts", search_text, nb_context, filters, id_ref)
         if sort_by and sort_by.get("field"):
             get_sorted = datas.get('sort_by')
             sorted_field_value = get_sorted.get("field", "")
