@@ -196,7 +196,7 @@ export const ListingsHeader: React.FC<ListingsHeaderProps> = ({
 						onClick={() => {
 							navigate(`/property/listings/${fetchedData.mine === true ? "seller" : "buyer"}-slots?id=${fetchedData.id}`)
 						}}
-						disabled={!fetchedData.isAvailable}
+						disabled={!fetchedData.isAvailable || fetchedData.status !== "active"}
 					/>
 					<div
 						className="flex flex-col items-start justify-center
