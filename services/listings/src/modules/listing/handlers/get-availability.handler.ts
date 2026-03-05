@@ -48,10 +48,10 @@ export async function getAvailability(request: FastifyRequest, reply: FastifyRep
       });
     }
 
-    if (error.message === 'listing.not_found') {
-      return reply.status(404).send({
-        error: "listing_not_found",
-        message: "listing.not_found"
+    if (error.message === 'listing.not_available') {
+      return reply.status(410).send({
+        error: "listing_not_available",
+        message: "listing.not_available"
       });
     }
 

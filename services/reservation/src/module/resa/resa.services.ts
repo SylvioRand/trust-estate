@@ -184,7 +184,7 @@ export async function deleteReservation(app: FastifyInstance, userId: string, re
 		}
 		if (userId !== reservation.buyerId)
 			await refundCredits(app, reservation.buyerId);
-		
+
 		await tx.reservation.delete({
 			where: { reservationId }
 		});
@@ -579,6 +579,9 @@ export async function getAvailability(app: FastifyInstance, userId: string) {
 		});
 
 		if (!response.ok) {
+			if (response.status === 410) {
+				throw new Error('slot_unavailable');
+			}
 			const error = await response.json() as any;
 			throw new Error('listing_server_error');
 		}
