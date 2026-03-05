@@ -422,3 +422,32 @@ export async function getSellerReservations(request: FastifyRequest<{ Querystrin
 		});
 	}
 }
+
+export async function cancelAllReservations(request: FastifyRequest, reply: FastifyReply) {
+	const user = (request as any).user as UserInterface;
+	const { listingId } = request.body;
+
+	if (!user)
+		return reply.status(401).send({
+			"error": "unauthorized",
+			"message": "common.unauthorized"
+		});
+
+	try {
+		await resaServices.cancelAllReservations(request.server, listingId);
+		return reply.status(200).send({
+			"cancelled": true
+		})
+	} catch (error: any) {
+		if (error.message === "listing_not_found")
+			return reply.status(404).send({
+				"error": "listing_not_found",
+				"message": "listing.not_found"
+			});
+		else
+			return reply.status(500).send({
+				"error": "internal_server_error",
+				"message": "common.internal_server_error"
+			});
+	}
+}

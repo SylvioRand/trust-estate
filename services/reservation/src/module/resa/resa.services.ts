@@ -827,3 +827,32 @@ export async function getReservationsByBuyerId(
 		totalMatching
 	};
 }
+
+export async function cancelAllReservations(app: FastifyInstance, listingId: string) {
+	await app.prisma.$transaction(async (tx: TransactionClient) => {
+		const reservations = await tx.reservation.findMany({
+			where: {
+				listingId,
+				status: { in: ['pending', 'confirmed'] }
+			}
+		});
+		
+		for (const reservation of reservations) {
+			if (reservation.status === 'confirmed' || reservation.status === 'pending') {
+				await refundCredits(app, reservation.buyerId);
+			}
+		}
+	});
+
+	await app.prisma.reservation.updateMany({
+		where: {
+			listingId,
+			status: { in: ['pending', 'confirmed'] }
+		},
+		data: {
+			status: 'cancelled',
+			cancelledAt: new Date(),
+			cancelledBy: 'system'
+		}
+	});
+};

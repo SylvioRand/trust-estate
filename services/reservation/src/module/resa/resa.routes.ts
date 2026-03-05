@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyPluginOptions } from "fastify";
 import * as resaControllers from './resa.controllers'
 import { CheckSlotInterface, FilterReservationsInterface, ReservationIdInterface, ReservationInterface, StatusInterface } from "./resa.interface";
-import { CheckSlotSchema, FilterReservationsSchema, GetReservationSchema, ReservationIdSchema, ReservationSchema, StatusListingSchema } from "./resa.schema";
+import { CancelAllReservationsSchema, CheckSlotSchema, FilterReservationsSchema, GetReservationSchema, ReservationIdSchema, ReservationSchema, StatusListingSchema } from "./resa.schema";
 
 export async function reservationRoutes(app: FastifyInstance, options: FastifyPluginOptions) {
 	app.get<{ Querystring: FilterReservationsInterface }>("/reservations/mine",
@@ -66,6 +66,11 @@ export async function reservationRoutes(app: FastifyInstance, options: FastifyPl
 		schema: FilterReservationsSchema,
 		preHandler: app.authentication
 	}, resaControllers.getSellerReservations);
+	app.post("/reservations/internal/cancel-all",
+		{
+			schema: CancelAllReservationsSchema,
+			preHandler: app.internalAuthentication
+		}, resaControllers.cancelAllReservations);
 }
 
 export async function deleteData(app: FastifyInstance, options: FastifyPluginOptions) {
