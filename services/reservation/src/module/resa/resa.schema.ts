@@ -70,6 +70,20 @@ export const CheckSlotSchema = {
 	}
 }
 
+export const CancelAllReservationsSchema = {
+	body: {
+		type: 'object',
+		required: ['listingId'],
+		properties: {
+			listingId: {
+				type: 'string',
+				format: 'uuid'
+			}
+		},
+		additionalProperties: false
+	}
+}
+
 export const GetReservationSchema = {
 	querystring: {
 		type: 'object',
