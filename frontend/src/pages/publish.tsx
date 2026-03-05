@@ -573,6 +573,12 @@ const PublishPage: React.FC = () => {
 					/>
 				</div>
 
+				<div
+					className="font-light mr-auto text-sm"
+				>
+					{t("section.main.notice.minimumPicture")}
+				</div>
+
 				<div className="grid grid-cols-2 grid-rows-1 gap-3
 					place-items-center
 					w-full"
