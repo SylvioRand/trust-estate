@@ -6,7 +6,7 @@ export class AuthClient {
   private static AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://ai-service:3005';
   private static INTERNAL_KEY_SECRET = process.env.INTERNAL_KEY_SECRET || "INTERNAL_KEY";
 
-  static async verifyToken(rawCookie: string | undefined) {
+  static async verifyToken(rawCookie: string | undefined, reply?: FastifyReply) {
     if (!this.INTERNAL_KEY_SECRET) {
       throw new Error('INTERNAL_KEY_SECRET is not defined');
     }
@@ -30,6 +30,15 @@ export class AuthClient {
         throw new Error('auth.unauthorized');
       }
 
+      if (reply) {
+        const setCookieHeaders = response.headers.getSetCookie();
+        if (setCookieHeaders && setCookieHeaders.length > 0) {
+          setCookieHeaders.forEach(cookie => {
+            reply.header('Set-Cookie', cookie);
+          });
+        }
+      }
+
       return await response.json() as { id: string; role: string; emailVerified: boolean; phoneVerified: boolean };
     } catch (error) {
       console.error('❌ Auth verification failed:', error);
@@ -37,7 +46,7 @@ export class AuthClient {
     }
   }
 
-  static async isModerator(rawCookie: string | undefined) {
+  static async isModerator(rawCookie: string | undefined, reply?: FastifyReply) {
     if (!this.INTERNAL_KEY_SECRET) {
       throw new Error('INTERNAL_KEY_SECRET is not defined');
     }
@@ -59,6 +68,15 @@ export class AuthClient {
 
       if (!response.ok) {
         throw new Error('auth.unauthorized');
+      }
+
+      if (reply) {
+        const setCookieHeaders = response.headers.getSetCookie();
+        if (setCookieHeaders && setCookieHeaders.length > 0) {
+          setCookieHeaders.forEach(cookie => {
+            reply.header('Set-Cookie', cookie);
+          });
+        }
       }
 
       return await response.json() as { id: string; role: string; emailVerified: boolean; phoneVerified: boolean };

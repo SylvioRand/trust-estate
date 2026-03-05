@@ -138,9 +138,9 @@ const ClientListingsView: React.FC<ListingsViewProps> = ({
 			if (response.ok) {
 				toast.success(t(`error:${responseData.message}`))
 				if (data.action === "block_temporary")
-					setFetchedData({ ...fetchedData, isAvailable: false, status: "blocked" });
+					setFetchedData({ ...fetchedData, isAvailable: false, status: "blocked", isReported: false });
 				else if (data.action === "archive_permanently")
-					setFetchedData({ ...fetchedData, isAvailable: false, status: "archived" });
+					setFetchedData({ ...fetchedData, isAvailable: false, status: "archived", isReported: false });
 			}
 			else {
 				if (responseData.details) {
