@@ -294,7 +294,7 @@ class ChromadbService:
             - If user implies a minimum ("at least X", "more than X"): use {"price": {"$gte": X}}.
             - NEVER use exact price match.
             - NUMBER NORMALIZATION: "3 milliards" / "3 billion" → 3000000000.
-        8. SEARCH_TEXT: Always write keywords in English (e.g., "apartment for rent").
+        7. SEARCH_TEXT: Always write keywords in English (e.g., "apartment for rent").
         8. NB_CONTEXT & SORTING:
             - Cheapest/most expensive, NO other filters → nb_context: -1, sort_by active.
             - Cheapest/most expensive WITH other filters → nb_context: 7, sort_by active, search_text = other filters only.
