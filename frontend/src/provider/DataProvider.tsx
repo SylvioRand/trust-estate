@@ -62,6 +62,7 @@ const DataProvider: React.FC<DataProviderProps> = ({
 						return;
 					}
 					if ((serverResponse as any).error === "email_not_verified") {
+						setUserData(null);
 						setIsConnected(false);
 						if (url.pathname === "/email-sent") {
 							return;
