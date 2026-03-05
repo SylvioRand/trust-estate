@@ -19,11 +19,6 @@ const EmailSentPage: React.FC = () => {
 	const [timeLeft, setTimeLeft, controls] = useCountdown();
 	const { setIsConnected, setUserData, userData } = useDataProvider();
 
-	useEffect(() => {
-		if (userData && userData.emailVerified === true) {
-			navigate("/welcome");
-		}
-	}, [userData]);
 
 	useEffect(() => {
 		const interval = setInterval(async () => {
