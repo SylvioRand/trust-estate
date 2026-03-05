@@ -349,7 +349,7 @@ const PropertyPage: React.FC = () => {
 	const getDataFromBackend = async () => {
 		setIsFetchingData(true);
 		try {
-			const response = await fetch(`/api/listings/?page=${page}${zone !== null && ZONE_ENUM.some(z => z.value === zone) ? `&zone=${zone}` : ""}${lastFilter}`, {
+			const response = await fetch(`/api/listings/?page=${page}&limit=6${zone !== null && ZONE_ENUM.some(z => z.value === zone) ? `&zone=${zone}` : ""}${lastFilter}`, {
 				method: "GET",
 				credentials: "include"
 			});
