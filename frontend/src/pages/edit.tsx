@@ -300,6 +300,7 @@ const EditPage: React.FC = () => {
 				<SimpleInput
 					icon="󰗴"
 					title={t("form.title.title")}
+					pattern=".*\S.*"
 					name="title"
 					minLength={10}
 					maxLength={100}
@@ -348,6 +349,7 @@ const EditPage: React.FC = () => {
 					icon=""
 					title={t("form.price.title")}
 					name="price"
+					pattern=".*\S.*"
 					type="decimal"
 					minLength={6}
 					maxLength={24}
@@ -358,6 +360,7 @@ const EditPage: React.FC = () => {
 					icon="󰳂"
 					title={t("form.area.title")}
 					name="surface"
+					pattern=".*\S.*"
 					type="decimal"
 					minLength={2}
 					maxLength={24}
@@ -384,6 +387,7 @@ const EditPage: React.FC = () => {
 						icon="󰋣"
 						title={t("form.bedrooms.title")}
 						name="bedrooms"
+						pattern=".*\S.*"
 						type="decimal"
 						minLength={1}
 						maxLength={3}
@@ -395,6 +399,7 @@ const EditPage: React.FC = () => {
 						icon="󱠘"
 						title={t("form.bathrooms.title")}
 						name="bathrooms"
+						pattern=".*\S.*"
 						type="decimal"
 						minLength={1}
 						maxLength={3}
