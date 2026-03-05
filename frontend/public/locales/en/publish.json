@@ -100,6 +100,9 @@
 					"title": "Electricity"
 				}
 			},
+			"notice": {
+				"minimumPicture": "A minimum of 3 photos is required to publish this listing."
+			},
 			"buttons": {
 				"pictures": {
 					"upload": "Upload Pictures",

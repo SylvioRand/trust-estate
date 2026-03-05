@@ -394,7 +394,7 @@ const SettingsPage: React.FC = () => {
 		rows.push(["credits", "balance", String(balance ?? "")]);
 
 		if (credits && credits.length > 0) {
-			credits.forEach((credit : any) => {
+			credits.forEach((credit: any) => {
 				rows.push(["transaction", "id", credit.id]);
 				rows.push(["transaction", "type", credit.type]);
 				rows.push(["transaction", "reason", credit.reason]);
@@ -498,6 +498,7 @@ const SettingsPage: React.FC = () => {
 							<SimpleInput
 								icon=""
 								title={t("section.profileSettings.form.firstName.label")}
+								pattern=".*\S.*"
 								name="firstName"
 								placeholder={t("section.profileSettings.form.firstName.placeholder")}
 								minLength={3}
@@ -508,6 +509,7 @@ const SettingsPage: React.FC = () => {
 							<SimpleInput
 								title={t("section.profileSettings.form.lastName.label")}
 								name="lastName"
+								pattern=".*\S.*"
 								placeholder={t("section.profileSettings.form.lastName.placeholder")}
 								minLength={3}
 								error={errorLastName}
