@@ -19,10 +19,10 @@ class ft_config:
     #API key for all routes
     INTERNAL_KEY = os.getenv("INTERNAL_KEY_SECRET", "")
     #LLM config
-    LLM_API_URL = os.getenv("LLM_API_URL", "https://api.groq.com/openai/v1/chat/completions")
-    LLM_API_KEY = os.getenv("LLM_API_KEY", "")
+    LLM_API_URL = os.getenv("LLM_API_URL", "https://integrate.api.nvidia.com/v1/chat/completions")
+    LLM_API_KEY = os.getenv("LLM_API_KEY", "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")
 
-    all_models = os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
+    all_models = os.getenv("LLM_MODEL", "google/gemma-3-27b-it")
     LLM_MODEL = [model.strip() for model in all_models.split(",")]
 
     #Embedding

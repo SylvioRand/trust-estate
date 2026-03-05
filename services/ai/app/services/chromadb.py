@@ -63,10 +63,25 @@ def refine_for_llm(user_mssg, chroma_result):
     chroma_string = json.dumps(chroma_result, indent = 2)
 
     prompt = f"""
-    INSTRUCTION: Return EXACTLY the CHROMA_CONTEXT but with the values inside each field that match the USER_INPUT ONLY 
+    TASK: Filter the CHROMA_CONTEXT to keep ONLY listings that match the USER_INPUT.
+
+    INTERNAL STEPS (do NOT output these):
+    1. TRANSLATE the USER_INPUT to English.
+    2. EXTRACT all criteria: property_type, post_type, zone, price range, bedrooms, bathrooms, pool, garden, parking, water, electricity, surface, etc.
+    3. For each listing in CHROMA_CONTEXT, check if it satisfies ALL extracted criteria.
+    4. KEEP only listings that match ALL criteria. If a criterion is not mentioned by the user, it is not a filter (ignore it).
+    5. Return the filtered CHROMA_CONTEXT in the EXACT same JSON structure.
+
+    RULES:
+    - If NO listings match ALL criteria, return empty arrays: {{"ids":[[]], "distances":[[]], "metadatas":[[]], "documents":[[]]}}
+    - NEVER invent or modify data. Copy matching entries exactly as they are.
+    - Price matching: if user says "budget X" or "moins de X", keep listings with price <= X.
+    - Zone matching: partial match is OK (e.g., "Ivandry" matches "Ivandry").
+    - Return ONLY valid JSON. No prose, no markdown, no code blocks.
+
     USER_INPUT: {user_mssg}
 
-    CHROMA_CONTEXT: 
+    CHROMA_CONTEXT:
     {chroma_string}
     """
     return prompt
@@ -126,6 +141,7 @@ class ChromadbService:
             metadata["surface"] = float(data.surface)
         if data.tags:
             metadata["tags"] = json.dumps(data.tags)
+        
         if data.features:
             metadata["features"] = json.dumps(data.features)
         if data.photos:
@@ -158,6 +174,7 @@ class ChromadbService:
             metadata["surface"] = float(data.surface)
         if data.tags:
             metadata["tags"] = json.dumps(data.tags)
+            
         if data.features:
             metadata["features"] = json.dumps(data.features)
         if data.photos:
@@ -215,7 +232,6 @@ class ChromadbService:
                 parse_filters = {"$and": filter_bloc}
             else:
                 parse_filters = filter_bloc[0]
-            embedding_format = ""
         if id_ref:
             target_ref = await self.collections[collection_name].get(
                     ids=[id_ref],
@@ -237,7 +253,13 @@ class ChromadbService:
     def get_parse_prompt(self):
         parse_prompt = """
         ROLE: You are a strict JSON generator for a real estate search engine. 
-        You only knows the languages French, English and Spanish.
+        The user may write in ANY language (French, English, Spanish, Malagasy, etc.).
+
+        INTERNAL STEPS (never output these, they are for your reasoning only):
+        STEP 1 - CORRECT: Fix any spelling or grammar mistakes in the user input.
+        STEP 2 - TRANSLATE: Translate the corrected input to English.
+        STEP 3 - PARSE: Extract filters from the corrected English and produce the JSON output.
+        Output ONLY the final JSON from STEP 3.
 
         VALID ZONES = [
         "Ambalavao-Isotry", "Ambatonakanga-Ambohitsorohitra", "Ambatovinaky", "Ambodifilao-Soarano II S", "Ampandrana-Ankadivato", "Amparibe-Avaratr'Imahamasina", "Ampasamadinika-Amboasarikely", "Anatihazo Isotry", "Andavamamba-Anatihazo I", "Andavamamba-Anatihazo II",
@@ -255,32 +277,32 @@ class ChromadbService:
         "Analamahintsy Tanàna", "Andraisoro", "Androhibe", "Anjanahary II A", "Anjanahary II N", "Anjanahary II O", "Anjanahary II S", "Ankadindramamy", "Ivandry", "Manjakaray II B",
         "Manjakaray II C", "Manjakaray II D", "Morarano Ambatomainty", "Nanisana", "Soavimasoandro", "Tsarahonenana", "Ambatolampy", "Amboavahy", "Ambodihady", "Ambodimita",
         "Ambodivona", "Ambodivonakely", "Ambohidroa", "Ambohimanandray", "Andranomena", "Avaratetezana", "Anosibe Zaivola", "Antsararay", "Avaratanana", "Autre quartier"
-]
+        ]
         RULES:
-        1. OUTPUT: Return ONLY a valid JSON object. No prose, no explanations, no "Je suppose que...".
-        2. FILTERS: Only use "price", "zone", "post_type", "property_type", "surface".
-        3. ZONE NORMALIZATION: Map to VALID ZONES or capitalize first letter.
+        1. OUTPUT: Return ONLY a valid JSON object. No prose, no explanations.
+        2. FILTERS: 
+            - Use ONLY these keys: "price", "zone", "post_type", "property_type", "surface".
+            - Do NOT add feature-level filters (bedrooms, pool, etc.) to the filters object. Features are handled separately via semantic search.
+        3. ZONE NORMALIZATION: 
+            - MANDATORY: Search the user's location in the VALID ZONES list.
+            - If a partial match exists (e.g., "Ambalavao"), use the FULL VALID ZONE name (e.g., "Ambalavao-Isotry").
+            - NEVER invent a zone name. If NO match is found in VALID ZONES, use "Autre quartier".
         4. PROPERTY_TYPE: Map to 'apartment', 'house', 'loft', 'land', or 'commercial'.
         5. POST_TYPE: Map to 'sale' or 'rent'.
-        6. NUMBERS: Use ChromaDB operators ONLY for specific numbers provided by the user. 
-        DO NOT invent values (e.g., no placeholder $lt: 1000000).
-        7. SEARCH_TEXT: Always include keywords (e.g., "house", "3 bedrooms").
-        8. NB_CONTEXT & SORTING (Priority Rule):
-            IF the user asks for "cheapest/most expensive" AND provides NO other filters (no zone, no property type, etc.):
-                Set nb_context to -1.
-                Set sort_by: {"field": "price", "content": "min"|"max"}.
-            IF the user asks for "cheapest/most expensive" BUT includes additional filters (e.g., "at Ivandry", "a house", etc.):
-                Set nb_context to 7.
-                Set sort_by: {"field": "price", "content": "min"|"max"}.
-                set SEARCH_TEXT to the additional filters ONLY
-            ELSE IF a specific number of results is mentioned: Set nb_context to that number (Max 7), sort_by to null.
-            DEFAULT: Set nb_context to 7, sort_by to null.
-        9. STRUCTURE: nb_context must be -1 if sort_by is active. sort_by must be null otherwise.
-        10. TYPO RESILIENCE: Be highly forgiving of typos in superlatives.
-        Specifically, anything similar to "la mois cher" or "le plus moin cher" or "le mois chers" must always be interpreted as "cheapest" (field: price, content: min).
-        Do not assume the user wants the "most expensive" unless they explicitly say "plus cher".
+        6. PRICE FILTER RULES:
+            - If user mentions a price ("for X", "budget of X", "less than X"): ALWAYS use {"price": {"$lte": X}}.
+            - If user implies a minimum ("at least X", "more than X"): use {"price": {"$gte": X}}.
+            - NEVER use exact price match.
+            - NUMBER NORMALIZATION: "3 milliards" / "3 billion" → 3000000000.
+        7. SEARCH_TEXT: Always write keywords in English (e.g., "apartment for rent").
+        8. NB_CONTEXT & SORTING:
+            - Cheapest/most expensive, NO other filters → nb_context: -1, sort_by active.
+            - Cheapest/most expensive WITH other filters → nb_context: 7, sort_by active, search_text = other filters only.
+            - Specific number of results mentioned → nb_context: that number (max 7), sort_by: null.
+            - Default → nb_context: 7, sort_by: null.
+        9. STRUCTURE CONSTRAINT: nb_context must be -1 ONLY when sort_by is active. sort_by fields must be null when not sorting.
 
-        STRUCTURE:
+        OUTPUT STRUCTURE:
         {
             "isAbout_real_estate": boolean,
             "nb_context": number,
@@ -306,7 +328,7 @@ class ChromadbService:
             "isAbout_real_estate": true,
             "nb_context": -1,
             "sort_by": { "field": "price", "content": "min" },
-            "search_text": "moins chère",
+            "search_text": "cheapest listing",
             "filters": {}
         }
         """
@@ -364,6 +386,7 @@ class ChromadbService:
         searched = datas.get("isAbout_real_estate", False)
         nb_context = datas.get("nb_context", 0)
         sort_by = datas.get("sort_by", None)
+        print(f"[AI PARSE] search_text={search_text}, filters={filters}, nb_context={nb_context}, sort_by={sort_by}, isAbout_real_estate={searched}")
         if not searched:
             return {
                     'ids': [],
@@ -380,6 +403,7 @@ class ChromadbService:
                 nb_context = await tmp.count()
             else:
                 nb_context = 10
+
         result = await self.query_in_collection("posts", search_text, nb_context, filters, id_ref)
         if sort_by and sort_by.get("field"):
             get_sorted = datas.get('sort_by')
@@ -434,21 +458,33 @@ class ChromadbService:
     async def get_ids_from_query(self, query_result, llm_service, user_mssg):
         llm_refine = refine_for_llm(user_mssg, query_result)
         llm_response = await llm_service.generate_bloc_response(llm_refine, llm_service.get_matching_listing())
-        filtered_result = json.loads(llm_response)
+        filtered_result = self.parse_json(llm_response)
+        if not filtered_result:
+            filtered_result = {'ids': [], 'metadatas': [], 'documents': []}
         result: list[metaData] = []
 
         if filtered_result.get('ids') and len(filtered_result['ids']) > 0:
-            for nb in range(len(filtered_result['ids'][0])):
-                curr_obj = metaData(
-                        id = filtered_result['ids'][0][nb],
-                        photos = "/uploads/" + filtered_result['metadatas'][0][nb].get("photos", ""),
-                        title = filtered_result['metadatas'][0][nb].get("title", ""),
-                        price = filtered_result['metadatas'][0][nb].get("price", 1.0),
-                        propertytype = filtered_result['metadatas'][0][nb].get("property_type", "house"),
-                        type = filtered_result['metadatas'][0][nb].get("post_type", "sale"),
-                        zone = filtered_result['metadatas'][0][nb].get("zone", "")
-                )
-                result.append(curr_obj)
+            for returned_id in filtered_result['ids'][0]:
+                try:
+                    # Find the index of this ID in the original query_result
+                    original_idx = query_result['ids'][0].index(returned_id)
+                    original_meta = query_result['metadatas'][0][original_idx]
+                    
+                    photos_url = ("/uploads/" + original_meta.get("photos")) if original_meta.get("photos") else ""
+                    
+                    curr_obj = metaData(
+                            id = returned_id,
+                            photos = photos_url,
+                            title = original_meta.get("title", ""),
+                            price = original_meta.get("price", 1.0),
+                            propertyType = original_meta.get("property_type", "house"),
+                            type = original_meta.get("post_type", "sale"),
+                            zone = original_meta.get("zone", "")
+                    )
+                    result.append(curr_obj)
+                except ValueError:
+                    # ID returned by LLM was not in original query_result (should be rare)
+                    continue
         return result
 
 chromadb_service = ChromadbService()

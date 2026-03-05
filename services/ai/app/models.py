@@ -27,8 +27,8 @@ class metaData(BaseModel):
     photos: str = "Failed"
     title: str = "Failed"
     price: float = 1.0
-    propertyType: Literal['apartment', 'house', 'loft', 'land', 'commercial'] = "apartment"
-    type: Literal["sale", "rent"] = "sale"
+    propertyType: Literal['apartment', 'house', 'loft', 'land', 'commercial']
+    type: Literal["sale", "rent"]
     zone: str = "Failed"
 
 class PostModel(BaseModel):
@@ -37,8 +37,8 @@ class PostModel(BaseModel):
     photos: list[str] = []
     description: str = "Beautiful property"
     price: float = Field(default=100000, gt=0)
-    type: Literal["sale", "rent"] = "sale"
-    propertyType: Literal['apartment', 'house', 'loft', 'land', 'commercial'] = "apartment"
+    type: Literal["sale", "rent"]
+    propertyType: Literal['apartment', 'house', 'loft', 'land', 'commercial']
     surface: Optional[float] = Field(default=45, gt=0)
     zone: str = "Ivandry"
     features: Optional[dict[str, Any]] = None
@@ -49,7 +49,7 @@ class PostModel(BaseModel):
             f"Title: {self.title}",
             f"Type: {self.type}",
             f"Description: {self.description}",
-            f"Property type: {self.propertyType}"
+            f"Property type: {self.propertyType}",
             f"Location: {self.zone}"
         ]
         return ". ".join(values) + " ."
@@ -58,6 +58,7 @@ class PostModel(BaseModel):
         values = [
             f"Title: {self.title}",
             f"Type: {self.type}",
+            f"Property type: {self.propertyType}",
             f"Description: {self.description}",
             f"Zone: {self.zone}",
             f"Price: {self.price}",

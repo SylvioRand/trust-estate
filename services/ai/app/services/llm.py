@@ -78,20 +78,28 @@ class LLMService:
         rules = """
         ROLE: Warm and professional real estate assistant.
             
-            LANGUAGE GATEKEEPER:
-            1. You ONLY support: English, French, and Spanish.
-            2. If the user input is in ANY other language (e.g., German, Italian, Malagasy):
+            LANGUAGE RULES:
+            1. You support: English, French, Spanish, and Malagasy.
+            2. ALWAYS reply in the SAME language as the user's message.
+            3. If the user mixes languages (e.g., "Find me a house avec 3 chambres"), identify the dominant language and reply ONLY in that language. 
+            4. IMPORTANT: Malagasy location names (like "Ambalavao", "Ivandry", "Isotry") are used in all languages and do NOT indicate that the conversation is in Malagasy. If the sentence structure is French or English, stay in that language.
+            5. If the user input is in ANY other unsupported language (e.g., German, Italian, Chinese):
             - STOP all processing.
             - Do NOT use the real estate context.
-            - Reply ONLY with this exact phrase: "I'm sorry, I only speak English, French, and Spanish."
+            - Reply ONLY with: "I'm sorry, I only speak English, French, Spanish, and Malagasy."
             
             REAL ESTATE GOAL:
-            - Help users understand listings using ONLY provided context.
-            - If no matches, ask for more details.
+            - Help users understand listings using ONLY the provided CONTEXT.
+            - NEVER invent, fabricate, or hallucinate listings, prices, features, or any property details.
+            - If the CONTEXT contains NO matching listings:
+                - Say so clearly: "I'm sorry, I couldn't find any listings matching all your criteria in my current records."
+                - DO NOT claim that no properties exist in a certain zone or price range (e.g., "There are no apartments in Ambalavao"). Only state that NONE from the search results matched ALL criteria.
+                - Suggest refining the MOST LIKELY problematic criteria (e.g., "You might want to try searching without the 'pool' filter or adjusting the price range").
+            - Only describe properties that are explicitly present in the CONTEXT provided to you.
             
             CONVERSATIONAL STYLE:
             - NO lists, NO bullet points, NO bold headers.
-            - Use natural, flowing paragraphs as if talking to a friend.
+            - Use natural, flowing paragraphs in a warm and professional tone.
             - Always include the price in "Ariary" (The abreviate format is "Ar").
             - Do not ask the user any questions if listings were found.
         """
@@ -122,6 +130,8 @@ class LLMService:
         2. DO NOT use Markdown formatting or code blocks (no ```json).
         3. The output must be a valid Python/JSON dictionary string that can be parsed by json.loads().
         4. Maintain the exact same keys: 'ids', 'distances', 'metadatas', 'documents', etc.
+        5. DO NOT omit any fields from the dictionaries inside the 'metadatas' array. You MUST return all fields (photos, title, zone, property_type, price, etc) exactly as they are in the CHROMA_CONTEXT.
+        6. CRITICAL: NEVER leave the 'ids' array empty if there are matches. You MUST copy the exact string IDs of the matching properties from the CHROMA_CONTEXT into your 'ids' array.
 
         EXAMPLE: 
         {
@@ -141,6 +151,13 @@ class LLMService:
             "metadatas": [
                 [
                 {
+                    "f_bedrooms": 5,
+                    "f_bathrooms": 1,
+                    "f_pool": true,
+                    "f_garden_private": true,
+                    "f_parking_type": "none",
+                    "f_water_access": true,
+                    "f_electricity_access": true,
                     "features": "{\"bedrooms\": 5, \"bathrooms\": 1, \"wc\": true, \"wcSeparate\": true, \"parkingType\": \"none\", \"gardenPrivate\": true, \"pool\": true, \"water_access\": true, \"electricityAccess\": true}",
                     "photos": "1771885395551-image.png",
                     "post_type": "sale",
@@ -167,6 +184,7 @@ class LLMService:
             ]
         }
         """
+        return result
 
     def generate_header(self):
         headers = {
@@ -184,7 +202,10 @@ class LLMService:
         data = {
             "model": model_to_use,
             "messages": mssg ,
-            "stream": streaming
+            "stream": streaming,
+            "temperature": 0.2,
+            "top_p": 0.7,
+            "max_tokens": 2048
         }
         return data
 

@@ -225,6 +225,8 @@ export class ListingService {
         data: statsUpdate
       });
 
+      AIClient.deleteIndexListing(id);
+
       return archivedListing;
     });
   }
@@ -394,6 +396,8 @@ export class ListingService {
           successfulRents: listing.type === 'rent' ? { increment: 1 } : undefined,
         }
       });
+
+      AIClient.deleteIndexListing(listingId);
 
       return (updated);
     });
