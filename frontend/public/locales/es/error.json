@@ -118,6 +118,8 @@
 				"invalid_value": "El número de habitaciones debe ser un número.",
 				"integer": "El número de habitaciones debe ser un entero.",
 				"too_low": "El número de habitaciones no puede ser negativo.",
+				"at_least_one": "El número de habitaciones debe ser al menos 1 para este tipo de propiedad.",
+				"must_be_zero": "El número de habitaciones debe ser 0 para este tipo de propiedad.",
 				"too_high": "El número de habitaciones no debe exceder 2147483647."
 			},
 			"bedroom_range_invalid": "El rango de habitaciones es inválido.",
@@ -125,6 +127,8 @@
 				"invalid_value": "El número de baños debe ser un número.",
 				"integer": "El número de baños debe ser un entero.",
 				"too_low": "El número de baños no puede ser negativo.",
+				"at_least_one": "El número de baños debe ser al menos 1 para este tipo de propiedad.",
+				"must_be_zero": "El número de baños debe ser 0 para este tipo de propiedad.",
 				"too_high": "El número de baños no debe exceder 2147483647."
 			},
 			"bathroom_range_invalid": "El rango de baños es inválido.",

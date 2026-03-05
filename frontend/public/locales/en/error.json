@@ -118,6 +118,8 @@
 				"invalid_value": "The bedroom count must be a number.",
 				"integer": "The bedroom count must be an integer.",
 				"too_low": "The bedroom count cannot be negative.",
+				"at_least_one": "The bedroom count must be at least 1 for this property type.",
+				"must_be_zero": "The bedroom count must be 0 for this property type.",
 				"too_high": "The bedroom count must not exceed 2147483647."
 			},
 			"bedroom_range_invalid": "The bedroom range is invalid.",
@@ -125,6 +127,8 @@
 				"invalid_value": "The bathroom count must be a number.",
 				"integer": "The bathroom count must be an integer.",
 				"too_low": "The bathroom count cannot be negative.",
+				"at_least_one": "The bathroom count must be at least 1 for this property type.",
+				"must_be_zero": "The bathroom count must be 0 for this property type.",
 				"too_high": "The bathroom count must not exceed 2147483647."
 			},
 			"bathroom_range_invalid": "The bathroom range is invalid.",
