@@ -13,7 +13,7 @@ app.register(fastifyCookie);
 
 app.decorate('moderatorAuthentificate', async (request: any, reply: any) => {
   try {
-    const user = await AuthClient.isModerator(request.headers.cookie);
+    const user = await AuthClient.isModerator(request.headers.cookie, reply);
     request.user = user;
   } catch (error) {
     reply.status(401).send({
@@ -26,7 +26,7 @@ app.decorate('moderatorAuthentificate', async (request: any, reply: any) => {
 
 app.decorate('authenticate', async (request: any, reply: any) => {
   try {
-    const user = await AuthClient.verifyToken(request.headers.cookie);
+    const user = await AuthClient.verifyToken(request.headers.cookie, reply);
     request.user = user;
   } catch (error) {
     reply.status(401).send({
@@ -38,7 +38,7 @@ app.decorate('authenticate', async (request: any, reply: any) => {
 
 app.decorate('optionalAuthenticate', async (request: any, reply: any) => {
   try {
-    const user = await AuthClient.verifyToken(request.headers.cookie);
+    const user = await AuthClient.verifyToken(request.headers.cookie, reply);
     request.user = user;
   } catch (error) {
     request.user = undefined;

@@ -119,7 +119,10 @@ export class ModeratorServices {
   static async applyModeratorAction(id: string, moderatorId: string, data: ModerationActionData) {
     const listing = await prisma.listing.findUnique({
       where: { id },
-      include: { reports: true }
+      include: {
+        reports: true,
+        features: true
+      }
     });
 
     if (!listing) {
@@ -156,9 +159,10 @@ export class ModeratorServices {
         }
       });
 
-      await tx.listing.update({
+      const updatedListing = await tx.listing.update({
         where: { id },
-        data: { status: newStatus }
+        data: { status: newStatus },
+        include: { features: true }
       });
 
       if (data.action === 'reject_reports') {
@@ -171,6 +175,8 @@ export class ModeratorServices {
         success: true,
         actionId: moderation.id,
         newStatus,
+        listing: updatedListing,
+        features: updatedListing.features,
         message: "moderator.action_applied_successfully"
       };
     });
