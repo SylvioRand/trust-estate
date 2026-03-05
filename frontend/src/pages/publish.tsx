@@ -311,6 +311,7 @@ const PublishPage: React.FC = () => {
 					icon="󰗴"
 					title={t("section.main.form.title.title")}
 					name="title"
+					pattern=".*\S.*"
 					minLength={10}
 					maxLength={100}
 					placeholder={t("section.main.form.title.placeholder")}
@@ -359,6 +360,7 @@ const PublishPage: React.FC = () => {
 					icon=""
 					title={t("section.main.form.price.title")}
 					name="price"
+					pattern=".*\S.*"
 					type="decimal"
 					minLength={1}
 					maxLength={24}
@@ -371,6 +373,7 @@ const PublishPage: React.FC = () => {
 					title={t("section.main.form.area.title")}
 					name="area"
 					type="decimal"
+					pattern=".*\S.*"
 					minLength={1}
 					maxLength={24}
 					placeholder={t("section.main.form.area.placeholder")}
@@ -397,6 +400,7 @@ const PublishPage: React.FC = () => {
 						name="bedrooms"
 						type="decimal"
 						minLength={1}
+						pattern=".*\S.*"
 						maxLength={3}
 						placeholder={t("section.main.form.bedrooms.placeholder")}
 						error={errorBedrooms}
@@ -407,6 +411,7 @@ const PublishPage: React.FC = () => {
 						title={t("section.main.form.bathrooms.title")}
 						name="bathrooms"
 						type="decimal"
+						pattern=".*\S.*"
 						minLength={1}
 						maxLength={3}
 						placeholder={t("section.main.form.bathrooms.placeholder")}
@@ -571,6 +576,12 @@ const PublishPage: React.FC = () => {
 					<ContentDivider
 						line_color="var(--color-background)"
 					/>
+				</div>
+
+				<div
+					className="font-light mr-auto text-sm"
+				>
+					{t("section.main.notice.minimumPicture")}
 				</div>
 
 				<div className="grid grid-cols-2 grid-rows-1 gap-3

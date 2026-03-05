@@ -181,6 +181,7 @@ const SignUpPage: React.FC = () => {
 							icon=""
 							title={t("form.firstName.label")}
 							name="firstName"
+							pattern=".*\S.*"
 							placeholder={t("form.firstName.placeholder")}
 							minLength={3}
 							maxLength={50}
@@ -190,6 +191,7 @@ const SignUpPage: React.FC = () => {
 						<SimpleInput
 							title={t("form.lastName.label")}
 							name="lastName"
+							pattern=".*\S.*"
 							minLength={3}
 							maxLength={50}
 							placeholder={t("form.lastName.placeholder")}
