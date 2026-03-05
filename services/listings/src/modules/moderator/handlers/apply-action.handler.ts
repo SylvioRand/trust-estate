@@ -10,10 +10,12 @@ export async function HandleApplyAction(request: FastifyRequest, reply: FastifyR
 
     const bodyData = ModerationActionSchema.parse(request.body);
 
-    const result = await ModeratorServices.applyModeratorAction(id, user.id, bodyData);
+    const result = await ModeratorServices.applyModeratorAction(id, user.id, bodyData) as any;
 
     if (bodyData.action == 'archive_permanent' || bodyData.action == 'block_temporary') {
       AIClient.deleteIndexListing(id);
+    } else if (result.newStatus === 'active') {
+      AIClient.upsertIndexListing(result.listing, "POST", result.features);
     }
 
     return reply.status(200).send(result);
