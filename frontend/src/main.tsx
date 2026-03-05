@@ -29,16 +29,17 @@ import PrivacyPolicyPage from './pages/privacy_policy.tsx';
 import EditPage from './pages/edit.tsx';
 import DashboardPage from './pages/dashboard.tsx';
 import FlaggedPage from './pages/flaggedPage.tsx';
+import ErrorPage from './pages/errorPage.tsx';
 
 const originalFetch = window.fetch;
 window.fetch = async (...args) => {
-	const response = await originalFetch(...args);
-	if (response.status === 429) {
-		if (window.location.pathname !== "/email-sent" && window.location.pathname !== "/sign-in/forgot-pass") {
-			window.location.href = "/429.html";
-		}
-	}
-	return response;
+  const response = await originalFetch(...args);
+  if (response.status === 429) {
+    if (window.location.pathname !== "/email-sent" && window.location.pathname !== "/sign-in/forgot-pass") {
+      window.location.href = "/429.html";
+    }
+  }
+  return response;
 };
 
 const router = createBrowserRouter([
@@ -48,6 +49,7 @@ const router = createBrowserRouter([
         <MainLayout />
       </DataProvider>
     ),
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "/sign-in",
