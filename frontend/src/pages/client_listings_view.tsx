@@ -318,8 +318,8 @@ const ClientListingsView: React.FC<ListingsViewProps> = ({
 							title={t("section.actionButton.popup.modAction.popup.reason.title")}
 							name="reason"
 							placeholder={t("section.actionButton.popup.modAction.popup.reason.placeholder")}
-							minLength={50}
-							maxLength={2000}
+							minLength={10}
+							maxLength={500}
 							rows={3}
 						/>
 						<TextArea
@@ -328,7 +328,7 @@ const ClientListingsView: React.FC<ListingsViewProps> = ({
 							name="messageToSeller"
 							placeholder={t("section.actionButton.popup.modAction.popup.messageToSeller.placeholder")}
 							minLength={50}
-							maxLength={2000}
+							maxLength={1000}
 							rows={3}
 						/>
 						<TextArea
@@ -337,7 +337,7 @@ const ClientListingsView: React.FC<ListingsViewProps> = ({
 							name="internalNote"
 							placeholder={t("section.actionButton.popup.modAction.popup.internalNote.placeholder")}
 							minLength={50}
-							maxLength={2000}
+							maxLength={1000}
 							rows={3}
 						/>
 						<div
