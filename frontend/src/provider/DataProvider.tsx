@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { DataContext } from "./DataContext";
-import type { APIResponse } from "../pages/sign_up";
-import { toast } from "react-toastify";
-import { useTranslation } from "react-i18next";
+import { apiFetch } from "../utils/fetchWithoutConsoleError";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface DataProviderProps {
@@ -30,60 +28,43 @@ const DataProvider: React.FC<DataProviderProps> = ({
 	const [isConnected, setIsConnected] = useState<boolean | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [userData, setUserData] = useState<UserModelData | null>(null);
-	const { t } = useTranslation("error");
 	const location = useLocation();
 	const navigate = useNavigate();
 	const url = new URL(window.location.href);
 	useEffect(() => {
 		const checkAuth = async () => {
-			try {
-				// Vérifier si l'utilisateur est authentifié
-				// Les cookies sont envoyés automatiquement
-				const response = await fetch(`/api/users/me`, {
-					method: "GET",
-					credentials: "include", // Envoie les cookies automatiquement
-				});
+			// /api/auth/status est un endpoint nginx qui intercepte les
+			// 4xx/5xx upstream et retourne toujours HTTP 200 avec un
+			// champ `error` dans le corps JSON. Aucune erreur réseau
+			// n'apparaît dans la console du navigateur.
+			const { data, error } = await apiFetch<UserModelData>("/api/auth/status");
 
-				const responseData = await response.json();
-
-				if (response.ok) {
-					const serverResponse = responseData as UserModelData;
-
-					setIsConnected(false);
-					if ((serverResponse as any).error === "invalid_or_expired_token") {
-						return;
-					}
-					if ((serverResponse as any).error === "phone_number_not_verified") {
-						setIsConnected(false);
-						if (url.pathname === "/add-phone") {
-							return;
-						}
-						navigate("/add-phone", { replace: true });
-						return;
-					}
-					if ((serverResponse as any).error === "email_not_verified") {
-						setUserData(null);
-						setIsConnected(false);
-						if (url.pathname === "/email-sent") {
-							return;
-						}
-						navigate("/email-sent", { replace: true });
-						return;
-					}
-					setIsConnected(true);
-					setUserData(serverResponse);
-					const from = location.state?.from;
-					if (from)
-						navigate(from, { replace: true });
-					return;
-				}
-
+			if (error === "service_unavailable") {
 				setIsConnected(false);
-
-			} catch (error) {
-				if (error instanceof Error && error.message !== "")
-					toast.error(t(`error:${error.message}`))
+				return;
 			}
+			if (error === "invalid_or_expired_token" || !data) {
+				setIsConnected(false);
+				return;
+			}
+			if (error === "phone_number_not_verified") {
+				setIsConnected(false);
+				if (url.pathname !== "/add-phone")
+					navigate("/add-phone", { replace: true });
+				return;
+			}
+			if (error === "email_not_verified") {
+				setUserData(null);
+				setIsConnected(false);
+				if (url.pathname !== "/email-sent")
+					navigate("/email-sent", { replace: true });
+				return;
+			}
+			setIsConnected(true);
+			setUserData(data);
+			const from = location.state?.from;
+			if (from)
+				navigate(from, { replace: true });
 		};
 
 		checkAuth();

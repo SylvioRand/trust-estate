@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import useDataProvider from "../provider/useDataProvider";
 import PhoneInput from "../components/PhoneInput";
 import { passwordRules } from "../const/constant";
+import { apiFetch } from "../utils/fetchWithoutConsoleError";
 
 export type APIResponse = {
 	error: string;
@@ -55,29 +56,25 @@ const SignUpPage: React.FC = () => {
 			data.phone = data.phoneCountryCode + data.phone;
 			delete data.phoneCountryCode;
 
-			const response = await fetch("/api/auth/register", {
+			const { error, data: responseData } = await apiFetch("/api/auth/register", {
 				method: "POST",
-				headers: {
-					"Content-type": "application/json"
-				},
+				headers: { "Content-type": "application/json" },
 				body: JSON.stringify(data)
-			})
+			});
 
-			const responseData = await response.json();
+			if (error) {
+				const errorData = responseData as APIResponse | null;
 
-			if (!response.ok) {
-				const errorData = responseData as APIResponse;
-
-				if (errorData.error === "email_exists") {
-					setErrorEmail([errorData.message]);
+				if (error === "email_exists") {
+					setErrorEmail([errorData?.message ?? error]);
 					throw new Error("auth.email_already_exists");
 				}
-				else if (errorData.error === "phone_exists") {
-					setErrorPhone([errorData.message]);
+				else if (error === "phone_exists") {
+					setErrorPhone([errorData?.message ?? error]);
 					throw new Error("auth.phone_already_exists");
 				}
-				else if (errorData.error === "validation_failed") {
-					if (errorData.details && typeof errorData.details === "object") {
+				else if (error === "validation_failed") {
+					if (errorData?.details && typeof errorData.details === "object") {
 						const entries = Object.entries(errorData.details) as [string, string | string[]][];
 
 						for (const [key, value] of entries) {
@@ -85,27 +82,16 @@ const SignUpPage: React.FC = () => {
 
 							if (tmp.length === 0) continue;
 
-
-							if (key === "email") {
-								setErrorEmail(tmp);
-							}
-							else if (key === "firstName") {
-								setErrorFirstName(tmp);
-							}
-							else if (key === "lastName") {
-								setErrorLastName(tmp);
-							}
-							else if (key === "password") {
-								setErrorPassword(tmp);
-							}
-							else if (key === "phone") {
-								setErrorPhone(tmp);
-							}
+							if (key === "email") setErrorEmail(tmp);
+							else if (key === "firstName") setErrorFirstName(tmp);
+							else if (key === "lastName") setErrorLastName(tmp);
+							else if (key === "password") setErrorPassword(tmp);
+							else if (key === "phone") setErrorPhone(tmp);
 						}
 					}
 					throw new Error("common.validation_failed");
 				}
-				else if (errorData.error === "rate_limited") {
+				else if (error === "rate_limited") {
 					throw new Error("common.rate_limited");
 				}
 			}

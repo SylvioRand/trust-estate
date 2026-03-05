@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ContentDivider from "../components/ContentDivider";
 import { toast } from "react-toastify";
+import { apiFetch } from "../utils/fetchWithoutConsoleError";
 
 type EmailVerificationStatus = "loading" | "confirmed" | "invalid";
 
@@ -14,30 +15,21 @@ const VerifyEmailPage: React.FC = () => {
 	const navigate = useNavigate();
 
 	const verifyToken = async () => {
-		try {
-			const response = await fetch("/api/auth/verify-email", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({ token }),
-				credentials: "include"
-			});
+		const { error } = await apiFetch("/api/auth/verify-email", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ token }),
+		});
 
-			if (!response.ok)
-				throw new Error("Invalid or Expired Token");
-
-			toast.success(t("success"));
-			setStatus("confirmed");
-
-			navigate("/welcome");
-
-		} catch (e) {
+		if (error) {
 			toast.error(t("error:auth.invalid_or_expired_token"));
 			setStatus("invalid");
 			navigate("/home");
-
+			return;
 		}
+		toast.success(t("success"));
+		setStatus("confirmed");
+		navigate("/welcome");
 	}
 
 	useEffect(() => {

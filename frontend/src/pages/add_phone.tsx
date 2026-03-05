@@ -4,12 +4,12 @@ import ContentDivider from "../components/ContentDivider";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import PhoneInput from "../components/PhoneInput";
-import type { APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { apiFetch } from "../utils/fetchWithoutConsoleError";
 
 const AddPhonePage: React.FC = () => {
 	const { t } = useTranslation(["addPhone", "error"]);
@@ -43,35 +43,22 @@ const AddPhonePage: React.FC = () => {
 
 		delete data.phoneCountryCode;
 
-		try {
-			const response = await fetch("/api/users/me/phone", {
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				credentials: "include",
-				body: JSON.stringify(data)
-			});
+		const { error, message } = await apiFetch("/api/users/me/phone", {
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(data)
+		});
 
-			const responseData = await response.json();
-
-			if (!response.ok) {
-				const errorData = responseData as APIResponse;
-
-				setErrorPhone([errorData.message]);
-				throw new Error(errorData.message);
-			}
-
-			toast.success(t("notif.success"));
-			navigate("/home");
-
-		}
-		catch (error) {
-			if (error instanceof Error && error.message !== "")
-				toast.error(t(`error:${error.message}`))
-		} finally {
+		if (error) {
+			setErrorPhone([message ?? error]);
+			toast.error(t(`error:${message ?? error}`));
 			setProcessingSubmit(false);
+			return;
 		}
+
+		toast.success(t("notif.success"));
+		navigate("/home");
+		setProcessingSubmit(false);
 	}
 
 	return (

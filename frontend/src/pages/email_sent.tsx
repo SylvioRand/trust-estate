@@ -5,8 +5,8 @@ import ContentDivider from "../components/ContentDivider";
 import ActionButton from "../components/ActionButton";
 import { toast } from "react-toastify";
 import useCountdown from "../components/Countdown";
-// import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
+import { apiFetch } from "../utils/fetchWithoutConsoleError";
 import { number } from "zod";
 
 const EmailSentPage: React.FC = () => {
@@ -22,20 +22,12 @@ const EmailSentPage: React.FC = () => {
 
 	useEffect(() => {
 		const interval = setInterval(async () => {
-			try {
-				const response = await fetch("/api/users/me", {
-					method: "GET",
-					credentials: "include"
-				});
-				if (response.ok) {
-					const data = await response.json();
-					if (data.emailVerified) {
-						setUserData(data);
-						setIsConnected(true);
-						navigate("/welcome");
-					}
-				}
-			} catch (error) {
+			// /api/auth/status retourne toujours HTTP 200 (nginx wrapper)
+			const { data, error } = await apiFetch<{ emailVerified: boolean }>("/api/auth/status");
+			if (!error && data?.emailVerified) {
+				setUserData(data as any);
+				setIsConnected(true);
+				navigate("/welcome");
 			}
 		}, 2000);
 
@@ -46,39 +38,26 @@ const EmailSentPage: React.FC = () => {
 
 	const handleOnResend = async () => {
 		setProcessResend(true);
-		if (isLoading) {
-			return;
-		}
+		if (isLoading) return;
 		setIsLoading(true);
-		let retryAfterSeconds: number = 60;
+		const retryAfterSeconds: number = 60;
 		try {
-			const response = await fetch("/api/auth/resend-email", {
-				method: "POST",
-				credentials: "include"
-			})
+			const { error, message } = await apiFetch("/api/auth/resend-email", { method: "POST" });
 
-			const data = await response.json();
-
-			if (!response.ok) {
-				if (data.error === "email_already_verified") {
-					toast.error(t(`error:${data.message}`));
+			if (error) {
+				if (error === "email_already_verified") {
+					toast.error(t(`error:${message ?? error}`));
 					navigate("/home");
-				}
-				else if (response.status === 429) {
-					const retryAfter = response.headers.get("Retry-After");
-					retryAfterSeconds = Number(retryAfter) || 60;
+				} else if (error === "http_429") {
 					setTimeLeft(retryAfterSeconds);
 					setResendButtonDisabled(true);
 					toast.error(t("error:auth.resend_email_rate_limit"));
-				}
-				else {
-					if (data.message !== null)
-						throw new Error(t(`${data.message}`));
+				} else if (message) {
+					throw new Error(t(`${message}`));
 				}
 				throw new Error("");
 			}
-			else
-				toast.success(t("buttons.resendEmail.success"));
+			toast.success(t("buttons.resendEmail.success"));
 
 		} catch (error) {
 			if (error instanceof Error && error.message !== "")
@@ -99,21 +78,12 @@ const EmailSentPage: React.FC = () => {
 
 	const handleOnLogOut = async () => {
 		setProcessLogOut(true);
-
-		try {
-			await fetch("/api/auth/logout", {
-				method: "POST",
-				credentials: "include"
-			});
-		} catch (error) {
-			if (error instanceof Error && error.message !== "")
-				toast.error(t(`error:${error.message}`));
-		} finally {
-			setIsConnected(false);
-			setUserData(null);
-			navigate("/home");
-			setProcessLogOut(false);
-		}
+		// nginx wrapper retourne toujours 200 pour logout
+		await apiFetch("/api/auth/logout", { method: "POST" });
+		setIsConnected(false);
+		setUserData(null);
+		navigate("/home");
+		setProcessLogOut(false);
 	}
 
 	return (

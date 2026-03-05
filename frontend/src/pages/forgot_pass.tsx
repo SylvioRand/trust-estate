@@ -5,8 +5,8 @@ import ContentDivider from "../components/ContentDivider";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useCountdown from "../components/Countdown";
-import type { APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
+import { apiFetch } from "../utils/fetchWithoutConsoleError";
 
 const ForgotPassPage: React.FC = () => {
 	const navigate = useNavigate();
@@ -26,33 +26,24 @@ const ForgotPassPage: React.FC = () => {
 		const data = Object.fromEntries(formData.entries());
 		let retryAfterSeconds: number = 60;
 		try {
-			const response = await fetch("/api/auth/forgot-password", {
+			const { error, message } = await apiFetch("/api/auth/forgot-password", {
 				method: "POST",
-				headers: {
-					"Content-type": "application/json"
-				},
+				headers: { "Content-type": "application/json" },
 				body: JSON.stringify(data)
 			});
 
-			const responseData = await response.json();
-
-			if (!response.ok) {
-				const errorData = responseData as APIResponse;
-
-				if (response.status === 400) {
-					setErrorEmail([errorData.message]);
-					throw new Error(errorData.message);
-				}
-				else if (response.status === 429) {
-					const retryAfter = response.headers.get("Retry-After");
-					retryAfterSeconds = Number(retryAfter) || 60;
-					setTimeLeft(retryAfterSeconds);
+			if (error) {
+				if (error === "http_429") {
 					setButtonSendDisabled(true);
 					toast.error(t("error:auth.forgot_password_rate_limit"));
+				} else {
+					const msg = message ?? error;
+					setErrorEmail([msg]);
+					throw new Error(msg);
 				}
-			}
-			else
+			} else {
 				toast.success(t("notification.emailSent"));
+			}
 		} catch (error) {
 			if (error instanceof Error && error.message !== "") {
 				toast.error(t(`error:${error.message}`));

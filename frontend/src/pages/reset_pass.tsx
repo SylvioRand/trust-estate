@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { passwordRules } from "../const/constant";
+import { apiFetch } from "../utils/fetchWithoutConsoleError";
 
 const ResetPassPage: React.FC = () => {
 	const { t } = useTranslation(["resetPass", "error"]);
@@ -39,27 +40,19 @@ const ResetPassPage: React.FC = () => {
 		delete data.confirmPassword;
 
 		try {
-			const response = await fetch("/api/auth/reset-password", {
+			const { error, message, data: responseData } = await apiFetch("/api/auth/reset-password", {
 				method: "POST",
-				headers: {
-					"Content-type": "application/json"
-				},
+				headers: { "Content-type": "application/json" },
 				body: JSON.stringify(data)
-			})
+			});
 
-			const responseData = await response.json();
-
-			if (!response.ok) {
-				if (response.status === 401) {
-					toast.error(t(`error:${responseData?.message ?? "invalid token"}`));
-					navigate("/sign-in");
-					throw new Error(responseData.message);
-				}
+			if (error) {
+				toast.error(t(`error:${message ?? "auth.invalid_or_expired_token"}`));
+				navigate("/sign-in");
+				return;
 			}
-			else {
-				toast.success(t(`error:${responseData?.message ?? "success"}`));
-				navigate("/sign-in", { state: { fromResetPass: true } });
-			}
+			toast.success(t(`error:${(responseData as any)?.message ?? "success"}`));
+			navigate("/sign-in", { state: { fromResetPass: true } });
 		} catch (error) {
 			if (error instanceof Error && error.message !== "") {
 				toast.error(t(`error:${error.message}`));

@@ -11,6 +11,87 @@
     # ==============================================
     # API ROUTES - Auth Service
     # ==============================================
+
+    # --------------------------------------------------
+    # Vérification d'authentification (appel passif)
+    # nginx intercepte les 4xx/5xx upstream → toujours
+    # HTTP 200 vers le navigateur, erreur dans le JSON.
+    # --------------------------------------------------
+    location = /api/auth/status {
+        proxy_pass http://auth_service/users/me;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_intercept_errors on;
+        error_page 400 401 403 404 =200 @auth_status_unauth;
+        error_page 500 502 503 504 =200 @auth_status_5xx;
+    }
+    location @auth_status_unauth {
+        add_header Content-Type application/json always;
+        return 200 '{"error":"invalid_or_expired_token"}';
+    }
+    location @auth_status_5xx {
+        add_header Content-Type application/json always;
+        return 200 '{"error":"service_unavailable"}';
+    }
+
+    # --------------------------------------------------
+    # Login — erreurs attendues converties en 200 JSON
+    # --------------------------------------------------
+    location = /api/auth/login {
+        proxy_pass http://auth_service/auth/login;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_intercept_errors on;
+        error_page 400 401 422 =200 @auth_login_bad_credentials;
+        error_page 403             =200 @auth_login_forbidden;
+        error_page 500 502 503 504 =200 @auth_5xx;
+    }
+    location @auth_login_bad_credentials {
+        add_header Content-Type application/json always;
+        return 200 '{"error":"invalid_credentials","message":"auth.invalid_credentials"}';
+    }
+    location @auth_login_forbidden {
+        add_header Content-Type application/json always;
+        return 200 '{"error":"email_not_verified","message":"auth.email_verification_required"}';
+    }
+
+    # --------------------------------------------------
+    # Logout
+    # --------------------------------------------------
+    location = /api/auth/logout {
+        proxy_pass http://auth_service/auth/logout;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_intercept_errors on;
+        error_page 400 401 403 =200 @auth_logout_ok;
+        error_page 500 502 503 504 =200 @auth_5xx;
+    }
+    location @auth_logout_ok {
+        add_header Content-Type application/json always;
+        return 200 '{"error":"invalid_or_expired_token"}';
+    }
+
+    # --------------------------------------------------
+    # Gestionnaire générique erreurs 5xx auth
+    # --------------------------------------------------
+    location @auth_5xx {
+        add_header Content-Type application/json always;
+        return 200 '{"error":"service_unavailable","message":"common.service_unavailable"}';
+    }
+
+    # Toutes les autres routes auth (register, forgot, reset, verify…)
     location /api/auth/ {
         proxy_pass http://auth_service/auth/;
         proxy_http_version 1.1;

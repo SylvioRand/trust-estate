@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import type { HistoryItem } from "./dashboard/CreditsSection";
 import type { Reservation } from "./dashboard/zodSchema/dashboard.schema";
 import { passwordRules } from "../const/constant";
+import { apiFetch } from "../utils/fetchWithoutConsoleError";
 
 interface SettingsButtonProps {
 	icon: string;
@@ -105,41 +106,25 @@ const SettingsPage: React.FC = () => {
 		data.phone = data.phoneCountryCode + data.phone;
 
 		try {
-			const response = await fetch("/api/users/me", {
+			const { error, data: responseData } = await apiFetch("/api/users/me", {
 				method: "PUT",
-				headers: {
-					"Content-type": "application/json"
-				},
-				credentials: "include",
+				headers: { "Content-type": "application/json" },
 				body: JSON.stringify(data)
-			})
+			});
 
-			const responseData = await response.json();
-
-			if (!response.ok) {
-				const errorData = responseData as APIResponse;
-
-				if (errorData.details) {
-					const details: Record<string, string[]> = errorData.details as Record<string, string[]>;
-
+			if (error) {
+				const errorData = responseData as APIResponse | null;
+				if (errorData?.details) {
+					const details = errorData.details as Record<string, string[]>;
 					for (const [key, value] of Object.entries(details)) {
-						for (let i = 0; i < value.length; i++)
-							toast.error(t(`error:${value[i]}`));
+						for (const msg of value) toast.error(t(`error:${msg}`));
 					}
+					if (details.firstName) setErrorFirstName(details.firstName);
+					if (details.lastName) setErrorLastName(details.lastName);
+					if (details.phone) setErrorPhone(details.phone);
 				}
-				if (response.status === 400) {
-					if (errorData.details) {
-						if (errorData.details.firstName)
-							setErrorFirstName(errorData.details.firstName as string[]);
-						if (errorData.details.lastName)
-							setErrorLastName(errorData.details.lastName as string[]);
-						if (errorData.details.phone)
-							setErrorPhone(errorData.details.phone as string[]);
-					}
-					throw new Error(errorData.message);
-				}
+				throw new Error(errorData?.message ?? error);
 			}
-
 			toast.success(t("error:auth.info_update_success"));
 		} catch (error) {
 			if (error instanceof Error) {
@@ -163,33 +148,23 @@ const SettingsPage: React.FC = () => {
 		const data = Object.fromEntries(formData.entries()) as Record<string, string>;
 
 		try {
-			const response = await fetch("/api/users/me/update-password", {
+			const { error, message, data: responseData } = await apiFetch("/api/users/me/update-password", {
 				method: "PUT",
-				headers: {
-					"Content-type": "application/json"
-				},
-				credentials: "include",
+				headers: { "Content-type": "application/json" },
 				body: JSON.stringify(data)
 			});
 
-			const responseData = await response.json();
-
-			if (!response.ok) {
-				const errorData = responseData as APIResponse;
-
-				if (response.status === 400) {
-					if (errorData.error === "invalid_credentials")
-						setErrorCurrentPassword([errorData.message]);
-					if (errorData.details) {
-						if (errorData.details.password)
-							setErrorCurrentPassword(errorData.details.password);
-						if (errorData.details.newPassword)
-							setErrorNewPassword(errorData.details.newPassword);
-					}
+			if (error) {
+				const errorData = responseData as APIResponse | null;
+				if (error === "invalid_credentials")
+					setErrorCurrentPassword([message ?? error]);
+				if (errorData?.details) {
+					if (errorData.details.password) setErrorCurrentPassword(errorData.details.password);
+					if (errorData.details.newPassword) setErrorNewPassword(errorData.details.newPassword);
 				}
-				throw new Error(errorData.message);
+				throw new Error(message ?? error);
 			}
-			toast.success(t(`error:${responseData?.message ?? "success"}`));
+			toast.success(t(`error:${(responseData as any)?.message ?? "success"}`));
 		} catch (error) {
 			if (error instanceof Error && error.message !== "") {
 				toast.error(t(`error:${error.message}`))
@@ -206,22 +181,10 @@ const SettingsPage: React.FC = () => {
 	const [processingAccountDeletion, setProcessingAccountDeletion] = useState<boolean>(false);
 
 	const handleLogOut = async () => {
-		try {
-			const response = await fetch("/api/auth/logout", {
-				method: "POST",
-				credentials: "include"
-			});
-
-			if (!response.ok)
-				throw new Error(t("error:auth.not_authenticated_user}"))
-
-		} catch (error) {
-			if (error instanceof Error && error.message !== "")
-				toast.error(t(`error:${error.message}`));
-		} finally {
-			navigate("/home");
-			setIsConnected(false);
-		}
+		// nginx wrapper pour logout retourne toujours 200
+		await apiFetch("/api/auth/logout", { method: "POST" });
+		navigate("/home");
+		setIsConnected(false);
 	}
 
 	const handleAccountDeletion = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -233,25 +196,17 @@ const SettingsPage: React.FC = () => {
 		const data = Object.fromEntries(formData.entries()) as Record<string, string>;
 
 		try {
-			const response = await fetch("/api/users/me", {
+			const { error, message, data: responseData } = await apiFetch("/api/users/me", {
 				method: "DELETE",
-				headers: {
-					"Content-type": "application/json"
-				},
-				credentials: "include",
+				headers: { "Content-type": "application/json" },
 				body: JSON.stringify(data)
 			});
 
-			const responseData = await response.json();
-
-			if (!response.ok) {
-				const errorData = responseData as APIResponse;
-
-				if (response.status === 400)
-					setErrorDeletePassword([errorData.message]);
-				throw new Error(errorData.message);
+			if (error) {
+				setErrorDeletePassword([message ?? error]);
+				throw new Error(message ?? error);
 			}
-			toast.success(t(`error:${responseData?.message ?? "success"}`));
+			toast.success(t(`error:${(responseData as any)?.message ?? "success"}`));
 			refPopUpDeleteAccount.current?.close();
 			setIsConnected(false);
 			navigate("/sign-in");
@@ -278,25 +233,17 @@ const SettingsPage: React.FC = () => {
 		const data = Object.fromEntries(formData.entries()) as Record<string, string>;
 
 		try {
-			const response = await fetch("/api/users/me/add-password", {
+			const { error, message, data: responseData } = await apiFetch("/api/users/me/add-password", {
 				method: "PUT",
-				headers: {
-					"Content-type": "application/json"
-				},
-				credentials: "include",
+				headers: { "Content-type": "application/json" },
 				body: JSON.stringify(data)
 			});
 
-			const responseData = await response.json();
-
-			if (!response.ok) {
-				const errorData = responseData as APIResponse;
-
-				if (response.status === 400)
-					setErrorAddPassword([errorData.message]);
-				throw new Error(errorData.message);
+			if (error) {
+				setErrorAddPassword([message ?? error]);
+				throw new Error(message ?? error);
 			}
-			toast.success(t(`error:${responseData?.message ?? "success"}`));
+			toast.success(t(`error:${(responseData as any)?.message ?? "success"}`));
 			setUserData(prev =>
 				prev ? { ...prev, hasPassword: true } : prev
 			);
@@ -315,56 +262,21 @@ const SettingsPage: React.FC = () => {
 	const [balance, setBalance] = useState<number>(0);
 
 	const fetchHistory = async () => {
-		try {
-			const response = await fetch("/api/credits/history", {
-				method: "GET",
-				credentials: "include",
-			});
-			const data = await response.json();
-			if (response.ok) {
-				if (response.status === 200) {
-					const history = data.data as HistoryItem[];
-					setCredits(history);
-				}
-			}
-		} catch (error) {
-
-		}
+		const { data, error } = await apiFetch("/api/credits/history");
+		if (!error && (data as any)?.data)
+			setCredits((data as any).data as HistoryItem[]);
 	};
 
 	const fetchBalance = async () => {
-		try {
-			const response = await fetch("/api/credits/balance", {
-				method: "GET",
-				credentials: "include",
-			});
-			const data = await response.json();
-			if (response.ok) {
-				if (response.status === 200) {
-					const balance = data.balance as number;
-					setBalance(balance);
-				}
-			}
-		} catch (error) {
-		};
+		const { data, error } = await apiFetch("/api/credits/balance");
+		if (!error && typeof (data as any)?.balance === "number")
+			setBalance((data as any).balance as number);
 	};
 
 	const fetchReservations = async () => {
-		try {
-			const response = await fetch("/api/reservations/mine", {
-				method: "GET",
-				credentials: "include",
-			});
-			const data = await response.json();
-			if (response.ok) {
-				if (response.status === 200 && data.message !== 'reservations_not_found') {
-					const reservations = data.reservations as any[];
-					setReservations(reservations);
-				}
-			}
-		} catch (error) {
-
-		}
+		const { data, error } = await apiFetch("/api/reservations/mine");
+		if (!error && (data as any)?.reservations && (data as any)?.message !== "reservations_not_found")
+			setReservations((data as any).reservations as any[]);
 	};
 
 	useEffect(() => {

@@ -4,10 +4,10 @@ import ActionButton from "../components/ActionButton";
 import ContentDivider from "../components/ContentDivider";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { type APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
 import useDataProvider from "../provider/useDataProvider";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
+import { apiFetch } from "../utils/fetchWithoutConsoleError";
 
 const SignInPage: React.FC = () => {
 	const { t } = useTranslation(["signIn", "error"]);
@@ -34,37 +34,31 @@ const SignInPage: React.FC = () => {
 		const formData = new FormData(e.currentTarget);
 		const data = Object.fromEntries(formData.entries());
 		try {
-			const response = await fetch("/api/auth/login", {
+			// /api/auth/login est wrappé nginx → toujours HTTP 200.
+			// L'erreur éventuelle est dans le champ `error` du JSON.
+			const { data: responseData, error, message } = await apiFetch("/api/auth/login", {
 				method: "POST",
-				headers: {
-					"Content-type": "application/json"
-				},
+				headers: { "Content-type": "application/json" },
 				body: JSON.stringify(data)
-			})
+			});
 
-			const responseData = await response.json();
-
-			if (!response.ok) {
-				const errorData = responseData as APIResponse;
-
-
-				if (response.status === 403) {
-					if (errorData.error === "email_not_verified") {
-						navigate("/email-sent");
-					}
-					else if (errorData.error === "phone_not_verified") {
-						navigate("/add-phone");
-					}
+			if (error) {
+				if (error === "email_not_verified") {
+					navigate("/email-sent");
+					return;
 				}
-				else if (response.status === 400) {
-					setErrorEmail([t(errorData.message)])
-					setErrorPassword([t(errorData.message)])
-					toast.error(t("error:" + errorData.message));
-					throw new Error("");
+				if (error === "phone_not_verified") {
+					navigate("/add-phone");
+					return;
 				}
-				else if (response.status === 429) {
-					throw new Error("");
+				if (error === "http_429") {
+					return;
 				}
+				const msg = message ?? "auth.invalid_credentials";
+				setErrorEmail([t(msg)]);
+				setErrorPassword([t(msg)]);
+				toast.error(t("error:" + msg));
+				return;
 			}
 
 			setErrorEmail([]);
