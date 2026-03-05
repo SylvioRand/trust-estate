@@ -20,13 +20,33 @@ const EmailSentPage: React.FC = () => {
 	const { setIsConnected, setUserData, userData } = useDataProvider();
 
 	useEffect(() => {
-		if (userData && userData.emailVerified === true)
-			navigate("/home");
+		if (userData && userData.emailVerified === true) {
+			navigate("/welcome");
+		}
 	}, [userData]);
 
 	useEffect(() => {
-		if (userData && userData.emailVerified === true)
-			navigate("/home");
+		const interval = setInterval(async () => {
+			try {
+				const response = await fetch("/api/users/me", {
+					method: "GET",
+					credentials: "include"
+				});
+				if (response.ok) {
+					const data = await response.json();
+					if (data.emailVerified) {
+						setUserData(data);
+						setIsConnected(true);
+						navigate("/welcome");
+					}
+				}
+			} catch (error) {
+			}
+		}, 2000);
+
+		return () => {
+			clearInterval(interval);
+		};
 	}, []);
 
 	const handleOnResend = async () => {

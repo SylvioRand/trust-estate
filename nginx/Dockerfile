@@ -25,6 +25,7 @@ COPY frontend/package*.json ./
 # Copy source code
 COPY frontend/ ./
 COPY shared/ ../shared/
+COPY .env .env
 
 # Build for production
 RUN npm run build

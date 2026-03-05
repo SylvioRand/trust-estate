@@ -132,6 +132,7 @@ const MetadataComponents: React.FC<MetadataComponentsProps> = ({
 }) => {
 	const formatter = new Intl.NumberFormat("de-DE");
 	const { t } = useTranslation("common");
+	console.log("metadata.photos", metadata.photos);
 
 	return (
 		<div
@@ -144,16 +145,15 @@ const MetadataComponents: React.FC<MetadataComponentsProps> = ({
 		transition-colors duration-300
 		flex-none"
 		>
-			<div
-				className="w-full aspect-square"
-			>
-				<img
-					className="rounded-2xl
-				w-full h-full object-cover"
-					src={`https://${window.location.hostname}:${window.location.port}${metadata.photos}`}
-					alt="Picture of a house"
-				/>
-			</div>
+			{metadata.photos && metadata.photos !== "" && (
+				<div className="w-full aspect-square">
+					<img
+						className="rounded-2xl w-full h-full object-cover"
+						src={`${import.meta.env.VITE_FRONTEND_URL}${metadata.photos}`}
+						alt="Picture of a house"
+					/>
+				</div>
+			)}
 			<div
 				className="flex flex-col items-start justify-center
 			px-2
