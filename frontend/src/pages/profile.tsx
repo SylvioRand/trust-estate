@@ -180,7 +180,7 @@ const ProfilePage: React.FC = () => {
 
 		if (isConnected !== null && isConnected === true)
 			getMyData();
-	}, []);
+	}, [isConnected]);
 
 	useEffect(() => {
 		const credit = async () => {
@@ -206,7 +206,7 @@ const ProfilePage: React.FC = () => {
 
 		if (isConnected !== null && isConnected === true)
 			credit();
-	}, []);
+	}, [isConnected]);
 
 	return (
 		<div
