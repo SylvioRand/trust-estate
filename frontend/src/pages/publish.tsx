@@ -76,6 +76,7 @@ const PublishPage: React.FC = () => {
 	const [uploadButtonProcessing, setUploadButtonProcessing] = useState<boolean>(false);
 	const [isUploadDisabled, setIsUploadDisabled] = useState<boolean>(false);
 	const [publishCounter, setPublishCounter] = useState<number>(0);
+	const [propertyType, setPropertyType] = useState<string>("apartment");
 	const navigate = useNavigate();
 
 	const [activeTags, setActiveTags] = useState<ListingsTags[]>([]);
@@ -129,14 +130,14 @@ const PublishPage: React.FC = () => {
 		const dataObj: UploadDataType = {
 			"type": data.type as ("sale" | "rent"),
 			"propertyType": data.propertyType as ("apartment" | "house" | "loft" | "land" | "commercial"),
-			"title": data.title as string,
-			"description": data.description as string,
+			"title": (data.title as string).trim(),
+			"description": (data.description as string).trim(),
 			"price": Number(data.price) as number,
 			"surface": Number(data.area) as number,
 			"zone": data.zone as string,
 			"features": {
-				"bedrooms": Number(data.bedrooms) as number,
-				"bathrooms": Number(data.bathrooms) as number,
+				"bedrooms": Number(data.bedrooms || 0) as number,
+				"bathrooms": Number(data.bathrooms || 0) as number,
 				"wc": data.wc === "true",
 				"wc_separate": data.wc_separate === "true",
 				"parking_type": data.parking_type as ("garage" | "box" | "parking" | "none"),
@@ -146,6 +147,19 @@ const PublishPage: React.FC = () => {
 				"electricity_access": data.electricity_access === "true"
 			},
 			"tags": activeTags
+		}
+
+		if (['apartment', 'house', 'loft'].includes(dataObj.propertyType)) {
+			if (dataObj.features.bedrooms <= 0) {
+				toast.error(t("error:validation.listing.bedroom.at_least_one"));
+				setUploadButtonProcessing(false);
+				return;
+			}
+			if (dataObj.features.bathrooms <= 0) {
+				toast.error(t("error:validation.listing.bathroom.at_least_one"));
+				setUploadButtonProcessing(false);
+				return;
+			}
 		}
 
 		const uploadFormData = new FormData();
@@ -394,33 +408,41 @@ const PublishPage: React.FC = () => {
 					gap-x-7 gap-y-3
 					w-full"
 				>
-					<SimpleInput
-						icon="󰋣"
-						title={t("section.main.form.bedrooms.title")}
-						name="bedrooms"
-						type="decimal"
-						minLength={1}
-						pattern=".*\S.*"
-						maxLength={3}
-						placeholder={t("section.main.form.bedrooms.placeholder")}
-						error={errorBedrooms}
-					/>
+					{['apartment', 'house', 'loft'].includes(propertyType) && (
+						<>
+							<SimpleInput
+								icon="󰋣"
+								title={t("section.main.form.bedrooms.title")}
+								name="bedrooms"
+								type="decimal"
+								minLength={1}
+								pattern=".*\S.*"
+								maxLength={3}
+								placeholder={t("section.main.form.bedrooms.placeholder")}
+								error={errorBedrooms}
+								required={true}
+							/>
 
-					<SimpleInput
-						icon="󱠘"
-						title={t("section.main.form.bathrooms.title")}
-						name="bathrooms"
-						type="decimal"
-						pattern=".*\S.*"
-						minLength={1}
-						maxLength={3}
-						placeholder={t("section.main.form.bathrooms.placeholder")}
-						error={errorBathrooms}
-					/>
+							<SimpleInput
+								icon="󱠘"
+								title={t("section.main.form.bathrooms.title")}
+								name="bathrooms"
+								type="decimal"
+								pattern=".*\S.*"
+								minLength={1}
+								maxLength={3}
+								placeholder={t("section.main.form.bathrooms.placeholder")}
+								error={errorBathrooms}
+								required={true}
+							/>
+						</>
+					)}
 
 					<InputEnum
 						title={t("section.main.form.propertyType.title")}
 						name="propertyType"
+						defaultValue={propertyType}
+						onChange={(val) => setPropertyType(val)}
 						dataEnum={[
 							{ value: "apartment", title: t("section.main.form.propertyType.apartment") },
 							{ value: "house", title: t("section.main.form.propertyType.house") },

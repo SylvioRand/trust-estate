@@ -5,10 +5,10 @@ interface ErrorInputProps {
 	value: string;
 }
 
-export const	ErrorInput: React.FC<ErrorInputProps> = ({
+export const ErrorInput: React.FC<ErrorInputProps> = ({
 	value = "Error"
 }) => {
-	const	{ t } = useTranslation("error");
+	const { t } = useTranslation("error");
 
 	return (
 		<div className="grid grid-cols-[auto_1fr] grid-rows-1 gap-2
@@ -22,7 +22,7 @@ export const	ErrorInput: React.FC<ErrorInputProps> = ({
 				text-[12px]
 				w-full"
 			>
-				{ t("error:" + value) }
+				{t("error:" + value)}
 			</div>
 		</div>
 	)
@@ -41,9 +41,10 @@ interface SimpleInputProps {
 	maxLength?: number;
 	ref?: RefObject<HTMLInputElement | null>;
 	list?: string;
+	required?: boolean;
 }
 
-const	SimpleInput: React.FC<SimpleInputProps> = ({
+const SimpleInput: React.FC<SimpleInputProps> = ({
 	title = "Title",
 	icon = "",
 	icon_size = 24,
@@ -55,9 +56,10 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 	minLength = 8,
 	maxLength = 256,
 	ref,
-	list
+	list,
+	required = true
 }) => {
-	const	[focused, setFocused] = useState<boolean>(false);
+	const [focused, setFocused] = useState<boolean>(false);
 
 	return (
 		<div className="flex flex-col items-center justify-center gap-1
@@ -68,7 +70,7 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 				w-full"
 			>
 				<div className="font-inter font-bold text-[14px]">
-					{ title }
+					{title}
 				</div>
 			</div>
 
@@ -98,7 +100,7 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 								fontSize: icon_size
 							}}
 						>
-							{ icon }
+							{icon}
 						</div>
 					</div>
 				}
@@ -107,31 +109,31 @@ const	SimpleInput: React.FC<SimpleInputProps> = ({
 						w-full h-full
 						text-[14px]
 						focus:outline-none"
-					placeholder={ placeholder }
-					name={ name }
-					type={ type }
-					required={ true }
+					placeholder={placeholder}
+					name={name}
+					type={type}
+					required={required}
 					{...(pattern ? { pattern } : {})}
-					minLength={ minLength }
-					maxLength={ maxLength }
+					minLength={minLength}
+					maxLength={maxLength}
 					{...(ref ? { ref } : {})}
 					{...(list ? { list } : {})}
-					onFocus={ () => setFocused(true) }
-					onBlur={ () => {
+					onFocus={() => setFocused(true)}
+					onBlur={() => {
 						setFocused(false);
 					}}
 				/>
 			</div>
 
 			<div className="w-full">
-				{ error.length > 0 && error.map((value: string, index: number) => {
-						return (
-							<ErrorInput
-								key={ index }
-								value={ value }
-							/>
-						);
-					})
+				{error.length > 0 && error.map((value: string, index: number) => {
+					return (
+						<ErrorInput
+							key={index}
+							value={value}
+						/>
+					);
+				})
 				}
 			</div>
 
@@ -147,15 +149,15 @@ interface PasswordInputProps {
 	pattern?: string;
 }
 
-export const	PasswordInput: React.FC<PasswordInputProps> = ({
+export const PasswordInput: React.FC<PasswordInputProps> = ({
 	title = "Title",
 	placeholder = "Placeholder",
 	name = "PasswordInput",
 	error = [],
 	pattern
 }) => {
-	const	[show, setShow] = useState(false);
-	const	[focused, setFocused] = useState<boolean>(false);
+	const [show, setShow] = useState(false);
+	const [focused, setFocused] = useState<boolean>(false);
 
 	return (
 		<div className="flex flex-col items-center justify-center gap-1
@@ -166,7 +168,7 @@ export const	PasswordInput: React.FC<PasswordInputProps> = ({
 				w-full"
 			>
 				<div className="font-bold text-[14px]">
-					{ title }
+					{title}
 				</div>
 			</div>
 
@@ -186,39 +188,39 @@ export const	PasswordInput: React.FC<PasswordInputProps> = ({
 						w-full h-full
 						text-[14px]
 						focus:outline-none"
-					placeholder={ placeholder }
-					name={ name }
-					required={ true }
-					type={ show ? "text" : "password" }
-					onFocus={ () => setFocused(true) }
-					onBlur={ () => setFocused(false) }
+					placeholder={placeholder}
+					name={name}
+					required={true}
+					type={show ? "text" : "password"}
+					onFocus={() => setFocused(true)}
+					onBlur={() => setFocused(false)}
 					{...(pattern ? { pattern } : {})}
 				/>
 
 				<button className="flex items-center justify-center
 					cursor-pointer
 					w-7 h-full"
-					onClick={ () => setShow(show ? false : true) }
+					onClick={() => setShow(show ? false : true)}
 					type="button"
 				>
 					<span className="font-icon
 						text-3xl"
 					>
-						{ show ? "󰈉" : "󰈈" }
+						{show ? "󰈉" : "󰈈"}
 					</span>
 				</button>
 
 			</div>
 
 			<div className="w-full">
-				{ error.length > 0 && error.map((value: string, index: number) => {
-						return (
-							<ErrorInput
-								key={ index }
-								value={ value }
-							/>
-						);
-					})
+				{error.length > 0 && error.map((value: string, index: number) => {
+					return (
+						<ErrorInput
+							key={index}
+							value={value}
+						/>
+					);
+				})
 				}
 			</div>
 
