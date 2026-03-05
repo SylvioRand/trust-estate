@@ -30,7 +30,6 @@ export class AuthClient {
         throw new Error('auth.unauthorized');
       }
 
-      // Propagate new cookies if present (token rotation)
       if (reply) {
         const setCookieHeaders = response.headers.getSetCookie();
         if (setCookieHeaders && setCookieHeaders.length > 0) {
@@ -71,7 +70,6 @@ export class AuthClient {
         throw new Error('auth.unauthorized');
       }
 
-      // Propagate new cookies if present (token rotation)
       if (reply) {
         const setCookieHeaders = response.headers.getSetCookie();
         if (setCookieHeaders && setCookieHeaders.length > 0) {
