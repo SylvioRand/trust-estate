@@ -15,6 +15,12 @@ export function VerifyUsersState() {
 	useEffect(() => {
 		const checkAuth = async () => {
 			try {
+				const isLoggedIn = document.cookie.split("; ").find((row) => row.startsWith("realestate_logged_in="));
+				if (!isLoggedIn) {
+					setIsConnected(false);
+					return;
+				}
+
 				const response = await fetch(`/api/users/me`, {
 					method: "GET",
 					credentials: "include"

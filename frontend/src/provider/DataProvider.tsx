@@ -39,6 +39,12 @@ const DataProvider: React.FC<DataProviderProps> = ({
 			try {
 				// Vérifier si l'utilisateur est authentifié
 				// Les cookies sont envoyés automatiquement
+				const isLoggedIn = document.cookie.split("; ").find((row) => row.startsWith("realestate_logged_in="));
+				if (!isLoggedIn) {
+					setIsConnected(false);
+					return;
+				}
+
 				const response = await fetch(`/api/users/me`, {
 					method: "GET",
 					credentials: "include", // Envoie les cookies automatiquement

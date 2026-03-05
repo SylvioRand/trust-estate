@@ -29,23 +29,27 @@ export function generateTokens(app: FastifyInstance, user: UserInterface) {
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-export const cookieOptions = {
-	httpOnly: true,
+export const cookieOptions = (httpOnly: boolean = true) => ({
+	httpOnly,
 	secure: true,
 	sameSite: 'none' as const,
 	path: '/'
-};
+});
 
 export function setAuthCookies(reply: FastifyReply, realestate_access_token: string, realestate_refresh_token: string) {
 
 	reply.setCookie("realestate_access_token", realestate_access_token, {
-		...cookieOptions,
+		...cookieOptions(true),
 		maxAge: 15 * 60
 	});
 	reply.setCookie("realestate_refresh_token", realestate_refresh_token, {
-		...cookieOptions,
+		...cookieOptions(true),
 		maxAge: 7 * 24 * 60 * 60
-	})
+	});
+	reply.setCookie("realestate_logged_in", "true", {
+		...cookieOptions(false),
+		maxAge: 7 * 24 * 60 * 60
+	});
 };
 
 export async function generateAccessToken(request: FastifyRequest, reply: FastifyReply, user: any) {
