@@ -134,8 +134,14 @@ const ClientListingsView: React.FC<ListingsViewProps> = ({
 
 			const responseData = await response.json();
 
-			if (response.ok)
+
+			if (response.ok) {
 				toast.success(t(`error:${responseData.message}`))
+				if (data.action === "block_temporary")
+					setFetchedData({ ...fetchedData, isAvailable: false, status: "blocked" });
+				else if (data.action === "archive_permanently")
+					setFetchedData({ ...fetchedData, isAvailable: false, status: "archived" });
+			}
 			else {
 				if (responseData.details) {
 					const details: Record<string, string[]> = responseData.details as Record<string, string[]>;
@@ -309,7 +315,7 @@ const ClientListingsView: React.FC<ListingsViewProps> = ({
 							dataEnum={[
 								{ value: "block_temporary", title: t("section.actionButton.popup.modAction.popup.action.block_temporary") },
 								{ value: "archive_permanent", title: t("section.actionButton.popup.modAction.popup.action.archive_permanent") },
-								{ value: "request_clarification", title: t("section.actionButton.popup.modAction.popup.action.request_clarification") },
+								// { value: "request_clarification", title: t("section.actionButton.popup.modAction.popup.action.request_clarification") },
 								{ value: "reject_reports", title: t("section.actionButton.popup.modAction.popup.action.reject_reports") }
 							]}
 						/>
