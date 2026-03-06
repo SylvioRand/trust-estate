@@ -73,8 +73,9 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
 		await deleteRefreshToken(request.server, realestate_refresh_token);
 	}
 
-	reply.clearCookie("realestate_access_token", { ...cookieOptions });
-	reply.clearCookie("realestate_refresh_token", { ...cookieOptions });
+	reply.clearCookie("realestate_access_token", { ...cookieOptions(true) });
+	reply.clearCookie("realestate_refresh_token", { ...cookieOptions(true) });
+	reply.clearCookie("realestate_logged_in", { ...cookieOptions(false) });
 	return reply.status(200).send({
 		"success": "true",
 		"message": "auth.logout_success"

@@ -7,15 +7,15 @@ const ZoneSchema = z.enum(validZone, {
   message: 'validation.listing.zone.invalid_value'
 });
 
-export const PublishListingSchema = z.object({
+export const BaseListingSchema = z.object({
   type: z.enum(['sale', 'rent']),
   propertyType: z.enum(['apartment', 'house', 'loft', 'land', 'commercial']),
-  title: z.string().min(3,
+  title: z.string().trim().min(3,
     "validation.listing.title.too_short"
   ).max(100,
     "validation.listing.title.too_long"
   ),
-  description: z.string().min(200,
+  description: z.string().trim().min(200,
     "validation.listing.description.too_short"
   ).max(2000,
     "validation.listing.description.too_long"
@@ -66,6 +66,40 @@ export const PublishListingSchema = z.object({
   }),
   tags: z.array(z.enum(['urgent', 'exclusive', 'discount'])).default([])
 }).strict();
+
+export const PublishListingSchema = BaseListingSchema.refine((data) => {
+  if (['apartment', 'house', 'loft'].includes(data.propertyType)) {
+    return data.features.bedrooms > 0;
+  }
+  return true;
+}, {
+  message: "validation.listing.bedroom.at_least_one",
+  path: ["features", "bedrooms"]
+}).refine((data) => {
+  if (['apartment', 'house', 'loft'].includes(data.propertyType)) {
+    return data.features.bathrooms > 0;
+  }
+  return true;
+}, {
+  message: "validation.listing.bathroom.at_least_one",
+  path: ["features", "bathrooms"]
+}).refine((data) => {
+  if (['land', 'commercial'].includes(data.propertyType)) {
+    return data.features.bedrooms === 0;
+  }
+  return true;
+}, {
+  message: "validation.listing.bedroom.must_be_zero",
+  path: ["features", "bedrooms"]
+}).refine((data) => {
+  if (['land', 'commercial'].includes(data.propertyType)) {
+    return data.features.bathrooms === 0;
+  }
+  return true;
+}, {
+  message: "validation.listing.bathroom.must_be_zero",
+  path: ["features", "bathrooms"]
+});
 export type PropertyListing = z.infer<typeof PublishListingSchema>;
 
 
@@ -234,7 +268,7 @@ export type SearchListingsQuery = z.infer<typeof SearchListingsSchema>;
 
 
 
-export const UpdateListingSchema = PublishListingSchema.pick({
+export const UpdateListingSchema = BaseListingSchema.pick({
   type: true,
   propertyType: true,
   title: true,
@@ -244,7 +278,7 @@ export const UpdateListingSchema = PublishListingSchema.pick({
   zone: true,
   tags: true
 }).partial().extend({
-  features: PublishListingSchema.shape.features.partial().optional()
+  features: BaseListingSchema.shape.features.partial().optional()
 }).strict();
 export type UpdateListingData = z.infer<typeof UpdateListingSchema>;
 

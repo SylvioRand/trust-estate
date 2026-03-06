@@ -11,6 +11,7 @@ interface InputEnumProps {
 	defaultValue?: string;
 	// startValue?: string;
 	dataEnum: InputEnumData[];
+	onChange?: (value: string) => void;
 }
 
 const InputEnum: React.FC<InputEnumProps> = ({
@@ -18,10 +19,9 @@ const InputEnum: React.FC<InputEnumProps> = ({
 	name = "InputEnumName",
 	defaultValue = "none",
 	// startValue = "",
-	dataEnum = []
+	dataEnum = [],
+	onChange
 }) => {
-	// const [value, setValue] = useState<string>(startValue || defaultValue);
-
 	return (
 		<div className="flex flex-col items-center justify-center
 			gap-1
@@ -44,8 +44,9 @@ const InputEnum: React.FC<InputEnumProps> = ({
 				"
 				name={name}
 				defaultValue={defaultValue}
-			// onChange={ (e: ChangeEvent<HTMLSelectElement>) => setValue(e.currentTarget.value) }
-			// value={value}
+				onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+					if (onChange) onChange(e.currentTarget.value);
+				}}
 			>
 				{
 					dataEnum.length > 0 && dataEnum.map((value: InputEnumData, index: number) => {
