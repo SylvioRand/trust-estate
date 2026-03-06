@@ -1,5 +1,4 @@
-*This project has been created as part of the 42 curriculum by
-aelison, tolrandr, rarakoto, srandria, mravelon*
+*This project has been created as part of the 42 curriculum by aelison, tolrandr, rarakoto, srandria, mravelon*
 
 ## Description
 
@@ -10,7 +9,7 @@ The platform integrates AI-powered tools to help users discover properties that 
 ## Instructions
 ### Prerequisites
 
-Ensure your machine has at least **15 GB of free disk space**.
+Ensure your machine has at least *20 GB of free disk space**.
 
 You will need the following tools installed:
 
@@ -24,7 +23,7 @@ You will need the following tools installed:
 
 #### 1. Environment Setup
 
-Before running the project, review the [.env_example](file:///.env_example) file located at the root of the project and create your own `.env` file based on it:
+Before running the project, review the **.env_example** file located at the root of the project and create your own `.env` file based on it:
 
 ```bash
 cp .env.example .env
@@ -46,8 +45,6 @@ The project uses a `Makefile` to streamline Docker operations and environment se
 
 ### Resources
 
-## Front-End
-
 - **Documentation**
   - https://react.dev/learn
   - https://tailwindcss.com/docs/installation/using-vite
@@ -62,8 +59,6 @@ The project uses a `Makefile` to streamline Docker operations and environment se
 
 - **AI Utilization**
   - Translate all JSON values used by i18n to ensure accurate and consistent localization.
-
-## AI Service
 
 - **LLMs & AI Platforms**
   - http://routeway.ai/
@@ -88,6 +83,7 @@ The project uses a `Makefile` to streamline Docker operations and environment se
 
 - **PRISMA ORM**
   - https://www.prisma.io/docs/prisma-postgres/quickstart/prisma-orm
+  - https://www.youtube.com/watch?v=g09PoiCob4Y&t=1828s
   
 
 - **Python Fundamentals**
@@ -132,6 +128,7 @@ The project uses a `Makefile` to streamline Docker operations and environment se
     - Prioritized and validated backlog items to ensure maximum value delivery per sprint.
     - Approved completed features by verifying functional and business requirements.
     - Designed and maintained the credit management service and related APIs.
+    - Helped on some front-end features.
 
 ## tolrandr
 - **Role**: Back-End Developer
@@ -190,12 +187,12 @@ We assigned roles based on what each team member wanted to try, learn, or alread
 
 ### AI & Machine Learning
 - **ChromaDB** — Vector database for embedding storage and semantic search in RAG pipeline
-- **Groq LLM API** — Open LLM inference platform for text generation with streaming support
+- **NVIDIA LLM API** — Open LLM inference platform for text generation with streaming support
 - **Sentence Transformers** — Python library for generating embeddings for semantic search
 
 ### Security & Authentication
 - **JWT (JSON Web Tokens)** — For stateless authentication and session management
-- **OAuth 2.0** — Third-party authentication (Google, GitHub, 42)
+- **OAuth 2.0** — Third-party authentication (Google)
 - **bcrypt** — Password hashing for secure storage
 
 ### Infrastructure & Deployment
@@ -204,7 +201,7 @@ We assigned roles based on what each team member wanted to try, learn, or alread
 - **PostgreSQL Cluster** — Distributed database architecture with service isolation
 
 ### Development & Build Tools
-- **npm/pnpm** — Package management for Node.js dependencies
+- **npm** — Package management for Node.js dependencies
 - **Prisma Migrations** — Version-controlled database schema changes
 
 
@@ -237,7 +234,7 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 - `User` → `forgot_password_token` (1:1, cascade delete)
 
 **Enumerations**:
-- `Role`: ADMIN, USER, MODERATOR
+- `Role`: USER, MODERATOR
 
 ---
 
@@ -389,10 +386,10 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **/add-phone**                      | rarakoto  |
 | **/home**                           | rarakoto  |
 | **/property**                       | rarakoto  |
-| **/ai**                             | rarakoto && aelison && mravelon  |
+| **/ai**                             | mravelon  |
 | **/profile**                        | rarakoto && mravelon  |
-| **/profile/settings**               | rarakoto  |
-| **/profile/moderator/flagged**      | rarakoto  |
+| **/profile/settings**               | rarakoto && mravelon  |
+| **/profile/moderator/flagged**      | rarakoto && mravelon  |
 | **/property/listings/edit**         | rarakoto  |
 | **/property/listings/seller-slots** | srandria  |
 | **/property/listings/buyer-slots**  | srandria  |
@@ -413,9 +410,9 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Reset Password** | Allow users to set a new password using a valid reset token |
 | **OAuth 2.0 (Google)** | Third-party authentication via Google with automatic account linking |
 | **Token Validation** | Internal endpoint to verify JWT tokens for inter-service communication |
-| **Moderator Role Check** | Internal endpoint to verify if a user holds a moderator or admin role, used by other services for access control |
+| **Moderator Role Check** | Internal endpoint to verify if a user holds a moderator role, used by other services for access control |
 | **User Details (Internal)** | Internal endpoint to fetch a user's full profile by ID, enabling cross-service data lookups without exposing a public route |
-| **Role Management** | Admin capability to change user roles (ADMIN, USER, MODERATOR) |
+| **Role Management** | Admin capability to change user roles (USER, MODERATOR) |
 | **User Profile** | Get authenticated user information including email, name, phone, trust score |
 | **Profile Update** | Update user information (first name, last name) |
 | **Phone Management** | Add or update phone number with verification status tracking |
@@ -424,19 +421,6 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Account Deletion (GDPR)** | Permanently delete user account and associated data with password confirmation |
 | **Logout** | Invalidate refresh tokens and end user session |
 
-### Credits Service (tolrandr)
-
-| Feature | Description |
-|---------|-------------|
-| **Credit Recharge** | Users purchase credit packages via internal endpoint (admin/system integration) |
-| **Personal Recharge** | Users purchase credits directly with payment processing |
-| **Balance Inquiry** | Get current credit balance, total earned, and total spent for authenticated user |
-| **Transaction History** | Retrieve complete transaction log with filters (type, reason, date) |
-| **Debit Credits** | Internal operation to deduct credits when publishing listings or making reservations |
-| **Credit Refund** | Internal operation to refund credits for cancelled actions or refund operations |
-| **Transaction Logging** | Automatic logging of all credit movements with type, reason, amount, and remaining balance |
-| **Health Check** | Service status endpoint for monitoring and load balancing |
-| **Data Deletion (GDPR)** | Delete all credit data associated with a deleted user account |
 
 ### Reservation Service (tolrandr)
 
@@ -455,6 +439,22 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Get Listing Status** | Internal endpoint to check reservation counts and status for listings |
 | **Data Deletion (GDPR)** | Delete all reservation data associated with a deleted user account |
 
+
+### Credits Service (mravelon)
+
+| Feature | Description |
+|---------|-------------|
+| **Credit Recharge** | Users purchase credit packages via internal endpoint |
+| **Personal Recharge** | Users purchase credits directly with payment processing |
+| **Balance Inquiry** | Get current credit balance, total earned, and total spent for authenticated user |
+| **Transaction History** | Retrieve complete transaction log with filters (type, reason, date) |
+| **Debit Credits** | Internal operation to deduct credits when publishing listings or making reservations |
+| **Credit Refund** | Internal operation to refund credits for cancelled actions or refund operations |
+| **Transaction Logging** | Automatic logging of all credit movements with type, reason, amount, and remaining balance |
+| **Health Check** | Service status endpoint for monitoring and load balancing |
+| **Data Deletion (GDPR)** | Delete all credit data associated with a deleted user account |
+
+
 ### AI Service (aelison)
 
 | Feature | Description |
@@ -469,10 +469,40 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 | **Generate Listing Description** | Correct the user's grammatical and syntactical errors. |
 | **Internal JWT Gate** | Protects internal indexing routes with a signed internal key |
 | **ChromaDB Startup Init** | Initializes ChromaDB connection and creates the posts collection at startup |
-| **CORS Enabled** | Allows cross-origin access from configured services (nginx, listings, chromadb). |
 | **ChromaDB Context Formatting** | Formats retrieved documents into LLM-ready context blocks. |
 | **Embedding Generation** | Generates embeddings for listing text using sentence-transformers. |
 | **Listing Text/Embedding Formats** | Standardizes listing fields into formats for embeddings and LLM context. |
+
+
+### Listings Service (srandria)
+
+| Feature | Description |
+|---------|-------------|
+| **Publish Listing** | Create a new property listing with multipart file upload (3–10 photos), Zod validation, credit debit, and automatic AI indexing via ChromaDB |
+| **Search Listings** | Browse all active listings with filters (type, propertyType, zone, price range, surface range), sorting, and paginated results |
+| **Get Listing Details** | Retrieve full listing details including features, seller stats, availability, and conditional seller contact info (visible only to owner or confirmed reservation holder) |
+| **Get My Listings** | Authenticated sellers retrieve their own listings with engagement stats (views, reservations) |
+| **Update Listing** | Modify listing fields (title, description, price, features, tags) with ownership verification and automatic AI re-indexing |
+| **Archive Listing** | Seller archives their listing, removing it from active search and deleting its AI index entry |
+| **Mark as Sold/Rented** | Seller marks a listing as realized (sold or rented), updating status and removing the AI index |
+| **Make Available** | Seller re-activates a previously unavailable listing and re-indexes it in ChromaDB |
+| **Report Listing** | Authenticated users can report a listing for fraud, spam, duplicate, incorrect info, or inappropriate content |
+| **Set Availability Schedule** | Seller defines weekly viewing time slots (day of week, start/end time) for a listing |
+| **Update Availability** | Replace the existing availability schedule for a listing with a new set of time slots |
+| **Get Availability** | Retrieve the weekly viewing schedule for a listing, used by the reservation service to compute bookable slots |
+| **Seller Stats** | Internal endpoint providing seller performance metrics (total listings, successful sales/rents, average rating, response rate) |
+| **Increment Reservation Stat** | Internal endpoint called by the reservation service to update a listing's reservation count upon confirmation |
+| **Data Deletion (GDPR)** | Internal endpoint to delete all listing data associated with a deleted user account |
+
+
+### Moderation Service (srandria && mravelon)
+
+| Feature | Description |
+|---------|-------------|
+| **Get Flagged Listings** | Moderators retrieve paginated listings that have been reported, with report counts, latest report reason, and seller info |
+| **Get Listing for Review** | Moderators view full listing details including all reports and moderation history for review |
+| **Apply Moderation Action** | Moderators apply actions on flagged listings: block (temporary), archive (permanent), request clarification, or reject reports — with status update, internal notes, and message to seller |
+| **Moderation Action History** | Retrieve paginated log of all moderation actions with filters by moderator and target listing |
 
 ---
 
@@ -481,22 +511,38 @@ The Trust Estate platform uses a **PostgreSQL** database distributed across four
 ### mravelon
 Sarah contributed to concept design, visual design, some frontend work on the chatbot, and overall project architecture structuring.
 - **Key Achievement**: Developed the **Frontend Dashboard & Reservation UI**, bridging the gap between backend logic and seamless user experience. Unified the deployment via a single-command **Makefile**.
+- **Challenges & Solutions**: 
+    - *Challenge*:  Coordinating data flow between multiple React components and disparate backend services.
+                    Ensuring secure and consistent credit transactions across multiple services.
+    - *Solution*: Implemented a centralized state management and used standardized API hooks to ensure predictable data handling.
 
 ### srandria
 Ensured the technical robustness of the platform, from infrastructure to UI.
 - **Key Achievement**: Developed the frontend dashboard and reservation UI, and unified the deployment setup.
+- **Challenges & Solutions**:
+    - *Challenge*: Managing complex viewing slot availability across different timezones and seller schedules.
+    - *Solution*: Developed a robust server-side logic in the listings/reservation services to compute real-time availability based on weekly schedules.
 
 ### rarakoto
 Ny Hasina turned the vision into a premium reality.
 - **Key Achievement**: Designed the visual identity and built the responsive frontend components.
+- **Challenges & Solutions**:
+    - *Challenge*: Creating a premium, responsive UI that works across all browser versions.
+    - *Solution*: Used Tailwind CSS for flexible layouts and conducted multi-browser testing to ensure full compatibility.
 
 ### tolrandr
 Drove the core transactions of the project.
-- **Key Achievement**: Complete authentication and credit management, securing data flows, and orchestrating inter-service events.
+- **Key Achievement**: Complete authentication and reservation management, securing data flows, and orchestrating inter-service events.
+- **Challenges & Solutions**:
+    - *Challenge*: Ensuring secure, authenticated, when a user login and make a reservation 
+    - *Solution*: Implemented JWT validation and secure reservation transactions.
 
 ### aelison
 Enabled intelligent property discovery and general debugging.
 - **Key Achievement**: RAG optimization (ChromaDB indexing for Madagascar).
+- **Challenges & Solutions**:
+    - *Challenge*: Optimizing the RAG pipeline for accuracy in property search.
+    - *Solution*: Fine-tuned the system prompts and implemented ChromaDB with sentence-transformers for better semantic understanding.
 
 
 ---
@@ -504,37 +550,58 @@ Enabled intelligent property discovery and general debugging.
 ## Modules
 
 ### Major Modules (1 module = 2 pts)
-1. Public API
-   - Secured public API with API key and rate limiting
-   - Documentation (at least 5 CRUD endpoints)
-2. Advanced Permission System
-   - Roles: admin, user, guest, moderator...
-   - CRUD users, manage roles via RBAC
-3. Retrieval-Augmented Generation (RAG) System
-   - Large dataset indexed, contextual answers
-4. LLM Interface
-   - Generation of text/images, streamed reply, error handling
-5. Microservices Backend Architecture
-   - 5 services independently deployed, REST communication
-
-### Total major modules: 10 pts
-
----
+1. **Public API** (tolrandr, aelison, srandria, mravelon)
+   - *Justification*: To allow external integrations and provide a structured way for the frontend to consume data.
+   - *Implementation*: Built with Fastify, secured with API keys and rate limiting via Nginx. Includes at least 5 CRUD endpoints for listing and user management.
+2. **Advanced Permission System** (tolrandr && srandria)
+   - *Justification*: To manage different user levels (Moderator, User) and protect sensitive actions.
+   - *Implementation*: Role-Based Access Control (RBAC) implemented across Auth and Listings services, allowing moderators to review reports.
+3. **Retrieval-Augmented Generation (RAG) System** (aelison)
+   - *Justification*: To provide an intelligent search experience where users can ask questions about properties in natural language.
+   - *Implementation*: Uses ChromaDB for vector storage and semantic search, retrieving relevant property data to enrich the LLM's context.
+4. **LLM Interface** (aelison && mravelon)
+   - *Justification*: To facilitate natural language interactions and automated content improvement (e.g., listing descriptions).
+   - *Implementation*: Integrated Nvidia API for text generation with streaming support for a responsive chat experience.
+5. **Microservices Backend Architecture** (tolrandr, aelison, srandria, mravelon)
+   - *Justification*: To ensure scalability, isolation of concerns, and technology flexibility.
+   - *Implementation*: 5 distinct services (Auth, Listings, Credits, Reservation, AI) communicating via REST, each with its own database and horizontal scalability.
 
 ### Minor Modules (1 module = 1 pt)
-1. Frontend: React
-2. Backend: Express (and Fastify, FastAPI, etc. where relevant)
-3. ORM: Prisma + PostgreSQL
-4. Notification system: All create/update/delete
-5. Analytics dashboard: User activity and insights
-6. Custom-made design: System with reusable components, including a proper color palette, typography, and icons.
-7. Advanced search: Filter/sort/pagination
-8. OAuth 2.0 login (Google, GitHub, etc.)
-9. GDPR compliance: Data download/export/deletion/confirmation
-10. Multi-browser support
-11. Multilanguage (i18n)
+1. **Frontend: React** (rarakoto)
+   - *Justification*: Chosen for its component-based architecture and reactive state management.
+   - *Implementation*: Built with Vite and TypeScript for a modern, efficient development workflow.
+2. **Backend: Fastify/FastAPI** (tolrandr, srandria, aelison, mravelon)
+   - *Justification*: Fastify for high-performance Node.js APIs and FastAPI for its excellent Python async support for AI features.
+   - *Implementation*: Structured into modular handlers and services.
+3. **ORM: Prisma + PostgreSQL** (tolrandr, srandria, mravelon)
+   - *Justification*: PostgreSQL for ACID compliance; Prisma for type-safe database access and streamlined migrations.
+   - *Implementation*: Distributed databases with service-specific schemas.
+4. **Notification system** (rarakoto)
+   - *Justification*: To keep users informed of critical actions (registrations, reservations).
+   - *Implementation*: Integrated email notifications for all key CRUD operations.
+5. **Analytics dashboard** (srandria)
+   - *Justification*: To provide sellers with insights into their listing performance (views, reservations, credits).
+   - *Implementation*: Real-time data aggregation from Listings and Reservation services displayed on the user dashboard.
+6. **Custom-made design** (rarakoto)
+   - *Justification*: To ensure a unique, premium brand identity that default tailwind components couldn't provide.
+   - *Implementation*: Custom color palette, typography, and over 10 reusable UI components.
+7. **Advanced search** (rarakoto)
+   - *Justification*: To help users quickly find properties matching complex criteria.
+   - *Implementation*: Server-side filtering, sorting, and pagination across multiple property attributes.
+8. **OAuth 2.0 login** (tolrandr)
+   - *Justification*: To simplify user onboarding and provide secure, trusted login options.
+   - *Implementation*: Integrated Google OAuth flow with automatic user account linking.
+9. **GDPR compliance** (tolrandr, srandria, mravelon, rarakoto)
+   - *Justification*: To respect user privacy and comply with data protection standards.
+   - *Implementation*: Added features for full account deletion and data export.
+10. **Multi-browser support** (rarakoto)
+    - *Justification*: To ensure the platform is accessible to all users regardless of their browser choice.
+    - *Implementation*: Cross-browser testing and CSS polyfills for Chrome, Firefox, and Safari.
+11. **Multilanguage (i18n)** (rarakoto, srandria)
+    - *Justification*: To cater to a diverse audience (French, English, Spanish).
+    - *Implementation*: Used `react-i18next` with JSON translation files.
 
-### Total minor modules: 11 pts
+### Total Modules Score: 21 pts (10 Major + 11 Minor)
 
 ---
 

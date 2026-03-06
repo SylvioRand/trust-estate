@@ -72,6 +72,7 @@ const BuyerSlotsPage: React.FC = () => {
   useEffect(() => {
     if (isConnected !== null && isConnected === false) {
       navigate("/sign-in", { state: { from: location.pathname + location.search } });
+      return;
     }
     if (!listingID) {
       navigate("/home");
