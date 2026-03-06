@@ -37,6 +37,8 @@ export function VerifyUsersState() {
 					}
 					setIsConnected(true);
 					if ((serverResponse as any).error === "phone_number_not_verified") {
+						setUserData(null);
+						setIsConnected(false);
 						if (url.pathname === "/add-phone") {
 							return;
 						}
