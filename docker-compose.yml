@@ -178,8 +178,6 @@ services:
     build:
       context: ./services/ai
       dockerfile: Dockerfile
-    ports:
-      - "3005:3005"
     env_file:
       - .env
     depends_on:
