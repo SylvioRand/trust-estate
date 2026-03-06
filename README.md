@@ -204,6 +204,339 @@ We assigned roles based on what each team member wanted to try, learn, or alread
 - **npm** — Package management for Node.js dependencies
 - **Prisma Migrations** — Version-controlled database schema changes
 
+---
+
+## Project Architecture
+
+```
+trust-estate/
+├── .env.example
+├── .dockerignore
+├── .gitignore
+├── docker-compose.yml
+├── Makefile
+├── README.md
+├── ENV_CONFIG.md
+│
+├── nginx/                                  (Reverse proxy & TLS termination)
+│   ├── Dockerfile
+│   ├── certs/
+│   │   ├── server.crt
+│   │   └── server.key
+│   └── conf.d/
+│       ├── common_routes.inc
+│       └── default.conf
+│
+├── secret/
+│   └── jwtTokenService/
+│       ├── jwt_auth_private.key
+│       └── jwt_auth_public.pem
+│
+├── shared/
+│   └── zones.json
+│
+├── frontend/                               (React / TypeScript / Vite)
+│   ├── index.html
+│   ├── vite.config.ts
+│   ├── tsconfig.json
+│   ├── tsconfig.app.json
+│   ├── tsconfig.node.json
+│   ├── package.json
+│   ├── eslint.config.js
+│   ├── public/
+│   │   ├── 429.html
+│   │   └── locales/
+│   │       ├── en/                         (28 JSON translation files)
+│   │       ├── fr/                         (28 JSON translation files)
+│   │       └── es/                         (28 JSON translation files)
+│   └── src/
+│       ├── main.tsx
+│       ├── index.css
+│       ├── assets/
+│       ├── components/
+│       │   ├── dashboard/
+│       │   │   ├── FilterDropdown.tsx
+│       │   │   ├── IconActionButton.tsx
+│       │   │   ├── ReservationCard.tsx
+│       │   │   ├── StatusAvatar.tsx
+│       │   │   └── StatusTag.tsx
+│       │   ├── ActionButton.tsx
+│       │   ├── ActionsMenu.tsx
+│       │   ├── Animate.tsx
+│       │   ├── BentoProperty.tsx
+│       │   ├── BoxSection.tsx
+│       │   ├── ChatTextArea.tsx
+│       │   ├── ContentDivider.tsx
+│       │   ├── CoolText.tsx
+│       │   ├── Countdown.tsx
+│       │   ├── FormField.tsx
+│       │   ├── GoogleButton.tsx
+│       │   ├── ImageUploader.tsx
+│       │   ├── Input.tsx
+│       │   ├── InputCheckBox.tsx
+│       │   ├── InputComponents.tsx
+│       │   ├── InputEnum.tsx
+│       │   ├── InputRange.tsx
+│       │   ├── LineChart.tsx
+│       │   ├── NavBar.tsx
+│       │   ├── PhoneInput.tsx
+│       │   ├── PhotoViewer.tsx
+│       │   ├── PopUp.tsx
+│       │   ├── RoleStatus.tsx
+│       │   ├── SellerStat.tsx
+│       │   ├── Separator.tsx
+│       │   ├── TagsComponents.tsx
+│       │   ├── TextArea.tsx
+│       │   ├── TimeInput.tsx
+│       │   ├── ToggleButton.tsx
+│       │   └── WavyLines.tsx
+│       ├── const/
+│       │   └── constant.tsx
+│       ├── dataModel/
+│       │   ├── dataZone.tsx
+│       │   ├── modelListings.tsx
+│       │   ├── modelProfile.tsx
+│       │   ├── modelPropertyList.tsx
+│       │   └── modelSlots.tsx
+│       ├── hooks/
+│       │   └── VerifyUsersState.tsx
+│       ├── i18n/
+│       │   ├── i18n.ts
+│       │   └── types/
+│       │       └── react-i18next.d.ts
+│       ├── interfaces/
+│       │   ├── googleInterface.ts
+│       │   └── profileInfos.ts
+│       ├── layout/
+│       │   └── layout.tsx
+│       ├── pages/
+│       │   ├── dashboard/
+│       │   │   ├── CreditsSection.tsx
+│       │   │   ├── ReservationsSection.tsx
+│       │   │   ├── VisitsSection.tsx
+│       │   │   └── zodSchema/
+│       │   │       └── dashboard.schema.tsx
+│       │   ├── add_phone.tsx
+│       │   ├── ai.tsx
+│       │   ├── buyer_slots.tsx
+│       │   ├── client_listings_view.tsx
+│       │   ├── dashboard.tsx
+│       │   ├── edit.tsx
+│       │   ├── email_sent.tsx
+│       │   ├── errorPage.tsx
+│       │   ├── flaggedPage.tsx
+│       │   ├── forgot_pass.tsx
+│       │   ├── home.tsx
+│       │   ├── listings.tsx
+│       │   ├── loading.tsx
+│       │   ├── my_listings_view.tsx
+│       │   ├── privacy_policy.tsx
+│       │   ├── profile.tsx
+│       │   ├── property.tsx
+│       │   ├── publish.tsx
+│       │   ├── reset_pass.tsx
+│       │   ├── seller_slots.tsx
+│       │   ├── settings.tsx
+│       │   ├── sign_in.tsx
+│       │   ├── sign_up.tsx
+│       │   ├── term_of_service.tsx
+│       │   ├── verify_email.tsx
+│       │   └── welcome.tsx
+│       ├── provider/
+│       │   ├── DataContext.tsx
+│       │   ├── DataProvider.tsx
+│       │   └── useDataProvider.tsx
+│       ├── types/
+│       │   └── google.accounts.d.ts
+│       └── utils/
+│           ├── fetchWithoutConsoleError.ts
+│           ├── Format.tsx
+│           ├── generateUUID.ts
+│           └── phoneCountry.tsx
+│
+└── services/
+    ├── ai/                                 (Python / FastAPI — AI & RAG)
+    │   ├── Dockerfile
+    │   ├── main.py
+    │   ├── requirements.txt
+    │   └── app/
+    │       ├── config.py
+    │       ├── models.py
+    │       ├── __init__.py
+    │       └── services/
+    │           ├── chromadb.py
+    │           ├── embedding.py
+    │           ├── llm.py
+    │           └── __init__.py
+    │
+    ├── auth/                               (Node.js / Fastify / TypeScript)
+    │   ├── Dockerfile
+    │   ├── docker-entrypoint.sh
+    │   ├── package.json
+    │   ├── tsconfig.json
+    │   ├── tsup.config.ts
+    │   ├── prisma/
+    │   │   ├── schema.prisma
+    │   │   └── seed.ts
+    │   └── src/
+    │       ├── app.ts
+    │       ├── config/
+    │       │   └── env.schema.ts
+    │       ├── hooks/
+    │       │   ├── errorHandle.ts
+    │       │   └── hooks.ts
+    │       ├── interfaces/
+    │       │   └── config.interface.ts
+    │       ├── modules/
+    │       │   ├── auth/
+    │       │   │   ├── auth.controllers.ts
+    │       │   │   ├── auth.interface.ts
+    │       │   │   ├── auth.module.ts
+    │       │   │   ├── auth.routes.ts
+    │       │   │   ├── auth.schema.ts
+    │       │   │   └── auth.services.ts
+    │       │   └── user/
+    │       │       ├── user.controllers.ts
+    │       │       ├── user.interface.ts
+    │       │       ├── user.module.ts
+    │       │       ├── user.routes.ts
+    │       │       ├── user.schema.ts
+    │       │       └── user.service.ts
+    │       ├── plugin/
+    │       │   ├── helmet.plugin.ts
+    │       │   ├── jwt.plugin.ts
+    │       │   ├── mail.plugin.ts
+    │       │   ├── prisma.plugin.ts
+    │       │   └── rate-limit.ts
+    │       ├── types/
+    │       │   ├── fastify-env.d.ts
+    │       │   └── fastify-mailer.d.ts
+    │       └── utils/
+    │           ├── auth.utils.ts
+    │           ├── text.ts
+    │           └── token.utils.ts
+    │
+    ├── chromadb/                           (ChromaDB vector store)
+    │   └── Dockerfile
+    │
+    ├── credits/                            (Node.js / Fastify / TypeScript)
+    │   ├── Dockerfile
+    │   ├── docker-entrypoint.sh
+    │   ├── package.json
+    │   ├── tsconfig.json
+    │   ├── tsup.config.ts
+    │   ├── prisma.config.ts
+    │   ├── prisma/
+    │   │   └── schema.prisma
+    │   └── src/
+    │       ├── app.ts
+    │       ├── config/
+    │       │   └── env.schema.ts
+    │       ├── hooks/
+    │       │   └── errorHandle.ts
+    │       ├── interfaces/
+    │       │   └── config.interface.ts
+    │       ├── module/
+    │       │   └── credit/
+    │       │       ├── credit.controllers.ts
+    │       │       ├── credit.interface.ts
+    │       │       ├── credit.modules.ts
+    │       │       ├── credit.routes.ts
+    │       │       ├── credit.schema.ts
+    │       │       └── credit.services.ts
+    │       ├── plugin/
+    │       │   ├── jwt.plugin.ts
+    │       │   └── prisma.plugin.ts
+    │       └── types/
+    │           ├── fastify-env.d.ts
+    │           └── fastify-prisma.d.ts
+    │
+    ├── listings/                           (Node.js / Fastify / TypeScript)
+    │   ├── Dockerfile
+    │   ├── docker-entrypoint.sh
+    │   ├── package.json
+    │   ├── tsconfig.json
+    │   ├── tsup.config.ts
+    │   ├── prisma/
+    │   │   └── schema.prisma
+    │   └── src/
+    │       ├── app.ts
+    │       ├── config/
+    │       │   └── prisma.ts
+    │       ├── infrastructure/
+    │       │   ├── ai.client.ts
+    │       │   ├── auth.client.ts
+    │       │   ├── credit.client.ts
+    │       │   └── reservation.client.ts
+    │       ├── modules/
+    │       │   ├── listing/
+    │       │   │   ├── handlers/
+    │       │   │   │   ├── archive.handler.ts
+    │       │   │   │   ├── delete-user-data.handler.ts
+    │       │   │   │   ├── get-availability.handler.ts
+    │       │   │   │   ├── get-mine.handler.ts
+    │       │   │   │   ├── get-one.handler.ts
+    │       │   │   │   ├── get-seller-stats.handler.ts
+    │       │   │   │   ├── increment-reservation-stat.handler.ts
+    │       │   │   │   ├── make-available.handler.ts
+    │       │   │   │   ├── mark-unvailable.handler.ts
+    │       │   │   │   ├── publish.handler.ts
+    │       │   │   │   ├── report.handler.ts
+    │       │   │   │   ├── search.handler.ts
+    │       │   │   │   ├── update-availability.handler.ts
+    │       │   │   │   └── update.handler.ts
+    │       │   │   ├── listing.controller.ts
+    │       │   │   ├── listing.schema.ts
+    │       │   │   └── listing.service.ts
+    │       │   └── moderator/
+    │       │       ├── handlers/
+    │       │       │   ├── apply-action.handler.ts
+    │       │       │   ├── get-actions-handler.ts
+    │       │       │   ├── get-flag-handler.ts
+    │       │       │   └── get-listing-post.ts
+    │       │       ├── moderator.controller.ts
+    │       │       ├── moderator.schema.ts
+    │       │       └── moderator.service.ts
+    │       ├── shared/
+    │       │   └── zones.json
+    │       └── types/
+    │           └── fastify.d.ts
+    │
+    └── reservation/                        (Node.js / Fastify / TypeScript)
+        ├── Dockerfile
+        ├── docker-entrypoint.sh
+        ├── package.json
+        ├── tsconfig.json
+        ├── tsup.config.ts
+        ├── prisma/
+        │   └── schema.prisma
+        └── src/
+            ├── app.ts
+            ├── config/
+            │   └── env.schema.ts
+            ├── hooks/
+            │   └── errorHandle.ts
+            ├── interfaces/
+            │   └── config.interface.ts
+            ├── module/
+            │   └── resa/
+            │       ├── resa.controllers.ts
+            │       ├── resa.interface.ts
+            │       ├── resa.module.ts
+            │       ├── resa.routes.ts
+            │       ├── resa.schema.ts
+            │       └── resa.services.ts
+            ├── plugin/
+            │   ├── jwt.plugin.ts
+            │   └── prisma.plugin.ts
+            ├── types/
+            │   ├── fastify-env.d.ts
+            │   └── fastify-prisma.d.ts
+            └── utils/
+                └── utils.ts
+```
+
+---
 
 ## Database Schema
 
