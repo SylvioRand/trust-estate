@@ -44,13 +44,7 @@ const EditPage: React.FC = () => {
 		{ value: "false", title: t("common:false") }
 	]
 
-	if (listingID === null)
-		navigate("/home");
 	VerifyUsersState();
-
-	// NOTE: redirect the user if he is not authenticated
-	if (!isConnected)
-		navigate("/sign-in");
 
 	const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -267,7 +261,12 @@ const EditPage: React.FC = () => {
 				navigate("/property");
 			}
 		}
-		fetchListingsData();
+		if (listingID === null)
+			navigate("/home");
+		else if (isConnected === null)
+			navigate("/sign-in");
+		else
+			fetchListingsData();
 	}, [])
 
 	useEffect(() => {

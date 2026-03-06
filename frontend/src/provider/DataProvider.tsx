@@ -34,6 +34,10 @@ const DataProvider: React.FC<DataProviderProps> = ({
 	const location = useLocation();
 	const navigate = useNavigate();
 	const url = new URL(window.location.href);
+	const clearLoggedInCookie = () => {
+		document.cookie = "realestate_logged_in=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+	};
+
 	useEffect(() => {
 		const checkAuth = async () => {
 			try {
@@ -57,6 +61,7 @@ const DataProvider: React.FC<DataProviderProps> = ({
 
 					setIsConnected(false);
 					if ((serverResponse as any).error === "invalid_or_expired_token") {
+						clearLoggedInCookie();
 						return;
 					}
 					if ((serverResponse as any).error === "phone_number_not_verified") {
@@ -85,6 +90,7 @@ const DataProvider: React.FC<DataProviderProps> = ({
 				}
 
 				setIsConnected(false);
+				clearLoggedInCookie();
 
 			} catch (error) {
 				if (error instanceof Error && error.message !== "")

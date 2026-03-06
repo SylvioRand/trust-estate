@@ -117,12 +117,14 @@ const FlaggedPage: React.FC = () => {
 	const { userData, isConnected } = useDataProvider();
 	const navigate = useNavigate();
 
-	if (isConnected === null || isConnected !== null && isConnected === false
-		|| userData !== null && userData.role !== "MODERATOR"
-	)
-		navigate("/sign-in");
-
 	useEffect(() => {
+		if (isConnected === null || isConnected !== null && isConnected === false
+			|| userData !== null && userData.role !== "MODERATOR"
+		) {
+			navigate("/sign-in");
+			return;
+		}
+
 		const getActionHistory = async () => {
 			try {
 				const response = await fetch(`/api/moderator/listings/flagged`, {
@@ -155,10 +157,10 @@ const FlaggedPage: React.FC = () => {
 	return (
 		<div
 			className="flex flex-col items-center justify-start
-		overflow-y-scroll
-		px-4 md:px-7 xl:px-64
-		gap-3
-		w-full h-screen"
+			overflow-y-scroll
+			px-4 md:px-7 xl:px-64
+			gap-3
+			w-full h-screen"
 		>
 			<div
 				className="w-full h-18 flex-none">
