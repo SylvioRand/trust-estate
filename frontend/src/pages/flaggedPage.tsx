@@ -117,15 +117,12 @@ const FlaggedPage: React.FC = () => {
 	const { userData, isConnected } = useDataProvider();
 	const navigate = useNavigate();
 
-
 	useEffect(() => {
 		if (isConnected === null || isConnected !== null && isConnected === false
 			|| userData !== null && userData.role !== "MODERATOR"
-		)
+		) {
 			navigate("/sign-in");
-	}, [])
-
-	useEffect(() => {
+		}
 		const getActionHistory = async () => {
 			try {
 				const response = await fetch(`/api/moderator/listings/flagged`, {
