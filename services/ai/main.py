@@ -15,7 +15,6 @@ import httpx
 import jwt
 import sys
 
-# from app.utils import *
 from app.config import config
 from app.services.llm import LLMService
 from app.models import Description, RequestChat, PostModel
@@ -28,7 +27,6 @@ from contextlib import asynccontextmanager
 from app.services.chromadb import chromadb_service
 
 from httpx import HTTPStatusError, RequestError, TimeoutException
-from fastapi.middleware.cors import CORSMiddleware
 
 # ====================== Utils ==================
 import logging
@@ -90,15 +88,6 @@ async def lifespan(_: FastAPI):
     
 app = FastAPI(lifespan=lifespan)
 
-#Enable cross-origin (CORS)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["nginx:8443", "chromadb-service:8000", "listings-service:3002", "https://localhost:8443"],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["Content-Type", "Authorization"],
-    max_age=600
-)
 # ====================== LLM cases ==================
 
 llm_service = LLMService()
