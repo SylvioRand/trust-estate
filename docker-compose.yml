@@ -29,8 +29,6 @@ services:
       context: ./services/auth
       dockerfile: Dockerfile
     container_name: trust-estate-auth
-    expose:
-      - "3001"
     environment:
       # Database
       DATABASE_URL: ${DATABASE_URL}?schema=auth
@@ -83,8 +81,6 @@ services:
       context: ./services/listings
       dockerfile: Dockerfile
     container_name: trust-estate-listings
-    expose:
-      - "3002"
     environment:
       DATABASE_URL: ${DATABASE_URL}?schema=listings
       PORT: 3002
@@ -114,8 +110,6 @@ services:
       context: ./services/reservation
       dockerfile: Dockerfile
     container_name: trust-estate-reservations
-    expose:
-      - "3003"
     environment:
       DATABASE_URL: ${DATABASE_URL}?schema=reservations
       PORT_AUTH_RESERVATION: 3003
@@ -147,8 +141,6 @@ services:
       context: ./services/credits
       dockerfile: Dockerfile
     container_name: trust-estate-credits
-    expose:
-      - "3004"
     environment:
       DATABASE_URL: ${DATABASE_URL}?schema=credits
       PORT_CREDITS_SERVICE: 3004
