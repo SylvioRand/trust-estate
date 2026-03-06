@@ -42,6 +42,7 @@ interface SimpleInputProps {
 	ref?: RefObject<HTMLInputElement | null>;
 	list?: string;
 	required?: boolean;
+	patternError?: string;
 }
 
 const SimpleInput: React.FC<SimpleInputProps> = ({
@@ -57,7 +58,8 @@ const SimpleInput: React.FC<SimpleInputProps> = ({
 	maxLength = 256,
 	ref,
 	list,
-	required = true
+	required = true,
+	patternError = ""
 }) => {
 	const [focused, setFocused] = useState<boolean>(false);
 
@@ -121,6 +123,15 @@ const SimpleInput: React.FC<SimpleInputProps> = ({
 					onFocus={() => setFocused(true)}
 					onBlur={() => {
 						setFocused(false);
+					}}
+					onInvalid={(e) => {
+						const target = e.target as HTMLInputElement;
+						if (target.validity.patternMismatch && patternError) {
+							target.setCustomValidity(patternError);
+						}
+					}}
+					onInput={(e) => {
+						(e.target as HTMLInputElement).setCustomValidity("");
 					}}
 				/>
 			</div>
