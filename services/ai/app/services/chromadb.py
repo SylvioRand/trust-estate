@@ -334,28 +334,6 @@ class ChromadbService:
         """
         return parse_prompt
 
-    # def get_generate_text(self):
-    #     prompt = """
-    #     You are a search assistant for a real estate app. 
-    #     Analyze the user's info and output a JSON object with:
-    #     1. "description": An enhanced description of the infos (ex: Magnifique villa T4 de 250m² nichée dans le quartier prisé d'Ivandry.
-    #     Ce bien d'exception, construit en 2020, vous séduira par ses prestations haut de gamme : 4 chambres spacieuses, 2 salles de bain modernes, une cuisine entièrement équipée et climatisée.
-    #     Profitez d'une piscine privée au cœur d'un jardin arboré de 500m².
-    #     Garage double et gardiennage 24h/24 pour votre sérénité.
-    #     Une opportunité rare pour les familles recherchant confort et sécurité.) 
-    #     2. "wordCount": The number of word inside the description
-    #     3. "alternatives": [
-    #     {
-    #         "style": (ex: "concise"),
-    #         "text": (ex: Villa T4 250m² Ivandry - 4 ch, 2 sdb, piscine, jardin 500m², garage, gardien. État impeccable, construction 2020.)
-    #     }
-    #     ]
-    #     4. "suggestedTitle": a better title for the listing (ex: "Villa T4 de standing avec piscine - Ivandry")
-    #     5. "keywords": all the keywords found in the user's info to generate a good description
-    #     """
-    #     return prompt
-
-
     def from_score_only(self, to_parse, ref_score):
         relevant_data = [
                 (id, doc, meta, score)
