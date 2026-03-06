@@ -18,6 +18,8 @@ You will need the following tools installed:
 - **Docker** (including **Docker Compose**; if it's not included with your Docker installation, install it separately)
 - **Make**, to build and run the project
 
+> For a complete list of environment variables and how to configure them, refer to [ENV_CONFIG.md](ENV_CONFIG.md).
+
 ### Execution
 
 #### 1. Environment Setup
