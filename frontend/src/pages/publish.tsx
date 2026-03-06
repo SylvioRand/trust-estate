@@ -330,6 +330,7 @@ const PublishPage: React.FC = () => {
 					maxLength={100}
 					placeholder={t("section.main.form.title.placeholder")}
 					error={errorTitle}
+					patternError={t("error:validation.listing.title.invalid_pattern")}
 				/>
 
 				<div
@@ -341,9 +342,10 @@ const PublishPage: React.FC = () => {
 						title={t("section.main.form.description.title")}
 						name="description"
 						placeholder={t("section.main.form.description.placeholder")}
-						minLength={50}
+						minLength={200}
 						maxLength={2000}
 						rows={5}
+						patternError={t("error:validation.listing.description.invalid_pattern")}
 					/>
 					<div className="absolute -top-1 right-0
 						px-2
