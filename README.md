@@ -22,6 +22,7 @@ You will need the following tools installed:
 - **Make**, to build and run the project
 
 > For a complete list of environment variables and how to configure them, refer to [ENV_CONFIG.md](ENV_CONFIG.md).
+> [public_api_doc.md](public_api_doc.md) contains the API documentation for all services.
 
 ### Execution
 
