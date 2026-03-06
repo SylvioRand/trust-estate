@@ -1,6 +1,5 @@
 .PHONY: all build up down clean logs restart status dev rebuild
 
-# Détection automatique de la commande docker compose
 DOCKER_COMPOSE := $(shell \
 	if docker compose version >/dev/null 2>&1; then \
 		echo "docker compose"; \
@@ -10,142 +9,145 @@ DOCKER_COMPOSE := $(shell \
 		echo "docker compose"; \
 	fi)
 
-# Variable pour Docker Buildkit
+define printInfo
+	echo "[\033[34m INF \033[0m] $(1)"
+endef
+
+define printError
+	echo "[\033[31m NOK \033[0m] $(1)"
+endef
+
+define printSuccess
+	echo "[\033[32m OK \033[0m] $(1)"
+endef
+
 export DOCKER_BUILDKIT=0
 
-# Default target: build and run everything
 all: certs generate-certs build up db-sync seed
-	@echo ""
-	@echo "✅ Trust Estate is running!"
-	@echo "🌐 Frontend: https://localhost:8443"
-	@echo "🐳 Using: $(DOCKER_COMPOSE)"
-	@echo ""
+	@$(call printSuccess,CASA is running!)
 
-# Synchronize Prisma schemas with database (runs inside Docker, no Node.js required on host)
 db-sync:
-	@echo "⏳ Waiting for services to be ready..."
+	@$(call printInfo,Waiting for services to be ready)
 	@until docker inspect --format='{{.State.Health.Status}}' trust-estate-auth 2>/dev/null | grep -q "healthy"; do \
-		echo "   ... waiting for auth service ..."; \
+		$(call printInfo,Waiting for auth service) \
 		sleep 2; \
 	done
 	@until docker inspect --format='{{.State.Health.Status}}' trust-estate-listings 2>/dev/null | grep -q "healthy"; do \
-		echo "   ... waiting for listings service ..."; \
+		$(call printInfo,Waiting for listings service) \
 		sleep 2; \
 	done
 	@until docker inspect --format='{{.State.Health.Status}}' trust-estate-reservations 2>/dev/null | grep -q "healthy"; do \
-		echo "   ... waiting for reservations service ..."; \
+		$(call printInfo,Waiting for reservation service) \
 		sleep 2; \
 	done
-	@echo "✅ All services ready! Synchronizing schemas..."
-	@echo "🔄 Synchronizing Prisma schemas with database..."
-	@echo "   -> Pushing auth schema..."
+	@$(call printInfo,All services ready! Synchronizing schemas ...)
+	@$(call printInfo,Synchronizing Prisma schemas with database ...)
+	@$(call printInfo,Pushing auth schema ...)
 	@docker exec trust-estate-auth npx prisma db push --accept-data-loss
-	@echo "   -> Pushing listings schema..."
+	@$(call printInfo,Pushing listings schema ...)
 	@docker exec trust-estate-listings npx prisma db push --accept-data-loss
-	@echo "   -> Pushing reservation schema..."
+	@$(call printInfo,Pushing reservation schema ...)
 	@docker exec trust-estate-reservations npx prisma db push --accept-data-loss
-	@echo "✅ Database schemas synchronized!"
+	@$(call printSuccess,Database schemas synchronized!)
 
-# Seed the database with test data (runs inside Docker, no Node.js required on host)
 seed:
-	@echo "🌱 Seeding database..."
-	@echo "   -> Seeding Auth (Admin account)..."
+	@$(call printInfo,Seeding DB ...)
+	@$(call printInfo,Seeding Auth ...)
 	@docker exec trust-estate-auth npx tsx prisma/seed.ts
-	@echo "✅ Seeding complete!"
+	@$(call printSuccess,Seeding complete!)
 
-# Build all containers
 build:
-	@echo "🔨 Building containers with $(DOCKER_COMPOSE)..."
+	@$(call printInfo,Building containers ...)
 	$(DOCKER_COMPOSE) build
+	@$(call printSuccess,Containers built!)
 
-# Rebuild without cache (use only when needed)
 rebuild:
-	@echo "🔨 Rebuilding containers without cache..."
+	@$(call printInfo,Rebuilding containers ...)
 	$(DOCKER_COMPOSE) build --no-cache
+	@$(call printSuccess,Containers rebuilt!)
 
-# Start all services
+
 up: certs generate-certs
-	@echo "🚀 Starting services..."
+	@$(call printInfo,Starting services ...)
 	$(DOCKER_COMPOSE) up -d
+	@$(call printSuccess,Services started!)
 
-# Stop all services
 down:
-	@echo "🛑 Stopping services..."
+	@$(call printInfo,Stopping services ...)
 	$(DOCKER_COMPOSE) down
+	@$(call printSuccess,Services stopped!)
 
-# Clean everything (containers, images, volumes)
 clean:
-	@echo "🧹 Cleaning up everything (images, volumes, data)..."
+	@$(call printInfo,Cleaning Started ...)
 	$(DOCKER_COMPOSE) down -v --rmi local
-	@echo "✅ Cleanup complete"
+	@$(call printSuccess,Cleanup complete!)
 
-# View logs
 logs:
 	$(DOCKER_COMPOSE) logs -f
 
-# Restart services
 restart: down up
 
-# Check status
 status:
 	$(DOCKER_COMPOSE) ps
 
-# Development mode: build and start with logs
 dev: build
-	@echo "🔧 Starting in development mode..."
+	@$(call printInfo,Starting in development mode ...)
 	$(DOCKER_COMPOSE) up
+	@$(call printSuccess,Development mode started!)
 
-# Fast reload for listings service only
 reload-listings:
-	@echo "🔄 Reloading listings service..."
+	@$(call printInfo,Reloading listings service ...)
 	$(DOCKER_COMPOSE) up -d --build listings-service
+	@$(call printSuccess,Service listings reloaded!)
 
-# Fast reload for nginx service only
 reload-nginx:
-	@echo "🔄 Reloading nginx service..."
+	@$(call printInfo,Reloading nginx service ...)
 	$(DOCKER_COMPOSE) up -d --build nginx
+	@$(call printSuccess,Service nginx reloaded!)
 
 reload-reservation:
-	@echo "🔄 Reloading reservation service..."
+	@$(call printInfo,Reloading reservation service ...)
 	$(DOCKER_COMPOSE) up -d --build reservations-service
+	@$(call printSuccess,Service reservation reloaded!)
 
 reload-credits:
-	@echo "🔄 Reloading credits service..."
+	@$(call printInfo,Reloading credits service ...)
 	$(DOCKER_COMPOSE) up -d --build credits-service
+	@$(call printSuccess,Service credits reloaded!)
 
 reload-ai:
-	@echo "🔄 Reloading ai service..."
+	@$(call printInfo,Reloading AI service ...)
 	$(DOCKER_COMPOSE) up -d --build ai-service
+	@$(call printSuccess,Service AI reloaded!)
 
 reload-chromadb:
-	@echo "🔄 Reloading chromadb service..."
+	@$(call printInfo,Reloading chromaDB service ...)
 	$(DOCKER_COMPOSE) up -d --build chromadb-service
+	@$(call printSuccess,Service chromaDB reloaded!)
 
 reload-auth:
-	@echo "🔄 Reloading chromadb service..."
+	@$(call printInfo,Reloading auth service ...)
 	$(DOCKER_COMPOSE) up -d --build auth-service
+	@$(call printSuccess,Service auth reloaded!)
 
-# Show which docker compose command is being used
 check:
-	@echo "🐳 Docker Compose command: $(DOCKER_COMPOSE)"
+	@$(call printInfo,Docker Compose command: $(DOCKER_COMPOSE))
 	@$(DOCKER_COMPOSE) version
 
-# Generate SSL certificates locally
 certs:
-	@echo "🔐 Checking SSL certificates..."
+	@$(call printInfo,Checking SSL certificates ...)
 	@mkdir -p nginx/certs
 	@if [ ! -f nginx/certs/server.key ] || [ ! -f nginx/certs/server.crt ]; then \
-		echo "⚙️  Generating self-signed certificates..."; \
+		$(call printInfo,Generating self-signed certificates ...); \
 		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 		-keyout nginx/certs/server.key \
 		-out nginx/certs/server.crt \
 		-subj "/C=MG/ST=Antananarivo/L=Antananarivo/O=TrustEstate/OU=Dev/CN=localhost" 2>/dev/null; \
-		echo "✅ Certificates generated in nginx/certs/"; \
+		$(call printSuccess,Certificates generated in nginx/certs/); \
 	else \
-		echo "✅ Certificates already exist."; \
+		$(call printSuccess,Certificates already exist.); \
 	fi
 
-# Appeler script de génération de certificats avant de démarrer les services
 generate-certs:
 	chmod +x script/secret.generator.sh
 	./script/secret.generator.sh
