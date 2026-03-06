@@ -1,7 +1,7 @@
 import React, { useEffect, useState, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { type ListingsData, type ListingsTags, dataExampleListingsData } from "../dataModel/modelListings";
+import { type ListingsData, type ListingsTags } from "../dataModel/modelListings";
 import { toast } from "react-toastify";
 import MyListingsView from "./my_listings_view";
 import ClientListingsView from "./client_listings_view";
@@ -55,6 +55,11 @@ const ListingsPage: React.FC = () => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
+		if (listingsID === null) {
+			navigate("/property");
+			return;
+		}
+
 		const fetchListingsData = async () => {
 			try {
 				if (listingsID === null)

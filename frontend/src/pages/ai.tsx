@@ -14,11 +14,9 @@ import React, { useEffect, useState } from "react";
 import { ChatTextarea } from "../components/ChatTextArea";
 import { useTranslation } from "react-i18next";
 import Markdown from 'react-markdown';
-import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import { type PropertyType } from "../dataModel/modelListings";
 import { Link, useNavigate } from "react-router-dom";
 import ActionButton from "../components/ActionButton";
-import Animate from "../components/Animate";
 import useDataProvider from "../provider/useDataProvider";
 
 const AIAvatar: React.FC = () => (
@@ -132,7 +130,6 @@ const MetadataComponents: React.FC<MetadataComponentsProps> = ({
 }) => {
 	const formatter = new Intl.NumberFormat("de-DE");
 	const { t } = useTranslation("common");
-	console.log("metadata.photos", metadata.photos);
 
 	return (
 		<div
