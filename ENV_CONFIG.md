@@ -176,12 +176,6 @@ RESERVATION_SERVICE_URL=http://reservations-service:3003
 CREDITS_SERVICE_URL=http://credits-service:3004
 AI_SERVICE_URL=http://ai-service:3005
 
-# Local development (uncomment and comment Docker URLs above)
-# AUTH_SERVICE_URL=http://localhost:3001
-# LISTINGS_SERVICE_URL=http://localhost:3002
-# RESERVATION_SERVICE_URL=http://localhost:3003
-# CREDITS_SERVICE_URL=http://localhost:3004
-
 # PostgreSQL
 POSTGRES_USER=trustestate
 POSTGRES_PASSWORD=trustestate_secret
