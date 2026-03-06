@@ -18,15 +18,31 @@ You will need the following tools installed:
 - **Docker** (including **Docker Compose**; if it's not included with your Docker installation, install it separately)
 - **Make**, to build and run the project
 
+> For a complete list of environment variables and how to configure them, refer to [ENV_CONFIG.md](ENV_CONFIG.md).
+
 ### Execution
 
-First, review the `.env_example` file located at the root of the project and create your own `.env` file based on it.
+#### 1. Environment Setup
 
-Then, simply run the command:
+Before running the project, review the [.env_example](file:///.env_example) file located at the root of the project and create your own `.env` file based on it:
 
 ```bash
-make
+cp .env.example .env
 ```
+
+Ensure you fill in all required environment variables, especially the ones for database access and AI service keys.
+
+#### 2. Main Commands
+
+The project uses a `Makefile` to streamline Docker operations and environment setup.
+
+| Command | Description |
+| :--- | :--- |
+| `make all` | **Full Setup**: Generates certs, builds, starts services, syncs DB, and seeds data. |
+| `make up` | Starts all services in the background. |
+| `make down` | Stops and removes all project containers. |
+| `make restart` | Restarts all services. |
+| `make status` | Checks the status of the running containers. |
 
 ### Resources
 
