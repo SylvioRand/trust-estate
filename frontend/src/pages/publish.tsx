@@ -376,7 +376,7 @@ const PublishPage: React.FC = () => {
 					icon=""
 					title={t("section.main.form.price.title")}
 					name="price"
-					pattern=".*\S.*"
+					pattern="\d+"
 					type="decimal"
 					minLength={1}
 					maxLength={24}
@@ -389,7 +389,7 @@ const PublishPage: React.FC = () => {
 					title={t("section.main.form.area.title")}
 					name="area"
 					type="decimal"
-					pattern=".*\S.*"
+					pattern="\d+"
 					minLength={1}
 					maxLength={24}
 					placeholder={t("section.main.form.area.placeholder")}
@@ -418,7 +418,7 @@ const PublishPage: React.FC = () => {
 								name="bedrooms"
 								type="decimal"
 								minLength={1}
-								pattern=".*\S.*"
+								pattern="\d+"
 								maxLength={3}
 								placeholder={t("section.main.form.bedrooms.placeholder")}
 								error={errorBedrooms}
@@ -430,7 +430,7 @@ const PublishPage: React.FC = () => {
 								title={t("section.main.form.bathrooms.title")}
 								name="bathrooms"
 								type="decimal"
-								pattern=".*\S.*"
+								pattern="\d+"
 								minLength={1}
 								maxLength={3}
 								placeholder={t("section.main.form.bathrooms.placeholder")}
