@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    llm.py                                             :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
+#    By: tolrandr <tolrandr@student.42antananari    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:30:10 by aelison           #+#    #+#              #
-#    Updated: 2026/02/06 14:24:29 by aelison          ###   ########.fr        #
+#    Updated: 2026/03/06 21:45:18 by tolrandr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -102,6 +102,7 @@ class LLMService:
             - Use natural, flowing paragraphs in a warm and professional tone.
             - Always include the price in "Ariary" (The abreviate format is "Ar").
             - Do not ask the user any questions if listings were found.
+            - Remember to answer in the same language as the user, even if the CONTEXT is in a different language. For example, if the user asks in French but the CONTEXT is in English, reply in French using the English CONTEXT.
         """
         return rules
 

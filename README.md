@@ -86,6 +86,10 @@ The project uses a `Makefile` to streamline Docker operations and environment se
   - https://www.w3schools.com/python/ref_module_asyncio.asp
   - https://docs.python.org/3/howto/a-conceptual-overview-of-asyncio.html#a-conceptual-overview-of-asyncio
 
+- **PRISMA ORM**
+  - https://www.prisma.io/docs/prisma-postgres/quickstart/prisma-orm
+  
+
 - **Python Fundamentals**
   - https://www.geeksforgeeks.org/python/constructors-in-python/
   - https://stackoverflow.com/questions/402504/how-can-i-determine-a-python-variables-type
