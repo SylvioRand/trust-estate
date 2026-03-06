@@ -16,17 +16,17 @@ const AddPhonePage: React.FC = () => {
 	const [processingSubmit, setProcessingSubmit] = useState<boolean>(false);
 	const [errorPhone, setErrorPhone] = useState<string[]>([]);
 	const navigate = useNavigate();
-	const { isConnected, userData } = useDataProvider();
+	// const { isConnected, userData } = useDataProvider();
 
-	const location = useLocation();
+	// const location = useLocation();
 
-	useEffect(() => {
-		if ((isConnected !== null && isConnected === false) ||
-			userData?.phoneVerified) {
-			const from = location.state?.from || "/home";
-			navigate(from, { replace: true });
-		}
-	}, [isConnected, userData?.phoneVerified, navigate, location.state?.from]);
+	// useEffect(() => {
+	// 	if ((isConnected !== null && isConnected === false) ||
+	// 		userData?.phoneVerified) {
+	// 		const from = location.state?.from || "/home";
+	// 		navigate(from, { replace: true });
+	// 	}
+	// }, [isConnected, userData?.phoneVerified, navigate, location.state?.from]);
 
 	VerifyUsersState();
 
