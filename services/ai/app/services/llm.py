@@ -19,7 +19,7 @@ class LLMService:
     def __init__(self):
         self.url = config.LLM_API_URL
         self.key = config.LLM_API_KEY
-        self.all_model = config.LLM_MODEL
+        self.model = config.LLM_MODEL
 
     def format_for_llm(self, text):
         if not text or not text.get('ids'):
@@ -239,7 +239,7 @@ class LLMService:
                 "POST",
                 url = self.url,
                 headers = self.generate_header(),
-                json = self.generate_json(text, True, model, system_prompt),
+                json = self.generate_json(text, True, self.model, system_prompt),
                 timeout = 130.0
             ) as response:
                 if response.status_code == 429:
@@ -255,7 +255,7 @@ class LLMService:
         response = httpx.post(
             url = self.url,
             headers = self.generate_header(),
-            json = self.generate_json(text, False, model, system_prompt),
+            json = self.generate_json(text, False, self.model, system_prompt),
             timeout = 120.0
         )
         if response.status_code == 429:
