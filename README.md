@@ -6,6 +6,10 @@ A real estate marketplace tailored to the Malagasy market, designed to make buyi
 
 The platform integrates AI-powered tools to help users discover properties that match their needs and preferences. It supports both sales and rentals across multiple property types, including land, houses, and apartments.
 
+## Project limits
+
+Since this is a student project, we are using a free LLM, which may not offer peak performance. Additionally, the model has rate limits; once these are reached, the AI features will temporarily stop working. We are also using a free tool for email confirmations, which is limited to 100 emails.
+
 ## Instructions
 ### Prerequisites
 
