@@ -355,6 +355,7 @@ const NavBar: React.FC = () => {
 						hidden"
 				>
 					{
+						(location.pathname !== "/email-sent" && location.pathname !== "/add-phone") &&
 						dataNavButton.map((value: NavButtonProps, index: number) => {
 							return (
 								<NavigationButton
@@ -421,13 +422,17 @@ const NavBar: React.FC = () => {
 						<option value="es">🇪🇸</option>
 					</select>
 
-					<div className="block justify-self-end
-						md:hidden
-						font-icon text-background text-4xl"
-						onClick={() => setOpenHamburger(true)}
-					>
-						
-					</div>
+					{
+						(location.pathname !== "/email-sent" && location.pathname !== "/add-phone") &&
+						<div
+							className="block justify-self-end
+							md:hidden
+							font-icon text-background text-4xl"
+							onClick={() => setOpenHamburger(true)}
+						>
+							
+						</div>
+					}
 				</div>
 
 				<HamburgerMenu
