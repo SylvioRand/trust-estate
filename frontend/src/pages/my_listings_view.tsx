@@ -614,11 +614,11 @@ const MyListingsView: React.FC<ListingsViewProps> = ({
 						title: t("section.actionButton.popup.edit.title"),
 						func: () => navigate(`/property/listings/edit?id=${fetchedData.id}`)
 					},
-					buttonAvailabilityModifier,
+					fetchedData.status === "active" || fetchedData.type === "rent" ? buttonAvailabilityModifier : { title: "IGNORE", func: () => { } },
 					{
 						color: "var(--color-red-500)",
-						icon: "󰀼",
-						title: t("section.actionButton.popup.archive.title"),
+						icon: fetchedData.status === "active" ? "󰀼" : "",
+						title: fetchedData.status === "active" ? t("section.actionButton.popup.archive.title") : "IGNORE",
 						func: () => setArePopUpArchiveOpen(true)
 					}
 				]}
@@ -731,7 +731,8 @@ const MyListingsView: React.FC<ListingsViewProps> = ({
 													toast.success(t("section.actionButton.popup.archive.popup.success"));
 													setFetchedData({
 														...fetchedData,
-														status: "archived"
+														status: "archived",
+														isAvailable: false
 													})
 												}
 												else {
