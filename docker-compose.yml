@@ -94,12 +94,14 @@ services:
       RESERVATION_SERVICE_URL: ${RESERVATION_SERVICE_URL}
       CREDITS_SERVICE_URL: ${CREDITS_SERVICE_URL}
       AI_SERVICE_URL: ${AI_SERVICE_URL}
+      NODE_EXTRA_CA_CERTS: ./secrets/ai/ca.crt
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
     volumes:
       - uploads_data:/app/uploads # Dossier partagé (Read-Write pour API)
+      - ./secrets/ai:/secrets/ai:ro
     healthcheck:
       test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3002/listings/health" ]
       interval: 30s
@@ -184,14 +186,23 @@ services:
       - .env
     depends_on:
       - chromadb-service
+    restart: unless-stopped
     volumes:
       - ./services/ai/:/app
-    restart: unless-stopped
+      - ./services/ai/:/app
+      - ./secrets/ai:/secrets/ai:ro
+    command: [
+      "uvicorn", "main:app",
+      "--host", "0.0.0.0",
+      "--port", "3005",
+      "--ssl-keyfile", "/secrets/ai/ai.key",
+      "--ssl-certfile", "/secrets/ai/ai.crt"
+    ]
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:3005/ai/health" ]
-      interval: 5s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "curl --fail --cacert /secrets/ai/ca.crt https://localhost:3005/ai/health || exit 1"]
+      #   interval: 5s
+      #   timeout: 10s
+      #   retries: 3
 
   # ChromaDB- Vector Database
   chromadb-service:

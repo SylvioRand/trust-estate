@@ -74,13 +74,13 @@
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 
-				#========================================
-				#           Config for the streaming
-				#========================================
-				proxy_buffering off;
-				proxy_cache off;
-				chunked_transfer_encoding on;
-				proxy_read_timeout 180s;
+	#========================================
+	#           Config for the streaming
+	#========================================
+	proxy_buffering off;
+	proxy_cache off;
+	chunked_transfer_encoding on;
+	proxy_read_timeout 180s;
     }
 
     location /api/reservations/ {
