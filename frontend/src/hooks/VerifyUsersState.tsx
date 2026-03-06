@@ -12,6 +12,10 @@ export function VerifyUsersState() {
 	const { t } = useTranslation("error");
 	const url = new URL(window.location.href);
 
+	const clearLoggedInCookie = () => {
+		document.cookie = "realestate_logged_in=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+	};
+
 	useEffect(() => {
 		const checkAuth = async () => {
 			try {
@@ -33,6 +37,7 @@ export function VerifyUsersState() {
 
 					setIsConnected(false);
 					if ((serverResponse as any).error === "invalid_or_expired_token") {
+						clearLoggedInCookie();
 						return;
 					}
 					setIsConnected(true);
@@ -66,6 +71,7 @@ export function VerifyUsersState() {
 					const errorResponse = responseData as APIResponse;
 					if (errorResponse.error === "invalid_or_expired_token") {
 						setIsConnected(false);
+						clearLoggedInCookie();
 						return;
 					}
 					toast.error(t(`error:${errorResponse.error}`));
