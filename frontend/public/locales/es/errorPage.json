@@ -1,0 +1,7 @@
+{
+    "title404": "404 - Página No Encontrada",
+    "message404": "La página que buscas no existe o ha sido movida.",
+    "titleError": "¡Oops! Algo salió mal",
+    "messageError": "Ocurrió un error inesperado. Nuestro equipo ha sido notificado.",
+    "buttonBackHome": "Volver al inicio"
+}
