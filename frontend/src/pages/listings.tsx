@@ -73,7 +73,7 @@ const ListingsPage: React.FC = () => {
 					throw new Error(responseData.message);
 			} catch (error) {
 				if (error instanceof Error && error.message !== "")
-					toast.error(`error:${error.message}`);
+					toast.error(t(`error:${error.message}`));
 				navigate("/property");
 			}
 		}
