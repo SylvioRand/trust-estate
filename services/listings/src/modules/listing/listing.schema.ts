@@ -309,7 +309,9 @@ export const GetSellerStatsParamsSchema = z.object({
 export type GetSellerStatsParams = z.infer<typeof GetSellerStatsParamsSchema>;
 
 export const GetOneParamsSchema = z.object({
-  id: z.string().uuid()
+  id: z.string().uuid(
+    "listing.not_found"
+  )
 }).strict();
 
 
