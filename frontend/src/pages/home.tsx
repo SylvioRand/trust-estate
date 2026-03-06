@@ -11,7 +11,7 @@ import bentoAccurateValuation from "../../src/images/bento_accurate_valuation.pn
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import ActionButton from "../components/ActionButton";
 import SimpleInput from "../components/Input";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ZONE_ENUM } from "../dataModel/dataZone";
 import type { InputEnumData } from "../components/InputEnum";
 import useDataProvider from "../provider/useDataProvider";
@@ -94,7 +94,7 @@ const DataAbousUs: React.FC<DataAboutUsProps> = ({
 }
 
 const HomePage: React.FC = () => {
-	const { t } = useTranslation("home");
+	const { t } = useTranslation(["home", "privacyPolicy", "termOfService"]);
 	const navigate = useNavigate();
 	const pictureStyle = "w-full rounded-xl shadow-standard border border-background/25";
 
@@ -422,8 +422,44 @@ const HomePage: React.FC = () => {
 				</div>
 			</div>
 
-			<div className="w-full h-50 flex-none">
+			<div
+				className="w-full
+				py-4
+				grid grid-cols-1 grid-rows-3 md:grid-cols-2 md:grid-rows-1
+				px-4 md:px-7 xl:px-64
+				place-items-center
+				flex-none"
+			>
+				<div
+					className="font-higuen
+					justify-self-start
+					text-4xl"
+				>
+					CASA
+				</div>
+				<div
+					className="flex items-start justify-center gap-4 text-sm"
+				>
+					<Link
+						to="/privacy-policy"
+						className="hover:underline cursor-pointer"
+					>
+						{t("privacyPolicy:title")}
+					</Link>
+					<Link
+						to="/terms-of-service"
+						className="hover:underline cursor-pointer"
+					>
+						{t("termOfService:title")}
+					</Link>
+					<div>
+						© 2025 - 2026 CASA
+					</div>
+				</div>
 			</div>
+
+			{/* <div className="w-full h-50 flex-none">
+			</div> */}
 
 
 		</div>
