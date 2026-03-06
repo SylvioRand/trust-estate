@@ -50,6 +50,7 @@ const router = createBrowserRouter([
       </DataProvider>
     ),
     errorElement: <ErrorPage />,
+    HydrateFallback: () => <div />,
     children: [
       {
         path: "/sign-in",
@@ -143,6 +144,13 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Navigate to="/home" replace />
+      },
+      {
+        path: "*",
+        element: <ErrorPage />,
+        loader: () => {
+          throw new Response("Not Found", { status: 404 });
+        }
       },
     ]
   },
