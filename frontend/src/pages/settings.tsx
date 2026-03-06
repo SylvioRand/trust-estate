@@ -368,9 +368,11 @@ const SettingsPage: React.FC = () => {
 	};
 
 	useEffect(() => {
-		fetchHistory();
-		fetchReservations();
-		fetchBalance();
+		if (isConnected !== null && isConnected === true) {
+			fetchHistory();
+			fetchReservations();
+			fetchBalance();
+		}
 	}, []);
 
 	function downloadGDPR() {

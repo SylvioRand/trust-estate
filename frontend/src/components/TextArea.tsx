@@ -1,6 +1,6 @@
 import React, { type CSSProperties, type RefObject } from "react";
 
-interface	TextAreaProps {
+interface TextAreaProps {
 	title: string;
 	name: string;
 	placeholder: string;
@@ -15,9 +15,10 @@ interface	TextAreaProps {
 	onFocus?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 	onBlur?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 	ref: RefObject<HTMLTextAreaElement | null>;
+	patternError?: string;
 }
 
-const	TextArea: React.FC<TextAreaProps> = ({
+const TextArea: React.FC<TextAreaProps> = ({
 	title = "Title",
 	name = "TextAreaName",
 	placeholder = "Placeholder",
@@ -31,7 +32,8 @@ const	TextArea: React.FC<TextAreaProps> = ({
 	onChange,
 	onFocus,
 	onBlur,
-	ref = null
+	ref = null,
+	patternError = ""
 }) => {
 	return (
 		<div className="flex flex-col items-center justify-center gap-1
@@ -41,11 +43,11 @@ const	TextArea: React.FC<TextAreaProps> = ({
 				w-full"
 			>
 				<div className="font-bold text-[14px]">
-					{ title }
+					{title}
 				</div>
 			</div>
 			<textarea
-				ref={ ref }
+				ref={ref}
 				className="w-full
 				outline-1 outline-background/25
 				focus:outline-3
@@ -55,21 +57,36 @@ const	TextArea: React.FC<TextAreaProps> = ({
 				text-[14px]
 				font-light
 				resize-none"
-				inputMode={ inputMode }
-				name={ name }
-				placeholder={ placeholder }
-				rows={ rows }
-				minLength= { minLength }
-				maxLength={ maxLength }
-				required={ true }
+				inputMode={inputMode}
+				name={name}
+				placeholder={placeholder}
+				rows={rows}
+				minLength={minLength}
+				maxLength={maxLength}
+				required={true}
 				style={{
 					...customStyle
 				}}
-				{ ...value ? { value } : {}}
-				{ ...onKeyDown ? { onKeyDown } : {}}
-				{ ...onChange ? { onChange } : {}}
-				{ ...onFocus ? { onFocus } : {}}
-				{ ...onBlur ? { onBlur } : {}}
+				{...value ? { value } : {}}
+				{...onKeyDown ? { onKeyDown } : {}}
+				{...onChange ? { onChange } : {}}
+				{...onFocus ? { onFocus } : {}}
+				{...onBlur ? { onBlur } : {}}
+				onInput={(e) => {
+					const target = e.target as HTMLTextAreaElement;
+					// Manual check for "only spaces" since textarea doesn't support 'pattern'
+					if (target.value.length > 0 && target.value.trim() === "" && patternError) {
+						target.setCustomValidity(patternError);
+					} else {
+						target.setCustomValidity("");
+					}
+				}}
+				onInvalid={(e) => {
+					const target = e.target as HTMLTextAreaElement;
+					if (target.value.length > 0 && target.value.trim() === "" && patternError) {
+						target.setCustomValidity(patternError);
+					}
+				}}
 			/>
 		</div>
 	);
