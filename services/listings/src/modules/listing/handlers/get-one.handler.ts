@@ -89,7 +89,7 @@ export async function handleGetOne(request: FastifyRequest, reply: FastifyReply)
     if (error instanceof ZodError) {
       return reply.status(400).send({
         "error": "validation_error",
-        "message": error.issues
+        "message": error.issues[0]?.message || "listing.not_found"
       });
     }
 
