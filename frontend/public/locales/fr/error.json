@@ -134,11 +134,13 @@
 			"bathroom_range_invalid": "La plage du nombre de salles de bain est invalide.",
 			"title": {
 				"too_short": "Le titre doit contenir au moins 3 caractères.",
-				"too_long": "Le titre ne doit pas dépasser 100 caractères."
+				"too_long": "Le titre ne doit pas dépasser 100 caractères.",
+				"invalid_pattern": "Le titre ne peut pas être composé uniquement d'espaces."
 			},
 			"description": {
 				"too_short": "La description doit contenir au moins 200 caractères.",
-				"too_long": "La description ne doit pas dépasser 2000 caractères."
+				"too_long": "La description ne doit pas dépasser 2000 caractères.",
+				"invalid_pattern": "La description ne peut pas être composée uniquement d'espaces."
 			},
 			"schedule": {
 				"invalid_day": "Le jour doit être compris entre 0 (dimanche) et 6 (samedi).",
