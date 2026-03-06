@@ -140,11 +140,13 @@ postgresql://[POSTGRES_USER]:[POSTGRES_PASSWORD]@[HOST]:[PORT]/[POSTGRES_DB]
 
 ## 🤖 AI Service (LLM)
 
+For the llm, use NVIDIA llm https://build.nvidia.com/google/gemma-3-27b-it
+
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `LLM_API_KEY` | API key for the LLM provider (OpenAI, Anthropic, etc.) | `sk-...` |
-| `LLM_API_URL` | LLM API base URL | `https://api.openai.com/v1` |
-| `LLM_MODEL` | LLM model used for text generation | `gpt-4o` or `claude-sonnet-4-6` |
+| `LLM_API_URL` | LLM API base URL | `https://integrate.api.nvidia.com/v1/chat/completions` |
+| `LLM_MODEL` | LLM model used for text generation | `google/gemma-3-27b-it` |
 | `EMBEDDING_MODEL` | Embedding model for vector/semantic search | `text-embedding-3-small` |
 
 ---
