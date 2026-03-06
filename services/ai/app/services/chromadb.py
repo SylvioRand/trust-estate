@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    chromadb.py                                        :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aelison <aelison@student.42antananarivo.m  +#+  +:+       +#+         #
+#    By: tolrandr <tolrandr@student.42antananari    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/29 08:29:41 by aelison           #+#    #+#              #
-#    Updated: 2026/02/23 11:13:02 by aelison          ###   ########.fr        #
+#    Updated: 2026/03/06 21:50:35 by tolrandr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
