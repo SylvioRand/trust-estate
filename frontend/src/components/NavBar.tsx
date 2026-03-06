@@ -189,6 +189,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 					}
 
 					{
+						(location.pathname !== "/add-phone" && location.pathname !== "/email-sent") &&
 						isConnected === true && userData &&
 						<MobileNavButton
 							icon=""
@@ -391,6 +392,7 @@ const NavBar: React.FC = () => {
 						}
 
 						{
+							(location.pathname !== "/add-phone" && location.pathname !== "/email-sent") &&
 							isConnected === true && userData &&
 							<div className="flex items-center justify-center gap-3 h-full">
 								<NavigationButton
