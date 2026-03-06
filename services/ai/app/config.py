@@ -22,8 +22,7 @@ class ft_config:
     LLM_API_URL = os.getenv("LLM_API_URL", "https://integrate.api.nvidia.com/v1/chat/completions")
     LLM_API_KEY = os.getenv("LLM_API_KEY", "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")
 
-    all_models = os.getenv("LLM_MODEL", "google/gemma-3-27b-it")
-    LLM_MODEL = [model.strip() for model in all_models.split(",")]
+    LLM_MODEL = os.getenv("LLM_MODEL", "google/gemma-3-27b-it")
 
     #Embedding
     EMBEDDING_MODEL=os.getenv("EMBEDDING_MODEL", "paraphrase-multilingual-MiniLM-L12-v2")
