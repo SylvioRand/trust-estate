@@ -281,7 +281,8 @@ class ChromadbService:
         RULES:
         1. OUTPUT: Return ONLY a valid JSON object. No prose, no explanations.
         2. FILTERS: 
-            - Use ONLY these keys: "price", "zone", "post_type", "property_type", "surface".
+            - Use ONLY these keys: "price", "zone", "post_type", "property_type", "surface", "tags"
+            - All ONLY available value for the key "tags" are: 'urgent', 'exclusive', 'discount'.
             - Do NOT add feature-level filters (bedrooms, pool, etc.) to the filters object. Features are handled separately via semantic search.
         3. ZONE NORMALIZATION: 
             - MANDATORY: Search the user's location in the VALID ZONES list.
@@ -356,6 +357,7 @@ class ChromadbService:
 
     async def get_query(self, user_mssg, llm_service, sys_prompt, id_ref=None):
         llm_parse_response = await llm_service.generate_bloc_response(user_mssg, sys_prompt)
+        print(f"Parse of LLM: {llm_parse_response}")
         datas = self.parse_json(llm_parse_response)
         if not datas:
             datas = {}
