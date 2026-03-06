@@ -134,11 +134,13 @@
 			"bathroom_range_invalid": "El rango de baños es inválido.",
 			"title": {
 				"too_short": "El título debe contener al menos 3 caracteres.",
-				"too_long": "El título no debe exceder los 100 caracteres."
+				"too_long": "El título no debe exceder los 100 caracteres.",
+				"invalid_pattern": "El título no puede consistir solo en espacios."
 			},
 			"description": {
 				"too_short": "La descripción debe contener al menos 200 caracteres.",
-				"too_long": "La descripción no debe exceder los 2000 caracteres."
+				"too_long": "La descripción no debe exceder los 2000 caracteres.",
+				"invalid_pattern": "La descripción no puede consistir solo en espacios."
 			},
 			"schedule": {
 				"invalid_day": "El día debe estar entre 0 (domingo) y 6 (sábado).",

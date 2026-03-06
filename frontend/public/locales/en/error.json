@@ -134,11 +134,13 @@
 			"bathroom_range_invalid": "The bathroom range is invalid.",
 			"title": {
 				"too_short": "The title must contain at least 3 characters.",
-				"too_long": "The title must not exceed 100 characters."
+				"too_long": "The title must not exceed 100 caracteres.",
+				"invalid_pattern": "The title cannot consist only of spaces."
 			},
 			"description": {
 				"too_short": "The description must contain at least 200 characters",
-				"too_long": "The description must not exceed 2000 characters."
+				"too_long": "The description must not exceed 2000 characters.",
+				"invalid_pattern": "The description cannot consist only of spaces."
 			},
 			"schedule": {
 				"invalid_day": "The day must be between 0 (Sunday) and 6 (Saturday).",
