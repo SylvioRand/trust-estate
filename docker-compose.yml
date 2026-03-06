@@ -94,7 +94,7 @@ services:
       RESERVATION_SERVICE_URL: ${RESERVATION_SERVICE_URL}
       CREDITS_SERVICE_URL: ${CREDITS_SERVICE_URL}
       AI_SERVICE_URL: ${AI_SERVICE_URL}
-      NODE_EXTRA_CA_CERTS: ./secrets/ai/ca.crt
+      NODE_EXTRA_CA_CERTS: /secrets/ai/ca.crt
     depends_on:
       db:
         condition: service_healthy
