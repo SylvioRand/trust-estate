@@ -234,46 +234,35 @@ class LLMService:
 
 
     async def generate_stream_response(self, text, metadata, system_prompt=""):
-        failed = True
-
-        for model in self.all_model:
-            async with httpx.AsyncClient() as client:
-                async with client.stream(
-                    "POST",
-                    url = self.url,
-                    headers = self.generate_header(),
-                    json = self.generate_json(text, True, model, system_prompt),
-                    timeout = 130.0
-                ) as response:
-                    if response.status_code == 429:
-                            error_details = await response.aread() 
-                            print(f"Error {response.status_code} on model {model}: {error_details.decode()}")
-                            continue
-                    response.raise_for_status()
-                    async for to_send in self.parse_and_send(response, metadata):
-                        yield to_send
-                    failed = False
-                    break
-        if failed:
-            raise Exception("Sorry, no more tokens in all of your models")
+        async with httpx.AsyncClient() as client:
+            async with client.stream(
+                "POST",
+                url = self.url,
+                headers = self.generate_header(),
+                json = self.generate_json(text, True, model, system_prompt),
+                timeout = 130.0
+            ) as response:
+                if response.status_code == 429:
+                        error_details = await response.aread() 
+                        print(f"Error {response.status_code} on model {model}: {error_details.decode()}")
+                response.raise_for_status()
+                async for to_send in self.parse_and_send(response, metadata):
+                    yield to_send
 
     async def generate_bloc_response(self, text, system_prompt=""):
         llm_response = ""
 
-        for model in self.all_model:
-            response = httpx.post(
-                url = self.url,
-                headers = self.generate_header(),
-                json = self.generate_json(text, False, model, system_prompt),
-                timeout = 120.0
-            )
-            if response.status_code == 429:
-                error_details = await response.aread() 
-                print(f"Error {response.status_code} on model {model}: {error_details.decode()}")
-                continue
-            response.raise_for_status()
-            data = response.json()
-            llm_response = data["choices"][0]["message"]["content"]
-            return llm_response
-        raise Exception("Sorry, no more tokens in all of your models")
+        response = httpx.post(
+            url = self.url,
+            headers = self.generate_header(),
+            json = self.generate_json(text, False, model, system_prompt),
+            timeout = 120.0
+        )
+        if response.status_code == 429:
+            error_details = await response.aread() 
+            print(f"Error {response.status_code} on model {model}: {error_details.decode()}")
+        response.raise_for_status()
+        data = response.json()
+        llm_response = data["choices"][0]["message"]["content"]
+        return llm_response
 

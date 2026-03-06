@@ -466,7 +466,6 @@ class ChromadbService:
         if filtered_result.get('ids') and len(filtered_result['ids']) > 0:
             for returned_id in filtered_result['ids'][0]:
                 try:
-                    # Find the index of this ID in the original query_result
                     original_idx = query_result['ids'][0].index(returned_id)
                     original_meta = query_result['metadatas'][0][original_idx]
                     
@@ -483,7 +482,6 @@ class ChromadbService:
                     )
                     result.append(curr_obj)
                 except ValueError:
-                    # ID returned by LLM was not in original query_result (should be rare)
                     continue
         return result
 
