@@ -5,9 +5,7 @@ import ContentDivider from "../components/ContentDivider";
 import ActionButton from "../components/ActionButton";
 import { toast } from "react-toastify";
 import useCountdown from "../components/Countdown";
-// import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
-import { number } from "zod";
 
 const EmailSentPage: React.FC = () => {
 	const { t } = useTranslation(["emailSent", "error"]);
@@ -17,8 +15,7 @@ const EmailSentPage: React.FC = () => {
 	const [resendButtonDisabled, setResendButtonDisabled] = useState<boolean>(false);
 	const navigate = useNavigate();
 	const [timeLeft, setTimeLeft, controls] = useCountdown();
-	const { setIsConnected, setUserData, userData } = useDataProvider();
-
+	const { setIsConnected, setUserData } = useDataProvider();
 
 	useEffect(() => {
 		const interval = setInterval(async () => {
