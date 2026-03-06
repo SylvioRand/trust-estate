@@ -29,15 +29,15 @@ all: certs generate-certs build up db-sync seed
 db-sync:
 	@$(call printInfo,Waiting for services to be ready)
 	@until docker inspect --format='{{.State.Health.Status}}' trust-estate-auth 2>/dev/null | grep -q "healthy"; do \
-		$(call printInfo,Waiting for auth service) \
+		$(call printInfo,Waiting for auth service); \
 		sleep 2; \
 	done
 	@until docker inspect --format='{{.State.Health.Status}}' trust-estate-listings 2>/dev/null | grep -q "healthy"; do \
-		$(call printInfo,Waiting for listings service) \
+		$(call printInfo,Waiting for listings service); \
 		sleep 2; \
 	done
 	@until docker inspect --format='{{.State.Health.Status}}' trust-estate-reservations 2>/dev/null | grep -q "healthy"; do \
-		$(call printInfo,Waiting for reservation service) \
+		$(call printInfo,Waiting for reservation service); \
 		sleep 2; \
 	done
 	@$(call printInfo,All services ready! Synchronizing schemas ...)
