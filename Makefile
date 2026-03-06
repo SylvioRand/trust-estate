@@ -14,7 +14,7 @@ DOCKER_COMPOSE := $(shell \
 export DOCKER_BUILDKIT=0
 
 # Default target: build and run everything
-all: certs build up db-sync seed
+all: certs generate-certs build up db-sync seed
 	@echo ""
 	@echo "✅ Trust Estate is running!"
 	@echo "🌐 Frontend: https://localhost:8443"
@@ -64,7 +64,7 @@ rebuild:
 	$(DOCKER_COMPOSE) build --no-cache
 
 # Start all services
-up: certs
+up: certs generate-certs
 	@echo "🚀 Starting services..."
 	$(DOCKER_COMPOSE) up -d
 
@@ -144,6 +144,11 @@ certs:
 	else \
 		echo "✅ Certificates already exist."; \
 	fi
+
+# Appeler script de génération de certificats avant de démarrer les services
+generate-certs:
+	chmod +x script/secret.generator.sh
+	./script/secret.generator.sh
 
 run-no-ai:
 	DOCKER_BUILDKIT=0 docker compose up -d --build nginx auth-service listings-service reservations-service db credits-service
