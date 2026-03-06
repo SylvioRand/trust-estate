@@ -15,9 +15,11 @@ const EmailSentPage: React.FC = () => {
 	const [resendButtonDisabled, setResendButtonDisabled] = useState<boolean>(false);
 	const navigate = useNavigate();
 	const [timeLeft, setTimeLeft, controls] = useCountdown();
-	const { setIsConnected, setUserData } = useDataProvider();
+	const { isConnected, setIsConnected, setUserData } = useDataProvider();
 
 	useEffect(() => {
+		if (isConnected === null)
+			navigate("/home", { replace: true });
 		const interval = setInterval(async () => {
 			try {
 				const response = await fetch("/api/users/me", {

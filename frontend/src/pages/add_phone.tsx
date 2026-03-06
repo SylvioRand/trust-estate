@@ -8,7 +8,7 @@ import type { APIResponse } from "./sign_up";
 import { toast } from "react-toastify";
 import { VerifyUsersState } from "../hooks/VerifyUsersState";
 import useDataProvider from "../provider/useDataProvider";
-import { Link, useLocation } from "react-router-dom";
+// import { Link, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
 const AddPhonePage: React.FC = () => {
