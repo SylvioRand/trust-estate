@@ -59,6 +59,13 @@ docker-compose.override.yml
 *.pid
 
 ############################
+# SSL / TLS Certificates
+############################
+nginx/certs/*.key
+nginx/certs/*.crt
+nginx/certs/*.pem
+
+############################
 # Prisma / ORM
 ############################
 prisma/migrations/*
